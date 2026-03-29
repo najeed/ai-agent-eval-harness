@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-res-13232",
-  "title": "Update Seller on Market Activity",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Seller on Market Activity",
+    "compliance_level": "Standard"
+  },
   "description": "A listing has been on the market for 30 days. The agent needs to provide the seller with a market activity update.",
-  "use_case": "Residential Sales",
-  "core_function": "Buyer & Seller Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather statistics for the listing: online views, number of showings, and any feedback received.",
-      "expected_outcome": "Agent compiles all relevant activity data for the property.",
-      "required_tools": [
-        "get_listing_analytics",
-        "get_showing_feedback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather statistics for the listing: online views, number of showings, and any feedback received.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles all relevant activity data for the property."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Research any new comparable listings or sales in the area since the property was listed.",
-      "expected_outcome": "Agent finds new market data that might affect the listing.",
-      "required_tools": [
-        "search_mls_comps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Research any new comparable listings or sales in the area since the property was listed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds new market data that might affect the listing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report summarizing the activity and new market data, and recommend a strategy, such as a price reduction.",
-      "expected_outcome": "Agent creates a comprehensive report and provides a data-driven recommendation.",
-      "required_tools": [
-        "generate_activity_report",
-        "provide_strategic_advice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report summarizing the activity and new market data, and recommend a strategy, such as a price reduction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a comprehensive report and provides a data-driven recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

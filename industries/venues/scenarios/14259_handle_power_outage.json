@@ -1,66 +1,72 @@
 {
-  "scenario_id": "venues-vo-14259",
-  "title": "Handle a Partial Power Outage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Partial Power Outage",
+    "compliance_level": "Standard"
+  },
   "description": "A power outage affects one section of the venue during an event, causing lights and concession stands to lose power.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Security & Emergency Response",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive reports of a power outage in a specific area.",
-      "expected_outcome": "Agent confirms the outage is affecting the west side of the venue.",
-      "required_tools": [
-        "get_system_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive reports of a power outage in a specific area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the outage is affecting the west side of the venue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the backup generators have activated for emergency lighting.",
-      "expected_outcome": "Agent confirms that emergency lights are on in the affected area.",
-      "required_tools": [
-        "check_generator_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the backup generators have activated for emergency lighting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that emergency lights are on in the affected area."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch electricians to the affected electrical room to diagnose the issue.",
-      "expected_outcome": "Agent sends the on-site electricians to investigate.",
-      "required_tools": [
-        "dispatch_technician"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch electricians to the affected electrical room to diagnose the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the on-site electricians to investigate."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Dispatch staff to the area to provide assistance and information to guests.",
-      "expected_outcome": "Agent sends guest services staff to the dark concourse to help guests.",
-      "required_tools": [
-        "dispatch_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Dispatch staff to the area to provide assistance and information to guests.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends guest services staff to the dark concourse to help guests."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

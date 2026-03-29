@@ -1,39 +1,46 @@
 {
-  "scenario_id": "construction-os-10679",
-  "title": "Coordinate a Utility Shutdown",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate a Utility Shutdown",
+    "compliance_level": "Standard"
+  },
   "description": "To tie in the new water line, the water supply to the existing building must be shut down for four hours. The site manager must coordinate this.",
-  "use_case": "On-Site Operations",
-  "core_function": "Task Execution & Coordination",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Notify all building occupants of the planned water shutdown, providing the date, time, and duration.",
-      "expected_outcome": "A notification is sent to all affected occupants.",
-      "required_tools": [
-        "send_occupant_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Notify all building occupants of the planned water shutdown, providing the date, time, and duration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A notification is sent to all affected occupants."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Coordinate with the plumbing subcontractor to ensure they are ready to perform the tie-in during the shutdown window.",
-      "expected_outcome": "The subcontractor confirms their readiness.",
-      "required_tools": [
-        "confirm_subcontractor_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Coordinate with the plumbing subcontractor to ensure they are ready to perform the tie-in during the shutdown window.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The subcontractor confirms their readiness."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

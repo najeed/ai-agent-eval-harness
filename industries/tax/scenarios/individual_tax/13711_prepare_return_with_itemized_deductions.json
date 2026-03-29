@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tax-ind-13711",
-  "title": "Prepare Return with Itemized Deductions",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Return with Itemized Deductions",
+    "compliance_level": "Standard"
+  },
   "description": "A homeowner needs to file their return and wants to itemize deductions, including mortgage interest, state taxes, and charitable contributions.",
-  "use_case": "Individual Tax Preparation & Filing",
-  "core_function": "Deductions & Credits Optimization",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all necessary documentation (Form 1098, property tax bills, donation receipts).",
-      "expected_outcome": "Agent collects all required documents from the taxpayer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all necessary documentation (Form 1098, property tax bills, donation receipts).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all required documents from the taxpayer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the data for mortgage interest, state and local taxes (SALT), and charitable giving onto Schedule A.",
-      "expected_outcome": "Agent correctly inputs all itemized deduction information.",
-      "required_tools": [
-        "enter_schedule_a_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the data for mortgage interest, state and local taxes (SALT), and charitable giving onto Schedule A.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly inputs all itemized deduction information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the total itemized deductions to the standard deduction and use the larger amount on the final return.",
-      "expected_outcome": "Agent confirms that itemizing provides a greater tax benefit and finalizes the return.",
-      "required_tools": [
-        "compare_deduction_methods"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the total itemized deductions to the standard deduction and use the larger amount on the final return.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that itemizing provides a greater tax benefit and finalizes the return."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

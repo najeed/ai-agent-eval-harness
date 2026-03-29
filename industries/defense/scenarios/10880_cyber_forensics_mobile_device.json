@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-cy-10880",
-  "title": "Mobile Device Forensics",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Mobile Device Forensics",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must conduct a forensic analysis of a captured enemy combatant's smartphone to extract intelligence.",
-  "use_case": "Cybersecurity & Information Warfare",
-  "core_function": "Cyber Forensics & Attribution",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use specialized tools to bypass the phone's password and create a forensic image of its internal memory.",
-      "expected_outcome": "Analyst successfully gains access to the phone's data.",
-      "required_tools": [
-        "bypass_mobile_password",
-        "create_forensic_image_mobile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_access_success_rate",
-          "threshold": 0.85
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use specialized tools to bypass the phone's password and create a forensic image of its internal memory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully gains access to the phone's data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Extract and analyze call logs, text messages, photos, and location history from the image.",
-      "expected_outcome": "Analyst extracts all relevant data from the phone.",
-      "required_tools": [
-        "extract_mobile_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_extraction_completeness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Extract and analyze call logs, text messages, photos, and location history from the image.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst extracts all relevant data from the phone."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate an intelligence report based on the extracted data, identifying other enemy combatants, locations, and plans.",
-      "expected_outcome": "Analyst produces a valuable intelligence product from the forensic analysis.",
-      "required_tools": [
-        "generate_intelligence_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_utility",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate an intelligence report based on the extracted data, identifying other enemy combatants, locations, and plans.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst produces a valuable intelligence product from the forensic analysis."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-em-11607",
-  "title": "Launch Annual Performance Review Cycle",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Launch Annual Performance Review Cycle",
+    "compliance_level": "Standard"
+  },
   "description": "An HR administrator needs to launch the annual performance review cycle for the entire company.",
-  "use_case": "Employee Management",
-  "core_function": "Performance Management",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate the performance review forms for all eligible employees in the performance management system.",
-      "expected_outcome": "Admin successfully creates review forms for all active employees.",
-      "required_tools": [
-        "generate_performance_forms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate the performance review forms for all eligible employees in the performance management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Admin successfully creates review forms for all active employees."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a company-wide communication announcing the start of the review cycle and the deadlines.",
-      "expected_outcome": "Admin drafts and sends the announcement email.",
-      "required_tools": [
-        "send_mass_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a company-wide communication announcing the start of the review cycle and the deadlines.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Admin drafts and sends the announcement email."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the completion status of self-assessments and manager reviews via a dashboard.",
-      "expected_outcome": "Admin checks the dashboard to track progress against deadlines.",
-      "required_tools": [
-        "view_performance_review_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the completion status of self-assessments and manager reviews via a dashboard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Admin checks the dashboard to track progress against deadlines."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

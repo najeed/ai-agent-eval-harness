@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13988",
-  "title": "Recognize a VIP Guest",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Recognize a VIP Guest",
+    "compliance_level": "Standard"
+  },
   "description": "A high-tier loyalty member is checking in. The agent needs to acknowledge their status and provide an upgrade.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Loyalty & Guest Relations",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the reservation and identify the guest's VIP loyalty status from an alert on the screen.",
-      "expected_outcome": "Agent correctly identifies the guest as a VIP.",
-      "required_tools": [
-        "get_reservation_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the reservation and identify the guest's VIP loyalty status from an alert on the screen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the guest as a VIP."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for available complimentary upgrades.",
-      "expected_outcome": "Agent finds an available junior suite for an upgrade.",
-      "required_tools": [
-        "check_for_upgrades"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for available complimentary upgrades.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an available junior suite for an upgrade."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Welcome the guest, acknowledge their loyalty, and inform them of their complimentary upgrade to a junior suite.",
-      "expected_outcome": "Agent provides excellent customer service and successfully processes the room upgrade.",
-      "required_tools": [
-        "upgrade_room"
-      ],
-      "success_criteria": [
-        {
-          "metric": "customer_satisfaction",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Welcome the guest, acknowledge their loyalty, and inform them of their complimentary upgrade to a junior suite.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides excellent customer service and successfully processes the room upgrade."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

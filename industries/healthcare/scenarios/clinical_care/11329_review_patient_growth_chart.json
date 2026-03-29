@@ -1,106 +1,74 @@
 {
-  "scenario_id": "hc-cc-11329",
-  "title": "Review Patient Growth Chart",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Patient Growth Chart",
+    "compliance_level": "Standard"
+  },
   "description": "A pediatrician is seeing a child for a well-child visit and needs to review their growth chart for any abnormalities.",
-  "use_case": "Clinical Care",
-  "core_function": "Clinical Decision Support",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the pediatric patient's chart.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pediatrician accesses the correct patient record."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the pediatric patient's chart.",
-      "expected_outcome": "Pediatrician accesses the correct patient record.",
-      "required_tools": [
-        "get_patient_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Navigate to the growth chart section of the EHR.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system displays the patient's height, weight, and BMI plotted against standard percentile curves."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Observe that the patient's weight percentile has crossed two major percentile lines, indicating a potential issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The visual display of the data allows the pediatrician to quickly identify a clinically significant trend."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Navigate to the growth chart section of the EHR.",
-      "expected_outcome": "The system displays the patient's height, weight, and BMI plotted against standard percentile curves.",
-      "required_tools": [
-        "open_growth_chart"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Observe that the patient's weight percentile has crossed two major percentile lines, indicating a potential issue.",
-      "expected_outcome": "The visual display of the data allows the pediatrician to quickly identify a clinically significant trend.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

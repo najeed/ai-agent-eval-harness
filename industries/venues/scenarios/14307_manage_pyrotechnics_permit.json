@@ -1,64 +1,72 @@
 {
-  "scenario_id": "venues-em-14307",
-  "title": "Manage Pyrotechnics Permit for an Event",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Pyrotechnics Permit for an Event",
+    "compliance_level": "Standard"
+  },
   "description": "A touring show plans to use pyrotechnics, and the event manager must secure a permit from the local fire department.",
-  "use_case": "Event Management & Booking",
-  "core_function": "Vendor & Partner Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the detailed pyrotechnics plan from the tour's production manager.",
-      "expected_outcome": "Agent receives the plan, including the types of effects and their locations.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the detailed pyrotechnics plan from the tour's production manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the plan, including the types of effects and their locations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Complete the permit application for the local fire department.",
-      "expected_outcome": "Agent fills out the required application form.",
-      "required_tools": [
-        "complete_permit_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Complete the permit application for the local fire department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fills out the required application form."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the application and the pyrotechnics plan to the fire marshal.",
-      "expected_outcome": "Agent submits the required documents.",
-      "required_tools": [
-        "submit_permit_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the application and the pyrotechnics plan to the fire marshal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the required documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Schedule an on-site inspection with the fire marshal for the day of the show.",
-      "expected_outcome": "Agent coordinates the final inspection to get the permit signed off.",
-      "required_tools": [
-        "schedule_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Schedule an on-site inspection with the fire marshal for the day of the show.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent coordinates the final inspection to get the permit signed off."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

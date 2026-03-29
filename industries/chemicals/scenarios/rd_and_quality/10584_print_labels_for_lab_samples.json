@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10584",
-  "title": "Print Labels for Lab Samples",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Print Labels for Lab Samples",
+    "compliance_level": "Standard"
+  },
   "description": "A lab technician is preparing several new solutions and needs to print chemical-resistant labels with the material name, concentration, and expiration date.",
-  "use_case": "R&D and Quality",
-  "core_function": "Sample Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the label printing software.",
-      "expected_outcome": "Agent successfully launches the application.",
-      "required_tools": [
-        "open_label_printer_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the label printing software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully launches the application."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select a label template appropriate for small bottles.",
-      "expected_outcome": "Agent chooses the '1x2 inch Reagent Bottle' template.",
-      "required_tools": [
-        "select_label_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select a label template appropriate for small bottles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent chooses the '1x2 inch Reagent Bottle' template."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the information for the new solution and print 5 copies of the label.",
-      "expected_outcome": "Agent enters the text and successfully sends the print job to the specialty label printer.",
-      "required_tools": [
-        "print_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the information for the new solution and print 5 copies of the label.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent enters the text and successfully sends the print job to the specialty label printer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ret-so-13412",
-  "title": "Handle a Spill Cleanup",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Spill Cleanup",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has spilled a drink. An associate needs to clean it up and document the action.",
-  "use_case": "Store Operations",
-  "core_function": "In-Store Customer Assistance",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Fetch the spill cleanup station and block off the area.",
-      "expected_outcome": "The associate follows safety procedures.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Fetch the spill cleanup station and block off the area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate follows safety procedures."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Clean the spill according to store policy.",
-      "expected_outcome": "The hazard is removed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Clean the spill according to store policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The hazard is removed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the incident and the cleanup action in the store's daily log or task management system.",
-      "expected_outcome": "The incident is documented for safety and compliance records.",
-      "required_tools": [
-        "log_store_incident"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the incident and the cleanup action in the store's daily log or task management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The incident is documented for safety and compliance records."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

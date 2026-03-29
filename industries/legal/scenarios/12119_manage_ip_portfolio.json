@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ct-12119",
-  "title": "Manage an IP Portfolio",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage an IP Portfolio",
+    "compliance_level": "Standard"
+  },
   "description": "An IP paralegal needs to review a client's trademark portfolio to identify upcoming renewal deadlines.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Intellectual Property (IP) Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the client's IP portfolio in the management software.",
-      "expected_outcome": "Agent retrieves the list of all trademarks.",
-      "required_tools": [
-        "ip_management_software_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the client's IP portfolio in the management software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the list of all trademarks."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Filter the portfolio to show all trademarks with a renewal deadline in the next 6 months.",
-      "expected_outcome": "Agent generates a list of upcoming deadlines.",
-      "required_tools": [
-        "ip_management_software_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Filter the portfolio to show all trademarks with a renewal deadline in the next 6 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of upcoming deadlines."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a report of the upcoming deadlines for the supervising attorney and the client.",
-      "expected_outcome": "Agent produces a clear report to ensure no deadlines are missed.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a report of the upcoming deadlines for the supervising attorney and the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clear report to ensure no deadlines are missed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tr-to-14014",
-  "title": "Schedule Preventive Maintenance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Preventive Maintenance",
+    "compliance_level": "Standard"
+  },
   "description": "A truck is approaching a mileage threshold for its scheduled 'A-Service' preventive maintenance. A fleet manager must schedule the service.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Fleet Maintenance",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a system alert that a truck is due for A-Service.",
-      "expected_outcome": "Agent is notified of the upcoming maintenance requirement.",
-      "required_tools": [
-        "get_maintenance_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a system alert that a truck is due for A-Service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is notified of the upcoming maintenance requirement."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the truck's upcoming schedule to find a time when it will be near a maintenance facility.",
-      "expected_outcome": "Agent identifies that the truck will have downtime near the Atlanta terminal in 3 days.",
-      "required_tools": [
-        "get_truck_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the truck's upcoming schedule to find a time when it will be near a maintenance facility.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that the truck will have downtime near the Atlanta terminal in 3 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new repair order for the A-Service and schedule it with the Atlanta maintenance shop.",
-      "expected_outcome": "A repair order is created and scheduled.",
-      "required_tools": [
-        "create_repair_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new repair order for the A-Service and schedule it with the Atlanta maintenance shop.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A repair order is created and scheduled."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

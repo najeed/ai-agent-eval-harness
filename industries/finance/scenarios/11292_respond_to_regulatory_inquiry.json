@@ -1,83 +1,61 @@
 {
-  "scenario_id": "finance-cf-11292",
-  "title": "Respond to a Regulatory Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a Regulatory Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A financial regulator has sent an inquiry requesting trade data for a specific time period.",
-  "use_case": "Corporate Finance",
-  "core_function": "Risk & Compliance",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Parse the regulator's request to identify the exact data and time period required.",
-      "expected_outcome": "Agent correctly identifies the scope of the data request.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Parse the regulator's request to identify the exact data and time period required.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the scope of the data request."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the trade database to pull all relevant trade records.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully extracts the requested trade data from the archive."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the trade database to pull all relevant trade records.",
-      "expected_outcome": "Agent successfully extracts the requested trade data from the archive.",
-      "required_tools": [
-        "query_trade_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Format the data according to the regulator's specifications and submit it through the secure portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares and submits the data package to the regulator."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Format the data according to the regulator's specifications and submit it through the secure portal.",
-      "expected_outcome": "Agent prepares and submits the data package to the regulator.",
-      "required_tools": [
-        "format_regulatory_data",
-        "submit_to_secure_portal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

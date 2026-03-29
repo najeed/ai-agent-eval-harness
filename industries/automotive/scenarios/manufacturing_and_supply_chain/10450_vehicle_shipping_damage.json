@@ -1,50 +1,59 @@
 {
-  "scenario_id": "auto-ms-10450",
-  "title": "Vehicle Damaged During Shipping",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Vehicle Damaged During Shipping",
+    "compliance_level": "Standard"
+  },
   "description": "A dealership reports that a new vehicle has arrived from the factory with a dent, which occurred during transport.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Logistics & Parts Tracking",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the VIN of the damaged vehicle and photos of the damage from the dealership.",
-      "expected_outcome": "Agent receives the VIN and images of the dented fender.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the VIN of the damaged vehicle and photos of the damage from the dealership.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the VIN and images of the dented fender."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log a damage claim against the shipping carrier responsible for the transport.",
-      "expected_outcome": "Agent successfully files a claim with the carrier, including the evidence.",
-      "required_tools": [
-        "file_carrier_damage_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log a damage claim against the shipping carrier responsible for the transport.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully files a claim with the carrier, including the evidence."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Authorize the dealership to perform the repair and issue a credit to cover the cost.",
-      "expected_outcome": "Agent authorizes the repair and processes a credit to the dealership's account.",
-      "required_tools": [
-        "authorize_dealership_repair"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Authorize the dealership to perform the repair and issue a credit to cover the cost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent authorizes the repair and processes a credit to the dealership's account."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

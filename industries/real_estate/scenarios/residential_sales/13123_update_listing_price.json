@@ -1,50 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13123",
-  "title": "Process a Listing Price Change",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Listing Price Change",
+    "compliance_level": "Standard"
+  },
   "description": "A seller has agreed to lower the price of their listed property. The agent needs to update the MLS and marketing materials.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Property Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain written confirmation (e.g., price reduction addendum) from the seller for the new price.",
-      "expected_outcome": "Agent receives a signed document authorizing the price change.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "compliance_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain written confirmation (e.g., price reduction addendum) from the seller for the new price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives a signed document authorizing the price change."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the price in the MLS listing.",
-      "expected_outcome": "The list price is successfully changed in the MLS system.",
-      "required_tools": [
-        "update_mls_listing_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the price in the MLS listing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The list price is successfully changed in the MLS system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify all agents who have previously shown the property of the price reduction.",
-      "expected_outcome": "A mass email is sent to all agents who have shown the property or saved the listing.",
-      "required_tools": [
-        "notify_interested_agents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify all agents who have previously shown the property of the price reduction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A mass email is sent to all agents who have shown the property or saved the listing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

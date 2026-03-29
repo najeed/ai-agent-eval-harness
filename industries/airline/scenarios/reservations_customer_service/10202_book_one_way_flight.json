@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-res-10202",
-  "title": "Book a One-Way Flight",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book a One-Way Flight",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to book a one-way flight from New York (JFK) to Los Angeles (LAX) for next Friday.",
-  "use_case": "Reservations & Customer Service",
-  "core_function": "Booking & Ticketing",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search for available one-way flights from JFK to LAX for the specified date.",
-      "expected_outcome": "Agent finds several flight options and presents them to the customer.",
-      "required_tools": [
-        "search_flights"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search for available one-way flights from JFK to LAX for the specified date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds several flight options and presents them to the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the flight chosen by the customer and create a new booking with their passenger details.",
-      "expected_outcome": "Agent creates a booking record with the correct flight and passenger information.",
-      "required_tools": [
-        "create_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the flight chosen by the customer and create a new booking with their passenger details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a booking record with the correct flight and passenger information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the customer's credit card payment and issue the electronic ticket.",
-      "expected_outcome": "Agent successfully takes payment and issues a ticket, providing the customer with a confirmation number.",
-      "required_tools": [
-        "process_payment",
-        "issue_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the customer's credit card payment and issue the electronic ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully takes payment and issues a ticket, providing the customer with a confirmation number."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

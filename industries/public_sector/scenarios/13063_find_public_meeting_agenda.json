@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ps-cs-13063",
-  "title": "Find a Public Meeting Agenda",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find a Public Meeting Agenda",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen wants to find the agenda for the upcoming city council meeting.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Information & Inquiry Resolution",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific meeting the citizen is asking about.",
-      "expected_outcome": "Agent understands the request is for the next city council meeting.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific meeting the citizen is asking about.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the request is for the next city council meeting."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the city's public website or records portal for the meeting agenda.",
-      "expected_outcome": "Agent locates the posted agenda for the meeting.",
-      "required_tools": [
-        "search_public_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the city's public website or records portal for the meeting agenda.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the posted agenda for the meeting."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a link to the agenda or summarize the key items for the citizen.",
-      "expected_outcome": "Agent provides the citizen with the information they requested.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a link to the agenda or summarize the key items for the citizen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the citizen with the information they requested."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

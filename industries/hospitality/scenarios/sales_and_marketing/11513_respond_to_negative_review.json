@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-sm-11513",
-  "title": "Respond to a Negative Online Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a Negative Online Review",
+    "compliance_level": "Standard"
+  },
   "description": "A hotel manager needs to respond to a negative review on a travel website where a guest complained about noise.",
-  "use_case": "Sales & Marketing",
-  "core_function": "Guest Feedback & Reviews",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the guest's stay details from the information in the review.",
-      "expected_outcome": "Manager successfully finds the guest's past reservation.",
-      "required_tools": [
-        "pms_lookup_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the guest's stay details from the information in the review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager successfully finds the guest's past reservation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a public response that is empathetic, apologizes for the specific issue, and avoids being defensive.",
-      "expected_outcome": "A well-written, professional response is drafted.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a public response that is empathetic, apologizes for the specific issue, and avoids being defensive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A well-written, professional response is drafted."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Post the response to the review website and offer to connect with the guest offline to resolve the matter further.",
-      "expected_outcome": "The response is posted, and it includes contact information for follow-up.",
-      "required_tools": [
-        "post_online_review_response"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Post the response to the review website and offer to connect with the guest offline to resolve the matter further.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The response is posted, and it includes contact information for follow-up."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

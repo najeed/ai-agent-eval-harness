@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-fs-11099",
-  "title": "Get a Class Roster",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Get a Class Roster",
+    "compliance_level": "Standard"
+  },
   "description": "A professor needs a printable roster for their class to take attendance on the first day.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "Curriculum Development & Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the faculty member and the specific course section.",
-      "expected_outcome": "Agent confirms the professor and course.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the faculty member and the specific course section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the professor and course."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the faculty member to the faculty portal where they can view and print their class rosters.",
-      "expected_outcome": "Agent provides clear instructions for self-service.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the faculty member to the faculty portal where they can view and print their class rosters.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions for self-service."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain how to generate a version of the roster that includes student photos, if available.",
-      "expected_outcome": "Agent provides additional helpful information about the system's features.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain how to generate a version of the roster that includes student photos, if available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides additional helpful information about the system's features."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

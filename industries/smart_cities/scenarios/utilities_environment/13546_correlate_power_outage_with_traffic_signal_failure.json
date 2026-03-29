@@ -1,50 +1,59 @@
 {
-  "scenario_id": "smartcities-ue-13546",
-  "title": "Correlate Power Outage with Traffic Signal Failure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Correlate Power Outage with Traffic Signal Failure",
+    "compliance_level": "Standard"
+  },
   "description": "A series of traffic signals go dark. An operator must determine if this is related to a power grid failure.",
-  "use_case": "Utilities & Environment",
-  "core_function": "Smart Grid & Energy Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive multiple alerts for traffic signal failures in the same geographic area.",
-      "expected_outcome": "Agent identifies a cluster of signal outages.",
-      "required_tools": [
-        "get_traffic_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive multiple alerts for traffic signal failures in the same geographic area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a cluster of signal outages."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Overlay the locations of the failed signals with the real-time power grid status map.",
-      "expected_outcome": "Agent visually correlates the two datasets on a map.",
-      "required_tools": [
-        "get_grid_status_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Overlay the locations of the failed signals with the real-time power grid status map.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent visually correlates the two datasets on a map."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm that the signal failures perfectly match a known power outage zone, identifying the root cause.",
-      "expected_outcome": "Agent correctly diagnoses the problem as a power outage, not a traffic system failure.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm that the signal failures perfectly match a known power outage zone, identifying the root cause.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly diagnoses the problem as a power outage, not a traffic system failure."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

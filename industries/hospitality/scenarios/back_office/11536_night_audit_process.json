@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-bo-11536",
-  "title": "Run the Night Audit Process",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Run the Night Audit Process",
+    "compliance_level": "Standard"
+  },
   "description": "The night auditor needs to run the end-of-day process to close the day's business and prepare for the next.",
-  "use_case": "Back Office & Administration",
-  "core_function": "Financial Reporting",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that all departments (e.g., F&B, gift shop) have closed their shifts and submitted their daily totals.",
-      "expected_outcome": "The auditor confirms all departmental reports are in.",
-      "required_tools": [
-        "pms_check_departmental_closures"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that all departments (e.g., F&B, gift shop) have closed their shifts and submitted their daily totals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor confirms all departmental reports are in."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Post all remaining room and tax charges to guest folios.",
-      "expected_outcome": "All in-house guests have their daily charges posted.",
-      "required_tools": [
-        "pms_post_room_and_tax"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Post all remaining room and tax charges to guest folios.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All in-house guests have their daily charges posted."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the main night audit sequence in the PMS, which closes the current business day and generates summary reports.",
-      "expected_outcome": "The audit process completes successfully, and the system date rolls over.",
-      "required_tools": [
-        "pms_run_night_audit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the main night audit sequence in the PMS, which closes the current business day and generates summary reports.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The audit process completes successfully, and the system date rolls over."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

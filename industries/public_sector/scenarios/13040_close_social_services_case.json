@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-cs-13040",
-  "title": "Close a Social Services Case",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Close a Social Services Case",
+    "compliance_level": "Standard"
+  },
   "description": "A client in a job training program has successfully found employment, and the social worker needs to close their case.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Case Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the client's case file.",
-      "expected_outcome": "The social worker locates the correct case.",
-      "required_tools": [
-        "get_case_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the client's case file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The social worker locates the correct case."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the client has met the goals of their service plan (i.e., gained employment).",
-      "expected_outcome": "The social worker confirms the successful outcome with the client.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the client has met the goals of their service plan (i.e., gained employment).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The social worker confirms the successful outcome with the client."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete the case closure summary, document the outcome, and officially close the case in the system.",
-      "expected_outcome": "The social worker writes a closing summary and updates the case status to 'Closed-Successful'.",
-      "required_tools": [
-        "add_case_note",
-        "update_case_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete the case closure summary, document the outcome, and officially close the case in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The social worker writes a closing summary and updates the case status to 'Closed-Successful'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

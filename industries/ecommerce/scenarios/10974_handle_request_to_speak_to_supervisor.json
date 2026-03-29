@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10974",
-  "title": "Handle Request to Speak to a Supervisor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Request to Speak to a Supervisor",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is unhappy with a policy and demands to be escalated to a supervisor.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Issue Resolution",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the customer's frustration and their request for a supervisor.",
-      "expected_outcome": "Agent responds empathetically and agrees to the escalation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the customer's frustration and their request for a supervisor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent responds empathetically and agrees to the escalation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the availability of a supervisor or team lead.",
-      "expected_outcome": "Agent sees that a supervisor is available for a warm transfer.",
-      "required_tools": [
-        "check_supervisor_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the availability of a supervisor or team lead.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees that a supervisor is available for a warm transfer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Summarize the issue in a note and initiate a transfer to the available supervisor.",
-      "expected_outcome": "Agent provides a concise summary for the supervisor and successfully transfers the call.",
-      "required_tools": [
-        "transfer_call"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Summarize the issue in a note and initiate a transfer to the available supervisor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a concise summary for the supervisor and successfully transfers the call."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

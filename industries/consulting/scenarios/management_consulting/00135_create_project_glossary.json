@@ -1,66 +1,72 @@
 {
-  "scenario_id": "consulting-mc-135",
-  "title": "Create a Project Glossary",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Project Glossary",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must scan a collection of project documents and create a glossary of key terms and acronyms.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process all documents in a specified project folder.",
-      "expected_outcome": "Agent successfully reads all documents.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process all documents in a specified project folder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reads all documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify all acronyms and technical terms used in the documents.",
-      "expected_outcome": "Agent extracts a list of potential glossary terms.",
-      "required_tools": [
-        "extract_key_terms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify all acronyms and technical terms used in the documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent extracts a list of potential glossary terms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each term, find its definition or first usage context within the documents.",
-      "expected_outcome": "Agent provides a definition or context for each term.",
-      "required_tools": [
-        "find_definition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each term, find its definition or first usage context within the documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a definition or context for each term."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Format the findings into a two-column glossary table (Term | Definition).",
-      "expected_outcome": "Agent generates a well-structured glossary.",
-      "required_tools": [
-        "create_glossary"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Format the findings into a two-column glossary table (Term | Definition).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a well-structured glossary."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "airline-ago-10282",
-  "title": "Handle a Lost Boarding Pass",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Lost Boarding Pass",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger has lost their boarding pass after checking in. A gate agent needs to re-issue it.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Gate & Boarding",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the passenger's booking using their name and photo ID.",
-      "expected_outcome": "Agent finds the passenger's booking and confirms they are checked in.",
-      "required_tools": [
-        "get_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the passenger's booking using their name and photo ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the passenger's booking and confirms they are checked in."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the passenger's identity against their photo ID.",
-      "expected_outcome": "Agent confirms the identity matches.",
-      "required_tools": [
-        "verify_passenger_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the passenger's identity against their photo ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the identity matches."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Re-print the boarding pass for the passenger.",
-      "expected_outcome": "Agent successfully provides the passenger with a new boarding pass.",
-      "required_tools": [
-        "print_boarding_pass"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Re-print the boarding pass for the passenger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully provides the passenger with a new boarding pass."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

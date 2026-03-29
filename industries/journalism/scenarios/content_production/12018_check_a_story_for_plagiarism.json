@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-cp-12018",
-  "title": "Check a Story for Plagiarism",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check a Story for Plagiarism",
+    "compliance_level": "Standard"
+  },
   "description": "Before publication, an editor must check a freelance submission to ensure it is original work and does not contain plagiarism.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Copy Editing & Review",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Copy the text of the submitted article.",
-      "expected_outcome": "The text is ready to be checked.",
-      "required_tools": [
-        "text_editor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Copy the text of the submitted article.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The text is ready to be checked."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run the text through a plagiarism detection tool.",
-      "expected_outcome": "The tool scans the web and internal archives for matching text.",
-      "required_tools": [
-        "run_plagiarism_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run the text through a plagiarism detection tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool scans the web and internal archives for matching text."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the plagiarism report and investigate any flagged passages to determine if they are properly attributed or constitute plagiarism.",
-      "expected_outcome": "Agent makes a final determination on the originality of the work.",
-      "required_tools": [
-        "analyze_plagiarism_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the plagiarism report and investigate any flagged passages to determine if they are properly attributed or constitute plagiarism.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a final determination on the originality of the work."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

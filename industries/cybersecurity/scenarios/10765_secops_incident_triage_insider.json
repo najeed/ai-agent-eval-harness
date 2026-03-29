@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-so-10765",
-  "title": "Insider Threat Alert Triage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Insider Threat Alert Triage",
+    "compliance_level": "Standard"
+  },
   "description": "A SOC analyst receives an alert from a User and Entity Behavior Analytics (UEBA) tool that a user has downloaded an unusually large amount of data.",
-  "use_case": "Security Operations (SecOps)",
-  "core_function": "Incident Detection & Triage",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the UEBA alert details, including the user, the amount of data downloaded, and the source.",
-      "expected_outcome": "Analyst retrieves the details of the behavioral anomaly.",
-      "required_tools": [
-        "get_ueba_alert_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the UEBA alert details, including the user, the amount of data downloaded, and the source.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst retrieves the details of the behavioral anomaly."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check with the user's manager to see if there is a legitimate business reason for the large download.",
-      "expected_outcome": "The manager confirms there is no legitimate reason for the activity.",
-      "required_tools": [
-        "contact_manager"
-      ],
-      "success_criteria": [
-        {
-          "metric": "investigation_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check with the user's manager to see if there is a legitimate business reason for the large download.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager confirms there is no legitimate reason for the activity."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the activity is suspicious and escalate to the insider threat team for a full investigation.",
-      "expected_outcome": "Analyst correctly identifies a potential insider threat and escalates it to the appropriate team.",
-      "required_tools": [
-        "create_incident_ticket",
-        "escalate_to_insider_threat_team"
-      ],
-      "success_criteria": [
-        {
-          "metric": "triage_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the activity is suspicious and escalate to the insider threat team for a full investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies a potential insider threat and escalates it to the appropriate team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

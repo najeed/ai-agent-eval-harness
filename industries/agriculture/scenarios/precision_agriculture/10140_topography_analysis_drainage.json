@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-pa-10140",
-  "title": "Analyze Field Topography for Drainage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Field Topography for Drainage",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer wants to analyze a high-resolution elevation map of a field to identify areas where water ponds and plan for drainage tile installation.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Analytics & Insights",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the LiDAR-based digital elevation model (DEM) for the field.",
-      "expected_outcome": "Agent retrieves the high-resolution elevation data.",
-      "required_tools": [
-        "get_elevation_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the LiDAR-based digital elevation model (DEM) for the field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the high-resolution elevation data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the DEM to identify all depressions and low-lying areas where water is likely to accumulate.",
-      "expected_outcome": "Agent generates a map highlighting all potential ponding areas.",
-      "required_tools": [
-        "analyze_topography_for_ponding"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the DEM to identify all depressions and low-lying areas where water is likely to accumulate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a map highlighting all potential ponding areas."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a preliminary layout plan for drainage tile lines to effectively drain the identified problem areas.",
-      "expected_outcome": "Agent creates a map showing a proposed drainage tile layout.",
-      "required_tools": [
-        "generate_drainage_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a preliminary layout plan for drainage tile lines to effectively drain the identified problem areas.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a map showing a proposed drainage tile layout."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

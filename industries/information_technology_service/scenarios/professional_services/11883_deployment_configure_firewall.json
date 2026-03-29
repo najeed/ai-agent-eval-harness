@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11883",
-  "title": "Deployment - Configure New Firewall",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Deployment - Configure New Firewall",
+    "compliance_level": "Standard"
+  },
   "description": "As part of a firewall replacement project, a technician needs to configure the new firewall.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Technology Deployment & Migration",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the discovery documentation to understand all the required firewall rules, VPN tunnels, and network segments.",
-      "expected_outcome": "The technician has a complete list of configuration requirements.",
-      "required_tools": [
-        "get_client_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the discovery documentation to understand all the required firewall rules, VPN tunnels, and network segments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician has a complete list of configuration requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Configure the new firewall with all the required settings in a staging environment.",
-      "expected_outcome": "The firewall is fully configured before being deployed.",
-      "required_tools": [
-        "configure_firewall"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Configure the new firewall with all the required settings in a staging environment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The firewall is fully configured before being deployed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Save the final configuration and prepare for the physical installation.",
-      "expected_outcome": "The configuration is backed up and ready for deployment.",
-      "required_tools": [
-        "backup_firewall_config"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Save the final configuration and prepare for the physical installation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The configuration is backed up and ready for deployment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

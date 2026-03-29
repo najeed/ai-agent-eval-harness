@@ -1,53 +1,59 @@
 {
-  "scenario_id": "insurance-la-11974",
-  "title": "Stop Payment on a Lost Claim Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Stop Payment on a Lost Claim Check",
+    "compliance_level": "Standard"
+  },
   "description": "A beneficiary reports that they lost their life insurance claim check and needs a new one.",
-  "use_case": "Life & Annuities",
-  "core_function": "Claims & Payouts",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the beneficiary and the claim payment.",
-      "expected_outcome": "Agent locates the claim and the specific payment details.",
-      "required_tools": [
-        "get_claim_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the beneficiary and the claim payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the claim and the specific payment details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check if the original check has been cashed.",
-      "expected_outcome": "Agent confirms the check has not yet been cashed.",
-      "required_tools": [
-        "check_payment_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check if the original check has been cashed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the check has not yet been cashed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place a stop payment on the lost check and reissue a new one.",
-      "expected_outcome": "Agent successfully stops the old check and issues a new payment.",
-      "required_tools": [
-        "stop_payment",
-        "reissue_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place a stop payment on the lost check and reissue a new one.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully stops the old check and issues a new payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

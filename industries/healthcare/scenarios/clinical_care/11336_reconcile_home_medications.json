@@ -1,84 +1,61 @@
 {
-  "scenario_id": "hc-cc-11336",
-  "title": "Reconcile Home Medications",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reconcile Home Medications",
+    "compliance_level": "Standard"
+  },
   "description": "A nurse is admitting a new patient and needs to reconcile the medications the patient takes at home with the medications being ordered in the hospital.",
-  "use_case": "Clinical Care",
-  "core_function": "Medication Administration",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Interview the patient to get a list of their home medications, dosages, and frequencies.",
-      "expected_outcome": "Nurse documents the patient-reported home medication list.",
-      "required_tools": [
-        "document_home_meds"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Interview the patient to get a list of their home medications, dosages, and frequencies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Nurse documents the patient-reported home medication list."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Open the admission medication reconciliation tool, which displays the home meds side-by-side with new inpatient orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Nurse views the reconciliation screen."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Open the admission medication reconciliation tool, which displays the home meds side-by-side with new inpatient orders.",
-      "expected_outcome": "Nurse views the reconciliation screen.",
-      "required_tools": [
-        "open_medication_reconciliation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each home medication, decide whether to 'Continue', 'Discontinue', or 'Modify' it for the inpatient stay, and complete the reconciliation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Nurse and provider complete the reconciliation, ensuring medication safety at a critical transition of care."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each home medication, decide whether to 'Continue', 'Discontinue', or 'Modify' it for the inpatient stay, and complete the reconciliation.",
-      "expected_outcome": "Nurse and provider complete the reconciliation, ensuring medication safety at a critical transition of care.",
-      "required_tools": [
-        "reconcile_medication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

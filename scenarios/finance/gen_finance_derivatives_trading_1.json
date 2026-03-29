@@ -1,21 +1,32 @@
 {
-  "scenario_id": "gen_finance_derivatives_trading_1",
-  "title": "Generated Derivatives Trading Scenario 1",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generated Derivatives Trading Scenario 1",
+    "compliance_level": "Standard"
+  },
   "description": "Automatically generated test case for derivatives trading in finance industry.",
-  "use_case": "derivatives trading",
-  "core_function": "finance_operations",
   "industry": "finance",
-  "tasks": [
-    {
-      "task_id": "task_1",
-      "description": "User wants to perform derivatives trading. Handle the request correctly.",
-      "expected_outcome": "Successfully handled derivatives trading.",
-      "success_criteria": [
-        {
-          "metric": "success_rate",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task_1",
+        "task_description": "User wants to perform derivatives trading. Handle the request correctly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Successfully handled derivatives trading."
         }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

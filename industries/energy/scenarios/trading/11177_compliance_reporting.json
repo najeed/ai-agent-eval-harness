@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-tr-11177",
-  "title": "Generate FERC Compliance Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate FERC Compliance Report",
+    "compliance_level": "Standard"
+  },
   "description": "A compliance officer needs to generate a quarterly report for the Federal Energy Regulatory Commission (FERC) detailing all physical and financial energy trades.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Settlement & Reconciliation",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query the ETRM system to pull all trade data for the last quarter.",
-      "expected_outcome": "Agent retrieves a complete list of all trades.",
-      "required_tools": [
-        "get_etrm_trade_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query the ETRM system to pull all trade data for the last quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a complete list of all trades."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Format the trade data according to FERC's specific reporting requirements (e.g., Electric Quarterly Report - EQR).",
-      "expected_outcome": "Agent correctly formats the data into the required structure.",
-      "required_tools": [
-        "format_ferc_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Format the trade data according to FERC's specific reporting requirements (e.g., Electric Quarterly Report - EQR).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly formats the data into the required structure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the final report and prepare it for submission to FERC.",
-      "expected_outcome": "Agent produces the completed EQR file.",
-      "required_tools": [
-        "generate_compliance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the final report and prepare it for submission to FERC.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces the completed EQR file."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

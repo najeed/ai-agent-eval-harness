@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hr-os-11614",
-  "title": "Enroll Employee in Training",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Enroll Employee in Training",
+    "compliance_level": "Standard"
+  },
   "description": "A manager wants to enroll their employee in an upcoming 'Leadership Skills' training course.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Learning & Development",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the employee and the desired training course in the Learning Management System (LMS).",
-      "expected_outcome": "L&D specialist identifies the employee and the course.",
-      "required_tools": [
-        "get_employee_record",
-        "search_lms_catalog"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the employee and the desired training course in the Learning Management System (LMS).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "L&D specialist identifies the employee and the course."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for available seats in the upcoming course session.",
-      "expected_outcome": "Specialist confirms there are open seats.",
-      "required_tools": [
-        "get_course_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for available seats in the upcoming course session.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist confirms there are open seats."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enroll the employee in the course and send a confirmation to the employee and their manager.",
-      "expected_outcome": "Specialist successfully enrolls the employee and sends notifications.",
-      "required_tools": [
-        "enroll_in_training_course"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enroll the employee in the course and send a confirmation to the employee and their manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist successfully enrolls the employee and sends notifications."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

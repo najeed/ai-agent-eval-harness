@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-co-11029",
-  "title": "Apply for On-Campus Housing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply for On-Campus Housing",
+    "compliance_level": "Standard"
+  },
   "description": "A newly admitted student wants to apply for on-campus housing for their first year.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Housing & Residential Life",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the student's admission status and eligibility for housing.",
-      "expected_outcome": "Agent confirms the student has been admitted and is eligible.",
-      "required_tools": [
-        "get_applicant_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the student's admission status and eligibility for housing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student has been admitted and is eligible."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the student to the online housing application portal.",
-      "expected_outcome": "Agent provides the correct URL and explains the application steps.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the student to the online housing application portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct URL and explains the application steps."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the different housing options (e.g., dorm styles, meal plans) and the lottery process.",
-      "expected_outcome": "Agent clearly communicates the housing options and how assignments are made.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the different housing options (e.g., dorm styles, meal plans) and the lottery process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the housing options and how assignments are made."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

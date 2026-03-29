@@ -1,67 +1,72 @@
 {
-  "scenario_id": "energy-cs-11183",
-  "title": "Enroll Customer in EV Managed Charging",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Enroll Customer in EV Managed Charging",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with a new electric vehicle wants to enroll in a program where the utility manages their charging to occur during off-peak hours in exchange for a lower rate.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "EV Charging Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the benefits of the managed charging program, including cost savings and grid benefits.",
-      "expected_outcome": "Agent clearly communicates the program's value proposition.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the benefits of the managed charging program, including cost savings and grid benefits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the program's value proposition."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the customer's EV model and home charger are compatible with the utility's control platform.",
-      "expected_outcome": "Agent confirms compatibility.",
-      "required_tools": [
-        "check_der_compatibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the customer's EV model and home charger are compatible with the utility's control platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms compatibility."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Guide the customer through the process of connecting their EV or charger account to the utility's platform.",
-      "expected_outcome": "Agent provides clear instructions for the customer to authorize the connection.",
-      "required_tools": [
-        "generate_onboarding_instructions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Guide the customer through the process of connecting their EV or charger account to the utility's platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions for the customer to authorize the connection."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Enroll the customer in the program and update their billing rate.",
-      "expected_outcome": "Agent successfully completes the enrollment.",
-      "required_tools": [
-        "enroll_in_der_program",
-        "update_customer_rate_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Enroll the customer in the program and update their billing rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the enrollment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ret-so-13410",
-  "title": "Sell a Gift Card",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Sell a Gift Card",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to purchase a $50 gift card.",
-  "use_case": "Store Operations",
-  "core_function": "Point of Sale (POS) Transactions",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the 'Sell Gift Card' option on the POS.",
-      "expected_outcome": "The POS enters the gift card sales workflow.",
-      "required_tools": [
-        "select_pos_function"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the 'Sell Gift Card' option on the POS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The POS enters the gift card sales workflow."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the gift card's barcode and enter the amount ($50) to be loaded onto it.",
-      "expected_outcome": "The gift card is identified, and the value is entered.",
-      "required_tools": [
-        "scan_gift_card",
-        "enter_gift_card_value"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the gift card's barcode and enter the amount ($50) to be loaded onto it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The gift card is identified, and the value is entered."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Take payment from the customer and complete the transaction, which activates the gift card.",
-      "expected_outcome": "The gift card is successfully activated with the correct value.",
-      "required_tools": [
-        "complete_transaction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Take payment from the customer and complete the transaction, which activates the gift card.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The gift card is successfully activated with the correct value."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

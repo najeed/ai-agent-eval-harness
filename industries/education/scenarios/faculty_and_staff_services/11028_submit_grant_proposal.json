@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-fs-11028",
-  "title": "Submit a Grant Proposal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Submit a Grant Proposal",
+    "compliance_level": "Standard"
+  },
   "description": "A researcher needs assistance with the final submission of a federal grant proposal through the university's sponsored programs office.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "Grant & Research Administration",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the researcher and the grant proposal details.",
-      "expected_outcome": "Agent locates the pending proposal in the administration system.",
-      "required_tools": [
-        "get_grant_proposal_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the researcher and the grant proposal details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the pending proposal in the administration system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a final review of the proposal against the funding agency's requirements checklist.",
-      "expected_outcome": "Agent verifies that all required sections and signatures are present.",
-      "required_tools": [
-        "validate_grant_proposal_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a final review of the proposal against the funding agency's requirements checklist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that all required sections and signatures are present."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Officially submit the grant proposal through the federal government's online portal on behalf of the university.",
-      "expected_outcome": "Agent successfully submits the proposal and logs the confirmation number.",
-      "required_tools": [
-        "submit_federal_grant"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Officially submit the grant proposal through the federal government's online portal on behalf of the university.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the proposal and logs the confirmation number."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12749",
-  "title": "Troubleshoot Refinery Process Alarm",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Troubleshoot Refinery Process Alarm",
+    "compliance_level": "Standard"
+  },
   "description": "A control room operator receives a high-temperature alarm from a heat exchanger in the crude distillation unit and must quickly diagnose the cause.",
-  "use_case": "Downstream",
-  "core_function": "Refinery Operations & Optimization",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the high-priority alarm and bring up the process graphic for the crude unit.",
-      "expected_outcome": "The alarm is acknowledged, and the relevant process diagram is displayed.",
-      "required_tools": [
-        "acknowledge_alarm",
-        "display_process_graphic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "response_time_seconds",
-          "threshold": 45
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the high-priority alarm and bring up the process graphic for the crude unit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The alarm is acknowledged, and the relevant process diagram is displayed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the trend data for the heat exchanger, looking at temperatures and flow rates on both the hot and cold sides.",
-      "expected_outcome": "Analysis shows the flow rate on the cold side has dropped significantly, causing the temperature rise.",
-      "required_tools": [
-        "get_process_data_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the trend data for the heat exchanger, looking at temperatures and flow rates on both the hot and cold sides.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analysis shows the flow rate on the cold side has dropped significantly, causing the temperature rise."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a field operator to check the control valve on the cold-side inlet for potential issues.",
-      "expected_outcome": "A field operator is dispatched to investigate the suspected valve problem.",
-      "required_tools": [
-        "dispatch_field_operator"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a field operator to check the control valve on the cold-side inlet for potential issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A field operator is dispatched to investigate the suspected valve problem."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

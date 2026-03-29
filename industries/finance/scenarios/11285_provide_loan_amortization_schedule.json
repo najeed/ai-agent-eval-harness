@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-rb-11285",
-  "title": "Provide Loan Amortization Schedule",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Loan Amortization Schedule",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to see a full amortization schedule for their auto loan.",
-  "use_case": "Retail Banking",
-  "core_function": "Loan & Mortgage Services",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their auto loan account.",
-      "expected_outcome": "Agent correctly locates the customer's loan.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their auto loan account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly locates the customer's loan."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the complete amortization schedule showing the breakdown of each payment into principal and interest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the schedule for the life of the loan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the complete amortization schedule showing the breakdown of each payment into principal and interest.",
-      "expected_outcome": "Agent successfully generates the schedule for the life of the loan.",
-      "required_tools": [
-        "generate_amortization_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the schedule to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the amortization schedule to the customer's email."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the schedule to the customer.",
-      "expected_outcome": "Agent sends the amortization schedule to the customer's email.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

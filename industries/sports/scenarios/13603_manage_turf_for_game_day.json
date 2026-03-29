@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-vo-13603",
-  "title": "Manage Turf for Game Day",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Turf for Game Day",
+    "compliance_level": "Standard"
+  },
   "description": "A groundskeeper needs to ensure the stadium's natural grass field is in optimal condition for an upcoming game.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Facility & Turf Management",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve data from in-ground sensors on soil moisture and temperature.",
-      "expected_outcome": "Agent gets a report showing that parts of the field are too dry.",
-      "required_tools": [
-        "get_soil_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve data from in-ground sensors on soil moisture and temperature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a report showing that parts of the field are too dry."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the upcoming weather forecast.",
-      "expected_outcome": "Agent confirms no rain is expected before the game.",
-      "required_tools": [
-        "get_weather_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the upcoming weather forecast.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms no rain is expected before the game."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Activate the sprinkler system for specific zones of the field to reach the optimal moisture level.",
-      "expected_outcome": "Agent successfully runs a targeted watering cycle.",
-      "required_tools": [
-        "activate_sprinkler_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Activate the sprinkler system for specific zones of the field to reach the optimal moisture level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs a targeted watering cycle."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

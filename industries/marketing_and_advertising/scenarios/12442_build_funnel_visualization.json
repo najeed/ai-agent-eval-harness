@@ -1,49 +1,59 @@
 {
-  "scenario_id": "marketing-ar-12442",
-  "title": "Build a Funnel Visualization",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Build a Funnel Visualization",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst needs to create a funnel visualization to see the drop-off rates between key steps on the website (e.g., from homepage to product page to cart to purchase).",
-  "use_case": "Analytics & Reporting",
-  "core_function": "Dashboarding & Visualization",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the stages of the conversion funnel.",
-      "expected_outcome": "Agent defines the steps of the funnel.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the stages of the conversion funnel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent defines the steps of the funnel."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "In the analytics tool, create a new funnel report using the defined stages.",
-      "expected_outcome": "Agent successfully configures the funnel report.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "In the analytics tool, create a new funnel report using the defined stages.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully configures the funnel report."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the funnel visualization to identify the biggest drop-off point.",
-      "expected_outcome": "Agent identifies the step in the process where the most users are leaving.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the funnel visualization to identify the biggest drop-off point.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the step in the process where the most users are leaving."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

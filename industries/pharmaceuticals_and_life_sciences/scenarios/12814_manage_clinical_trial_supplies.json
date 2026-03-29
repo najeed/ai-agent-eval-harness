@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ct-12814",
-  "title": "Manage Clinical Trial Supplies",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Clinical Trial Supplies",
+    "compliance_level": "Standard"
+  },
   "description": "A clinical supply manager needs to ship investigational product (IP) to a clinical site based on their patient enrollment rate.",
-  "use_case": "Clinical Trials",
-  "core_function": "Trial Operations & Monitoring",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the current inventory of IP at a specific clinical site.",
-      "expected_outcome": "Agent finds the site's inventory is running low.",
-      "required_tools": [
-        "get_site_inventory_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the current inventory of IP at a specific clinical site.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the site's inventory is running low."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the site's patient enrollment forecast for the next month.",
-      "expected_outcome": "Agent sees that the site is expected to enroll 5 new patients.",
-      "required_tools": [
-        "get_patient_enrollment_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the site's patient enrollment forecast for the next month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees that the site is expected to enroll 5 new patients."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the amount of IP needed for the resupply shipment.",
-      "expected_outcome": "Agent calculates that 10 kits are needed to meet the forecasted demand and safety stock levels.",
-      "required_tools": [
-        "calculate_resupply_quantity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the amount of IP needed for the resupply shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates that 10 kits are needed to meet the forecasted demand and safety stock levels."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a shipment order for the IP to be sent to the clinical site.",
-      "expected_outcome": "Agent successfully generates a shipment order in the inventory management system.",
-      "required_tools": [
-        "create_shipment_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a shipment order for the IP to be sent to the clinical site.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates a shipment order in the inventory management system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

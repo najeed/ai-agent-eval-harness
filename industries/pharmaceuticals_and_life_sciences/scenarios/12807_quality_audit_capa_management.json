@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12807",
-  "title": "Manage CAPA from Quality Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage CAPA from Quality Audit",
+    "compliance_level": "Standard"
+  },
   "description": "Following a regulatory inspection, a quality manager must create and track a Corrective and Preventive Action (CAPA) to address a finding.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Quality Audits & Inspections",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the audit finding into the quality management system.",
-      "expected_outcome": "Agent creates a new record for the finding: 'Inadequate training records for lab staff'.",
-      "required_tools": [
-        "log_audit_finding"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the audit finding into the quality management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new record for the finding: 'Inadequate training records for lab staff'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new CAPA plan linked to the finding.",
-      "expected_outcome": "Agent drafts a CAPA plan with steps for corrective action (retrain staff) and preventive action (implement new training tracker).",
-      "required_tools": [
-        "create_capa_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new CAPA plan linked to the finding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a CAPA plan with steps for corrective action (retrain staff) and preventive action (implement new training tracker)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign ownership and due dates for the CAPA tasks.",
-      "expected_outcome": "Agent assigns the retraining task to the Lab Manager and the tracker implementation to the IT department.",
-      "required_tools": [
-        "assign_capa_tasks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign ownership and due dates for the CAPA tasks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the retraining task to the Lab Manager and the tracker implementation to the IT department."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Track the CAPA to completion and link evidence of closure (e.g., training certificates).",
-      "expected_outcome": "Agent monitors task completion, attaches the required evidence, and formally closes the CAPA.",
-      "required_tools": [
-        "track_capa_status",
-        "attach_evidence"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Track the CAPA to completion and link evidence of closure (e.g., training certificates).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent monitors task completion, attaches the required evidence, and formally closes the CAPA."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

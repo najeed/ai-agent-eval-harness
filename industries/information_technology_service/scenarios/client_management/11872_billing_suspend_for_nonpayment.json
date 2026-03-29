@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-cm-11872",
-  "title": "Billing - Suspend Account for Non-Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Billing - Suspend Account for Non-Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A client is 90 days overdue on their invoices. The account manager needs to suspend their services.",
-  "use_case": "Client & Contract Management",
-  "core_function": "Billing & Invoicing",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the client's overdue balance and that multiple payment reminders have been sent.",
-      "expected_outcome": "The manager confirms the account is severely delinquent.",
-      "required_tools": [
-        "get_client_financials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the client's overdue balance and that multiple payment reminders have been sent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager confirms the account is severely delinquent."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a final notice to the client informing them that services will be suspended in 48 hours if payment is not received.",
-      "expected_outcome": "A final warning is sent.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a final notice to the client informing them that services will be suspended in 48 hours if payment is not received.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A final warning is sent."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After 48 hours with no payment, place the client's account and services into a suspended state.",
-      "expected_outcome": "The client's services are suspended pending payment.",
-      "required_tools": [
-        "suspend_client_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After 48 hours with no payment, place the client's account and services into a suspended state.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client's services are suspended pending payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

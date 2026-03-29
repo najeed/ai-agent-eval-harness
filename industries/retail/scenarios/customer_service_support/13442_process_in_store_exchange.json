@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ret-cs-13442",
-  "title": "Process an In-Store Exchange",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an In-Store Exchange",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to exchange a shirt they bought for a different size.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Returns & Exchanges",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process the original shirt as a return, using the receipt to look up the transaction.",
-      "expected_outcome": "The original item is returned into the system.",
-      "required_tools": [
-        "scan_receipt",
-        "process_return"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process the original shirt as a return, using the receipt to look up the transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The original item is returned into the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the new shirt (the different size) as a new purchase.",
-      "expected_outcome": "The new item is added to the transaction.",
-      "required_tools": [
-        "scan_item_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the new shirt (the different size) as a new purchase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new item is added to the transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The POS system calculates an even exchange with a $0 balance. Complete the transaction.",
-      "expected_outcome": "The exchange is completed successfully with no money changing hands.",
-      "required_tools": [
-        "complete_transaction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The POS system calculates an even exchange with a $0 balance. Complete the transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The exchange is completed successfully with no money changing hands."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

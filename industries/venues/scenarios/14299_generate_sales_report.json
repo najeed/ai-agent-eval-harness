@@ -1,52 +1,59 @@
 {
-  "scenario_id": "venues-em-14299",
-  "title": "Generate a Sales Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a Sales Report",
+    "compliance_level": "Standard"
+  },
   "description": "A sales director needs a report on all confirmed bookings for the next quarter.",
-  "use_case": "Event Management & Booking",
-  "core_function": "Settlement & Post-Event Reporting",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the booking or CRM system.",
-      "expected_outcome": "Agent logs into the system.",
-      "required_tools": [
-        "access_crm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the booking or CRM system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs into the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Filter all bookings for the specified date range (next quarter) and with a status of 'Confirmed'.",
-      "expected_outcome": "Agent correctly applies the filters.",
-      "required_tools": [
-        "filter_bookings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Filter all bookings for the specified date range (next quarter) and with a status of 'Confirmed'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly applies the filters."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report showing the event name, client, dates, and contracted revenue for each booking.",
-      "expected_outcome": "Agent successfully generates the requested report.",
-      "required_tools": [
-        "generate_sales_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report showing the event name, client, dates, and contracted revenue for each booking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the requested report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

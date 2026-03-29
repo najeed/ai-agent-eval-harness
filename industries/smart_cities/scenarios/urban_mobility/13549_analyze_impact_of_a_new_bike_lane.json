@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-um-13549",
-  "title": "Analyze Impact of a New Bike Lane",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Impact of a New Bike Lane",
+    "compliance_level": "Standard"
+  },
   "description": "A new protected bike lane was recently installed. A planner wants to see its impact on traffic speed and cyclist volume.",
-  "use_case": "Urban Mobility & Transport",
-  "core_function": "Traffic Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve historical traffic speed data for the street before and after the bike lane installation.",
-      "expected_outcome": "Agent gets the two datasets for comparison.",
-      "required_tools": [
-        "get_historical_traffic_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve historical traffic speed data for the street before and after the bike lane installation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the two datasets for comparison."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve data from bicycle counters along the new lane.",
-      "expected_outcome": "Agent gets the cyclist volume data.",
-      "required_tools": [
-        "get_bicycle_counter_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve data from bicycle counters along the new lane.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the cyclist volume data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a comparative report showing that vehicle speeds decreased by 5% while cyclist volume increased by 200%.",
-      "expected_outcome": "Agent creates a report summarizing the project's impact.",
-      "required_tools": [
-        "generate_comparative_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a comparative report showing that vehicle speeds decreased by 5% while cyclist volume increased by 200%.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a report summarizing the project's impact."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

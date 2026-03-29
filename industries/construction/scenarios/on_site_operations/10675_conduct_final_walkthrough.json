@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-os-10675",
-  "title": "Conduct Final Walkthrough with Client",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Final Walkthrough with Client",
+    "compliance_level": "Standard"
+  },
   "description": "The project is substantially complete. The PM needs to conduct the final walkthrough with the client to generate the initial punch list.",
-  "use_case": "On-Site Operations",
-  "core_function": "Quality & Punch Lists",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Schedule the final walkthrough with the client and architect.",
-      "expected_outcome": "A meeting is successfully scheduled.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Schedule the final walkthrough with the client and architect.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A meeting is successfully scheduled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "During the walkthrough, use a mobile device to log any defects or incomplete items identified by the client directly into the punch list system.",
-      "expected_outcome": "New punch list items are created in real-time during the meeting.",
-      "required_tools": [
-        "create_punch_list_item"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "During the walkthrough, use a mobile device to log any defects or incomplete items identified by the client directly into the punch list system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "New punch list items are created in real-time during the meeting."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "construction-os-10646",
-  "title": "Track Concrete Curing Time",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Concrete Curing Time",
+    "compliance_level": "Standard"
+  },
   "description": "After a concrete slab is poured, the site manager must track its curing time and test results before allowing heavy equipment on it.",
-  "use_case": "On-Site Operations",
-  "core_function": "Quality & Punch Lists",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the date and time of the concrete pour.",
-      "expected_outcome": "The pour is logged in the system.",
-      "required_tools": [
-        "create_daily_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the date and time of the concrete pour.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The pour is logged in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the 7-day and 28-day concrete cylinder break test results from the testing agency.",
-      "expected_outcome": "The strength test results are retrieved.",
-      "required_tools": [
-        "get_third_party_test_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the 7-day and 28-day concrete cylinder break test results from the testing agency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The strength test results are retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that the 28-day strength meets the specified psi required by the structural engineer before clearing the slab for heavy loads.",
-      "expected_outcome": "Agent confirms the concrete has reached its required strength.",
-      "required_tools": [
-        "verify_specification_compliance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that the 28-day strength meets the specified psi required by the structural engineer before clearing the slab for heavy loads.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the concrete has reached its required strength."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,86 +1,61 @@
 {
-  "scenario_id": "hc-pa-11310",
-  "title": "Correct an Error in a Patient Chart",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Correct an Error in a Patient Chart",
+    "compliance_level": "Standard"
+  },
   "description": "An HIM specialist discovers a scanned document was accidentally filed in the wrong patient's chart.",
-  "use_case": "Patient Administration",
-  "core_function": "Patient Records Management",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the incorrect document in the first patient's chart.",
-      "expected_outcome": "Agent locates the document that needs to be moved.",
-      "required_tools": [
-        "get_patient_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the incorrect document in the first patient's chart.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the document that needs to be moved."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Remove the document from the incorrect chart, noting the reason as 'Chart correction'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully detaches the document."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Remove the document from the incorrect chart, noting the reason as 'Chart correction'.",
-      "expected_outcome": "Agent successfully detaches the document.",
-      "required_tools": [
-        "delete_patient_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Locate the correct patient's chart and upload the document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent files the document in the correct patient's record, resolving the error."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Locate the correct patient's chart and upload the document.",
-      "expected_outcome": "Agent files the document in the correct patient's record, resolving the error.",
-      "required_tools": [
-        "search_patient_record",
-        "upload_patient_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

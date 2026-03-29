@@ -1,66 +1,72 @@
 {
-  "scenario_id": "energy-cs-11191",
-  "title": "Analyze Potential for Heat Pump Adoption",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Potential for Heat Pump Adoption",
+    "compliance_level": "Standard"
+  },
   "description": "A utility's electrification program manager wants to identify customers who would be good candidates for switching from a gas furnace to an electric heat pump.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Energy Efficiency & Audits",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all customers who have both natural gas and electric service.",
-      "expected_outcome": "System generates a list of dual-fuel customers.",
-      "required_tools": [
-        "get_customers_by_service_type"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all customers who have both natural gas and electric service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a list of dual-fuel customers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Filter the list to customers with high winter gas usage, indicating they use gas for heating.",
-      "expected_outcome": "System narrows down the list to likely gas heating customers.",
-      "required_tools": [
-        "analyze_usage_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Filter the list to customers with high winter gas usage, indicating they use gas for heating.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System narrows down the list to likely gas heating customers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Further filter the list to customers living in homes of a certain age, as they are more likely to need a new HVAC system soon.",
-      "expected_outcome": "System creates a final, targeted list of high-potential candidates.",
-      "required_tools": [
-        "get_property_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Further filter the list to customers living in homes of a certain age, as they are more likely to need a new HVAC system soon.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a final, targeted list of high-potential candidates."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a targeted marketing list for a campaign promoting heat pump rebates.",
-      "expected_outcome": "Agent produces the final marketing list.",
-      "required_tools": [
-        "create_marketing_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a targeted marketing list for a campaign promoting heat pump rebates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces the final marketing list."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

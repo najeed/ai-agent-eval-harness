@@ -1,55 +1,59 @@
 {
-  "scenario_id": "energy-tr-11185",
-  "title": "Capacity Market Auction Bidding",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Capacity Market Auction Bidding",
+    "compliance_level": "Standard"
+  },
   "description": "A power plant owner needs to develop a bid strategy to sell capacity from their generator in the ISO's forward capacity auction.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Trade Execution & Hedging",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Determine the true cost of the generator being available (Cost of New Entry - CONE) to inform the bid floor.",
-      "expected_outcome": "Analyst calculates the minimum acceptable price for the capacity.",
-      "required_tools": [
-        "calculate_generator_cone"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Determine the true cost of the generator being available (Cost of New Entry - CONE) to inform the bid floor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst calculates the minimum acceptable price for the capacity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze past capacity auction clearing prices and the supply/demand balance for the upcoming auction.",
-      "expected_outcome": "Analyst forecasts the likely clearing price for the auction.",
-      "required_tools": [
-        "get_historical_auction_results",
-        "analyze_capacity_market"
-      ],
-      "success_criteria": [
-        {
-          "metric": "forecast_accuracy_mae",
-          "threshold": 15.0,
-          "threshold_unit": "kWh",
-          "threshold_type": "min"
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze past capacity auction clearing prices and the supply/demand balance for the upcoming auction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst forecasts the likely clearing price for the auction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Formulate and submit a bid into the capacity auction platform.",
-      "expected_outcome": "Agent successfully submits the capacity offer.",
-      "required_tools": [
-        "submit_capacity_market_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Formulate and submit a bid into the capacity auction platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the capacity offer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

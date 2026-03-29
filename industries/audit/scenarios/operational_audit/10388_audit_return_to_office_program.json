@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-op-10388",
-  "title": "Audit the Return-to-Office Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit the Return-to-Office Program",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor reviews the company's return-to-office program to assess its effectiveness and impact on employees.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Project & Program Audit",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the project plan and goals for the return-to-office program.",
-      "expected_outcome": "The auditor understands the stated objectives of the program.",
-      "required_tools": [
-        "get_project_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the project plan and goals for the return-to-office program.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor understands the stated objectives of the program."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze badge swipe data to determine if employees are complying with the new in-office day requirements.",
-      "expected_outcome": "The analysis shows that office attendance is significantly below the target.",
-      "required_tools": [
-        "analyze_badge_swipe_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze badge swipe data to determine if employees are complying with the new in-office day requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis shows that office attendance is significantly below the target."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Survey employees to gauge their satisfaction with the new hybrid work model and identify key pain points.",
-      "expected_outcome": "The survey reveals high levels of dissatisfaction with the policy, which is correlated with an increase in employee attrition.",
-      "required_tools": [
-        "distribute_survey",
-        "analyze_survey_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Survey employees to gauge their satisfaction with the new hybrid work model and identify key pain points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The survey reveals high levels of dissatisfaction with the policy, which is correlated with an increase in employee attrition."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-om-12245",
-  "title": "Split an Order for Partial Shipment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Split an Order for Partial Shipment",
+    "compliance_level": "Standard"
+  },
   "description": "An order contains two items, but one is on backorder. The customer wants the in-stock item to ship now.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Order Processing",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the order and confirm one item is in stock and the other is on backorder.",
-      "expected_outcome": "Agent verifies the inventory status of the line items.",
-      "required_tools": [
-        "get_order_details",
-        "check_inventory_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the order and confirm one item is in stock and the other is on backorder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the inventory status of the line items."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Split the order line for the in-stock item into a new sales order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new order is created for the available item, and the original order is updated to only contain the backordered item."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Split the order line for the in-stock item into a new sales order.",
-      "expected_outcome": "A new order is created for the available item, and the original order is updated to only contain the backordered item.",
-      "required_tools": [
-        "split_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Release the new order to the warehouse for immediate shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new order is sent to the WMS for fulfillment."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Release the new order to the warehouse for immediate shipment.",
-      "expected_outcome": "The new order is sent to the WMS for fulfillment.",
-      "required_tools": [
-        "release_order_to_warehouse"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

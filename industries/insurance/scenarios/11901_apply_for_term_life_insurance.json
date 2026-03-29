@@ -1,49 +1,59 @@
 {
-  "scenario_id": "insurance-la-11901",
-  "title": "Apply for Term Life Insurance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply for Term Life Insurance",
+    "compliance_level": "Standard"
+  },
   "description": "A 35-year-old non-smoker wants to apply for a 20-year, $500,000 term life insurance policy.",
-  "use_case": "Life & Annuities",
-  "core_function": "New Business & Underwriting",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the applicant's personal and contact information.",
-      "expected_outcome": "Agent accurately collects the applicant's basic details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the applicant's personal and contact information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately collects the applicant's basic details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask a series of health and lifestyle questions (e.g., smoking status, major health conditions).",
-      "expected_outcome": "Agent captures all required underwriting questions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask a series of health and lifestyle questions (e.g., smoking status, major health conditions).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent captures all required underwriting questions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the application to underwriting and schedule a required paramedical exam.",
-      "expected_outcome": "Agent successfully submits the application and schedules the exam for the applicant.",
-      "required_tools": [
-        "submit_life_application",
-        "schedule_paramedical_exam"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the application to underwriting and schedule a required paramedical exam.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the application and schedules the exam for the applicant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

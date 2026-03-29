@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-pm-10697",
-  "title": "Manage Spending Against an Allowance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Spending Against an Allowance",
+    "compliance_level": "Standard"
+  },
   "description": "The contract includes a $20,000 allowance for light fixtures. The PM must help the client make selections while staying within this allowance.",
-  "use_case": "Project Management",
-  "core_function": "Budgeting & Cost Control",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Provide the client with a list of light fixtures from approved vendors.",
-      "expected_outcome": "A list of options is sent to the client.",
-      "required_tools": [
-        "get_vendor_catalog"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Provide the client with a list of light fixtures from approved vendors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of options is sent to the client."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "As the client makes selections, track the total cost against the $20,000 allowance.",
-      "expected_outcome": "A running total of the selected fixtures' cost is maintained.",
-      "required_tools": [
-        "track_allowance_spending"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "As the client makes selections, track the total cost against the $20,000 allowance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A running total of the selected fixtures' cost is maintained."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the client when their selections have reached 90% of the allowance to prevent overspending.",
-      "expected_outcome": "A timely notification is sent to the client.",
-      "required_tools": [
-        "send_client_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the client when their selections have reached 90% of the allowance to prevent overspending.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A timely notification is sent to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

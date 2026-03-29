@@ -1,87 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13839",
-  "title": "Cross-sell - Internet to Mobile Customer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cross-sell - Internet to Mobile Customer",
+    "compliance_level": "Standard"
+  },
   "description": "During a call, a mobile-only customer mentions they are unhappy with their current internet provider. The agent should try to sell them home internet.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Upselling and Cross-selling",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the customer's comment and check if their address is serviceable for internet.",
-      "expected_outcome": "Agent pivots the conversation and confirms serviceability.",
-      "required_tools": [
-        "check_service_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the customer's comment and check if their address is serviceable for internet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pivots the conversation and confirms serviceability."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Present home internet plans, highlighting any bundling discounts available for existing mobile customers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the plans and the 'Save $20/month' bundle offer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Present home internet plans, highlighting any bundling discounts available for existing mobile customers.",
-      "expected_outcome": "Agent clearly explains the plans and the 'Save $20/month' bundle offer.",
-      "required_tools": [
-        "get_internet_plans",
-        "get_bundle_discounts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the order for the new internet service, applying the bundle discount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the internet service to the customer's account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the order for the new internet service, applying the bundle discount.",
-      "expected_outcome": "Agent successfully adds the internet service to the customer's account.",
-      "required_tools": [
-        "add_service_to_account",
-        "apply_promotion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

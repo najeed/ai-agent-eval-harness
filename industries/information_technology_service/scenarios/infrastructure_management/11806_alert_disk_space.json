@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11806",
-  "title": "Monitoring - Low Disk Space Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitoring - Low Disk Space Alert",
+    "compliance_level": "Standard"
+  },
   "description": "An RMM alert indicates that a server's C: drive has less than 10% free space.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Monitoring & Alerting",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the alert.",
-      "expected_outcome": "A technician takes ownership.",
-      "required_tools": [
-        "acknowledge_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A technician takes ownership."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a script via the RMM tool to identify the largest files and folders on the drive.",
-      "expected_outcome": "The script reveals that old application log files are taking up most of the space.",
-      "required_tools": [
-        "run_script_on_endpoint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a script via the RMM tool to identify the largest files and folders on the drive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The script reveals that old application log files are taking up most of the space."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run another script to safely delete log files older than 90 days, freeing up space and resolving the alert.",
-      "expected_outcome": "Disk space is reclaimed, and the alert clears.",
-      "required_tools": [
-        "run_script_on_endpoint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run another script to safely delete log files older than 90 days, freeing up space and resolving the alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Disk space is reclaimed, and the alert clears."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

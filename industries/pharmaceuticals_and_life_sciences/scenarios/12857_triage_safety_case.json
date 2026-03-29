@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12857",
-  "title": "Triage an Incoming Safety Case",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Triage an Incoming Safety Case",
+    "compliance_level": "Standard"
+  },
   "description": "A drug safety associate must perform the initial triage of a new adverse event case to determine its priority and processing requirements.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Pharmacovigilance & Safety Reporting",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review a newly created case for completeness and validity.",
-      "expected_outcome": "Agent confirms the case has the four minimum elements for a valid report.",
-      "required_tools": [
-        "review_safety_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review a newly created case for completeness and validity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the case has the four minimum elements for a valid report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assess the case for seriousness (e.g., results in death, hospitalization, disability).",
-      "expected_outcome": "Agent identifies the event as 'serious' because the patient was hospitalized.",
-      "required_tools": [
-        "assess_case_seriousness"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assess the case for seriousness (e.g., results in death, hospitalization, disability).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the event as 'serious' because the patient was hospitalized."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Determine if the case qualifies for expedited reporting to health authorities (e.g., within 7 or 15 days).",
-      "expected_outcome": "Agent determines the case is a serious, unexpected event and must be reported within 15 days.",
-      "required_tools": [
-        "determine_reportability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Determine if the case qualifies for expedited reporting to health authorities (e.g., within 7 or 15 days).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the case is a serious, unexpected event and must be reported within 15 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Assign the case to the appropriate workflow for data entry and medical assessment.",
-      "expected_outcome": "Agent routes the case to the high-priority work queue.",
-      "required_tools": [
-        "route_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Assign the case to the appropriate workflow for data entry and medical assessment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent routes the case to the high-priority work queue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

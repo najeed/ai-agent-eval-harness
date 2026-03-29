@@ -1,81 +1,58 @@
 {
-  "scenario_id": "lw-im-12220",
-  "title": "Process Scrapped Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Scrapped Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "An item returned by a customer is deemed unsalable and must be scrapped.",
-  "use_case": "Inventory Management",
-  "core_function": "Returns & Reverse Logistics",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the item's RMA tag to retrieve its inspection status.",
-      "expected_outcome": "Agent confirms the item's disposition is 'Scrap'.",
-      "required_tools": [
-        "get_rma_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the item's RMA tag to retrieve its inspection status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the item's disposition is 'Scrap'."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Move the item to the designated scrap area in the warehouse.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent physically moves the item."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Move the item to the designated scrap area in the warehouse.",
-      "expected_outcome": "Agent physically moves the item.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process an inventory adjustment to remove the item from stock, using 'Scrap' as the reason code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adjusts the inventory out of the system, and the quantity on hand is reduced."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process an inventory adjustment to remove the item from stock, using 'Scrap' as the reason code.",
-      "expected_outcome": "Agent successfully adjusts the inventory out of the system, and the quantity on hand is reduced.",
-      "required_tools": [
-        "create_inventory_adjustment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

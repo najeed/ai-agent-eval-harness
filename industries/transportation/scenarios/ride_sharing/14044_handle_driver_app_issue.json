@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-rs-14044",
-  "title": "Handle Driver App Technical Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Driver App Technical Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A driver calls support because their app is frozen and they cannot complete their current trip.",
-  "use_case": "Ride-Sharing & On-Demand Mobility",
-  "core_function": "Customer & Driver Support",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the driver's account and their currently active trip.",
-      "expected_outcome": "Agent finds the driver's active trip record.",
-      "required_tools": [
-        "get_driver_profile",
-        "get_driver_active_trip"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the driver's account and their currently active trip.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the driver's active trip record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the driver through basic troubleshooting steps (e.g., force quit and restart the app, restart their phone).",
-      "expected_outcome": "Agent provides clear technical support instructions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the driver through basic troubleshooting steps (e.g., force quit and restart the app, restart their phone).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear technical support instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If troubleshooting fails, manually complete the trip for the driver in the backend system.",
-      "expected_outcome": "The agent ends the trip so the rider can exit and the driver can be paid.",
-      "required_tools": [
-        "manual_complete_trip"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If troubleshooting fails, manually complete the trip for the driver in the backend system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent ends the trip so the rider can exit and the driver can be paid."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "File a technical issue ticket for the engineering team to investigate the app freeze.",
-      "expected_outcome": "A bug report is created for the technical team.",
-      "required_tools": [
-        "create_tech_support_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "File a technical issue ticket for the engineering team to investigate the app freeze.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A bug report is created for the technical team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

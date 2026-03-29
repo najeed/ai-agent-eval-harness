@@ -1,53 +1,59 @@
 {
-  "scenario_id": "chemicals-com-10526",
-  "title": "Provide Technical Application Support",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Technical Application Support",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is using a new adhesive product and asks for advice on the optimal curing temperature and time for their specific substrate.",
-  "use_case": "Commercial & Sales",
-  "core_function": "Technical Support",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and the specific adhesive product they are using.",
-      "expected_outcome": "Agent correctly identifies the product in question.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and the specific adhesive product they are using.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the product in question."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the internal technical knowledge base for application guides related to this product and substrate type.",
-      "expected_outcome": "Agent finds a technical data sheet (TDS) with recommended curing profiles.",
-      "required_tools": [
-        "search_knowledge_base"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the internal technical knowledge base for application guides related to this product and substrate type.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a technical data sheet (TDS) with recommended curing profiles."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Relay the recommended curing conditions (e.g., '120\u00b0C for 30 minutes') to the customer and offer to email them the TDS.",
-      "expected_outcome": "Agent clearly communicates the technical advice and sends the supporting document.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Relay the recommended curing conditions (e.g., '120\u00b0C for 30 minutes') to the customer and offer to email them the TDS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the technical advice and sends the supporting document."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

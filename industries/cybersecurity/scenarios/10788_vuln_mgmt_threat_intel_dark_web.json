@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10788",
-  "title": "Dark Web Monitoring",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dark Web Monitoring",
+    "compliance_level": "Standard"
+  },
   "description": "A threat intelligence analyst is monitoring dark web markets for stolen company credentials.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Threat Intelligence Integration",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Regularly and safely browse known dark web forums and marketplaces where stolen data is sold.",
-      "expected_outcome": "Analyst maintains situational awareness of the dark web landscape.",
-      "required_tools": [
-        "monitor_dark_web_forums"
-      ],
-      "success_criteria": [
-        {
-          "metric": "monitoring_diligence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Regularly and safely browse known dark web forums and marketplaces where stolen data is sold.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst maintains situational awareness of the dark web landscape."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for any mentions of the company's name or employee email domains.",
-      "expected_outcome": "Analyst runs regular searches for company-specific keywords.",
-      "required_tools": [
-        "search_dark_web_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "search_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for any mentions of the company's name or employee email domains.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst runs regular searches for company-specific keywords."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Discover a newly posted database of credentials from a third-party site breach that includes several company email addresses and passwords, and then trigger an internal incident response.",
-      "expected_outcome": "Analyst proactively discovers a data breach and initiates a response to mitigate the risk.",
-      "required_tools": [
-        "identify_compromised_credentials",
-        "trigger_incident_response"
-      ],
-      "success_criteria": [
-        {
-          "metric": "threat_discovery_rate",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Discover a newly posted database of credentials from a third-party site breach that includes several company email addresses and passwords, and then trigger an internal incident response.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst proactively discovers a data breach and initiates a response to mitigate the risk."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

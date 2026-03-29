@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13124",
-  "title": "Enforce Parking Violation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Enforce Parking Violation",
+    "compliance_level": "Standard"
+  },
   "description": "A property inspection reveals a tenant is parking an unauthorized vehicle in a designated spot. The PM must enforce the rules.",
-  "use_case": "Property Management",
-  "core_function": "Compliance & Legal",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the vehicle and the tenant associated with the parking spot.",
-      "expected_outcome": "Agent confirms the vehicle is not registered with the office and identifies the tenant leasing the spot.",
-      "required_tools": [
-        "get_tenant_vehicle_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the vehicle and the tenant associated with the parking spot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the vehicle is not registered with the office and identifies the tenant leasing the spot."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Issue a formal parking violation notice and place it on the vehicle.",
-      "expected_outcome": "A standard violation sticker or notice is generated.",
-      "required_tools": [
-        "generate_violation_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Issue a formal parking violation notice and place it on the vehicle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A standard violation sticker or notice is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the violation, including a photo, in the tenant's record in the property management software.",
-      "expected_outcome": "The violation is documented with evidence in the tenant's file.",
-      "required_tools": [
-        "log_lease_violation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the violation, including a photo, in the tenant's record in the property management software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The violation is documented with evidence in the tenant's file."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-com-13259",
-  "title": "Manage a Tenant Improvement (TI) Project",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Tenant Improvement (TI) Project",
+    "compliance_level": "Standard"
+  },
   "description": "A new office tenant receives a TI allowance to build out their space. The property manager must oversee the project.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Property & Asset Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the lease to confirm the TI allowance amount and any landlord responsibilities.",
-      "expected_outcome": "Agent correctly identifies the scope and budget of the TI project.",
-      "required_tools": [
-        "get_lease_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the lease to confirm the TI allowance amount and any landlord responsibilities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the scope and budget of the TI project."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the tenant's construction plans to ensure they comply with building rules and regulations.",
-      "expected_outcome": "Agent checks plans for compliance.",
-      "required_tools": [
-        "review_construction_plans"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the tenant's construction plans to ensure they comply with building rules and regulations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks plans for compliance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Track the project's progress and process disbursement requests from the TI allowance for completed work.",
-      "expected_outcome": "Agent manages the financial aspects of the build-out correctly.",
-      "required_tools": [
-        "track_project_milestones",
-        "process_payment_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Track the project's progress and process disbursement requests from the TI allowance for completed work.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent manages the financial aspects of the build-out correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_product-po-11723",
-  "title": "High CPU Alert on Database",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "High CPU Alert on Database",
+    "compliance_level": "Standard"
+  },
   "description": "Monitoring systems alert that the primary database server is experiencing sustained high CPU usage.",
-  "use_case": "Product Operations & Reliability (SRE)",
-  "core_function": "Performance Monitoring & Optimization",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the high CPU alert.",
-      "expected_outcome": "Agent takes ownership of the alert.",
-      "required_tools": [
-        "acknowledge_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the high CPU alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent takes ownership of the alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the database monitoring tool to identify the queries consuming the most CPU.",
-      "expected_outcome": "Agent finds a single, inefficient query from a new reporting feature is causing the high load.",
-      "required_tools": [
-        "get_top_database_queries"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the database monitoring tool to identify the queries consuming the most CPU.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a single, inefficient query from a new reporting feature is causing the high load."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Escalate the issue to the engineering team responsible for the reporting feature, providing the problematic query.",
-      "expected_outcome": "Agent creates a high-priority ticket with actionable data for the developers.",
-      "required_tools": [
-        "create_engineering_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Escalate the issue to the engineering team responsible for the reporting feature, providing the problematic query.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a high-priority ticket with actionable data for the developers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

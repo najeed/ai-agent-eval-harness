@@ -1,50 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11472",
-  "title": "Track Equipment Operating Hours",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Equipment Operating Hours",
+    "compliance_level": "Standard"
+  },
   "description": "A supervisor needs to log the daily operating hours for a piece of heavy equipment (e.g., a bulldozer) for maintenance tracking.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Site Management & Logistics",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the piece of equipment in the asset management system.",
-      "expected_outcome": "Agent finds the correct record for the bulldozer.",
-      "required_tools": [
-        "find_asset_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the piece of equipment in the asset management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct record for the bulldozer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Read the hour meter on the machine at the end of the day.",
-      "expected_outcome": "The supervisor gets the current operating hours from the machine.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Read the hour meter on the machine at the end of the day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The supervisor gets the current operating hours from the machine."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the new hour meter reading into the asset's record.",
-      "expected_outcome": "Agent successfully updates the operating hours, which will be used to trigger preventative maintenance.",
-      "required_tools": [
-        "update_asset_operating_hours"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the new hour meter reading into the asset's record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the operating hours, which will be used to trigger preventative maintenance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

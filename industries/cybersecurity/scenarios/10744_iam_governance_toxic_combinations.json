@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-iam-10744",
-  "title": "Separation of Duties Policy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Separation of Duties Policy",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must create a Separation of Duties (SoD) policy in the IGA tool to prevent a single user from having two conflicting permissions (e.g., creating a vendor and approving a payment).",
-  "use_case": "Identity & Access Management (IAM)",
-  "core_function": "Identity Governance & Attestation",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the two conflicting permissions ('create_vendor' and 'approve_payment') that constitute a toxic combination.",
-      "expected_outcome": "Analyst correctly identifies the permissions that violate SoD.",
-      "required_tools": [
-        "get_permission_definitions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the two conflicting permissions ('create_vendor' and 'approve_payment') that constitute a toxic combination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies the permissions that violate SoD."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new SoD rule in the IGA tool that flags any user who is assigned both permissions simultaneously.",
-      "expected_outcome": "Analyst successfully creates the preventative rule.",
-      "required_tools": [
-        "create_sod_rule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "rule_creation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new SoD rule in the IGA tool that flags any user who is assigned both permissions simultaneously.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully creates the preventative rule."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the new rule against the current user base and identify three users who are currently in violation of the new policy for remediation.",
-      "expected_outcome": "Analyst successfully detects and reports existing policy violations.",
-      "required_tools": [
-        "run_sod_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "detection_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the new rule against the current user base and identify three users who are currently in violation of the new policy for remediation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully detects and reports existing policy violations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

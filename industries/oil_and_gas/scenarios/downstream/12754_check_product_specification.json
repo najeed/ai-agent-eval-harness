@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-down-12754",
-  "title": "Check Jet Fuel Specification",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Jet Fuel Specification",
+    "compliance_level": "Standard"
+  },
   "description": "A salesperson receives an inquiry from an airline for jet fuel. They need to confirm their product meets the required international specification (e.g., ASTM D1655).",
-  "use_case": "Downstream",
-  "core_function": "Distribution & Retail",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the internal product specification sheet for 'Jet A-1' fuel.",
-      "expected_outcome": "The product spec sheet is displayed.",
-      "required_tools": [
-        "get_product_specification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the internal product specification sheet for 'Jet A-1' fuel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The product spec sheet is displayed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the internal specification against the requirements of ASTM D1655, paying close attention to flash point and freeze point.",
-      "expected_outcome": "The comparison confirms that the company's product meets all requirements of the ASTM standard.",
-      "required_tools": [
-        "compare_specifications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the internal specification against the requirements of ASTM D1655, paying close attention to flash point and freeze point.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The comparison confirms that the company's product meets all requirements of the ASTM standard."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a Certificate of Quality (COQ) to send to the customer confirming compliance.",
-      "expected_outcome": "A formal COQ document is created and ready to be sent.",
-      "required_tools": [
-        "generate_certificate_of_quality"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a Certificate of Quality (COQ) to send to the customer confirming compliance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal COQ document is created and ready to be sent."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

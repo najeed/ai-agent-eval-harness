@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13922",
-  "title": "Validate a Tour Voucher",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Validate a Tour Voucher",
+    "compliance_level": "Standard"
+  },
   "description": "A tourist arrives for a city bus tour and presents a pre-paid voucher to the agent at the departure point.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Access & Entry Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the QR code or enter the voucher number from the customer's ticket.",
-      "expected_outcome": "Agent correctly captures the voucher information.",
-      "required_tools": [
-        "scan_voucher"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the QR code or enter the voucher number from the customer's ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly captures the voucher information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Validate the voucher in the system to confirm it is valid for the current tour.",
-      "expected_outcome": "The system confirms the voucher is valid and has not been used before.",
-      "required_tools": [
-        "validate_voucher"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Validate the voucher in the system to confirm it is valid for the current tour.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms the voucher is valid and has not been used before."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Mark the voucher as redeemed and allow the tourist to board the bus.",
-      "expected_outcome": "Agent successfully redeems the voucher and confirms the tourist can proceed.",
-      "required_tools": [
-        "redeem_voucher"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Mark the voucher as redeemed and allow the tourist to board the bus.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully redeems the voucher and confirms the tourist can proceed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

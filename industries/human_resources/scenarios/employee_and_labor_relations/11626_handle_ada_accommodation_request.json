@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-er-11626",
-  "title": "Handle an ADA Accommodation Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an ADA Accommodation Request",
+    "compliance_level": "Standard"
+  },
   "description": "An employee requests an ergonomic chair as a reasonable accommodation under the Americans with Disabilities Act (ADA).",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Policy & Compliance",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the accommodation request and begin the interactive process with the employee.",
-      "expected_outcome": "HR representative acknowledges the request and explains the process.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the accommodation request and begin the interactive process with the employee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR representative acknowledges the request and explains the process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request medical documentation to understand the employee's limitations.",
-      "expected_outcome": "HR requests and receives a doctor's note supporting the need for an ergonomic chair.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request medical documentation to understand the employee's limitations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR requests and receives a doctor's note supporting the need for an ergonomic chair."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Approve the request and coordinate with facilities to procure and deliver the ergonomic chair.",
-      "expected_outcome": "HR approves the accommodation and creates a work order for facilities.",
-      "required_tools": [
-        "approve_ada_accommodation",
-        "create_facilities_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Approve the request and coordinate with facilities to procure and deliver the ergonomic chair.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR approves the accommodation and creates a work order for facilities."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

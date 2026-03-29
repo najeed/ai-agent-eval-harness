@@ -1,49 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11864",
-  "title": "Project Management - Budget Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Management - Budget Management",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager reviews the budget for an ongoing project and sees that it is at risk of going over budget.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Project Execution & Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review all time entries and expenses logged against the project.",
-      "expected_outcome": "The project manager identifies which tasks took longer than estimated.",
-      "required_tools": [
-        "get_project_financials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review all time entries and expenses logged against the project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project manager identifies which tasks took longer than estimated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Meet with the technical team to understand the reasons for the extra time.",
-      "expected_outcome": "The PM learns about unforeseen technical challenges.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Meet with the technical team to understand the reasons for the extra time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PM learns about unforeseen technical challenges."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Proactively communicate the budget risk to the client and discuss options, such as de-scoping certain tasks to stay within budget.",
-      "expected_outcome": "The PM manages the client's expectations and collaborates on a solution.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Proactively communicate the budget risk to the client and discuss options, such as de-scoping certain tasks to stay within budget.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PM manages the client's expectations and collaborates on a solution."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

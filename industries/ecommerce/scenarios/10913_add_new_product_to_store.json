@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ecommerce-osm-10913",
-  "title": "Add a New Product to the Store",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add a New Product to the Store",
+    "compliance_level": "Standard"
+  },
   "description": "A merchandiser needs to add a brand new product to the e-commerce platform.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Product Information Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new product entry with its SKU, name, description, price, and specifications.",
-      "expected_outcome": "Agent successfully populates all required fields for the new product.",
-      "required_tools": [
-        "create_new_product"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new product entry with its SKU, name, description, price, and specifications.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully populates all required fields for the new product."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Upload product images and assign them to the new product entry.",
-      "expected_outcome": "Agent uploads and correctly links images to the product.",
-      "required_tools": [
-        "upload_product_images"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Upload product images and assign them to the new product entry.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uploads and correctly links images to the product."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the product to the appropriate categories and set its initial inventory level.",
-      "expected_outcome": "Agent correctly categorizes the product and sets its stock.",
-      "required_tools": [
-        "assign_product_to_category",
-        "update_inventory_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the product to the appropriate categories and set its initial inventory level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly categorizes the product and sets its stock."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

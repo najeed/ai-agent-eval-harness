@@ -1,84 +1,61 @@
 {
-  "scenario_id": "hc-ph-11397",
-  "title": "Generate Patient List for Outreach",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Patient List for Outreach",
+    "compliance_level": "Standard"
+  },
   "description": "A care manager needs a list of all high-risk asthma patients who have had an ED visit in the last 6 months.",
-  "use_case": "Population Health & Care Management",
-  "core_function": "Reporting & Analytics",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the patient list builder tool in the analytics platform.",
-      "expected_outcome": "The manager accesses the reporting tool.",
-      "required_tools": [
-        "open_analytics_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the patient list builder tool in the analytics platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager accesses the reporting tool."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Build a query with the following criteria: (Diagnosis = Asthma) AND (Risk Score = High) AND (ED Visit within last 180 days).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager correctly defines the criteria for the patient list."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Build a query with the following criteria: (Diagnosis = Asthma) AND (Risk Score = High) AND (ED Visit within last 180 days).",
-      "expected_outcome": "The manager correctly defines the criteria for the patient list.",
-      "required_tools": [
-        "build_patient_list_query"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the query and generate the list of patients.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A targeted list of patients is created, allowing the care manager to focus their outreach efforts on the most vulnerable patients."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the query and generate the list of patients.",
-      "expected_outcome": "A targeted list of patients is created, allowing the care manager to focus their outreach efforts on the most vulnerable patients.",
-      "required_tools": [
-        "run_patient_list_query"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

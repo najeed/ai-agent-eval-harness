@@ -1,64 +1,72 @@
 {
-  "scenario_id": "tr-to-14058",
-  "title": "Find a Backhaul Load",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find a Backhaul Load",
+    "compliance_level": "Standard"
+  },
   "description": "A driver is about to deliver a load, leaving them empty. A dispatcher needs to find a 'backhaul' load originating near the delivery location to avoid an empty return trip.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Dispatch & Load Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify that a driver will be empty in a specific city tomorrow.",
-      "expected_outcome": "Dispatcher knows they need to find a load for this driver.",
-      "required_tools": [
-        "get_driver_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify that a driver will be empty in a specific city tomorrow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher knows they need to find a load for this driver."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search an external load board for available loads picking up in or near the driver's location.",
-      "expected_outcome": "The system returns a list of available loads from various brokers.",
-      "required_tools": [
-        "search_load_boards"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search an external load board for available loads picking up in or near the driver's location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system returns a list of available loads from various brokers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Filter the loads to find one that is profitable and matches the driver's equipment and destination preference.",
-      "expected_outcome": "The dispatcher identifies a suitable load.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Filter the loads to find one that is profitable and matches the driver's equipment and destination preference.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The dispatcher identifies a suitable load."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Contact the broker to book the load.",
-      "expected_outcome": "The backhaul load is secured, ensuring a profitable return trip.",
-      "required_tools": [
-        "book_brokered_load"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Contact the broker to book the load.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The backhaul load is secured, ensuring a profitable return trip."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-os-10656",
-  "title": "Photo-document Project Progress",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Photo-document Project Progress",
+    "compliance_level": "Standard"
+  },
   "description": "A project engineer needs to take weekly progress photos from established photo points around the site.",
-  "use_case": "On-Site Operations",
-  "core_function": "Daily Operations & Reporting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the list of established photo documentation points for the project.",
-      "expected_outcome": "Agent retrieves a map with 8 designated photo locations.",
-      "required_tools": [
-        "get_photo_documentation_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the list of established photo documentation points for the project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a map with 8 designated photo locations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Capture a photo from 'Photo Point #1' and tag it with the location and date.",
-      "expected_outcome": "A photo is taken and correctly tagged with metadata.",
-      "required_tools": [
-        "capture_photo",
-        "tag_photo"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Capture a photo from 'Photo Point #1' and tag it with the location and date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A photo is taken and correctly tagged with metadata."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upload the tagged photo to the project's photo archive.",
-      "expected_outcome": "The photo is successfully stored in the correct folder in the project's document management system.",
-      "required_tools": [
-        "upload_photo_to_archive"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upload the tagged photo to the project's photo archive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The photo is successfully stored in the correct folder in the project's document management system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

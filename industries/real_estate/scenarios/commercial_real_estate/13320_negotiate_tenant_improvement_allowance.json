@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13320",
-  "title": "Negotiate Tenant Improvement Allowance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Negotiate Tenant Improvement Allowance",
+    "compliance_level": "Standard"
+  },
   "description": "A prospective office tenant requires a significant build-out. The tenant's agent must negotiate a Tenant Improvement (TI) allowance from the landlord.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Leasing & Tenant Representation",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain construction bids to estimate the cost of the tenant's desired office build-out.",
-      "expected_outcome": "Agent has a clear cost estimate for the build-out.",
-      "required_tools": [
-        "request_construction_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain construction bids to estimate the cost of the tenant's desired office build-out.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a clear cost estimate for the build-out."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "In the Letter of Intent (LOI), propose that the landlord provide a TI allowance of a specific amount per square foot.",
-      "expected_outcome": "The LOI includes a formal request for a TI allowance.",
-      "required_tools": [
-        "draft_loi"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "In the Letter of Intent (LOI), propose that the landlord provide a TI allowance of a specific amount per square foot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The LOI includes a formal request for a TI allowance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Negotiate with the landlord's agent to reach an agreement on the final TI allowance amount.",
-      "expected_outcome": "An agreed-upon TI allowance is included in the final lease terms.",
-      "required_tools": [
-        "log_negotiation_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "negotiation_success",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Negotiate with the landlord's agent to reach an agreement on the final TI allowance amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An agreed-upon TI allowance is included in the final lease terms."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

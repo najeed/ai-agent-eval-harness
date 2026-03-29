@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10794",
-  "title": "Quantitative Risk Assessment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Quantitative Risk Assessment",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must perform a quantitative risk assessment for a potential data breach, calculating the potential financial loss.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Risk Assessment & Management",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Determine the value of the asset at risk (e.g., a customer database with 1 million records).",
-      "expected_outcome": "Analyst correctly identifies the asset and its size.",
-      "required_tools": [
-        "identify_asset_value"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Determine the value of the asset at risk (e.g., a customer database with 1 million records).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies the asset and its size."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Estimate the likelihood of a data breach occurring in a given year based on historical data and threat intelligence.",
-      "expected_outcome": "Analyst estimates a 10% chance of a breach per year.",
-      "required_tools": [
-        "estimate_event_likelihood"
-      ],
-      "success_criteria": [
-        {
-          "metric": "estimation_accuracy",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-2",
+        "task_description": "Estimate the likelihood of a data breach occurring in a given year based on historical data and threat intelligence.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst estimates a 10% chance of a breach per year."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the Annualized Loss Expectancy (ALE) by multiplying the potential loss per breach (e.g., $5M) by the likelihood (10%), to arrive at an ALE of $500,000.",
-      "expected_outcome": "Analyst correctly performs the quantitative risk calculation to inform security investment decisions.",
-      "required_tools": [
-        "calculate_annualized_loss_expectancy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the Annualized Loss Expectancy (ALE) by multiplying the potential loss per breach (e.g., $5M) by the likelihood (10%), to arrive at an ALE of $500,000.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly performs the quantitative risk calculation to inform security investment decisions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,62 +1,72 @@
 {
-  "scenario_id": "journalism-cp-12068",
-  "title": "Choose a 'Pull Quote' for an Article Layout",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Choose a 'Pull Quote' for an Article Layout",
+    "compliance_level": "Standard"
+  },
   "description": "A print designer needs a 'pull quote' (a short, compelling excerpt) from a feature story to use as a large, graphical element in the layout.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Publishing & CMS Management",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Read through the final draft of the article.",
-      "expected_outcome": "Agent is familiar with the content.",
-      "required_tools": [
-        "document_viewer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehension_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Read through the final draft of the article.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is familiar with the content."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify several short, powerful, and representative quotes from the article.",
-      "expected_outcome": "A list of potential pull quotes is generated.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "relevance_of_selection",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify several short, powerful, and representative quotes from the article.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of potential pull quotes is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select the single best quote that captures the essence of the story and will entice people to read.",
-      "expected_outcome": "The final pull quote is chosen.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select the single best quote that captures the essence of the story and will entice people to read.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The final pull quote is chosen."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Send the selected quote to the print designer.",
-      "expected_outcome": "The designer receives the content they need for the layout.",
-      "required_tools": [
-        "communication_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Send the selected quote to the print designer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The designer receives the content they need for the layout."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

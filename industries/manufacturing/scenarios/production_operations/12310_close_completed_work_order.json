@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-po-12310",
-  "title": "Close a Completed Work Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Close a Completed Work Order",
+    "compliance_level": "Standard"
+  },
   "description": "A work order has been fully completed and all units have passed final inspection. It needs to be closed.",
-  "use_case": "Production & Operations",
-  "core_function": "Work Order Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the produced quantity matches the ordered quantity on the work order.",
-      "expected_outcome": "Agent confirms that 100 out of 100 units are marked as complete.",
-      "required_tools": [
-        "get_work_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the produced quantity matches the ordered quantity on the work order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that 100 out of 100 units are marked as complete."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for any outstanding labor or material transactions that need to be recorded.",
-      "expected_outcome": "Agent confirms that all labor and materials have been fully accounted for.",
-      "required_tools": [
-        "review_work_order_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for any outstanding labor or material transactions that need to be recorded.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that all labor and materials have been fully accounted for."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Change the work order status to 'Closed'.",
-      "expected_outcome": "Agent successfully closes the work order, and the system calculates final costs.",
-      "required_tools": [
-        "close_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Change the work order status to 'Closed'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully closes the work order, and the system calculates final costs."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-mid-12763",
-  "title": "Manage Pipeline Hydrostatic Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Pipeline Hydrostatic Test",
+    "compliance_level": "Standard"
+  },
   "description": "An integrity engineer manages a hydrostatic pressure test on a newly constructed pipeline to ensure it is safe to operate.",
-  "use_case": "Midstream",
-  "core_function": "Compliance & Safety",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Develop a hydrotest plan, specifying the test pressure (e.g., 1.25 times max operating pressure) and duration.",
-      "expected_outcome": "A detailed and compliant test plan is created.",
-      "required_tools": [
-        "create_hydrotest_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Develop a hydrotest plan, specifying the test pressure (e.g., 1.25 times max operating pressure) and duration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A detailed and compliant test plan is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Monitor the pressure in the pipeline segment in real-time as it is filled with water and brought up to the test pressure.",
-      "expected_outcome": "The pressure is monitored and held steady at the target test pressure.",
-      "required_tools": [
-        "get_realtime_pressure_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Monitor the pressure in the pipeline segment in real-time as it is filled with water and brought up to the test pressure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The pressure is monitored and held steady at the target test pressure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the pressure data over the test duration. A stable pressure confirms no leaks. Generate the final test report.",
-      "expected_outcome": "The test is successful, and a certified report is generated for regulatory filing.",
-      "required_tools": [
-        "analyze_pressure_test_data",
-        "generate_test_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the pressure data over the test duration. A stable pressure confirms no leaks. Generate the final test report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The test is successful, and a certified report is generated for regulatory filing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

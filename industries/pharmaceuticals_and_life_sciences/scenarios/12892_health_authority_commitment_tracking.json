@@ -1,68 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12892",
-  "title": "Track Health Authority Commitments",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Health Authority Commitments",
+    "compliance_level": "Standard"
+  },
   "description": "As a condition of a drug approval, a company has made a post-marketing commitment to a health authority to conduct a new study. A regulatory manager must track this commitment.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Regulatory Intelligence",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the post-marketing commitment into the regulatory tracking system.",
-      "expected_outcome": "Agent creates a new record for the commitment, including its description and due date.",
-      "required_tools": [
-        "log_regulatory_commitment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the post-marketing commitment into the regulatory tracking system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new record for the commitment, including its description and due date."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign ownership of the commitment to the relevant internal department (e.g., Clinical Operations).",
-      "expected_outcome": "Agent assigns the commitment to the head of Clinical Operations.",
-      "required_tools": [
-        "assign_tasks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign ownership of the commitment to the relevant internal department (e.g., Clinical Operations).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the commitment to the head of Clinical Operations."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Periodically check on the status of the commitment to ensure it is on track to be met by the deadline.",
-      "expected_outcome": "Agent sends automated reminders and requests status updates from the owner.",
-      "required_tools": [
-        "monitor_task_status",
-        "send_reminder"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Periodically check on the status of the commitment to ensure it is on track to be met by the deadline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends automated reminders and requests status updates from the owner."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the final study report to the health authority to fulfill the commitment.",
-      "expected_outcome": "Once the study is complete, the agent submits the report and closes the commitment record.",
-      "required_tools": [
-        "submit_to_regulatory_gateway",
-        "update_commitment_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the final study report to the health authority to fulfill the commitment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Once the study is complete, the agent submits the report and closes the commitment record."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

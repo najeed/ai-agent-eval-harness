@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ag-cm-10148",
-  "title": "Plan a Multi-Year Crop Rotation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan a Multi-Year Crop Rotation",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer wants to create a 4-year crop rotation plan for their fields to improve soil health and break pest cycles.",
-  "use_case": "Crop Management",
-  "core_function": "Planting & Seeding",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the last 3 years of cropping history for all of the farmer's fields.",
-      "expected_outcome": "Agent gets the historical data for each field.",
-      "required_tools": [
-        "get_cropping_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the last 3 years of cropping history for all of the farmer's fields.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the historical data for each field."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the farmer's goals (e.g., maximize corn acres, include a legume, manage soybean cyst nematode).",
-      "expected_outcome": "Agent documents the planning goals.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the farmer's goals (e.g., maximize corn acres, include a legume, manage soybean cyst nematode).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent documents the planning goals."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a 4-year crop rotation plan for each field that meets the farmer's goals and follows best agronomic practices.",
-      "expected_outcome": "Agent creates a detailed plan, such as Corn -> Soybeans -> Wheat -> Alfalfa for a specific field.",
-      "required_tools": [
-        "generate_crop_rotation_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a 4-year crop rotation plan for each field that meets the farmer's goals and follows best agronomic practices.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed plan, such as Corn -> Soybeans -> Wheat -> Alfalfa for a specific field."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

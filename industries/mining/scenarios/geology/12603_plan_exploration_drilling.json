@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-geo-12603",
-  "title": "Plan Exploration Drilling Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Exploration Drilling Program",
+    "compliance_level": "Standard"
+  },
   "description": "An exploration geologist plans a diamond drilling program to test a new geophysical anomaly for potential mineralization.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Exploration & Targeting",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the target area based on the geophysical survey results.",
-      "expected_outcome": "The target for drilling is clearly defined on a map.",
-      "required_tools": [
-        "get_geophysical_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the target area based on the geophysical survey results.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The target for drilling is clearly defined on a map."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Design the layout of the proposed drillholes, specifying their location, azimuth, dip, and planned total depth.",
-      "expected_outcome": "A set of planned drillholes is designed to optimally test the target.",
-      "required_tools": [
-        "design_drillhole_layout"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_completeness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Design the layout of the proposed drillholes, specifying their location, azimuth, dip, and planned total depth.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A set of planned drillholes is designed to optimally test the target."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Estimate the total cost of the drilling program and prepare a proposal for management approval.",
-      "expected_outcome": "A costed proposal is generated to support the funding request.",
-      "required_tools": [
-        "estimate_drilling_cost",
-        "generate_funding_proposal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Estimate the total cost of the drilling program and prepare a proposal for management approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A costed proposal is generated to support the funding request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

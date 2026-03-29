@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ports-hs-12959",
-  "title": "Manage Port Preparations for a Coming Storm",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Port Preparations for a Coming Storm",
+    "compliance_level": "Standard"
+  },
   "description": "A hurricane is forecast to approach the port. The emergency manager must coordinate preparations to secure the facility.",
-  "use_case": "Health, Safety, Security & Environment (HSSE)",
-  "core_function": "Emergency Response",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the storm's forecast track and intensity.",
-      "expected_outcome": "Manager gets regular updates on the hurricane's expected arrival time and wind speed.",
-      "required_tools": [
-        "get_weather_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the storm's forecast track and intensity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager gets regular updates on the hurricane's expected arrival time and wind speed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Instruct terminal operations to lower crane booms and add extra tie-downs to all cranes.",
-      "expected_outcome": "Work orders are issued to secure all heavy equipment.",
-      "required_tools": [
-        "issue_storm_prep_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Instruct terminal operations to lower crane booms and add extra tie-downs to all cranes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Work orders are issued to secure all heavy equipment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Order the evacuation of all vessels from their berths to safer anchorage offshore.",
-      "expected_outcome": "The harbormaster communicates with all vessels and directs them to leave the port.",
-      "required_tools": [
-        "order_vessel_evacuation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Order the evacuation of all vessels from their berths to safer anchorage offshore.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The harbormaster communicates with all vessels and directs them to leave the port."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

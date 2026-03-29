@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13190",
-  "title": "Issue a Rent Increase Notice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue a Rent Increase Notice",
+    "compliance_level": "Standard"
+  },
   "description": "A landlord wants to increase the rent for a month-to-month tenant. The PM must issue a legally compliant notice.",
-  "use_case": "Property Management",
-  "core_function": "Compliance & Legal",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Determine the legally required notice period for a rent increase in the property's jurisdiction.",
-      "expected_outcome": "Agent checks local regulations and confirms a 60-day notice is required.",
-      "required_tools": [
-        "search_legal_knowledge_base"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Determine the legally required notice period for a rent increase in the property's jurisdiction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks local regulations and confirms a 60-day notice is required."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a formal rent increase notice with the new rental amount and the date it becomes effective.",
-      "expected_outcome": "A compliant notice is created with all the required information.",
-      "required_tools": [
-        "generate_legal_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a formal rent increase notice with the new rental amount and the date it becomes effective.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A compliant notice is created with all the required information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Deliver the notice to the tenant according to legal requirements (e.g., certified mail or personal service).",
-      "expected_outcome": "The notice is sent via certified mail, and the tracking number is logged.",
-      "required_tools": [
-        "send_certified_mail",
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Deliver the notice to the tenant according to legal requirements (e.g., certified mail or personal service).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The notice is sent via certified mail, and the tracking number is logged."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

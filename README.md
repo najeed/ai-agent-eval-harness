@@ -3,8 +3,8 @@
 # 🤖 MultiAgentEval - The Enterprise-Grade Reliability Framework for AI Agents
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
-[![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-93%25-brightgreen.svg)](docs/TESTING.md)
-[![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-98%25-brightgreen.svg)](docs/COVERAGE_INVENTORY.md)
+[![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-95.4%25-brightgreen.svg)](TESTING.md)
+[![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-98.2%25-brightgreen.svg)](docs/feature_inventory.md)
 [![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -18,9 +18,9 @@
 | :--- | :--- |
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 Production-Ready Framework |
-| **Core Goal** | Eliminating the "Agentic Reliability Gap" |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [Advanced Update](#the-advanced-update-v11) • [Architecture](#zero-touch-core-architecture) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Status** | 🟢 Regulatory-Hardened AES v1.2 |
+| **Architecture** | [Zero-Touch Core](docs/architecture.md) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.2 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### 🛡️ Add the Badge to Your Agent
 
@@ -74,16 +74,21 @@ The harness is organized into the following key components:
 -   `/dataproc_engine`: High-fidelity industrial data extraction engine (8 Sectors, Gold Standards).
 -   `/industries`: Evaluation assets (5,000+ scenarios) categorized by 45+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
--   `/eval_runner/console`: Flask-based REST API for the **Integrated Visual Suite**.
+-   `/eval_runner/console`: Flask-based REST API for the Integrated Visual Suite.
 -   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
 -   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).
--   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard.
+-   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.2.
 -   `/schemas`: JSON Schema definitions for cross-platform scenario validation.
 -   `/docs`: Deep-dive guides, architecture, and API specifications.
 -   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
 -   `/sample_agent`: Reference implementation for benchmark testing.
+
+MultiAgentEval has transitioned to the Regulatory-Hardened AES v1.2 specification. This framework now provides the "Big Iron" standard for autonomous agent governance.
+- **Deterministic Outcomes**: Validation against industrial standards (ISO-20022, HL7, SWIFT).
+- **State-Machine DAGs**: Non-linear `workflow` execution with Pre-condition Gating for multi-step safety.
+- **Pluralistic Judging**: Non-repudiable audit records via Inter-Judge Agreement (IJA) panel consensus.
 
 ## Getting Started
 
@@ -206,6 +211,8 @@ The latest release introduces a new suite of high-level automation and visual to
 - **`failures search`**: Intelligence-driven retrieval of edge cases from the global failure corpus.
 - **`explain`**: AI-powered trace diagnostics (loops, timeouts, PII leaks) via `--path <run.jsonl>`.
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
+- **`aes add-standard`**: Expand the global industrial registry with new standard definitions (ID, Name, Industry, Description).
+- **`init --standard <id>`**: Rapidly scaffold a dedicated, industry-compliant evaluation environment for a specific standard (e.g., `init --standard ISO_20022`).
 
 #### Premium UX Tools
 - **Scenario Editor**: A visual interface for constructing real-world AES logic; saves production-ready JSON directly to the catalog.

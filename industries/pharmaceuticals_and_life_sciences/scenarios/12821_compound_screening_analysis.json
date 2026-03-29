@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12821",
-  "title": "Analyze High-Throughput Screening Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze High-Throughput Screening Data",
+    "compliance_level": "Standard"
+  },
   "description": "A scientist needs to analyze data from a high-throughput screening (HTS) campaign to identify 'hit' compounds.",
-  "use_case": "Research & Development",
-  "core_function": "Drug Discovery & Target Identification",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Import the raw data from the HTS plate reader for thousands of compounds.",
-      "expected_outcome": "Agent successfully imports the data, including plate layouts and fluorescence readings.",
-      "required_tools": [
-        "import_hts_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_import_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Import the raw data from the HTS plate reader for thousands of compounds.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully imports the data, including plate layouts and fluorescence readings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Normalize the data against positive and negative controls on each plate.",
-      "expected_outcome": "Agent correctly applies a normalization algorithm to the raw data.",
-      "required_tools": [
-        "normalize_screening_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Normalize the data against positive and negative controls on each plate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly applies a normalization algorithm to the raw data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate a Z-score for each compound to measure its activity.",
-      "expected_outcome": "Agent correctly calculates the Z-score for all compounds.",
-      "required_tools": [
-        "calculate_hit_score"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate a Z-score for each compound to measure its activity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the Z-score for all compounds."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a list of 'hit' compounds that meet the activity threshold (e.g., Z-score > 3).",
-      "expected_outcome": "Agent produces a final list of hit compounds for follow-up studies.",
-      "required_tools": [
-        "generate_hit_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a list of 'hit' compounds that meet the activity threshold (e.g., Z-score > 3).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a final list of hit compounds for follow-up studies."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-gs-11540",
-  "title": "Concierge Request - Book Theater Tickets",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Concierge Request - Book Theater Tickets",
+    "compliance_level": "Standard"
+  },
   "description": "A guest wants the concierge to book two tickets for a popular musical.",
-  "use_case": "Guest Services & Front Office",
-  "core_function": "Guest Inquiries & Concierge",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check ticket availability and pricing for the show through the hotel's ticketing partner.",
-      "expected_outcome": "Agent finds two available seats in the orchestra section.",
-      "required_tools": [
-        "contact_external_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check ticket availability and pricing for the show through the hotel's ticketing partner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds two available seats in the orchestra section."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Confirm with the guest that they approve the seats and the price.",
-      "expected_outcome": "The guest approves the purchase.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Confirm with the guest that they approve the seats and the price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The guest approves the purchase."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Purchase the tickets and charge the amount to the guest's room folio.",
-      "expected_outcome": "The tickets are purchased, and the charge is posted to the guest's bill.",
-      "required_tools": [
-        "pms_adjust_folio_charge"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Purchase the tickets and charge the amount to the guest's room folio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tickets are purchased, and the charge is posted to the guest's bill."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

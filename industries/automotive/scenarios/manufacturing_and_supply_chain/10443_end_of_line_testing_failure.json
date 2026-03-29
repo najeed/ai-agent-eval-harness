@@ -1,53 +1,59 @@
 {
-  "scenario_id": "auto-ms-10443",
-  "title": "End-of-Line (EOL) Testing Failure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "End-of-Line (EOL) Testing Failure",
+    "compliance_level": "Standard"
+  },
   "description": "A newly assembled vehicle has failed the EOL diagnostic test for an ABS fault.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Quality Assurance",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the EOL test failure alert and identify the specific DTC.",
-      "expected_outcome": "Agent receives alert for VIN ending in 12345 with DTC C1155 - 'Wheel Speed Sensor LF Input Circuit Failure'.",
-      "required_tools": [
-        "get_qa_alert_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the EOL test failure alert and identify the specific DTC.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives alert for VIN ending in 12345 with DTC C1155 - 'Wheel Speed Sensor LF Input Circuit Failure'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the defect and route the vehicle to the on-site rectification center.",
-      "expected_outcome": "Agent logs the defect and updates the vehicle's routing.",
-      "required_tools": [
-        "log_quality_defect",
-        "update_vehicle_routing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the defect and route the vehicle to the on-site rectification center.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the defect and updates the vehicle's routing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign a technician to diagnose and repair the fault.",
-      "expected_outcome": "Agent creates a repair order and assigns it to a technician in the rectification center.",
-      "required_tools": [
-        "create_repair_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign a technician to diagnose and repair the fault.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a repair order and assigns it to a technician in the rectification center."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

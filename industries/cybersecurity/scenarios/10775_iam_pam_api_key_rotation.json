@@ -1,54 +1,59 @@
 {
-  "scenario_id": "cyber-iam-10775",
-  "title": "API Key Rotation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "API Key Rotation",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must rotate the secret API key for a critical service that integrates with a third-party vendor.",
-  "use_case": "Identity & Access Management (IAM)",
-  "core_function": "Privileged Access Management (PAM)",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Coordinate a maintenance window with the application owner and the third-party vendor.",
-      "expected_outcome": "Analyst successfully schedules the key rotation.",
-      "required_tools": [
-        "schedule_maintenance_window"
-      ],
-      "success_criteria": [
-        {
-          "metric": "coordination_effectiveness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Coordinate a maintenance window with the application owner and the third-party vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully schedules the key rotation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a new, strong, random API key.",
-      "expected_outcome": "A new secure key is generated.",
-      "required_tools": [
-        "generate_api_key"
-      ],
-      "success_criteria": [
-        {
-          "metric": "key_strength",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a new, strong, random API key.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new secure key is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "During the maintenance window, update the key in both the internal application's configuration and the third-party vendor's portal, then test the integration.",
-      "expected_outcome": "The key is successfully rotated without causing a lasting service outage.",
-      "required_tools": [
-        "update_application_config",
-        "update_vendor_portal_config",
-        "test_api_integration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "remediation_success_rate",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "During the maintenance window, update the key in both the internal application's configuration and the third-party vendor's portal, then test the integration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The key is successfully rotated without causing a lasting service outage."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,48 +1,59 @@
 {
-  "scenario_id": "hr-os-11631",
-  "title": "Manage a Company Reorganization",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Company Reorganization",
+    "compliance_level": "Standard"
+  },
   "description": "A company is reorganizing two departments, which will result in changes to reporting structures.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Workforce Planning",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the new organizational chart from leadership.",
-      "expected_outcome": "HRBP receives the 'to-be' structure.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the new organizational chart from leadership.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP receives the 'to-be' structure."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Plan the bulk updates needed in the HRIS to reflect the new reporting structures.",
-      "expected_outcome": "HRBP maps out all the required employee record changes.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Plan the bulk updates needed in the HRIS to reflect the new reporting structures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP maps out all the required employee record changes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute the bulk updates in the HRIS on the effective date of the reorganization.",
-      "expected_outcome": "HRBP successfully updates all manager and department fields for the affected employees.",
-      "required_tools": [
-        "perform_bulk_hris_update"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute the bulk updates in the HRIS on the effective date of the reorganization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP successfully updates all manager and department fields for the affected employees."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

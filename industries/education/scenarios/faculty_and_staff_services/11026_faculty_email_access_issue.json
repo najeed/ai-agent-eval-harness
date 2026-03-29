@@ -1,53 +1,59 @@
 {
-  "scenario_id": "education-fs-11026",
-  "title": "Faculty Cannot Access Email",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Faculty Cannot Access Email",
+    "compliance_level": "Standard"
+  },
   "description": "A professor reports they are unable to access their university email account.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "IT & Classroom Tech Support",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the faculty member and check their account status in the identity management system.",
-      "expected_outcome": "Agent finds the account is active and not locked.",
-      "required_tools": [
-        "get_employee_record",
-        "check_account_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the faculty member and check their account status in the identity management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the account is active and not locked."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the professor through clearing their web browser cache and cookies.",
-      "expected_outcome": "Agent provides clear, step-by-step instructions for common browsers.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the professor through clearing their web browser cache and cookies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear, step-by-step instructions for common browsers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the issue persists, trigger a password reset for the faculty member's account.",
-      "expected_outcome": "Agent initiates a password reset and confirms the user can now log in.",
-      "required_tools": [
-        "reset_employee_password"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the issue persists, trigger a password reset for the faculty member's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates a password reset and confirms the user can now log in."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

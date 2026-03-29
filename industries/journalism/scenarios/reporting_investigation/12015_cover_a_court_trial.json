@@ -1,66 +1,72 @@
 {
-  "scenario_id": "journalism-ri-12015",
-  "title": "Cover a Court Trial",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cover a Court Trial",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter is assigned to cover a high-profile criminal trial and must provide daily updates.",
-  "use_case": "Reporting & Investigation",
-  "core_function": "Field Reporting & Event Coverage",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the court docket to understand the day's schedule and witnesses.",
-      "expected_outcome": "Agent knows the plan for the day's proceedings.",
-      "required_tools": [
-        "search_court_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the court docket to understand the day's schedule and witnesses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent knows the plan for the day's proceedings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attend the trial and take detailed notes of testimony and arguments.",
-      "expected_outcome": "Agent captures the key events of the trial.",
-      "required_tools": [
-        "note_taking_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "detail_of_notes",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attend the trial and take detailed notes of testimony and arguments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent captures the key events of the trial."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "During breaks, file short updates to the newsroom's live blog.",
-      "expected_outcome": "The online audience receives timely updates from the courtroom.",
-      "required_tools": [
-        "cms_live_blog_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "timeliness_of_updates",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "During breaks, file short updates to the newsroom's live blog.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The online audience receives timely updates from the courtroom."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "At the end of the day, write a summary article of the day's proceedings.",
-      "expected_outcome": "A comprehensive summary article is produced.",
-      "required_tools": [
-        "draft_article"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_clarity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "At the end of the day, write a summary article of the day's proceedings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive summary article is produced."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pw-13036",
-  "title": "Schedule a Bulk Item Pickup",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule a Bulk Item Pickup",
+    "compliance_level": "Standard"
+  },
   "description": "A resident needs to schedule a special pickup for a large item, like an old mattress.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Service Request Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the resident's address and the type of bulk item to be collected.",
-      "expected_outcome": "Agent gathers the necessary details for the pickup.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the resident's address and the type of bulk item to be collected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the necessary details for the pickup."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the schedule for bulk item collection and find the next available date.",
-      "expected_outcome": "Agent finds the next available pickup date for the resident's area.",
-      "required_tools": [
-        "get_bulk_pickup_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the schedule for bulk item collection and find the next available date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the next available pickup date for the resident's area."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the pickup and provide the resident with instructions on where and when to place the item.",
-      "expected_outcome": "Agent books the pickup and gives clear instructions to the resident.",
-      "required_tools": [
-        "schedule_bulk_pickup"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the pickup and provide the resident with instructions on where and when to place the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent books the pickup and gives clear instructions to the resident."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

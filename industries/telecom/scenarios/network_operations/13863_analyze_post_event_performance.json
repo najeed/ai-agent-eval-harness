@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-no-13863",
-  "title": "Analyze Post-Event Network Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Post-Event Network Performance",
+    "compliance_level": "Standard"
+  },
   "description": "After a major sporting event, an agent needs to analyze network performance in the stadium's area to plan for future events.",
-  "use_case": "Network Operations",
-  "core_function": "Performance Management",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve historical performance data (e.g., user count, data throughput, congestion) for the cell sectors covering the stadium during the event.",
-      "expected_outcome": "Agent successfully pulls the relevant historical data.",
-      "required_tools": [
-        "get_historical_performance_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve historical performance data (e.g., user count, data throughput, congestion) for the cell sectors covering the stadium during the event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pulls the relevant historical data."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to identify peak usage times and any performance bottlenecks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that data throughput was maxed out for 2 hours."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to identify peak usage times and any performance bottlenecks.",
-      "expected_outcome": "Agent identifies that data throughput was maxed out for 2 hours.",
-      "required_tools": [
-        "analyze_performance_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report recommending capacity upgrades or the deployment of a temporary cell-on-wheels (COW) for the next event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a report with actionable recommendations."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report recommending capacity upgrades or the deployment of a temporary cell-on-wheels (COW) for the next event.",
-      "expected_outcome": "Agent creates a report with actionable recommendations.",
-      "required_tools": [
-        "generate_performance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

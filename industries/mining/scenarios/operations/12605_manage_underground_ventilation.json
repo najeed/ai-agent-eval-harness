@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-ops-12605",
-  "title": "Manage Underground Ventilation on Demand",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Underground Ventilation on Demand",
+    "compliance_level": "Standard"
+  },
   "description": "An underground mine operator uses a Ventilation on Demand (VOD) system to adjust fan speeds based on where people and equipment are working.",
-  "use_case": "Mine Operations",
-  "core_function": "Underground Production",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The VOD system detects that a diesel loader has entered a previously empty section of the mine.",
-      "expected_outcome": "The system automatically identifies the need for more ventilation in that area.",
-      "required_tools": [
-        "get_equipment_location_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The VOD system detects that a diesel loader has entered a previously empty section of the mine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system automatically identifies the need for more ventilation in that area."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system automatically sends a command to increase the speed of the auxiliary fan that supplies air to that section.",
-      "expected_outcome": "The fan speed is increased to ensure air quality is maintained for the loader operator.",
-      "required_tools": [
-        "set_fan_speed"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system automatically sends a command to increase the speed of the auxiliary fan that supplies air to that section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The fan speed is increased to ensure air quality is maintained for the loader operator."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After the loader leaves the area, the system automatically reduces the fan speed to save energy.",
-      "expected_outcome": "The fan speed is reduced, minimizing power consumption without compromising safety.",
-      "required_tools": [
-        "set_fan_speed"
-      ],
-      "success_criteria": [
-        {
-          "metric": "resource_allocation_efficiency",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "After the loader leaves the area, the system automatically reduces the fan speed to save energy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The fan speed is reduced, minimizing power consumption without compromising safety."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

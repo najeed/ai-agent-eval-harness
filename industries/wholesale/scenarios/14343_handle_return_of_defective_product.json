@@ -1,65 +1,72 @@
 {
-  "scenario_id": "wholesale-im-14343",
-  "title": "Handle Return of a Defective Product",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Return of a Defective Product",
+    "compliance_level": "Standard"
+  },
   "description": "A retailer returns a product that they claim is defective.",
-  "use_case": "Inventory & Warehouse Management",
-  "core_function": "Returns Management (RMA)",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the returned item and the RMA number.",
-      "expected_outcome": "The warehouse receives the item.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the returned item and the RMA number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The warehouse receives the item."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inspect the item to verify the defect.",
-      "expected_outcome": "A technician confirms the product has a manufacturing defect.",
-      "required_tools": [
-        "perform_quality_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inspect the item to verify the defect.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A technician confirms the product has a manufacturing defect."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue a full credit to the retailer.",
-      "expected_outcome": "Agent credits the retailer's account.",
-      "required_tools": [
-        "issue_credit_memo"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue a full credit to the retailer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent credits the retailer's account."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Quarantine the defective item and notify the supplier of the quality issue.",
-      "expected_outcome": "The item is set aside, and a quality report is sent to the original supplier.",
-      "required_tools": [
-        "quarantine_inventory_item",
-        "send_quality_report_to_supplier"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Quarantine the defective item and notify the supplier of the quality issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The item is set aside, and a quality report is sent to the original supplier."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

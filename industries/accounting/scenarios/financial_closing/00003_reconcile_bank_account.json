@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-fc-3",
-  "title": "Reconcile a Corporate Bank Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reconcile a Corporate Bank Account",
+    "compliance_level": "Standard"
+  },
   "description": "As part of the month-end close, an accountant needs to reconcile the main corporate bank account, matching transactions in the general ledger to the bank statement.",
-  "use_case": "Financial Closing & Reporting",
-  "core_function": "Account Reconciliation",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the general ledger transactions for the bank account for the month.",
-      "expected_outcome": "Agent successfully pulls all GL entries for the cash account.",
-      "required_tools": [
-        "get_gl_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the general ledger transactions for the bank account for the month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pulls all GL entries for the cash account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the bank statement for the same period.",
-      "expected_outcome": "Agent successfully retrieves the official bank statement.",
-      "required_tools": [
-        "get_bank_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the bank statement for the same period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the official bank statement."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Automatically match transactions between the GL and the bank statement.",
-      "expected_outcome": "Agent's tool matches over 95% of transactions automatically.",
-      "required_tools": [
-        "match_bank_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Automatically match transactions between the GL and the bank statement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent's tool matches over 95% of transactions automatically."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Identify and list any reconciling items, such as outstanding checks or deposits in transit, and prepare the final reconciliation report.",
-      "expected_outcome": "Agent correctly identifies all reconciling items and generates a balanced reconciliation report.",
-      "required_tools": [
-        "generate_reconciliation_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-4",
+        "task_description": "Identify and list any reconciling items, such as outstanding checks or deposits in transit, and prepare the final reconciliation report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies all reconciling items and generates a balanced reconciliation report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ecommerce-osm-10988",
-  "title": "Manually Set Up Related Products",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manually Set Up Related Products",
+    "compliance_level": "Standard"
+  },
   "description": "A merchandiser wants to manually define a set of 'related products' to display on a specific product page (e.g., showing the matching charger and case for a phone).",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Search & Navigation",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the primary product (e.g., 'Smartphone Z').",
-      "expected_outcome": "Agent identifies the primary SKU.",
-      "required_tools": [
-        "get_product_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the primary product (e.g., 'Smartphone Z').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the primary SKU."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide a list of SKUs for the related products (e.g., 'Charger-Z', 'Case-Z').",
-      "expected_outcome": "Agent inputs the list of related SKUs.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide a list of SKUs for the related products (e.g., 'Charger-Z', 'Case-Z').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent inputs the list of related SKUs."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Save this list as the manually curated 'related products' for 'Smartphone Z'.",
-      "expected_outcome": "Agent successfully updates the product relationship in the PIM.",
-      "required_tools": [
-        "set_related_products"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Save this list as the manually curated 'related products' for 'Smartphone Z'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the product relationship in the PIM."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

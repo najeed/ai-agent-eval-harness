@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-im-12296",
-  "title": "Dispose of Obsolete Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dispose of Obsolete Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A product has been discontinued and the remaining stock is deemed obsolete. It needs to be disposed of.",
-  "use_case": "Inventory Management",
-  "core_function": "Inventory Analysis",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "An analyst identifies a product with no sales for over a year and a 'Discontinued' status.",
-      "expected_outcome": "The obsolete stock is identified.",
-      "required_tools": [
-        "generate_inventory_aging_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "An analyst identifies a product with no sales for over a year and a 'Discontinued' status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The obsolete stock is identified."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Management approves the disposal of the remaining stock.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Authorization is given to write off the inventory."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Management approves the disposal of the remaining stock.",
-      "expected_outcome": "Authorization is given to write off the inventory.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "An inventory adjustment is created to remove the stock from the system, using 'Obsolete Disposal' as the reason.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The inventory is removed from the system records."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "A work order is created for the warehouse team to physically remove the product from the shelves and place it in the disposal area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The physical product is handled correctly for disposal."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "An inventory adjustment is created to remove the stock from the system, using 'Obsolete Disposal' as the reason.",
-      "expected_outcome": "The inventory is removed from the system records.",
-      "required_tools": [
-        "create_inventory_adjustment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "A work order is created for the warehouse team to physically remove the product from the shelves and place it in the disposal area.",
-      "expected_outcome": "The physical product is handled correctly for disposal.",
-      "required_tools": [
-        "create_warehouse_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

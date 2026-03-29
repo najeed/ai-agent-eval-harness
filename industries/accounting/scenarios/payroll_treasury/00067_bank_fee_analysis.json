@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-pt-67",
-  "title": "Analyze Bank Account Analysis Statement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Bank Account Analysis Statement",
+    "compliance_level": "Standard"
+  },
   "description": "The treasurer receives the monthly account analysis statement from the bank and needs to verify the fees charged for services like wires, ACH, and lockbox processing.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Cash Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the monthly bank account analysis statement.",
-      "expected_outcome": "Agent gets the statement, which details transaction volumes and fees.",
-      "required_tools": [
-        "get_bank_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the monthly bank account analysis statement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the statement, which details transaction volumes and fees."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the internal records of transaction volumes for the same period.",
-      "expected_outcome": "Agent gets the company's own count of wire and ACH transactions.",
-      "required_tools": [
-        "get_internal_transaction_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the internal records of transaction volumes for the same period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the company's own count of wire and ACH transactions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the bank's reported volumes and fees against the internal records and the agreed-upon fee schedule.",
-      "expected_outcome": "Agent confirms all fees are calculated correctly based on actual volumes.",
-      "required_tools": [
-        "compare_bank_fees"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the bank's reported volumes and fees against the internal records and the agreed-upon fee schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all fees are calculated correctly based on actual volumes."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Accrue for the bank fees with a journal entry.",
-      "expected_outcome": "Agent posts a journal entry to debit 'Bank Fees Expense' and credit 'Accrued Expenses'.",
-      "required_tools": [
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Accrue for the bank fees with a journal entry.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent posts a journal entry to debit 'Bank Fees Expense' and credit 'Accrued Expenses'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,66 +1,72 @@
 {
-  "scenario_id": "energy-cs-11179",
-  "title": "Corporate Carbon Accounting Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Corporate Carbon Accounting Report",
+    "compliance_level": "Standard"
+  },
   "description": "A sustainability consultant is preparing a carbon accounting report for a client, covering their Scope 2 emissions from purchased electricity.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Billing & Program Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the client's electricity consumption data (in MWh) for all their facilities for the past year.",
-      "expected_outcome": "Agent compiles the total electricity usage.",
-      "required_tools": [
-        "get_historical_consumption_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_aggregation_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the client's electricity consumption data (in MWh) for all their facilities for the past year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles the total electricity usage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each facility, find the appropriate regional grid emission factor (e.g., from eGRID) to calculate emissions.",
-      "expected_outcome": "Agent retrieves the correct emission factors (in kg CO2e/MWh) for each location.",
-      "required_tools": [
-        "get_grid_emission_factors"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each facility, find the appropriate regional grid emission factor (e.g., from eGRID) to calculate emissions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct emission factors (in kg CO2e/MWh) for each location."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the total Scope 2 emissions for the client in metric tons of CO2 equivalent.",
-      "expected_outcome": "Agent computes the final emissions figure.",
-      "required_tools": [
-        "calculate_scope2_emissions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the total Scope 2 emissions for the client in metric tons of CO2 equivalent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent computes the final emissions figure."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a report compliant with the GHG Protocol, detailing the methodology and results.",
-      "expected_outcome": "Agent produces a formal carbon accounting report.",
-      "required_tools": [
-        "generate_ghg_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a report compliant with the GHG Protocol, detailing the methodology and results.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a formal carbon accounting report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

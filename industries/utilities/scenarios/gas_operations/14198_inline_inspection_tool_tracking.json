@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14198",
-  "title": "Inline Inspection (PIG) Tool Tracking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inline Inspection (PIG) Tool Tracking",
+    "compliance_level": "Standard"
+  },
   "description": "A control room operator is tracking the real-time progress of a PIG as it travels through a natural gas pipeline.",
-  "use_case": "Gas Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the PIG's location using its onboard transmitter and sensors placed along the pipeline.",
-      "expected_outcome": "System displays the PIG's current location and speed on a map.",
-      "required_tools": [
-        "track_pig_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "monitoring_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the PIG's location using its onboard transmitter and sensors placed along the pipeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System displays the PIG's current location and speed on a map."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system detects that the PIG has stopped moving, indicating it may be stuck.",
-      "expected_outcome": "System generates an alert that the PIG is no longer progressing.",
-      "required_tools": [
-        "monitor_pig_progress"
-      ],
-      "success_criteria": [
-        {
-          "metric": "event_detection_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system detects that the PIG has stopped moving, indicating it may be stuck.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates an alert that the PIG is no longer progressing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a field crew to the PIG's last known location to investigate and retrieve the tool.",
-      "expected_outcome": "System creates a work order for the field crew.",
-      "required_tools": [
-        "dispatch_field_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a field crew to the PIG's last known location to investigate and retrieve the tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a work order for the field crew."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-wm-11215",
-  "title": "Cancel a Pending Trade Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cancel a Pending Trade Order",
+    "compliance_level": "Standard"
+  },
   "description": "A client placed a limit order to buy a stock, but now wants to cancel it before it executes.",
-  "use_case": "Wealth Management",
-  "core_function": "Trade Execution & Servicing",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the client and locate the specific open order in their account.",
-      "expected_outcome": "Agent finds the open limit order to buy 200 shares of ZYX.",
-      "required_tools": [
-        "get_open_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the client and locate the specific open order in their account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the open limit order to buy 200 shares of ZYX."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status of the order to ensure it has not yet been filled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the order is still pending and has not executed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status of the order to ensure it has not yet been filled.",
-      "expected_outcome": "Agent confirms the order is still pending and has not executed.",
-      "required_tools": [
-        "get_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cancel the pending order and confirm the cancellation with the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully cancels the order and informs the client."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cancel the pending order and confirm the cancellation with the client.",
-      "expected_outcome": "Agent successfully cancels the order and informs the client.",
-      "required_tools": [
-        "cancel_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

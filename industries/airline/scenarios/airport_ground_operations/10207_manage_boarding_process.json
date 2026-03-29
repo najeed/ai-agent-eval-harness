@@ -1,54 +1,59 @@
 {
-  "scenario_id": "airline-ago-10207",
-  "title": "Manage the Boarding Process",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage the Boarding Process",
+    "compliance_level": "Standard"
+  },
   "description": "A gate agent needs to manage the boarding process for a full flight.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Gate & Boarding",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Make pre-boarding announcements, inviting passengers who need extra assistance to board first.",
-      "expected_outcome": "Agent makes clear and timely announcements.",
-      "required_tools": [
-        "make_pa_announcement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Make pre-boarding announcements, inviting passengers who need extra assistance to board first.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes clear and timely announcements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Board the aircraft by zones or groups, scanning each passenger's boarding pass.",
-      "expected_outcome": "Agent follows the standard boarding procedure and scans all boarding passes.",
-      "required_tools": [
-        "scan_boarding_pass"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Board the aircraft by zones or groups, scanning each passenger's boarding pass.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent follows the standard boarding procedure and scans all boarding passes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reconcile the passenger count with the flight manifest and formally close the flight.",
-      "expected_outcome": "Agent confirms all boarded passengers are on the manifest and closes the flight in the system.",
-      "required_tools": [
-        "reconcile_passenger_count",
-        "close_flight"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reconcile the passenger count with the flight manifest and formally close the flight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all boarded passengers are on the manifest and closes the flight in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

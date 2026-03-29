@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11702",
-  "title": "Cancel Subscription",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cancel Subscription",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to cancel their monthly subscription at the end of the current billing period.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Account & Billing Support",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the user's identity and authority to cancel the account.",
-      "expected_outcome": "Agent confirms they are speaking to the account owner.",
-      "required_tools": [
-        "verify_customer_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the user's identity and authority to cancel the account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms they are speaking to the account owner."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask for the reason for cancellation and attempt a retention offer if applicable (e.g., a discount).",
-      "expected_outcome": "Agent logs the cancellation reason and makes a retention offer, which the customer declines.",
-      "required_tools": [
-        "get_retention_offers",
-        "log_cancellation_reason"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask for the reason for cancellation and attempt a retention offer if applicable (e.g., a discount).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the cancellation reason and makes a retention offer, which the customer declines."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the subscription cancellation to be effective at the end of the billing cycle.",
-      "expected_outcome": "Agent successfully schedules the cancellation.",
-      "required_tools": [
-        "cancel_subscription"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the subscription cancellation to be effective at the end of the billing cycle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules the cancellation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-to-14034",
-  "title": "Handle a Roadside Inspection Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Roadside Inspection Report",
+    "compliance_level": "Standard"
+  },
   "description": "A driver undergoes a DOT roadside inspection and receives a violation. The safety manager must log the report and schedule corrective action.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Safety & Compliance",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The driver uploads a photo of the inspection report, which notes a violation for a burnt-out headlight.",
-      "expected_outcome": "The safety manager receives the report.",
-      "required_tools": [
-        "get_driver_uploads"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The driver uploads a photo of the inspection report, which notes a violation for a burnt-out headlight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The safety manager receives the report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the inspection and the violation in the safety management system.",
-      "expected_outcome": "A new compliance record is created.",
-      "required_tools": [
-        "log_roadside_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the inspection and the violation in the safety management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new compliance record is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-priority repair order for the truck to have the headlight replaced.",
-      "expected_outcome": "A repair order is generated for the specific violation.",
-      "required_tools": [
-        "create_repair_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-priority repair order for the truck to have the headlight replaced.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A repair order is generated for the specific violation."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Once repaired, upload proof of correction to the relevant government portal.",
-      "expected_outcome": "The violation is formally closed out with the DOT.",
-      "required_tools": [
-        "upload_compliance_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Once repaired, upload proof of correction to the relevant government portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The violation is formally closed out with the DOT."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10064",
-  "title": "Balance a Flight Control Surface",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Balance a Flight Control Surface",
+    "compliance_level": "Standard"
+  },
   "description": "After being repainted, an aileron must be re-balanced to prevent aerodynamic flutter.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Component Repair & Overhaul",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Mount the aileron on a balancing rig.",
-      "expected_outcome": "Agent correctly sets up the aileron for balancing.",
-      "required_tools": [
-        "setup_balancing_rig"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Mount the aileron on a balancing rig.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sets up the aileron for balancing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the balance of the aileron and compare it to the specifications in the maintenance manual.",
-      "expected_outcome": "Agent finds the aileron is out of balance.",
-      "required_tools": [
-        "check_component_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the balance of the aileron and compare it to the specifications in the maintenance manual.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the aileron is out of balance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add or remove balance weights at specified locations until the aileron is balanced within the required tolerance.",
-      "expected_outcome": "Agent successfully balances the aileron and documents the final weight configuration.",
-      "required_tools": [
-        "adjust_balance_weights",
-        "document_maintenance_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add or remove balance weights at specified locations until the aileron is balanced within the required tolerance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully balances the aileron and documents the final weight configuration."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,65 +1,72 @@
 {
-  "scenario_id": "tr-ro-14053",
-  "title": "Assign a Crew to a Train",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assign a Crew to a Train",
+    "compliance_level": "Standard"
+  },
   "description": "A train is scheduled to depart. A crew dispatcher needs to assign a qualified and rested crew to operate it.",
-  "use_case": "Rail Operations",
-  "core_function": "Train & Crew Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the train that needs a crew assignment.",
-      "expected_outcome": "Dispatcher identifies the correct train.",
-      "required_tools": [
-        "get_unassigned_trains"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the train that needs a crew assignment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher identifies the correct train."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "View the list of available crews, showing their qualifications and rest status.",
-      "expected_outcome": "A list of rested and available crews is displayed.",
-      "required_tools": [
-        "get_available_crews"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "View the list of available crews, showing their qualifications and rest status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of rested and available crews is displayed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select a crew that is qualified for the specific route and has sufficient rest.",
-      "expected_outcome": "Dispatcher makes a compliant crew choice.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select a crew that is qualified for the specific route and has sufficient rest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher makes a compliant crew choice."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Assign the selected crew to the train and notify them of their assignment.",
-      "expected_outcome": "The crew is assigned, and they receive a notification with the report time and location.",
-      "required_tools": [
-        "assign_crew_to_train",
-        "send_crew_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Assign the selected crew to the train and notify them of their assignment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew is assigned, and they receive a notification with the report time and location."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

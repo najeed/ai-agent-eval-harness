@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11893",
-  "title": "Server & Network - Change Device VLAN",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Server & Network - Change Device VLAN",
+    "compliance_level": "Standard"
+  },
   "description": "A client has moved a printer to a new location in the office and it can no longer be reached, likely because it needs to be on a different VLAN.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Server & Network Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the new wall port the printer is plugged into and its corresponding switch port.",
-      "expected_outcome": "Technician knows which switch port to reconfigure.",
-      "required_tools": [
-        "get_client_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the new wall port the printer is plugged into and its corresponding switch port.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician knows which switch port to reconfigure."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the configuration of the switch port and find it's on the default 'Data' VLAN.",
-      "expected_outcome": "Technician confirms the current VLAN assignment is incorrect for a printer.",
-      "required_tools": [
-        "get_switch_port_config"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the configuration of the switch port and find it's on the default 'Data' VLAN.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician confirms the current VLAN assignment is incorrect for a printer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Change the VLAN on the switch port to the 'Printers' VLAN.",
-      "expected_outcome": "The printer gets a correct IP address and is now accessible on the network.",
-      "required_tools": [
-        "update_switch_port_config"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Change the VLAN on the switch port to the 'Printers' VLAN.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The printer gets a correct IP address and is now accessible on the network."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

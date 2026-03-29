@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10716",
-  "title": "Phishing Simulation Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Phishing Simulation Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "A security awareness manager must conduct a simulated phishing campaign to test employee vigilance.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Security Awareness & Training",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select a phishing template from the training platform (e.g., a fake 'password reset' email).",
-      "expected_outcome": "Manager selects an appropriate and realistic template.",
-      "required_tools": [
-        "select_phishing_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "template_selection_relevance",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select a phishing template from the training platform (e.g., a fake 'password reset' email).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager selects an appropriate and realistic template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Launch the phishing campaign, sending the simulated phishing email to all employees.",
-      "expected_outcome": "The campaign is successfully launched.",
-      "required_tools": [
-        "launch_phishing_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_execution_success",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Launch the phishing campaign, sending the simulated phishing email to all employees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The campaign is successfully launched."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the campaign results, noting the percentage of users who clicked the link, and automatically enroll those users in remedial training.",
-      "expected_outcome": "Manager analyzes the results and ensures that employees who failed the test receive follow-up training.",
-      "required_tools": [
-        "analyze_campaign_results",
-        "enroll_users_in_training"
-      ],
-      "success_criteria": [
-        {
-          "metric": "remediation_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the campaign results, noting the percentage of users who clicked the link, and automatically enroll those users in remedial training.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager analyzes the results and ensures that employees who failed the test receive follow-up training."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-tm-13644",
-  "title": "Manage Scouting Assignments",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Scouting Assignments",
+    "compliance_level": "Standard"
+  },
   "description": "The head of scouting needs to assign scouts to watch specific amateur tournaments.",
-  "use_case": "Team & Player Management",
-  "core_function": "Player Scouting & Recruitment",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the schedule for upcoming amateur tournaments.",
-      "expected_outcome": "Agent has a list of all relevant tournaments.",
-      "required_tools": [
-        "get_amateur_tournament_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the schedule for upcoming amateur tournaments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a list of all relevant tournaments."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the availability of all team scouts.",
-      "expected_outcome": "Agent has the schedule for each scout.",
-      "required_tools": [
-        "get_scout_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the availability of all team scouts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the schedule for each scout."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign scouts to tournaments based on their expertise and location.",
-      "expected_outcome": "Agent creates an assignment list, sending each scout to a specific tournament.",
-      "required_tools": [
-        "assign_scout_to_event"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign scouts to tournaments based on their expertise and location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates an assignment list, sending each scout to a specific tournament."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

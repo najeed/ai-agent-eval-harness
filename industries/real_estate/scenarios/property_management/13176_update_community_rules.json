@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13176",
-  "title": "Update and Distribute Community Rules",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update and Distribute Community Rules",
+    "compliance_level": "Standard"
+  },
   "description": "A property management company is updating the community rules for an apartment complex (e.g., new pool hours).",
-  "use_case": "Property Management",
-  "core_function": "Compliance & Legal",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Draft the updated community rules and regulations document.",
-      "expected_outcome": "A revised document with the new rule changes is created.",
-      "required_tools": [
-        "edit_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Draft the updated community rules and regulations document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A revised document with the new rule changes is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Distribute the updated rules to all current residents as required by law or the lease agreement.",
-      "expected_outcome": "The new rules document is sent via email to all tenants in the complex.",
-      "required_tools": [
-        "send_bulk_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Distribute the updated rules to all current residents as required by law or the lease agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new rules document is sent via email to all tenants in the complex."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the new resident onboarding package to include the new version of the rules.",
-      "expected_outcome": "The template for new lease packages is updated with the latest rules document.",
-      "required_tools": [
-        "update_document_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the new resident onboarding package to include the new version of the rules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The template for new lease packages is updated with the latest rules document."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

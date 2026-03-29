@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10080",
-  "title": "Conduct a Satellite Vibration Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct a Satellite Vibration Test",
+    "compliance_level": "Standard"
+  },
   "description": "A satellite must be subjected to intense vibrations on a shaker table to ensure it can survive the violent forces of a rocket launch.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Satellite Manufacturing & Integration",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Mount the satellite onto the shaker table.",
-      "expected_outcome": "Agent ensures the satellite is securely mounted.",
-      "required_tools": [
-        "mount_on_shaker_table"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Mount the satellite onto the shaker table.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ensures the satellite is securely mounted."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run the shaker table through a vibration profile that simulates the launch environment.",
-      "expected_outcome": "Agent operates the shaker table according to the test plan.",
-      "required_tools": [
-        "operate_shaker_table"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run the shaker table through a vibration profile that simulates the launch environment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent operates the shaker table according to the test plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After the test, perform a full functional check on the satellite to verify that no components were damaged.",
-      "expected_outcome": "Agent runs a functional test and confirms the satellite is still fully operational.",
-      "required_tools": [
-        "run_functional_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After the test, perform a full functional check on the satellite to verify that no components were damaged.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs a functional test and confirms the satellite is still fully operational."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

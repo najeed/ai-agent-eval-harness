@@ -27,7 +27,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
 
         model = payload.get("model") or config.XAI_MODEL
         endpoint = url or (config.XAI_BASE_URL + "/chat/completions")
-        prompt = payload.get("task") or str(payload)
+        prompt = payload.get("task_description") or str(payload)
 
         async with aiohttp.ClientSession() as session:
             try:

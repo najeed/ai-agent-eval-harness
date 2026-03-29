@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-om-12249",
-  "title": "Handle a Damaged Shipment Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Damaged Shipment Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports that their order arrived damaged. The agent must process the claim and send a replacement.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Claims Management",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the customer's order and ask for photos of the damaged items and packaging.",
-      "expected_outcome": "Agent receives photographic evidence from the customer.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the customer's order and ask for photos of the damaged items and packaging.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives photographic evidence from the customer."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "File a damage claim with the shipping carrier, uploading the photos as evidence.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the claim to the carrier."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "File a damage claim with the shipping carrier, uploading the photos as evidence.",
-      "expected_outcome": "Agent successfully submits the claim to the carrier.",
-      "required_tools": [
-        "submit_carrier_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Immediately create and ship a no-charge replacement order to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent resolves the customer's problem without waiting for the claim outcome."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Immediately create and ship a no-charge replacement order to the customer.",
-      "expected_outcome": "Agent resolves the customer's problem without waiting for the claim outcome.",
-      "required_tools": [
-        "create_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

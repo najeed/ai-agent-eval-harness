@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13947",
-  "title": "Handle a Room Noise Complaint",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Room Noise Complaint",
+    "compliance_level": "Standard"
+  },
   "description": "A guest calls the front desk at 11 PM to complain about a loud party in the adjacent room.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Guest Services & In-Stay Support",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Apologize to the guest and confirm their room number and the location of the noise.",
-      "expected_outcome": "Agent gathers the necessary details and shows empathy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Apologize to the guest and confirm their room number and the location of the noise.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the necessary details and shows empathy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch security personnel to the location of the party to address the noise.",
-      "expected_outcome": "Agent successfully sends a security officer to the correct room.",
-      "required_tools": [
-        "dispatch_security"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch security personnel to the location of the party to address the noise.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends a security officer to the correct room."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Offer the complaining guest a room change or a service recovery gesture (e.g., complimentary breakfast).",
-      "expected_outcome": "Agent proactively offers a solution to make up for the inconvenience.",
-      "required_tools": [
-        "offer_service_recovery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Offer the complaining guest a room change or a service recovery gesture (e.g., complimentary breakfast).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proactively offers a solution to make up for the inconvenience."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

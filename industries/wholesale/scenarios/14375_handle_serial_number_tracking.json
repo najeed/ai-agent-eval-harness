@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-im-14375",
-  "title": "Handle Serial Number Tracking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Serial Number Tracking",
+    "compliance_level": "Standard"
+  },
   "description": "A wholesaler of high-value electronics must track the unique serial number of each item.",
-  "use_case": "Inventory & Warehouse Management",
-  "core_function": "Inventory Control",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "When receiving items, scan the serial number of each individual unit.",
-      "expected_outcome": "All serial numbers are recorded in the inventory system upon receipt.",
-      "required_tools": [
-        "scan_serial_number"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "When receiving items, scan the serial number of each individual unit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All serial numbers are recorded in the inventory system upon receipt."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "When shipping an order, scan the serial number of each unit being sent to a customer.",
-      "expected_outcome": "The system links specific serial numbers to the customer's sales order.",
-      "required_tools": [
-        "assign_serial_number_to_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "When shipping an order, scan the serial number of each unit being sent to a customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system links specific serial numbers to the customer's sales order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "When a customer has a warranty claim, use the serial number to verify the purchase date and details.",
-      "expected_outcome": "Agent can use the serial number to instantly look up the item's entire history.",
-      "required_tools": [
-        "trace_serial_number"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "When a customer has a warranty claim, use the serial number to verify the purchase date and details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent can use the serial number to instantly look up the item's entire history."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

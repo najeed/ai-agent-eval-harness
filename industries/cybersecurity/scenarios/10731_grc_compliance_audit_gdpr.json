@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10731",
-  "title": "GDPR Data Deletion Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "GDPR Data Deletion Audit",
+    "compliance_level": "Standard"
+  },
   "description": "A GRC analyst must audit the process for handling 'right to be forgotten' requests to ensure compliance with GDPR.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Compliance Auditing & Reporting",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select a random sample of recent data deletion requests from the ticketing system.",
-      "expected_outcome": "Analyst selects a representative sample of requests.",
-      "required_tools": [
-        "get_gdpr_request_tickets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "sampling_randomness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select a random sample of recent data deletion requests from the ticketing system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst selects a representative sample of requests."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each request, trace the process to ensure the user's data was deleted from all relevant systems (e.g., CRM, marketing database, backups).",
-      "expected_outcome": "Analyst follows the data trail to verify deletion across multiple systems.",
-      "required_tools": [
-        "trace_data_deletion_process"
-      ],
-      "success_criteria": [
-        {
-          "metric": "audit_thoroughness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each request, trace the process to ensure the user's data was deleted from all relevant systems (e.g., CRM, marketing database, backups).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst follows the data trail to verify deletion across multiple systems."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document any findings where data was not properly deleted and create a corrective action plan to fix the process.",
-      "expected_outcome": "Analyst identifies a gap in the process (backups were not wiped) and creates a plan to fix it.",
-      "required_tools": [
-        "document_audit_finding",
-        "create_corrective_action_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "finding_accuracy_and_relevance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document any findings where data was not properly deleted and create a corrective action plan to fix the process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst identifies a gap in the process (backups were not wiped) and creates a plan to fix it."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

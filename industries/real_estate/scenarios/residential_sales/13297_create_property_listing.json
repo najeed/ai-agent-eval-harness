@@ -1,54 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13297",
-  "title": "Create New Property Listing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create New Property Listing",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to create a compelling and accurate MLS listing for a new property.",
-  "use_case": "Residential Sales",
-  "core_function": "Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve property details, including square footage, number of beds/baths, and tax records.",
-      "expected_outcome": "Agent gathers all necessary factual data for the listing.",
-      "required_tools": [
-        "get_property_tax_records",
-        "get_property_deed_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve property details, including square footage, number of beds/baths, and tax records.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all necessary factual data for the listing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write compelling marketing copy for the public remarks section, highlighting key features.",
-      "expected_outcome": "Agent generates engaging and descriptive text for the listing.",
-      "required_tools": [
-        "generate_listing_description"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write compelling marketing copy for the public remarks section, highlighting key features.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates engaging and descriptive text for the listing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upload professional photos and schedule the listing to go live on the MLS.",
-      "expected_outcome": "Agent successfully uploads media and publishes the listing.",
-      "required_tools": [
-        "upload_to_mls",
-        "schedule_listing_publication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upload professional photos and schedule the listing to go live on the MLS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads media and publishes the listing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-po-12302",
-  "title": "Track Work Order Progress",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Work Order Progress",
+    "compliance_level": "Standard"
+  },
   "description": "A production supervisor wants to check the progress of a specific high-priority work order.",
-  "use_case": "Production & Operations",
-  "core_function": "Work Order Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the work order using its ID.",
-      "expected_outcome": "Agent successfully retrieves the details for the specified work order.",
-      "required_tools": [
-        "find_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the work order using its ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the details for the specified work order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the completed operations and the current location of the work order.",
-      "expected_outcome": "Agent reports that 3 of 5 operations are complete and the job is at the 'Assembly' work center.",
-      "required_tools": [
-        "get_work_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the completed operations and the current location of the work order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reports that 3 of 5 operations are complete and the job is at the 'Assembly' work center."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Estimate the completion time based on the remaining operations and standard cycle times.",
-      "expected_outcome": "Agent provides an estimated completion date and time.",
-      "required_tools": [
-        "estimate_completion_time"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Estimate the completion time based on the remaining operations and standard cycle times.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an estimated completion date and time."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13154",
-  "title": "Collect Delinquent Rent After Notice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Collect Delinquent Rent After Notice",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant who received a late notice is still delinquent. The PM must call them to arrange payment.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management & Reporting",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the tenant, their total outstanding balance including late fees, and their phone number.",
-      "expected_outcome": "Agent has all necessary information to make the call.",
-      "required_tools": [
-        "get_delinquent_tenant_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the tenant, their total outstanding balance including late fees, and their phone number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has all necessary information to make the call."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Call the tenant to discuss the overdue balance and request payment.",
-      "expected_outcome": "Agent makes the call and clearly communicates the amount due.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Call the tenant to discuss the overdue balance and request payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes the call and clearly communicates the amount due."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the tenant agrees to pay, process a credit card payment over the phone.",
-      "expected_outcome": "Agent successfully takes a payment and provides a confirmation number to the tenant.",
-      "required_tools": [
-        "process_phone_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the tenant agrees to pay, process a credit card payment over the phone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully takes a payment and provides a confirmation number to the tenant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

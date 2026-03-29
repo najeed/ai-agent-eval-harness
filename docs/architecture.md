@@ -1,33 +1,28 @@
 The "Zero-Touch Core" is a design philosophy ensuring the central evaluation engine remains framework-agnostic. All industry-specific logic, communication protocols (adapters), and World Shims (Environment Simulators) are implemented as modular plugins.
 
-### Unified Command-Line Interface
-The CLI (`cli.py`) now features **Dynamic Discovery**. Before parsing arguments, the harness triggers the `on_discover_adapters` hook across all registered plugins. This allows ecosystem-specific protocols like `autogen://` or `langgraph://` to be recognized as first-class citizens in the `--protocol` argument without hardcoding.
-
-Furthermore, the unified `--agent` flag provides a single point of entry for specifying target endpoints, which are intelligently routed to the appropriate adapter via the `metadata` context. The harness also implements **Zero-Touch Identity Discovery**, automatically extracting human-readable agent names from response metadata (via `session.py`) or manual `--agent-name` overrides to enrich leaderboards and visual trajectories without framework-level changes.
-
 ## High-Level Data Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                             CLI (eval_runner/cli.py)                        │
-│  • evaluate / console / import-drift / aes validate / replay                │
+│  • evaluate / run / console / list / lint / taxonomy / drift / aes          │
 └──────────────┬───────────────────┬────────────────────────┬─────────────────┘
                │                   │                        │
                ▼                   ▼                        ▼
 ┌───────────────────────────┐  ┌──────────────────────┐  ┌───────────────────────┐
-│     Loader (loader.py)    │  │  AES Spec (/spec)    │  │  Drift (drift_imp...) │
-│ • Universal Registry      │  │ • Schema Validation  │  │ • Production Traces   │
-│ • JSON v2 / CSV / JSONL   │  │ • Portable Benchmarks│  │ • Scenario Conversion │
+│     Loader (loader.py)    │  │  AES Spec (/spec)    │  │ Drift (drift_importer)│
+│ • Universal Registry      │  │ • DAG Workflows      │  │ • Production Traces   │
+│ • Auto-Shim               │  │ • Typed Outcomes     │  │ • Scenario Conversion │
 └──────────────┬────────────┘  └──────────┬───────────┘  └──────────┬────────────┘
                │                          │                         │
                └──────────────────────────┼─────────────────────────┘
                                           ▼
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                            Engine (eval_runner/engine.py)                    │
+│                            Engine (eval_runner/session.py)                   │
 │                                                                              │
 │  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │     Multi-turn Conversation Loop (with hooks)                          │  │
-│  │  [before_evaluation] -> [on_turn_end] -> [after_eval]                  │  │
+│  │     DAG-Based Execution Loop (nodes/edges)                             │  │
+│  │  [node_start] -> [turn_loop] -> [calculate_metrics] -> [node_end]      │  │
 │  └───────────────────────────────────┬────────────────────────────────────┘  │
 │                                      │                                       │
 │  ┌────────────────────────────┐       ▼        ┌──────────────────────────┐  │
@@ -70,7 +65,9 @@ The core engine is built around a central `EventEmitter` (see `eval_runner/event
 - `HITL_PAUSE` / `HITL_RESUME`: Human-In-The-Loop events.
 
 ### Plugin Lifecycle
-Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the evaluation loop. The `PluginManager` triggers these hooks synchronously, ensuring a deterministic execution order.
+Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the evaluation loop. The `discovery` module (powered by `eval_runner/discovery.py`) identifies valid plugin classes in the project-root `/plugins` directory and package-local subdirectories.
+
+The `PluginManager` triggers these hooks synchronously, ensuring a deterministic execution order.
 
 | Hook | Trigger Point | Use Case |
 |---|---|---|
@@ -93,14 +90,14 @@ Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the eval
 | Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |
 | Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
 
-## Foundational Core: AES & Flight Recorder
+## Regulatory Enforcement Layer: AES v1.2
 
-Phase 1 establishes the "Standardized Evaluation" layer:
-- **AES (Agent Eval Specification)**: A framework-agnostic YAML format defining agent tasks, expected states, and safety policies. It enables benchmark sharing across repositories.
+AES v1.2 elevates the harness into a **Verification OS** for mission-critical industries:
+- **State-Machine DAG**: Scenarios no longer use linear `tasks`. They define a directed acyclic graph of `nodes` and `edges`, enabling non-linear state transitions and dependency gating.
+- **Typed Outcomes (Standards Registry)**: Mandates adherence to industrial gold standards (e.g., ISO-20022, HL7 FHIR) using typed result schemas.
+- **Pluralistic Judging (IJA)**: Implements Inter-Judge Agreement metrics. Critical evaluations require a "Judge Panel" consensus (at least 3 judges) with a configurable `ija_threshold` to ensure non-repudiable audit records.
 - **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior without re-running the actual models.
-- **Agent Crash Replayer**: The `replay` CLI command reconstructs the agent's timeline from a `run.jsonl` file, enabling step-by-step inspection.
-- **Scenario Editor**: A visual drag-and-drop tool integrated into the Visual Suite for authoring and modifying AES logic without writing JSON.
-- **Trace Explainer**: High-fidelity root cause diagnostics with forensic reasoning (e.g., policy violations vs. induced errors) and confidence scoring (100% for violations, 85% for tool/logic errors, 50% for heuristic fallbacks).
+- **Scenario Editor**: A visual drag-and-drop tool integrated into the Visual Suite, fully updated to support v1.2 DAG orchestration.
 
 ## Semantic Bridge & Drift Management
 
@@ -114,16 +111,16 @@ Phase 2 focuses on operationalizing evaluation data:
 Phase 3 introduces advanced orchestration capabilities for research and complex production replay:
 - **Native HITL (Human-In-The-Loop)**: The `human` adapter allows scenarios to pause and wait for human intervention. This is integrated directly into the `SessionManager` loop, emitting `HITL_PAUSE` and `HITL_RESUME` events.
 - **Non-Linear Trajectories**: `SessionManager.fork()` enables creators to explore multiple agent paths from a single checkpoint. This is essential for studying agent decision-making under ambiguity.
-- **Universal Agent Adapters**: The `AgentAdapterRegistry` allows switching between `http`, `local` (subprocess), and `socket` protocols. High-level metadata is propagated from the CLI to ensure the correct communication shim is used without scenario-level changes.
-- **Advanced Adapter Discovery**: The registry supports plugin-driven discovery. External plugins can register custom protocols (e.g., `mock_proto`, `proprietary_rpc`) using the `on_discover_adapters` hook.
+- **Universal Agent Adapters**: The `AgentAdapterRegistry` allows switching between `http`, `local` (subprocess), and `socket` protocols. High-level metadata is propagated from the CLI to ensure the correct communication shim is used.
+- **Advanced Adapter Discovery**: The registry supports plugin-driven discovery. External plugins can register custom protocols using the `on_discover_adapters` hook. Discovery is deferred until execution to maintain CLI performance.
 - **Scenario Catalog & Intelligence**: A centralized indexer (`catalog.py`) enables high-performance discovery across thousands of scenarios. It supports keyword search and powers the Visual Suite "Scenario Explorer".
 - **AES Quality Linter**: The `linter.py` module implements automated quality scoring, ensuring scenarios have required metadata, balanced task counts, and no duplicates.
 - **Visual Debugger Hook**: A dedicated `DebuggerStateStore` in the console backend captures live world state and tool signals via the `EventEmitter` for real-time UI synchronization.
 
 ## Simulation Lab & Research metrics
 
-- **High-Fidelity Metrics**: Decoupled framework with specialized modules for Calculation, Strategic Planning, and Causal Inference. Features robust numerical extraction and domain-specific LLM rubrics.
-- **Research Metrics**: Native support for `pass@k` (robustness across attempts) and `Success Consistency`. The harness now generates a `research_summary.md` and ASCII table for multi-attempt evaluations, capturing semantic stability and outcome variance.
+- **High-Fidelity Metrics**: Decoupled framework with specialized modules for Calculation, Strategic Planning, and Causal Inference. Features robust numerical extraction, dynamic mock data loading from the `/industries` directory, and domain-specific LLM rubrics.
+- **Research Metrics**: Native support for `pass@k` (robustness across attempts) and `Success Consistency`. The harness generates a `research_summary.md` and ASCII table for multi-attempt evaluations, capturing semantic stability and outcome variance.
 - **Adversarial Red-Teaming**: The `mutator` engine injects typos, prompt-injection, and ambiguity into scenarios to test agent edge-resistance.
 
 ## Ecosystem, Benchmarks & Distribution
@@ -140,10 +137,12 @@ Phase 4 elevates the Harness from an isolated tool to an integrated participant 
 
 | Variable | Default | Description |
 |---|---|---|
-| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint |
+| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint for `http` protocol |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
-| `MAX_ENGINE_ATTEMPTS` | `50` | Evaluation security cap |
+| `MAX_ENGINE_ATTEMPTS` | `50` | Evaluation security cap (attempts) |
 | `JUDGE_PROVIDER` | `ollama` | Multi-model judge provider |
+| `RUN_LOG_DIR` | `runs` | Directory for execution traces |
+| `DEFAULT_ADAPTER_TIMEOUT` | `30` | Network timeout for agent adapters (seconds) |
 
 ## Test Suite
 

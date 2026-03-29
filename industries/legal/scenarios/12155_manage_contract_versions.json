@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ct-12155",
-  "title": "Manage Contract Versions",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Contract Versions",
+    "compliance_level": "Standard"
+  },
   "description": "During a lengthy negotiation, multiple versions of a contract are being exchanged. A paralegal needs to manage version control.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Contract Lifecycle Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Save each new version of the contract with a clear naming convention (e.g., 'Agreement_v3_2024-07-15').",
-      "expected_outcome": "Agent saves the document with a logical name.",
-      "required_tools": [
-        "document_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Save each new version of the contract with a clear naming convention (e.g., 'Agreement_v3_2024-07-15').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent saves the document with a logical name."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a document comparison tool to create a redline showing the changes between the latest version and the prior version.",
-      "expected_outcome": "Agent generates a comparison document that clearly highlights all changes.",
-      "required_tools": [
-        "document_comparison_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a document comparison tool to create a redline showing the changes between the latest version and the prior version.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a comparison document that clearly highlights all changes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Share the redline with the legal team to easily review the changes made by the other side.",
-      "expected_outcome": "The team can efficiently review the latest round of negotiations.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Share the redline with the legal team to easily review the changes made by the other side.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team can efficiently review the latest round of negotiations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

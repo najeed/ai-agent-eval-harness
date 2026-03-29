@@ -1,54 +1,59 @@
 {
-  "scenario_id": "pharma-cm-12850",
-  "title": "Create Patient-Facing Educational Material",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Patient-Facing Educational Material",
+    "compliance_level": "Standard"
+  },
   "description": "A medical communications specialist needs to create a patient-friendly brochure explaining a specific disease state.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Patient Support Programs",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Research and summarize the key information about the disease state in plain language.",
-      "expected_outcome": "Agent drafts a summary avoiding medical jargon.",
-      "required_tools": [
-        "search_medical_literature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.98,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Research and summarize the key information about the disease state in plain language.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a summary avoiding medical jargon."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the content for the brochure using the summary.",
-      "expected_outcome": "Agent creates the full text for the brochure.",
-      "required_tools": [
-        "draft_brochure_content"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the content for the brochure using the summary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the full text for the brochure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the draft brochure for internal medical and regulatory review to ensure accuracy and compliance.",
-      "expected_outcome": "Agent submits the document to the promotional review committee.",
-      "required_tools": [
-        "upload_document_for_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the draft brochure for internal medical and regulatory review to ensure accuracy and compliance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the document to the promotional review committee."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

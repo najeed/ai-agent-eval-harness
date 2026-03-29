@@ -1,50 +1,59 @@
 {
-  "scenario_id": "auto-sm-10447",
-  "title": "Customer Declines Recommended Service",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Declines Recommended Service",
+    "compliance_level": "Standard"
+  },
   "description": "During a service visit, a technician recommends a coolant flush, but the customer declines the service.",
-  "use_case": "Service & Maintenance",
-  "core_function": "Repair & Maintenance Execution",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the customer's decision to decline the recommended coolant flush.",
-      "expected_outcome": "Agent understands the customer's choice.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the customer's decision to decline the recommended coolant flush.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the customer's choice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the potential risks of not performing the service, without being pushy.",
-      "expected_outcome": "Agent briefly explains that old coolant can be less effective at preventing corrosion.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the potential risks of not performing the service, without being pushy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent briefly explains that old coolant can be less effective at preventing corrosion."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the repair order and the customer's service record to show that the service was recommended but declined.",
-      "expected_outcome": "Agent accurately documents the declined service for future reference and liability purposes.",
-      "required_tools": [
-        "update_repair_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the repair order and the customer's service record to show that the service was recommended but declined.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately documents the declined service for future reference and liability purposes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

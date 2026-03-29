@@ -1,67 +1,72 @@
 {
-  "scenario_id": "journalism-ae-12069",
-  "title": "Create a 'Story Highlights' for Instagram",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a 'Story Highlights' for Instagram",
+    "compliance_level": "Standard"
+  },
   "description": "An editor wants to create a permanent 'Story Highlight' on the publication's Instagram profile for a major investigative series.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Social Media & Distribution",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all the Instagram Stories that were posted during the investigation.",
-      "expected_outcome": "All relevant past stories are collected.",
-      "required_tools": [
-        "instagram_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehensiveness_of_collection",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all the Instagram Stories that were posted during the investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All relevant past stories are collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the best and most informative stories to include in the highlight reel.",
-      "expected_outcome": "A curated selection of stories is made.",
-      "required_tools": [
-        "instagram_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "quality_of_selection",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the best and most informative stories to include in the highlight reel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A curated selection of stories is made."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new Story Highlight on the Instagram profile.",
-      "expected_outcome": "A new highlight reel is created.",
-      "required_tools": [
-        "instagram_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new Story Highlight on the Instagram profile.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new highlight reel is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Give the highlight a clear title (e.g., 'The Investigation') and a custom cover photo.",
-      "expected_outcome": "The highlight is clearly labeled and visually appealing on the profile.",
-      "required_tools": [
-        "instagram_app",
-        "image_editing_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "visual_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-4",
+        "task_description": "Give the highlight a clear title (e.g., 'The Investigation') and a custom cover photo.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The highlight is clearly labeled and visually appealing on the profile."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,109 +1,61 @@
 {
-  "scenario_id": "telecom-ma-99999",
-  "title": "Multi-Agent Billing & Network Repair",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Multi-Agent Billing & Network Repair",
+    "compliance_level": "Standard"
+  },
   "description": "A complex multi-agent scenario where a billing agent must coordinate with a network specialist to resolve a high-bill complaint caused by technical faults.",
-  "use_case": "Mixed Use Case",
-  "core_function": "Multi-Agent Coordination",
   "industry": "Telecom",
-  "version": "2.0.0",
-  "agent_topology": {
-    "billing_agent": {
-      "writes": [
-        "billing:dispute",
-        "coordination:handoff"
-      ],
-      "reads": [
-        "network:diagnostics"
-      ]
-    },
-    "network_specialist": {
-      "writes": [
-        "network:diagnostics"
-      ],
-      "reads": [
-        "billing:dispute",
-        "coordination:handoff"
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Billing agent receives complaint and delegates technical investigation to network specialist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Delegation is recorded in the coordination namespace."
+        }
+      },
+      {
+        "id": "task-2",
+        "task_description": "Network specialist performs diagnostics and writes findings to the network namespace.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Findings reveal a ghost-data bug."
+        }
+      },
+      {
+        "id": "task-3",
+        "task_description": "Billing agent reads network findings and applies credit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Credit applied based on technical evidence."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   },
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Billing agent receives complaint and delegates technical investigation to network specialist.",
-      "expected_outcome": "Delegation is recorded in the coordination namespace.",
-      "expected_delegations": 1,
-      "required_tools": [
-        "delegate_to_specialist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.8
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Network specialist performs diagnostics and writes findings to the network namespace.",
-      "expected_outcome": "Findings reveal a ghost-data bug.",
-      "required_tools": [
-        "run_line_diagnostics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Billing agent reads network findings and applies credit.",
-      "expected_outcome": "Credit applied based on technical evidence.",
-      "expected_delegations": 1,
-      "required_tools": [
-        "apply_credit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "billing.dispute_resolved",
-          "value": true
-        }
-      ]
-    }
-  ],
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

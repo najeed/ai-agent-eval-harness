@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ps-pa-13054",
-  "title": "Award a Contract",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Award a Contract",
+    "compliance_level": "Standard"
+  },
   "description": "The procurement department is ready to officially award a contract to the winning bidder.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Procurement & Contracts",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the contract and the selected winning vendor.",
-      "expected_outcome": "The procurement officer has the details of the winning bid.",
-      "required_tools": [
-        "get_contract_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the contract and the selected winning vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The procurement officer has the details of the winning bid."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the official contract documents for signature.",
-      "expected_outcome": "The officer successfully generates the legal contract.",
-      "required_tools": [
-        "generate_contract_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the official contract documents for signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer successfully generates the legal contract."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the contract to the vendor for signature and notify the unsuccessful bidders of the outcome.",
-      "expected_outcome": "The officer sends the contract for execution and sends notifications to all other bidders.",
-      "required_tools": [
-        "send_document_for_signature",
-        "notify_unsuccessful_bidders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the contract to the vendor for signature and notify the unsuccessful bidders of the outcome.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer sends the contract for execution and sends notifications to all other bidders."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

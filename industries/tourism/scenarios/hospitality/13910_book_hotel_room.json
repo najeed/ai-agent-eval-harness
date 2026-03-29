@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13910",
-  "title": "Book a Standard Hotel Room",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book a Standard Hotel Room",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to book a standard king room for two nights.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Booking & Reservation Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check availability for a standard king room for the requested dates.",
-      "expected_outcome": "Agent confirms that a standard king room is available.",
-      "required_tools": [
-        "check_room_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check availability for a standard king room for the requested dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that a standard king room is available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the customer with the total price, including taxes and fees.",
-      "expected_outcome": "Agent accurately calculates and communicates the total cost.",
-      "required_tools": [
-        "calculate_total_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the customer with the total price, including taxes and fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates and communicates the total cost."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new reservation with the customer's details and collect payment information.",
-      "expected_outcome": "Agent successfully creates a new booking and obtains a confirmation number.",
-      "required_tools": [
-        "create_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new reservation with the customer's details and collect payment information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new booking and obtains a confirmation number."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

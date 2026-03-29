@@ -1,52 +1,59 @@
 {
-  "scenario_id": "construction-os-10667",
-  "title": "Conduct Pre-Task Safety Briefing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Pre-Task Safety Briefing",
+    "compliance_level": "Standard"
+  },
   "description": "Before starting a concrete demolition task, a foreman must conduct and document a pre-task safety briefing with the crew.",
-  "use_case": "On-Site Operations",
-  "core_function": "Task Execution & Coordination",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the Job Hazard Analysis (JHA) for 'Concrete Demolition'.",
-      "expected_outcome": "The relevant JHA document is retrieved.",
-      "required_tools": [
-        "get_jha_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the Job Hazard Analysis (JHA) for 'Concrete Demolition'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The relevant JHA document is retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log that a pre-task briefing was held, covering the hazards and controls listed in the JHA.",
-      "expected_outcome": "A new entry is made in the safety meeting log.",
-      "required_tools": [
-        "create_safety_meeting_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log that a pre-task briefing was held, covering the hazards and controls listed in the JHA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new entry is made in the safety meeting log."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Record the names of the 6 crew members who attended the briefing.",
-      "expected_outcome": "The attendee list is added to the log entry.",
-      "required_tools": [
-        "update_safety_meeting_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Record the names of the 6 crew members who attended the briefing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The attendee list is added to the log entry."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

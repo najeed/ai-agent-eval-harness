@@ -1,54 +1,59 @@
 {
-  "scenario_id": "chemicals-scl-10552",
-  "title": "Return Off-Spec Raw Material to Vendor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Return Off-Spec Raw Material to Vendor",
+    "compliance_level": "Standard"
+  },
   "description": "An incoming raw material failed QC testing and needs to be returned to the supplier.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Inventory Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the quarantined, off-spec lot of material in the inventory system.",
-      "expected_outcome": "Agent locates the correct batch that needs to be returned.",
-      "required_tools": [
-        "find_inventory_by_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the quarantined, off-spec lot of material in the inventory system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct batch that needs to be returned."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the supplier to obtain a Return Material Authorization (RMA) number.",
-      "expected_outcome": "Agent communicates with the supplier and receives an RMA number.",
-      "required_tools": [
-        "contact_supplier"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the supplier to obtain a Return Material Authorization (RMA) number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent communicates with the supplier and receives an RMA number."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a return shipment in the logistics system using the RMA number and schedule a pickup.",
-      "expected_outcome": "Agent successfully processes the return order and arranges for the carrier to pick it up.",
-      "required_tools": [
-        "create_return_shipment",
-        "schedule_waste_pickup"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a return shipment in the logistics system using the RMA number and schedule a pickup.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the return order and arranges for the carrier to pick it up."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

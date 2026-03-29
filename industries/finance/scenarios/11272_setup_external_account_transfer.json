@@ -1,81 +1,61 @@
 {
-  "scenario_id": "finance-rb-11272",
-  "title": "Set up External Account for Transfers",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set up External Account for Transfers",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to link an account from another bank to be able to transfer funds.",
-  "use_case": "Retail Banking",
-  "core_function": "Payments & Transfers",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Collect the routing and account number for the external bank account.",
-      "expected_outcome": "Agent accurately captures the external account details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Collect the routing and account number for the external bank account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures the external account details."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate the micro-deposit verification process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent starts the process where two small deposits will be sent to the external account for verification."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate the micro-deposit verification process.",
-      "expected_outcome": "Agent starts the process where two small deposits will be sent to the external account for verification.",
-      "required_tools": [
-        "initiate_micro_deposit_verification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain to the customer that they will need to verify the amounts of the micro-deposits once they appear.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly instructs the customer on the next steps they need to take to complete the setup."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain to the customer that they will need to verify the amounts of the micro-deposits once they appear.",
-      "expected_outcome": "Agent clearly instructs the customer on the next steps they need to take to complete the setup.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

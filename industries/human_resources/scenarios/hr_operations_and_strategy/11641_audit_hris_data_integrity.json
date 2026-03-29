@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-os-11641",
-  "title": "Audit HRIS Data Integrity",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit HRIS Data Integrity",
+    "compliance_level": "Standard"
+  },
   "description": "An HRIS analyst needs to run an audit to find employees with missing or incomplete data in their records.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "HRIS Management",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a query or report to find employee records with blank fields for critical information (e.g., emergency contact, address).",
-      "expected_outcome": "Analyst generates a list of employees with incomplete profiles.",
-      "required_tools": [
-        "run_hris_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a query or report to find employee records with blank fields for critical information (e.g., emergency contact, address).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst generates a list of employees with incomplete profiles."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each employee on the list, determine what specific information is missing.",
-      "expected_outcome": "Analyst creates a spreadsheet detailing the missing data for each employee.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each employee on the list, determine what specific information is missing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst creates a spreadsheet detailing the missing data for each employee."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send notifications to the identified employees asking them to update their information in the self-service portal.",
-      "expected_outcome": "Analyst sends targeted emails requesting employees to complete their profiles.",
-      "required_tools": [
-        "send_reminder_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send notifications to the identified employees asking them to update their information in the self-service portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst sends targeted emails requesting employees to complete their profiles."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

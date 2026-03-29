@@ -6,6 +6,37 @@ from dotenv import load_dotenv
 load_dotenv()
 
 PROJECT_ROOT = Path(__file__).parent.parent
+_TEMP_DIR_CACHE = None
+
+def get_safe_tmp_dir() -> Path:
+    """
+    Returns a writable temporary directory.
+    Prioritizes C:\tmp on Windows (per user request) or /tmp on Unix.
+    Falls back to PROJECT_ROOT / ".tmp" if C:\tmp is not writable.
+    """
+    global _TEMP_DIR_CACHE
+    if _TEMP_DIR_CACHE:
+        return _TEMP_DIR_CACHE
+
+    # 1. Primary path (local .tmp within PROJECT_ROOT)
+    primary = PROJECT_ROOT / ".tmp"
+    
+    # 2. Verify write permission
+    try:
+        primary.mkdir(parents=True, exist_ok=True)
+        test_file = primary / ".multiagent_eval_perm_test"
+        test_file.write_text("perm_test", encoding="utf-8")
+        test_file.unlink()
+        _TEMP_DIR_CACHE = primary
+        return primary
+    except Exception:
+        # 3. Fallback to gitignored project-local .tmp
+        fallback = PROJECT_ROOT / ".tmp"
+        fallback.mkdir(parents=True, exist_ok=True)
+        _TEMP_DIR_CACHE = fallback
+        return fallback
+
+LOG_REDIRECT_PATH = get_safe_tmp_dir() / "tool_logs"
 
 # --- Engine Configuration ---
 AGENT_API_URLS = [url.strip() for url in os.getenv("AGENT_API_URLS", os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")).split(",")]
@@ -50,6 +81,8 @@ LUNA_JUDGE_TEMPERATURE = float(os.getenv("LUNA_JUDGE_TEMPERATURE", "0.0"))
 # --- Provider Defaults ---
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", f"{OLLAMA_HOST}/api/chat")
+AUTOGEN_API_URL = os.getenv("AUTOGEN_API_URL", "http://localhost:5002/execute_task")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")

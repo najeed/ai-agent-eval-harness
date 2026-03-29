@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hr-os-11668",
-  "title": "Analyze Compensation Equity",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Compensation Equity",
+    "compliance_level": "Standard"
+  },
   "description": "A compensation analyst is conducting a pay equity study to check for gender- or race-based pay gaps.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Reporting & Analytics",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a report from the HRIS containing employee job title, salary, gender, and ethnicity data.",
-      "expected_outcome": "Analyst pulls the necessary raw data.",
-      "required_tools": [
-        "run_hris_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a report from the HRIS containing employee job title, salary, gender, and ethnicity data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst pulls the necessary raw data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each major job role, calculate the average salary for different demographic groups.",
-      "expected_outcome": "Analyst performs statistical analysis to compare pay across groups.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each major job role, calculate the average salary for different demographic groups.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst performs statistical analysis to compare pay across groups."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify any statistically significant pay gaps and prepare a report of the findings for HR leadership.",
-      "expected_outcome": "Analyst identifies potential areas of concern and creates a detailed report with recommendations.",
-      "required_tools": [
-        "create_presentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify any statistically significant pay gaps and prepare a report of the findings for HR leadership.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst identifies potential areas of concern and creates a detailed report with recommendations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

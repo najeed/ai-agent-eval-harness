@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ps-pa-13007",
-  "title": "Register as a City Vendor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Register as a City Vendor",
+    "compliance_level": "Standard"
+  },
   "description": "A small business wants to register with the city so they can bid on government contracts.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Procurement & Contracts",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the business's information, including legal name, tax ID number, and contact details.",
-      "expected_outcome": "Agent accurately collects all required vendor information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the business's information, including legal name, tax ID number, and contact details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately collects all required vendor information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect required documents, such as a W-9 form and any necessary certifications (e.g., minority-owned business).",
-      "expected_outcome": "Agent guides the user in uploading the necessary forms.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect required documents, such as a W-9 form and any necessary certifications (e.g., minority-owned business).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent guides the user in uploading the necessary forms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a vendor profile in the procurement system.",
-      "expected_outcome": "Agent successfully creates the new vendor record, making the business eligible to bid on contracts.",
-      "required_tools": [
-        "create_vendor_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a vendor profile in the procurement system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the new vendor record, making the business eligible to bid on contracts."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hr-er-11625",
-  "title": "Issue a Disciplinary Warning",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue a Disciplinary Warning",
+    "compliance_level": "Standard"
+  },
   "description": "An employee has violated the company's attendance policy. Their manager, in consultation with HR, needs to issue a formal written warning.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Disciplinary Actions",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the employee's attendance record and prior warnings.",
-      "expected_outcome": "HRBP confirms the employee has had multiple unexcused absences and a prior verbal warning.",
-      "required_tools": [
-        "get_employee_attendance_record",
-        "get_employee_disciplinary_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the employee's attendance record and prior warnings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP confirms the employee has had multiple unexcused absences and a prior verbal warning."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the formal written warning document, citing the specific policy violation and outlining expectations for improvement.",
-      "expected_outcome": "HRBP drafts a clear and fact-based warning letter.",
-      "required_tools": [
-        "generate_document_from_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_creation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the formal written warning document, citing the specific policy violation and outlining expectations for improvement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP drafts a clear and fact-based warning letter."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Coach the manager on how to deliver the warning and document the conversation in the employee's HR file.",
-      "expected_outcome": "HRBP provides guidance to the manager and logs the delivered warning in the HRIS.",
-      "required_tools": [
-        "log_disciplinary_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Coach the manager on how to deliver the warning and document the conversation in the employee's HR file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP provides guidance to the manager and logs the delivered warning in the HRIS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

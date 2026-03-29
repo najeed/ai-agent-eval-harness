@@ -1,54 +1,59 @@
 {
-  "scenario_id": "hr-em-11621",
-  "title": "Run Annual Benefits Open Enrollment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Run Annual Benefits Open Enrollment",
+    "compliance_level": "Standard"
+  },
   "description": "An HR benefits specialist needs to manage the company's annual open enrollment period.",
-  "use_case": "Employee Management",
-  "core_function": "Benefits Administration",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Configure the benefits administration system for the new plan year, including updated rates and plan options.",
-      "expected_outcome": "Specialist successfully sets up the system for open enrollment.",
-      "required_tools": [
-        "configure_open_enrollment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Configure the benefits administration system for the new plan year, including updated rates and plan options.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist successfully sets up the system for open enrollment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a series of communications to employees announcing open enrollment and explaining the changes for the new year.",
-      "expected_outcome": "Specialist drafts and schedules all employee communications.",
-      "required_tools": [
-        "send_mass_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a series of communications to employees announcing open enrollment and explaining the changes for the new year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist drafts and schedules all employee communications."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Track employee enrollment progress and send reminders to those who have not yet completed their elections.",
-      "expected_outcome": "Specialist monitors the completion dashboard and sends targeted reminders.",
-      "required_tools": [
-        "view_open_enrollment_dashboard",
-        "send_reminder_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Track employee enrollment progress and send reminders to those who have not yet completed their elections.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist monitors the completion dashboard and sends targeted reminders."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

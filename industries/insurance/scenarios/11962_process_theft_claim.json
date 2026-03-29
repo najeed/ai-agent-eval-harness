@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11962",
-  "title": "Process a Homeowners Theft Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Homeowners Theft Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A customer's home was burglarized, and they are filing a claim for stolen items.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Claims Processing",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Start a new claim and gather initial details, including the police report number.",
-      "expected_outcome": "The adjuster opens a new claim and records the police report details.",
-      "required_tools": [
-        "create_new_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Start a new claim and gather initial details, including the police report number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster opens a new claim and records the police report details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask the customer to provide a list of stolen items with their estimated value and any proof of ownership.",
-      "expected_outcome": "The adjuster clearly instructs the customer on what documentation is needed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask the customer to provide a list of stolen items with their estimated value and any proof of ownership.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster clearly instructs the customer on what documentation is needed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the list is received, review it against the policy's coverage limits and deductible to determine the settlement amount.",
-      "expected_outcome": "The adjuster reviews the submitted documents and calculates the claim payment.",
-      "required_tools": [
-        "calculate_claim_payout"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the list is received, review it against the policy's coverage limits and deductible to determine the settlement amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster reviews the submitted documents and calculates the claim payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

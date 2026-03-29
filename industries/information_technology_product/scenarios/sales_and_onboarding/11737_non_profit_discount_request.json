@@ -1,49 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11737",
-  "title": "Non-Profit Discount Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Non-Profit Discount Request",
+    "compliance_level": "Standard"
+  },
   "description": "A representative from a registered non-profit organization inquires about special pricing.",
-  "use_case": "Sales & Account Management",
-  "core_function": "New Customer Acquisition",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the non-profit discount program and its eligibility requirements.",
-      "expected_outcome": "Agent clearly communicates the company's non-profit policy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the non-profit discount program and its eligibility requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the company's non-profit policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request documentation to verify the organization's non-profit status (e.g., 501(c)(3) letter).",
-      "expected_outcome": "Agent requests the necessary verification documents.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request documentation to verify the organization's non-profit status (e.g., 501(c)(3) letter).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent requests the necessary verification documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once verified, provide the customer with a unique discount code to use during checkout.",
-      "expected_outcome": "Agent provides the verified organization with their discount.",
-      "required_tools": [
-        "generate_discount_code"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once verified, provide the customer with a unique discount code to use during checkout.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the verified organization with their discount."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

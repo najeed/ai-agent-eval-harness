@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-proc-12606",
-  "title": "Manage Flotation Reagent Dosing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Flotation Reagent Dosing",
+    "compliance_level": "Standard"
+  },
   "description": "A metallurgist adjusts the dosing rate of a collector reagent in a flotation circuit to improve copper recovery.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Mineral Separation",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the latest lab assay results for the feed, concentrate, and tailings streams, which show copper recovery is slightly below target.",
-      "expected_outcome": "The metallurgist identifies that recovery needs to be improved.",
-      "required_tools": [
-        "get_lab_assay_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the latest lab assay results for the feed, concentrate, and tailings streams, which show copper recovery is slightly below target.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The metallurgist identifies that recovery needs to be improved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the current reagent dosing rates and decide to slightly increase the collector addition.",
-      "expected_outcome": "A decision is made to increase the collector dosing rate by 5%.",
-      "required_tools": [
-        "get_reagent_dosing_rates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the current reagent dosing rates and decide to slightly increase the collector addition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A decision is made to increase the collector dosing rate by 5%."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Adjust the setpoint for the collector dosing pump in the plant's control system.",
-      "expected_outcome": "The pump's setpoint is updated, and subsequent lab results show copper recovery has increased to the target level.",
-      "required_tools": [
-        "set_reagent_pump_setpoint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Adjust the setpoint for the collector dosing pump in the plant's control system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The pump's setpoint is updated, and subsequent lab results show copper recovery has increased to the target level."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11856",
-  "title": "Auditing - Internal Security Scan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Auditing - Internal Security Scan",
+    "compliance_level": "Standard"
+  },
   "description": "As part of a security audit project, an analyst needs to run an authenticated scan on internal servers to find vulnerabilities and missing patches.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "IT & Security Auditing",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get temporary domain administrator credentials from the client to perform the authenticated scan.",
-      "expected_outcome": "The analyst has the necessary credentials.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get temporary domain administrator credentials from the client to perform the authenticated scan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analyst has the necessary credentials."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Configure and run an internal vulnerability scan against the client's servers.",
-      "expected_outcome": "The scan completes successfully.",
-      "required_tools": [
-        "run_vulnerability_scan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Configure and run an internal vulnerability scan against the client's servers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The scan completes successfully."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the results and generate a prioritized list of vulnerabilities to be remediated.",
-      "expected_outcome": "A clear, actionable vulnerability report is created as part of the audit deliverable.",
-      "required_tools": [
-        "analyze_scan_results",
-        "generate_security_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the results and generate a prioritized list of vulnerabilities to be remediated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear, actionable vulnerability report is created as part of the audit deliverable."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

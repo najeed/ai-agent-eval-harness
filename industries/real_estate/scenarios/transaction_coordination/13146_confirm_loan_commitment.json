@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-tc-13146",
-  "title": "Confirm Lender's Loan Commitment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Confirm Lender's Loan Commitment",
+    "compliance_level": "Standard"
+  },
   "description": "The financing contingency deadline is approaching. The TC must confirm the buyer has secured their loan commitment from the lender.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Transaction Coordination",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the transaction file for the financing contingency deadline.",
-      "expected_outcome": "Agent identifies the deadline is in 2 days.",
-      "required_tools": [
-        "get_transaction_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the transaction file for the financing contingency deadline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the deadline is in 2 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the buyer's loan officer to request the status and a copy of the loan commitment letter.",
-      "expected_outcome": "Agent sends a request email to the loan officer.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the buyer's loan officer to request the status and a copy of the loan commitment letter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a request email to the loan officer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upon receipt, upload the commitment letter to the transaction file and mark the contingency as satisfied.",
-      "expected_outcome": "The letter is saved, and the transaction checklist is updated.",
-      "required_tools": [
-        "upload_transaction_document",
-        "update_transaction_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upon receipt, upload the commitment letter to the transaction file and mark the contingency as satisfied.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The letter is saved, and the transaction checklist is updated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

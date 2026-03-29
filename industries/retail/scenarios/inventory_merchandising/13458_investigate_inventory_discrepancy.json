@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-im-13458",
-  "title": "Investigate an Inventory Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate an Inventory Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "A cycle count has revealed a significant discrepancy for a high-value item. A manager needs to investigate the cause.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Stock Management",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the cycle count results that show the discrepancy.",
-      "expected_outcome": "The manager confirms the difference between the system quantity and the physical count.",
-      "required_tools": [
-        "review_cycle_count_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the cycle count results that show the discrepancy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager confirms the difference between the system quantity and the physical count."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the full transaction history for the item over the last month (sales, receipts, transfers).",
-      "expected_outcome": "The manager analyzes the item's movement history to look for errors.",
-      "required_tools": [
-        "get_item_transaction_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the full transaction history for the item over the last month (sales, receipts, transfers).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager analyzes the item's movement history to look for errors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After finding no errors, conclude the discrepancy is likely due to theft and make an inventory adjustment to correct the on-hand quantity, noting 'Shrinkage' as the reason.",
-      "expected_outcome": "The system's inventory is corrected, and the loss is properly categorized.",
-      "required_tools": [
-        "adjust_inventory_quantity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After finding no errors, conclude the discrepancy is likely due to theft and make an inventory adjustment to correct the on-hand quantity, noting 'Shrinkage' as the reason.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system's inventory is corrected, and the loss is properly categorized."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

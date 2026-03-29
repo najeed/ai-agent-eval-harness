@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-fo-10260",
-  "title": "Conduct a Pre-Flight Safety Briefing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct a Pre-Flight Safety Briefing",
+    "compliance_level": "Standard"
+  },
   "description": "Before every flight, the cabin crew must conduct a safety briefing for passengers.",
-  "use_case": "Flight Operations",
-  "core_function": "In-Flight Services & Safety",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Make an announcement to direct passengers' attention to the briefing.",
-      "expected_outcome": "Crew gets the passengers' attention.",
-      "required_tools": [
-        "make_pa_announcement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Make an announcement to direct passengers' attention to the briefing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Crew gets the passengers' attention."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Demonstrate the use of safety equipment, including seatbelts, oxygen masks, and life vests.",
-      "expected_outcome": "Crew performs the safety demonstration.",
-      "required_tools": [
-        "perform_safety_demonstration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Demonstrate the use of safety equipment, including seatbelts, oxygen masks, and life vests.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Crew performs the safety demonstration."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Point out the emergency exits and ensure the exit rows are clear.",
-      "expected_outcome": "Crew completes the briefing and performs a final cabin check.",
-      "required_tools": [
-        "check_cabin_safety"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Point out the emergency exits and ensure the exit rows are clear.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Crew completes the briefing and performs a final cabin check."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

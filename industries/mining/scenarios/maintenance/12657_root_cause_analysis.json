@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-maint-12657",
-  "title": "Perform Root Cause Analysis (RCA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Root Cause Analysis (RCA)",
+    "compliance_level": "Standard"
+  },
   "description": "After a major failure of a gearbox, a reliability engineer leads a team to perform a formal Root Cause Analysis to prevent recurrence.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Work Management",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all evidence related to the failure, including the broken parts, maintenance records, and operator interviews.",
-      "expected_outcome": "All relevant information and data about the failure is collected.",
-      "required_tools": [
-        "collect_failure_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all evidence related to the failure, including the broken parts, maintenance records, and operator interviews.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All relevant information and data about the failure is collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Facilitate an RCA session with the team using a method like the '5 Whys' or a fishbone diagram.",
-      "expected_outcome": "The team works through the analysis and identifies the physical, human, and latent root causes.",
-      "required_tools": [
-        "facilitate_rca_session"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Facilitate an RCA session with the team using a method like the '5 Whys' or a fishbone diagram.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team works through the analysis and identifies the physical, human, and latent root causes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the findings and create corrective actions to address the root causes (e.g., 'update lubrication procedure', 'improve alignment standard').",
-      "expected_outcome": "A set of actionable recommendations is created and assigned for implementation.",
-      "required_tools": [
-        "log_corrective_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the findings and create corrective actions to address the root causes (e.g., 'update lubrication procedure', 'improve alignment standard').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A set of actionable recommendations is created and assigned for implementation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

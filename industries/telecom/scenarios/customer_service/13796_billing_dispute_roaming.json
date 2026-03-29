@@ -1,110 +1,74 @@
 {
-  "scenario_id": "telecom-cs-13796",
-  "title": "Customer Billing Dispute - International Roaming",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Billing Dispute - International Roaming",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is disputing high charges after traveling internationally, claiming they were unaware of roaming fees.",
-  "use_case": "Customer Service",
-  "core_function": "Billing and Payments",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve customer account and the specific billing statement with roaming charges.",
-      "expected_outcome": "Agent correctly identifies the customer and the bill in question.",
-      "required_tools": [
-        "get_customer_details",
-        "get_billing_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve customer account and the specific billing statement with roaming charges.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and the bill in question."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the customer's plan details to confirm if it includes an international roaming package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer's plan does not include free roaming."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the customer's plan details to confirm if it includes an international roaming package.",
-      "expected_outcome": "Agent confirms the customer's plan does not include free roaming.",
-      "required_tools": [
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review account history for any pre-travel notifications sent regarding roaming charges.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a record of an SMS notification sent when the customer first connected abroad."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Explain the standard roaming rates and offer to retroactively add a one-week international pass to reduce the bill.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the policy and successfully applies a travel pass to lower the customer's bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review account history for any pre-travel notifications sent regarding roaming charges.",
-      "expected_outcome": "Agent finds a record of an SMS notification sent when the customer first connected abroad.",
-      "required_tools": [
-        "get_account_communication_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Explain the standard roaming rates and offer to retroactively add a one-week international pass to reduce the bill.",
-      "expected_outcome": "Agent clearly explains the policy and successfully applies a travel pass to lower the customer's bill.",
-      "required_tools": [
-        "apply_retroactive_addon"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

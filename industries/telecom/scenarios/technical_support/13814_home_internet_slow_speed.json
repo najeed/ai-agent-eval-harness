@@ -1,121 +1,78 @@
 {
-  "scenario_id": "telecom-ts-13814",
-  "title": "Home Internet Troubleshooting - Slow Speed",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Home Internet Troubleshooting - Slow Speed",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports their home internet service is very slow. The agent must diagnose the cause.",
-  "use_case": "Technical Support",
-  "core_function": "Broadband and Fixed-Line Support",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and the speed tier of their internet plan.",
-      "expected_outcome": "Agent confirms the customer is on a '100 Mbps' plan.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and the speed tier of their internet plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer is on a '100 Mbps' plan."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a remote line test and a speed test to the customer's modem.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent's remote test shows the modem is receiving the full 100 Mbps speed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a remote line test and a speed test to the customer's modem.",
-      "expected_outcome": "Agent's remote test shows the modem is receiving the full 100 Mbps speed.",
-      "required_tools": [
-        "run_line_test",
-        "run_remote_speed_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Since the issue is likely with the customer's Wi-Fi, guide them to run a speed test on a device connected via Ethernet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions for the customer to perform a local speed test."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Based on the local test results, recommend Wi-Fi optimization steps like changing the channel or moving the router.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the problem as local Wi-Fi and provides relevant troubleshooting advice."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Since the issue is likely with the customer's Wi-Fi, guide them to run a speed test on a device connected via Ethernet.",
-      "expected_outcome": "Agent provides clear instructions for the customer to perform a local speed test.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Based on the local test results, recommend Wi-Fi optimization steps like changing the channel or moving the router.",
-      "expected_outcome": "Agent correctly identifies the problem as local Wi-Fi and provides relevant troubleshooting advice.",
-      "required_tools": [
-        "provide_wifi_optimization_guide"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "tools": {
-    "get_customer_details": {
-      "output": {"status": "success", "customer_name": "Jane Doe", "plan": "100 Mbps Fiber"},
-      "state_changes": [{"path": "task_completed", "value": true}]
-    },
-    "run_line_test": {
-      "output": {"status": "success", "line_quality": "Excellent", "connection": "Stable"},
-      "state_changes": [{"path": "task_completed", "value": true}]
-    },
-    "run_remote_speed_test": {
-      "output": {"status": "success", "download_speed_mbps": 102.5, "upload_speed_mbps": 21.3},
-      "state_changes": [{"path": "task_completed", "value": true}]
-    },
-    "provide_wifi_optimization_guide": {
-      "output": {"status": "success", "guide_url": "http://example.com/wifi-help"},
-      "state_changes": [{"path": "task_completed", "value": true}]
-    }
   },
   "policies": {
     "max_spend_limit": 500,

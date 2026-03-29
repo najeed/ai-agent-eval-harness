@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13824",
-  "title": "Troubleshooting - Streaming App Login",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Troubleshooting - Streaming App Login",
+    "compliance_level": "Standard"
+  },
   "description": "A customer cannot log in to a partner streaming app (e.g., Netflix) that is included with their plan.",
-  "use_case": "Technical Support",
-  "core_function": "Value-Added Service Support",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the customer's plan includes the streaming service subscription.",
-      "expected_outcome": "Agent confirms the 'Unlimited Gold' plan includes a Netflix subscription.",
-      "required_tools": [
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the customer's plan includes the streaming service subscription.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the 'Unlimited Gold' plan includes a Netflix subscription."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status of the subscription link between the telecom account and the partner service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the subscription link is in a 'pending activation' state."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status of the subscription link between the telecom account and the partner service.",
-      "expected_outcome": "Agent finds the subscription link is in a 'pending activation' state.",
-      "required_tools": [
-        "check_partner_subscription_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Manually re-trigger the activation link and instruct the customer to try logging in again in 5 minutes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully re-sends the activation signal."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Manually re-trigger the activation link and instruct the customer to try logging in again in 5 minutes.",
-      "expected_outcome": "Agent successfully re-sends the activation signal.",
-      "required_tools": [
-        "resend_partner_activation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

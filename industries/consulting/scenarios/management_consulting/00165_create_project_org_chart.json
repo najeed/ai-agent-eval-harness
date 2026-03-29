@@ -1,36 +1,46 @@
 {
-  "scenario_id": "consulting-mc-165",
-  "title": "Create a Project Organization Chart",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Project Organization Chart",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must create an organization chart based on a list of project roles and their reporting structure.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a list of roles and who they report to (e.g., 'Analyst A reports to Manager B').",
-      "expected_outcome": "Agent successfully ingests the hierarchical data.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a list of roles and who they report to (e.g., 'Analyst A reports to Manager B').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully ingests the hierarchical data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a visual organization chart (e.g., using Mermaid syntax) that accurately reflects the reporting structure.",
-      "expected_outcome": "Agent produces a valid and correct organizational chart diagram.",
-      "required_tools": [
-        "create_org_chart_diagram"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a visual organization chart (e.g., using Mermaid syntax) that accurately reflects the reporting structure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a valid and correct organizational chart diagram."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

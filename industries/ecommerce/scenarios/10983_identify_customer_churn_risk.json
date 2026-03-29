@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10983",
-  "title": "Identify Customer Churn Risk",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Customer Churn Risk",
+    "compliance_level": "Standard"
+  },
   "description": "A system analyzes customer behavior to identify those at risk of churning (i.e., ceasing to be a customer).",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Customer Analytics",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze customer data against churn indicators (e.g., decreased purchase frequency, stopped opening emails, recently returned an item).",
-      "expected_outcome": "System calculates a 'churn risk score' for each customer.",
-      "required_tools": [
-        "analyze_customer_behavior"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_assessment_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze customer data against churn indicators (e.g., decreased purchase frequency, stopped opening emails, recently returned an item).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System calculates a 'churn risk score' for each customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a list of customers with a churn risk score above 80%.",
-      "expected_outcome": "System creates a segment of 'at-risk' customers.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a list of customers with a churn risk score above 80%.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a segment of 'at-risk' customers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a task for the marketing team to target this segment with a special 'We miss you' re-engagement offer.",
-      "expected_outcome": "System creates a task in the marketing team's queue.",
-      "required_tools": [
-        "create_marketing_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a task for the marketing team to target this segment with a special 'We miss you' re-engagement offer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a task in the marketing team's queue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

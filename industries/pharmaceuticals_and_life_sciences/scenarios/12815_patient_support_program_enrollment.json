@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12815",
-  "title": "Enroll Patient in Support Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Enroll Patient in Support Program",
+    "compliance_level": "Standard"
+  },
   "description": "A case manager for a patient support program receives a request to enroll a new patient and verify their benefits for a specialty drug.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Patient Support Programs",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive and log the completed enrollment form from the patient's physician.",
-      "expected_outcome": "Agent creates a new patient case and enters their demographic and insurance information.",
-      "required_tools": [
-        "create_patient_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive and log the completed enrollment form from the patient's physician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new patient case and enters their demographic and insurance information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a benefits verification check with the patient's insurance provider.",
-      "expected_outcome": "Agent uses a benefits verification tool and finds the drug is covered but requires prior authorization.",
-      "required_tools": [
-        "run_benefits_verification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a benefits verification check with the patient's insurance provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses a benefits verification tool and finds the drug is covered but requires prior authorization."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Initiate the prior authorization process on behalf of the physician's office.",
-      "expected_outcome": "Agent submits the required clinical information to the insurance company.",
-      "required_tools": [
-        "submit_prior_authorization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Initiate the prior authorization process on behalf of the physician's office.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the required clinical information to the insurance company."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Inform the patient and physician that the enrollment is pending prior authorization approval.",
-      "expected_outcome": "Agent sends a status update notification to the patient and physician.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Inform the patient and physician that the enrollment is pending prior authorization approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a status update notification to the patient and physician."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

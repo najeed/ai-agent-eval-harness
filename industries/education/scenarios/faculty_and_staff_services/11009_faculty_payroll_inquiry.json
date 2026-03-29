@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-fs-11009",
-  "title": "Faculty Payroll Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Faculty Payroll Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A new faculty member has a question about a deduction on their first paycheck.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "HR & Onboarding",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the faculty member and retrieve their latest pay stub.",
-      "expected_outcome": "Agent securely identifies the employee and accesses their payroll record.",
-      "required_tools": [
-        "get_employee_record",
-        "get_payroll_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the faculty member and retrieve their latest pay stub.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely identifies the employee and accesses their payroll record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the deduction in question and look up its definition in the HR system.",
-      "expected_outcome": "Agent finds the deduction is for their selected retirement plan contribution.",
-      "required_tools": [
-        "lookup_payroll_code"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the deduction in question and look up its definition in the HR system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the deduction is for their selected retirement plan contribution."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the deduction to the faculty member by referencing the benefits they selected during onboarding.",
-      "expected_outcome": "Agent clearly explains the deduction and resolves the inquiry.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the deduction to the faculty member by referencing the benefits they selected during onboarding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the deduction and resolves the inquiry."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

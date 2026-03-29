@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-tm-12243",
-  "title": "Handle Carrier Late Arrival for Pickup",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Carrier Late Arrival for Pickup",
+    "compliance_level": "Standard"
+  },
   "description": "A carrier scheduled for a pickup is running late. The shipping manager must assess the impact.",
-  "use_case": "Transportation Management",
-  "core_function": "Shipment Planning & Execution",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a call from a carrier stating they will be 2 hours late for a pickup.",
-      "expected_outcome": "Agent logs the carrier's ETA update.",
-      "required_tools": [
-        "update_shipment_eta"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a call from a carrier stating they will be 2 hours late for a pickup.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the carrier's ETA update."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the delivery requirements for the shipment to see if the delay will cause a missed appointment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the delivery is to a retail DC with a strict appointment time, which will now be missed."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the delivery requirements for the shipment to see if the delay will cause a missed appointment.",
-      "expected_outcome": "Agent finds the delivery is to a retail DC with a strict appointment time, which will now be missed.",
-      "required_tools": [
-        "get_shipment_delivery_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the receiving facility to reschedule the delivery appointment for the next day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reschedules the delivery to avoid refusal and fees."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the receiving facility to reschedule the delivery appointment for the next day.",
-      "expected_outcome": "Agent successfully reschedules the delivery to avoid refusal and fees.",
-      "required_tools": [
-        "reschedule_delivery_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

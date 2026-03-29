@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13363",
-  "title": "Handle a Tenant's Subletting Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Tenant's Subletting Request",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant requests permission to sublet their apartment for the summer.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations & Renewals",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the original lease agreement to see if subletting is permitted.",
-      "expected_outcome": "Agent determines the lease allows subletting with landlord approval.",
-      "required_tools": [
-        "get_lease_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the original lease agreement to see if subletting is permitted.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the lease allows subletting with landlord approval."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Require the tenant to have the proposed sub-tenant complete a rental application.",
-      "expected_outcome": "The sub-tenant submits an application for screening.",
-      "required_tools": [
-        "send_application_link"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Require the tenant to have the proposed sub-tenant complete a rental application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sub-tenant submits an application for screening."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Screen the sub-tenant's application. If they are approved, draft a sublease agreement for all parties to sign.",
-      "expected_outcome": "The sub-tenant is approved and a formal sublease agreement is executed.",
-      "required_tools": [
-        "run_background_check",
-        "generate_sublease_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Screen the sub-tenant's application. If they are approved, draft a sublease agreement for all parties to sign.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sub-tenant is approved and a formal sublease agreement is executed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

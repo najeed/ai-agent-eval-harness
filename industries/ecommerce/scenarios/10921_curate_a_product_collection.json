@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-osm-10921",
-  "title": "Curate a 'Back to School' Collection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Curate a 'Back to School' Collection",
+    "compliance_level": "Standard"
+  },
   "description": "A merchandiser wants to create a new curated collection page for a 'Back to School' campaign.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Search & Navigation",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new collection page titled 'Back to School'.",
-      "expected_outcome": "Agent successfully creates a new, empty collection page.",
-      "required_tools": [
-        "create_collection_page"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new collection page titled 'Back to School'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new, empty collection page."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add a list of specified products (SKUs for backpacks, notebooks, pens) to the collection.",
-      "expected_outcome": "Agent successfully populates the collection with the correct items.",
-      "required_tools": [
-        "add_product_to_collection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add a list of specified products (SKUs for backpacks, notebooks, pens) to the collection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully populates the collection with the correct items."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Make the collection visible on the main navigation menu.",
-      "expected_outcome": "Agent updates the site's navigation to include a link to the new collection.",
-      "required_tools": [
-        "update_navigation_menu"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Make the collection visible on the main navigation menu.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the site's navigation to include a link to the new collection."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

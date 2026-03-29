@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12805",
-  "title": "Review Promotional Material for Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Promotional Material for Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must facilitate the review of a new sales aid for a drug product, ensuring it gets approval from the medical, legal, and regulatory departments.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Promotional Material Review",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Upload the draft sales aid to the promotional review system.",
-      "expected_outcome": "Agent successfully uploads the document and initiates a new review cycle.",
-      "required_tools": [
-        "upload_document_for_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Upload the draft sales aid to the promotional review system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the document and initiates a new review cycle."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Route the document to the predefined list of reviewers (Medical, Legal, Regulatory).",
-      "expected_outcome": "Agent correctly assigns the review task to all required stakeholders.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Route the document to the predefined list of reviewers (Medical, Legal, Regulatory).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly assigns the review task to all required stakeholders."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Collate the feedback from all reviewers.",
-      "expected_outcome": "Agent consolidates comments, noting that Legal requires a change to a claim and Medical requests a new reference.",
-      "required_tools": [
-        "collate_feedback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Collate the feedback from all reviewers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent consolidates comments, noting that Legal requires a change to a claim and Medical requests a new reference."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Return the document to the marketing team with the consolidated feedback for revision.",
-      "expected_outcome": "Agent sends the document back for edits with clear instructions.",
-      "required_tools": [
-        "return_document_for_revision"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Return the document to the marketing team with the consolidated feedback for revision.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the document back for edits with clear instructions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

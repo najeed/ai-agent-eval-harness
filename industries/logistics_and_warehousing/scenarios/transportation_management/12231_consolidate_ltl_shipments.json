@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-tm-12231",
-  "title": "Consolidate LTL Shipments into a Multi-Stop FTL",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Consolidate LTL Shipments into a Multi-Stop FTL",
+    "compliance_level": "Standard"
+  },
   "description": "A planner has several LTL shipments going to the same region and wants to consolidate them into a more cost-effective multi-stop full truckload.",
-  "use_case": "Transportation Management",
-  "core_function": "Shipment Planning & Execution",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all pending LTL shipments going to a specific region (e.g., the Southeast).",
-      "expected_outcome": "Agent generates a list of 5 LTL shipments.",
-      "required_tools": [
-        "find_pending_shipments_by_region"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all pending LTL shipments going to a specific region (e.g., the Southeast).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of 5 LTL shipments."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a load planning tool to see if the shipments can fit on one truck and calculate the potential cost savings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool confirms the shipments can be consolidated, saving 20% on freight costs."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a load planning tool to see if the shipments can fit on one truck and calculate the potential cost savings.",
-      "expected_outcome": "The tool confirms the shipments can be consolidated, saving 20% on freight costs.",
-      "required_tools": [
-        "run_load_consolidation_scenario"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new multi-stop FTL shipment and assign the LTL orders to it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the consolidated load and links the original orders."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new multi-stop FTL shipment and assign the LTL orders to it.",
-      "expected_outcome": "Agent successfully creates the consolidated load and links the original orders.",
-      "required_tools": [
-        "create_multi_stop_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

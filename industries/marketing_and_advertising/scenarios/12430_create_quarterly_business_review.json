@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-ar-12430",
-  "title": "Create Quarterly Business Review (QBR) Deck",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Quarterly Business Review (QBR) Deck",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst needs to prepare a slide deck for a QBR meeting, summarizing the last quarter's marketing performance.",
-  "use_case": "Analytics & Reporting",
-  "core_function": "Performance Reporting",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Pull performance data for the entire last quarter across all major channels.",
-      "expected_outcome": "Agent gathers all necessary data for the 3-month period.",
-      "required_tools": [
-        "query_analytics_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Pull performance data for the entire last quarter across all major channels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all necessary data for the 3-month period."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate a standard QBR slide template with the data, including charts for key trends.",
-      "expected_outcome": "Agent fills out the slide deck with accurate data and visualizations.",
-      "required_tools": [
-        "presentation_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate a standard QBR slide template with the data, including charts for key trends.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fills out the slide deck with accurate data and visualizations."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Write a summary of key achievements, challenges, and learnings from the quarter.",
-      "expected_outcome": "Agent adds insightful, narrative context to the data.",
-      "required_tools": [
-        "presentation_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "insight_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Write a summary of key achievements, challenges, and learnings from the quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds insightful, narrative context to the data."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

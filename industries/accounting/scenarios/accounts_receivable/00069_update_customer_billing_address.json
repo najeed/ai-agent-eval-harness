@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-ar-69",
-  "title": "Update a Customer's Billing Address",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update a Customer's Billing Address",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to inform the company that they have moved and need to update their billing address.",
-  "use_case": "Accounts Receivable",
-  "core_function": "Credit Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer in the system.",
-      "expected_outcome": "Agent finds the correct customer account.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct customer account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Authenticate the caller's identity to ensure they are authorized to make changes.",
-      "expected_outcome": "Agent verifies the caller's identity by asking security questions.",
-      "required_tools": [
-        "verify_customer_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Authenticate the caller's identity to ensure they are authorized to make changes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the caller's identity by asking security questions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the billing address in the customer master record.",
-      "expected_outcome": "Agent successfully updates the address.",
-      "required_tools": [
-        "update_customer_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the billing address in the customer master record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the address."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

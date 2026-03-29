@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-pm-10665",
-  "title": "Assess Risk of a Labor Strike",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assess Risk of a Labor Strike",
+    "compliance_level": "Standard"
+  },
   "description": "News reports indicate a potential labor strike by local union electricians. A PM must assess the risk to the project.",
-  "use_case": "Project Management",
-  "core_function": "Risk & Issue Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all upcoming tasks assigned to the electrical subcontractor.",
-      "expected_outcome": "A list of all electrical tasks for the next 60 days is generated.",
-      "required_tools": [
-        "get_tasks_by_subcontractor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all upcoming tasks assigned to the electrical subcontractor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of all electrical tasks for the next 60 days is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the potential strike in the risk register, classifying it as 'High Impact, Low Probability'.",
-      "expected_outcome": "A new entry is created in the risk register.",
-      "required_tools": [
-        "create_risk_register_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the potential strike in the risk register, classifying it as 'High Impact, Low Probability'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new entry is created in the risk register."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "As a contingency, identify a non-union electrical subcontractor that could be used if the strike occurs.",
-      "expected_outcome": "An alternative subcontractor is identified.",
-      "required_tools": [
-        "search_supplier_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "As a contingency, identify a non-union electrical subcontractor that could be used if the strike occurs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An alternative subcontractor is identified."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

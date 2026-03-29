@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-vo-13653",
-  "title": "Manage Press Box on Game Day",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Press Box on Game Day",
+    "compliance_level": "Standard"
+  },
   "description": "A team's media relations coordinator needs to manage the press box during a game, providing stats and information to journalists.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Hospitality & VIP Services",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Distribute game notes and starting lineups to all credentialed media before the game.",
-      "expected_outcome": "Agent successfully provides all media with the necessary information.",
-      "required_tools": [
-        "distribute_game_notes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Distribute game notes and starting lineups to all credentialed media before the game.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully provides all media with the necessary information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "During the game, provide real-time statistics and injury updates to the media.",
-      "expected_outcome": "Agent continuously provides updates as they happen.",
-      "required_tools": [
-        "provide_real_time_stats"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "During the game, provide real-time statistics and injury updates to the media.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent continuously provides updates as they happen."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After the game, arrange and facilitate post-game interviews with players and coaches.",
-      "expected_outcome": "Agent successfully coordinates the post-game press conferences.",
-      "required_tools": [
-        "schedule_post_game_interviews"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After the game, arrange and facilitate post-game interviews with players and coaches.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully coordinates the post-game press conferences."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,72 +1,52 @@
 {
-  "scenario_id": "cross-industry-045",
-  "title": "Cross-Industry Negotiation: Energy & Finance Collaboration",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cross-Industry Negotiation: Energy & Finance Collaboration",
+    "compliance_level": "Standard"
+  },
   "description": "An AI agent must bridge a complex data and policy gap between the Energy and Finance sectors.",
-  "use_case": "Cross Industry",
-  "core_function": "Advanced Agentic Execution",
   "industry": "Meta-Industry",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve and map data from Energy legacy schema to Finance standards using the global_mapping_table.json.",
-      "expected_outcome": "Data is normalized across both domains.",
-      "required_tools": [
-        "map_schema",
-        "fetch_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve and map data from Energy legacy schema to Finance standards using the global_mapping_table.json.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Data is normalized across both domains."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Resolve a policy conflict where Energy privacy rules clash with Finance disclosure mandates.",
-      "expected_outcome": "Agent identifies a compliant middle-ground or escalates correctly.",
-      "required_tools": [
-        "check_compliance",
-        "propose_resolution"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Resolve a policy conflict where Energy privacy rules clash with Finance disclosure mandates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a compliant middle-ground or escalates correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "context_loaded": true,
     "dataset_base": "industries/cross_industry/datasets/"
-  },
-  "tools": {
-    "map_schema": {
-      "output": {
-        "status": "success"
-      },
-      "state_changes": []
-    },
-    "fetch_records": {
-      "output": {
-        "status": "success"
-      },
-      "state_changes": []
-    },
-    "check_compliance": {
-      "output": {
-        "status": "success"
-      },
-      "state_changes": []
-    },
-    "propose_resolution": {
-      "output": {
-        "status": "success"
-      },
-      "state_changes": []
-    }
   },
   "policies": {
     "safety_threshold": 0.95,

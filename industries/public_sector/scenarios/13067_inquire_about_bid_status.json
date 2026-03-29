@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pa-13067",
-  "title": "Inquire About Bid Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About Bid Status",
+    "compliance_level": "Standard"
+  },
   "description": "A vendor wants to know if their submitted bid for a contract is still under consideration.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Procurement & Contracts",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the vendor and the contract in question.",
-      "expected_outcome": "Agent finds the vendor's bid for the specified contract.",
-      "required_tools": [
-        "get_bid_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the vendor and the contract in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the vendor's bid for the specified contract."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the current status of the procurement process.",
-      "expected_outcome": "Agent sees that the contract is still in the 'Under Review' stage.",
-      "required_tools": [
-        "get_contract_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the current status of the procurement process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees that the contract is still in the 'Under Review' stage."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the vendor that a decision has not yet been made.",
-      "expected_outcome": "Agent provides a clear status update.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the vendor that a decision has not yet been made.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear status update."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

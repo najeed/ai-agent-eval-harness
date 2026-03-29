@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ps-pa-13095",
-  "title": "Inquire About a Property Lien",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About a Property Lien",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen is buying a property and wants to check if there are any outstanding government liens (e.g., for unpaid taxes or water bills).",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Taxation & Revenue",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the property address or parcel number.",
-      "expected_outcome": "Agent gets the identifier for the property.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the property address or parcel number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the identifier for the property."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search across multiple systems (tax, utilities) for any outstanding liens on the property.",
-      "expected_outcome": "Agent searches and finds an outstanding lien for an unpaid water bill.",
-      "required_tools": [
-        "search_for_liens"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search across multiple systems (tax, utilities) for any outstanding liens on the property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent searches and finds an outstanding lien for an unpaid water bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the details of any found liens to the citizen.",
-      "expected_outcome": "Agent informs the citizen about the water bill lien and the amount owed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the details of any found liens to the citizen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent informs the citizen about the water bill lien and the amount owed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

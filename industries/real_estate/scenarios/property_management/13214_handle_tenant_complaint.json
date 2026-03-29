@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13214",
-  "title": "Handle a Tenant Noise Complaint",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Tenant Noise Complaint",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant complains about excessive noise from a neighboring unit. The agent must address the issue according to policy.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive and document the noise complaint, including the date, time, and nature of the noise.",
-      "expected_outcome": "Agent accurately logs the complaint in the system.",
-      "required_tools": [
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive and document the noise complaint, including the date, time, and nature of the noise.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately logs the complaint in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the lease agreements for both the complaining tenant and the accused tenant regarding quiet hours and nuisance clauses.",
-      "expected_outcome": "Agent confirms the relevant lease clauses.",
-      "required_tools": [
-        "get_lease_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the lease agreements for both the complaining tenant and the accused tenant regarding quiet hours and nuisance clauses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the relevant lease clauses."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a formal warning notice to the tenant accused of making noise, referencing the lease terms.",
-      "expected_outcome": "Agent sends a standardized, professional warning.",
-      "required_tools": [
-        "send_lease_violation_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a formal warning notice to the tenant accused of making noise, referencing the lease terms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a standardized, professional warning."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

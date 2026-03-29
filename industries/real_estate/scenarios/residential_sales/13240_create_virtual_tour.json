@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-res-13240",
-  "title": "Create a Virtual Tour",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Virtual Tour",
+    "compliance_level": "Standard"
+  },
   "description": "To enhance a listing's marketing, an agent wants to create a 3D virtual tour.",
-  "use_case": "Residential Sales",
-  "core_function": "Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Schedule a 3D camera operator (e.g., Matterport provider) to scan the property.",
-      "expected_outcome": "Agent successfully books a vendor to create the tour.",
-      "required_tools": [
-        "contact_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Schedule a 3D camera operator (e.g., Matterport provider) to scan the property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books a vendor to create the tour."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Receive the completed virtual tour link from the vendor.",
-      "expected_outcome": "Agent gets the URL for the virtual tour.",
-      "required_tools": [
-        "get_vendor_deliverable"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Receive the completed virtual tour link from the vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the URL for the virtual tour."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the virtual tour link to the MLS listing and other marketing materials.",
-      "expected_outcome": "Agent successfully updates the listing with the new tour.",
-      "required_tools": [
-        "update_mls_listing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the virtual tour link to the MLS listing and other marketing materials.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the listing with the new tour."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

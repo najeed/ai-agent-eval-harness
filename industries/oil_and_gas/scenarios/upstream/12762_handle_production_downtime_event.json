@@ -1,54 +1,59 @@
 {
-  "scenario_id": "og-up-12762",
-  "title": "Analyze Production Downtime Event",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Production Downtime Event",
+    "compliance_level": "Standard"
+  },
   "description": "After an unplanned shutdown of an offshore platform, a production engineer analyzes the event to correctly categorize the cause and the amount of deferred production.",
-  "use_case": "Upstream",
-  "core_function": "Production Operations",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the start and end time of the platform shutdown from the event log.",
-      "expected_outcome": "The exact duration of the downtime is determined.",
-      "required_tools": [
-        "get_event_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the start and end time of the platform shutdown from the event log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The exact duration of the downtime is determined."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Determine the root cause of the shutdown by reviewing alarms and operator logs (e.g., 'Compressor Failure').",
-      "expected_outcome": "The root cause is correctly identified and categorized.",
-      "required_tools": [
-        "get_alarm_history",
-        "get_operator_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Determine the root cause of the shutdown by reviewing alarms and operator logs (e.g., 'Compressor Failure').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The root cause is correctly identified and categorized."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the total volume of deferred production (oil and gas) by multiplying the downtime duration by the platform's normal production rate.",
-      "expected_outcome": "The lost production volume is calculated and logged in the downtime tracking system.",
-      "required_tools": [
-        "calculate_deferred_production",
-        "log_downtime_event"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the total volume of deferred production (oil and gas) by multiplying the downtime duration by the platform's normal production rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The lost production volume is calculated and logged in the downtime tracking system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

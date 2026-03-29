@@ -1,50 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11440",
-  "title": "Install Heavy Machinery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Install Heavy Machinery",
+    "compliance_level": "Standard"
+  },
   "description": "A field crew needs to install and align a large industrial motor and pump set.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Construction & Assembly",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the installation drawing for the motor and pump.",
-      "expected_outcome": "The crew gets the drawing showing the required location and orientation.",
-      "required_tools": [
-        "get_installation_drawing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the installation drawing for the motor and pump.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew gets the drawing showing the required location and orientation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Set the motor and pump on the concrete base and perform a rough alignment.",
-      "expected_outcome": "The crew physically places the equipment.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Set the motor and pump on the concrete base and perform a rough alignment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew physically places the equipment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use a laser alignment tool to precisely align the motor and pump shafts, then log the final alignment values in the quality record.",
-      "expected_outcome": "The crew performs the precision alignment and documents that the final values are within the required tolerance.",
-      "required_tools": [
-        "log_quality_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use a laser alignment tool to precisely align the motor and pump shafts, then log the final alignment values in the quality record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew performs the precision alignment and documents that the final values are within the required tolerance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

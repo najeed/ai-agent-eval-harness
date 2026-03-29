@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12716",
-  "title": "Create B2B Lubricant Sales Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create B2B Lubricant Sales Order",
+    "compliance_level": "Standard"
+  },
   "description": "A sales representative for a major oil company places a bulk order for industrial lubricants for a large manufacturing client.",
-  "use_case": "Downstream",
-  "core_function": "Distribution & Retail",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the client's account and their contract pricing for 'Turbo Oil 560'.",
-      "expected_outcome": "The client's specific pricing for the requested product is retrieved.",
-      "required_tools": [
-        "get_customer_details",
-        "get_contract_pricing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the client's account and their contract pricing for 'Turbo Oil 560'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client's specific pricing for the requested product is retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check inventory for the required quantity at the nearest distribution center.",
-      "expected_outcome": "The system confirms sufficient stock is available.",
-      "required_tools": [
-        "check_product_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check inventory for the required quantity at the nearest distribution center.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms sufficient stock is available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new sales order in the ERP system for the specified quantity and schedule the delivery.",
-      "expected_outcome": "The sales order is created and a delivery date is confirmed.",
-      "required_tools": [
-        "create_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new sales order in the ERP system for the specified quantity and schedule the delivery.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sales order is created and a delivery date is confirmed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

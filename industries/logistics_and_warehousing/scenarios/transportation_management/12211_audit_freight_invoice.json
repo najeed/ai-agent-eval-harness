@@ -1,82 +1,58 @@
 {
-  "scenario_id": "lw-tm-12211",
-  "title": "Audit a Freight Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit a Freight Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "An accounts payable clerk needs to audit a carrier's freight invoice against the agreed-upon rate before approving it for payment.",
-  "use_case": "Transportation Management",
-  "core_function": "Proof of Delivery & Settlement",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the freight invoice and the original rate confirmation for the specified shipment.",
-      "expected_outcome": "Agent correctly pulls both the invoice and the rate agreement.",
-      "required_tools": [
-        "get_freight_invoice",
-        "get_rate_confirmation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the freight invoice and the original rate confirmation for the specified shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly pulls both the invoice and the rate agreement."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the invoiced amount, including linehaul and fuel surcharge, against the amounts on the rate confirmation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that the carrier has overcharged for the fuel surcharge."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the invoiced amount, including linehaul and fuel surcharge, against the amounts on the rate confirmation.",
-      "expected_outcome": "Agent identifies that the carrier has overcharged for the fuel surcharge.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Short-pay the invoice with a note explaining the discrepancy and approve the corrected amount for payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adjusts the payment amount and adds a clear reason code."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Short-pay the invoice with a note explaining the discrepancy and approve the corrected amount for payment.",
-      "expected_outcome": "Agent successfully adjusts the payment amount and adds a clear reason code.",
-      "required_tools": [
-        "approve_invoice_for_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

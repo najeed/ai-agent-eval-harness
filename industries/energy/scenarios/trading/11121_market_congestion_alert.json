@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-tr-11121",
-  "title": "Market Transmission Congestion Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Market Transmission Congestion Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A trader receives an alert about potential transmission congestion on a key path. They need to assess the impact on their wind farm's ability to export power.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Market Analysis & Forecasting",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the real-time Locational Marginal Prices (LMPs) for the wind farm's node and the downstream load zone.",
-      "expected_outcome": "Agent fetches the LMPs and shows a significant negative price spread.",
-      "required_tools": [
-        "get_real_time_lmp"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the real-time Locational Marginal Prices (LMPs) for the wind farm's node and the downstream load zone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fetches the LMPs and shows a significant negative price spread."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the ISO's market notifications to understand the cause and expected duration of the congestion.",
-      "expected_outcome": "Agent identifies the cause as an unplanned transmission line outage with an ETR of 4 hours.",
-      "required_tools": [
-        "get_iso_market_notifications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the ISO's market notifications to understand the cause and expected duration of the congestion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the cause as an unplanned transmission line outage with an ETR of 4 hours."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Adjust the wind farm's bid strategy for the next 4 hours to reduce its output and avoid selling power at a loss.",
-      "expected_outcome": "Agent successfully submits a revised bid to the ISO.",
-      "required_tools": [
-        "update_market_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Adjust the wind farm's bid strategy for the next 4 hours to reduce its output and avoid selling power at a loss.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits a revised bid to the ISO."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

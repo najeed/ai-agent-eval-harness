@@ -1,81 +1,58 @@
 {
-  "scenario_id": "lw-im-12284",
-  "title": "Identify Inventory Ownership (3PL)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Inventory Ownership (3PL)",
+    "compliance_level": "Standard"
+  },
   "description": "In a multi-client 3PL warehouse, an operator needs to know which client owns the inventory in a specific location.",
-  "use_case": "Inventory Management",
-  "core_function": "Inventory Control",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "An operator scans a location barcode.",
-      "expected_outcome": "The location ID is captured.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "An operator scans a location barcode.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The location ID is captured."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The WMS displays the item and quantity in that location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows the inventory details."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The WMS displays the item and quantity in that location.",
-      "expected_outcome": "The system shows the inventory details.",
-      "required_tools": [
-        "get_inventory_by_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system also displays the name of the client who owns the inventory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator correctly identifies that the stock belongs to 'Client XYZ'."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system also displays the name of the client who owns the inventory.",
-      "expected_outcome": "The operator correctly identifies that the stock belongs to 'Client XYZ'.",
-      "required_tools": [
-        "get_inventory_owner"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ret-so-13411",
-  "title": "Conduct Daily Team Huddle",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Daily Team Huddle",
+    "compliance_level": "Standard"
+  },
   "description": "A manager starts the day by leading a team huddle to communicate daily sales goals and priorities.",
-  "use_case": "Store Operations",
-  "core_function": "Store Opening & Closing",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the store performance dashboard to review yesterday's sales results and today's sales goal.",
-      "expected_outcome": "The manager retrieves the key performance indicators for the huddle.",
-      "required_tools": [
-        "view_sales_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the store performance dashboard to review yesterday's sales results and today's sales goal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager retrieves the key performance indicators for the huddle."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the list of key tasks and promotions for the day.",
-      "expected_outcome": "The manager is aware of the day's operational priorities.",
-      "required_tools": [
-        "view_daily_priorities"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the list of key tasks and promotions for the day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager is aware of the day's operational priorities."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Communicate the sales goals and key tasks to the team.",
-      "expected_outcome": "The store team is informed and aligned on the goals for the day.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Communicate the sales goals and key tasks to the team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The store team is informed and aligned on the goals for the day."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

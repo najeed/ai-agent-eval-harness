@@ -1,51 +1,59 @@
 {
-  "scenario_id": "utils-cs-14193",
-  "title": "Inquiry about Final Bill after Move-Out",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquiry about Final Bill after Move-Out",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who recently moved out is calling to ask about their final bill, which seems high.",
-  "use_case": "Customer Service",
-  "core_function": "Billing & Account Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's closed account and the final bill details.",
-      "expected_outcome": "Agent successfully locates the final bill.",
-      "required_tools": [
-        "get_customer_details",
-        "get_billing_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's closed account and the final bill details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully locates the final bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the components of the final bill, including the prorated final usage and the application of their initial deposit.",
-      "expected_outcome": "Agent clearly breaks down the final charges and credits.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the components of the final bill, including the prorated final usage and the application of their initial deposit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly breaks down the final charges and credits."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the final balance due or the refund amount to be sent to their forwarding address.",
-      "expected_outcome": "Agent resolves the customer's confusion and confirms the final amount.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the final balance due or the refund amount to be sent to their forwarding address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent resolves the customer's confusion and confirms the final amount."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

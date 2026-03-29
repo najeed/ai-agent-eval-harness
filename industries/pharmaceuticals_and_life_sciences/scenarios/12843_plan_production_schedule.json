@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12843",
-  "title": "Plan Weekly Production Schedule",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Weekly Production Schedule",
+    "compliance_level": "Standard"
+  },
   "description": "A production planner needs to create the manufacturing schedule for the upcoming week based on demand forecasts and material availability.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Production & Batch Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the demand forecast for all products for the next month.",
-      "expected_outcome": "Agent retrieves the forecast and identifies which products have the most urgent demand.",
-      "required_tools": [
-        "get_demand_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the demand forecast for all products for the next month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the forecast and identifies which products have the most urgent demand."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the inventory of the required raw materials and API for the high-demand products.",
-      "expected_outcome": "Agent confirms that all necessary materials are in stock and released.",
-      "required_tools": [
-        "check_inventory_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the inventory of the required raw materials and API for the high-demand products.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that all necessary materials are in stock and released."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a production schedule that prioritizes the high-demand products and optimizes equipment utilization.",
-      "expected_outcome": "Agent generates a schedule that sequences batches to minimize changeover times.",
-      "required_tools": [
-        "create_production_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_relevance",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a production schedule that prioritizes the high-demand products and optimizes equipment utilization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a schedule that sequences batches to minimize changeover times."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Publish the final schedule and create the electronic work orders for the scheduled batches.",
-      "expected_outcome": "Agent publishes the schedule and the corresponding work orders are created in the MES.",
-      "required_tools": [
-        "publish_schedule",
-        "create_work_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Publish the final schedule and create the electronic work orders for the scheduled batches.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent publishes the schedule and the corresponding work orders are created in the MES."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

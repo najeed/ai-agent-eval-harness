@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-pt-59",
-  "title": "Process 401(k) Contributions",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process 401(k) Contributions",
+    "compliance_level": "Standard"
+  },
   "description": "After a payroll run, the accountant must remit the employee 401(k) contributions and the company match to the plan administrator.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Payroll Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a report from the payroll system detailing the employee contributions and company match for the period.",
-      "expected_outcome": "Agent generates the 401(k) contribution report.",
-      "required_tools": [
-        "generate_401k_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a report from the payroll system detailing the employee contributions and company match for the period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates the 401(k) contribution report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate an ACH transfer to the 401(k) plan administrator for the total amount.",
-      "expected_outcome": "Agent successfully schedules the payment.",
-      "required_tools": [
-        "create_ach_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate an ACH transfer to the 401(k) plan administrator for the total amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules the payment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upload the contribution detail file to the plan administrator's portal so they can allocate the funds to individual employee accounts.",
-      "expected_outcome": "Agent successfully uploads the contribution data file.",
-      "required_tools": [
-        "upload_contribution_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upload the contribution detail file to the plan administrator's portal so they can allocate the funds to individual employee accounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the contribution data file."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

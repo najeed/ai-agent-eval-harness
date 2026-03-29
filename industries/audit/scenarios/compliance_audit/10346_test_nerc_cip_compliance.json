@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-cp-10346",
-  "title": "Test NERC CIP Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Test NERC CIP Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "For an electric utility, a compliance auditor tests adherence to NERC CIP (Critical Infrastructure Protection) standards.",
-  "use_case": "Compliance & Regulatory Audit",
-  "core_function": "Regulatory Compliance Testing",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the training records for all personnel with access to the critical cyber systems.",
-      "expected_outcome": "Auditor verifies that all required personnel have completed their annual security awareness training.",
-      "required_tools": [
-        "get_training_completion_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the training records for all personnel with access to the critical cyber systems.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor verifies that all required personnel have completed their annual security awareness training."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the logs for all remote access to the critical systems.",
-      "expected_outcome": "Auditor verifies that all remote access sessions used multi-factor authentication.",
-      "required_tools": [
-        "analyze_access_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the logs for all remote access to the critical systems.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor verifies that all remote access sessions used multi-factor authentication."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a physical inspection of the data center to ensure all access points are secured and access is logged.",
-      "expected_outcome": "Auditor finds that the visitor access log for the data center is not being consistently filled out.",
-      "required_tools": [
-        "perform_physical_inspection",
-        "review_access_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a physical inspection of the data center to ensure all access points are secured and access is logged.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor finds that the visitor access log for the data center is not being consistently filled out."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

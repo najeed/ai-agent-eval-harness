@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-up-12765",
-  "title": "Manage Offshore Spare Parts Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Offshore Spare Parts Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance supervisor checks the inventory for a critical spare part (a pump seal) on an offshore platform and orders more if needed.",
-  "use_case": "Upstream",
-  "core_function": "Asset & Maintenance Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the inventory level for 'Pump Seal P-101' in the platform's inventory management system.",
-      "expected_outcome": "The system shows only one unit is in stock.",
-      "required_tools": [
-        "check_spare_part_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the inventory level for 'Pump Seal P-101' in the platform's inventory management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows only one unit is in stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the minimum required stock level for this critical part.",
-      "expected_outcome": "The system shows the minimum stock level should be three units.",
-      "required_tools": [
-        "get_minimum_stock_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the minimum required stock level for this critical part.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows the minimum stock level should be three units."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a purchase requisition to order two more units to bring the stock up to the required level.",
-      "expected_outcome": "A purchase request is created and sent to the onshore procurement team.",
-      "required_tools": [
-        "create_purchase_requisition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a purchase requisition to order two more units to bring the stock up to the required level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A purchase request is created and sent to the onshore procurement team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

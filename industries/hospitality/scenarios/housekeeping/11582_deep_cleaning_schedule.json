@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-hk-11582",
-  "title": "Schedule a Room for Deep Cleaning",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule a Room for Deep Cleaning",
+    "compliance_level": "Standard"
+  },
   "description": "A room is due for its quarterly deep cleaning.",
-  "use_case": "Housekeeping & Maintenance",
-  "core_function": "Room Status & Cleaning",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify rooms that are due for deep cleaning.",
-      "expected_outcome": "A list of rooms is generated.",
-      "required_tools": [
-        "hms_get_deep_clean_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify rooms that are due for deep cleaning.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of rooms is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Find a vacant day for one of the rooms and place it 'Out of Order' in the PMS to block it from being sold.",
-      "expected_outcome": "The room is blocked for maintenance.",
-      "required_tools": [
-        "pms_block_room"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Find a vacant day for one of the rooms and place it 'Out of Order' in the PMS to block it from being sold.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The room is blocked for maintenance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a detailed work order for the deep cleaning task, which includes services like carpet shampooing and curtain washing.",
-      "expected_outcome": "A work order with a detailed checklist is created for the housekeeping team.",
-      "required_tools": [
-        "hms_create_cleaning_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a detailed work order for the deep cleaning task, which includes services like carpet shampooing and curtain washing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A work order with a detailed checklist is created for the housekeeping team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

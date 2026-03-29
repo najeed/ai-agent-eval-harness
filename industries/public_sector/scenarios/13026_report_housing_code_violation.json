@@ -1,49 +1,59 @@
 {
-  "scenario_id": "ps-rc-13026",
-  "title": "Report a Housing Code Violation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report a Housing Code Violation",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant wants to report a potential housing code violation (e.g., no heating) against their landlord.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Inspections & Enforcement",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather information from the tenant, including their address, landlord's contact info, and the specific nature of the complaint.",
-      "expected_outcome": "Agent documents the details of the alleged violation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather information from the tenant, including their address, landlord's contact info, and the specific nature of the complaint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent documents the details of the alleged violation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the complaint in the code enforcement system.",
-      "expected_outcome": "Agent creates a new case file for the complaint.",
-      "required_tools": [
-        "log_complaint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the complaint in the code enforcement system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new case file for the complaint."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the tenant of their rights and the next steps, which will involve an inspector contacting the landlord.",
-      "expected_outcome": "Agent provides clear information and sets expectations for the tenant.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the tenant of their rights and the next steps, which will involve an inspector contacting the landlord.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear information and sets expectations for the tenant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

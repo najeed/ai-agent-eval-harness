@@ -1,54 +1,59 @@
 {
-  "scenario_id": "auto-ms-10415",
-  "title": "Critical Parts Shortage Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Critical Parts Shortage Alert",
+    "compliance_level": "Standard"
+  },
   "description": "The inventory system alerts that the stock of a critical part (touchscreen displays) will be depleted in 4 hours, potentially halting production.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Supplier Management",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the part number and the supplier for the component.",
-      "expected_outcome": "Agent identifies the part and the supplier 'DisplayTech Inc'.",
-      "required_tools": [
-        "get_part_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the part number and the supplier for the component.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the part and the supplier 'DisplayTech Inc'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status of any in-transit shipments of that part from the supplier.",
-      "expected_outcome": "Agent finds the next shipment is delayed and now scheduled for tomorrow.",
-      "required_tools": [
-        "track_supplier_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status of any in-transit shipments of that part from the supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the next shipment is delayed and now scheduled for tomorrow."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the supplier to request an expedited, emergency shipment and search for alternative, certified suppliers.",
-      "expected_outcome": "Agent contacts the supplier to arrange an emergency air freight shipment.",
-      "required_tools": [
-        "contact_supplier",
-        "find_alternative_suppliers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the supplier to request an expedited, emergency shipment and search for alternative, certified suppliers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent contacts the supplier to arrange an emergency air freight shipment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

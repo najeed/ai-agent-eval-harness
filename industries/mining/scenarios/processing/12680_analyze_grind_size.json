@@ -1,54 +1,59 @@
 {
-  "scenario_id": "mining-proc-12680",
-  "title": "Analyze Grind Size Distribution",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Grind Size Distribution",
+    "compliance_level": "Standard"
+  },
   "description": "A plant metallurgist analyzes the particle size distribution of the output from the grinding circuit to ensure it is optimal for flotation.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Crushing & Grinding",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Take a sample of the slurry from the cyclone overflow.",
-      "expected_outcome": "A representative sample is collected for analysis.",
-      "required_tools": [
-        "take_slurry_sample"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Take a sample of the slurry from the cyclone overflow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A representative sample is collected for analysis."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the sample using a laser particle size analyzer.",
-      "expected_outcome": "The analyzer generates a particle size distribution curve.",
-      "required_tools": [
-        "run_particle_size_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the sample using a laser particle size analyzer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analyzer generates a particle size distribution curve."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the results, checking the P80 (the size that 80% of the particles are smaller than). If it's too coarse, adjust the cyclone settings to fix it.",
-      "expected_outcome": "The P80 is found to be too coarse. The cyclone's vortex finder is adjusted to make the grind finer.",
-      "required_tools": [
-        "analyze_grind_size_data",
-        "adjust_cyclone_settings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the results, checking the P80 (the size that 80% of the particles are smaller than). If it's too coarse, adjust the cyclone settings to fix it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The P80 is found to be too coarse. The cyclone's vortex finder is adjusted to make the grind finer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

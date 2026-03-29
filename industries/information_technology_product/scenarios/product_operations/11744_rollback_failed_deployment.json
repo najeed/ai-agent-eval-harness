@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-po-11744",
-  "title": "Rollback Failed Deployment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Rollback Failed Deployment",
+    "compliance_level": "Standard"
+  },
   "description": "Shortly after a new deployment, error rates spike, indicating a critical bug in the new version.",
-  "use_case": "Product Operations & Reliability (SRE)",
-  "core_function": "Deployment & Release Management",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the spike in errors from the monitoring dashboard and correlate it with the recent deployment.",
-      "expected_outcome": "Agent quickly connects the errors to the new release.",
-      "required_tools": [
-        "view_performance_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the spike in errors from the monitoring dashboard and correlate it with the recent deployment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent quickly connects the errors to the new release."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Declare an incident and immediately initiate the rollback procedure in the CI/CD pipeline.",
-      "expected_outcome": "Agent takes decisive action to restore service by deploying the previous stable version.",
-      "required_tools": [
-        "start_incident",
-        "execute_rollback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Declare an incident and immediately initiate the rollback procedure in the CI/CD pipeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent takes decisive action to restore service by deploying the previous stable version."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the system to confirm that error rates return to normal after the rollback is complete.",
-      "expected_outcome": "Agent verifies that the rollback was successful and the system is stable.",
-      "required_tools": [
-        "view_performance_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the system to confirm that error rates return to normal after the rollback is complete.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that the rollback was successful and the system is stable."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

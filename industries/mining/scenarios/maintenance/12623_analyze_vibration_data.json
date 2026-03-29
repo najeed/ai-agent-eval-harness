@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-maint-12623",
-  "title": "Analyze Conveyor Vibration Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Conveyor Vibration Data",
+    "compliance_level": "Standard"
+  },
   "description": "A reliability engineer analyzes vibration data from a critical conveyor belt's gearbox to detect early signs of a bearing fault.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Reliability & Condition Monitoring",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Download the latest vibration data from the online sensor attached to the conveyor gearbox.",
-      "expected_outcome": "The vibration waveform and spectrum data are downloaded.",
-      "required_tools": [
-        "download_vibration_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Download the latest vibration data from the online sensor attached to the conveyor gearbox.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The vibration waveform and spectrum data are downloaded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the vibration spectrum and identify specific frequencies that correspond to a bearing defect.",
-      "expected_outcome": "The analysis reveals a clear spike in the spectrum at the characteristic frequency for an outer race bearing fault.",
-      "required_tools": [
-        "analyze_vibration_spectrum"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the vibration spectrum and identify specific frequencies that correspond to a bearing defect.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis reveals a clear spike in the spectrum at the characteristic frequency for an outer race bearing fault."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-priority work order to replace the gearbox bearing during the next planned maintenance shutdown.",
-      "expected_outcome": "A work order is created to proactively replace the failing component before it causes a catastrophic failure.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-priority work order to replace the gearbox bearing during the next planned maintenance shutdown.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A work order is created to proactively replace the failing component before it causes a catastrophic failure."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

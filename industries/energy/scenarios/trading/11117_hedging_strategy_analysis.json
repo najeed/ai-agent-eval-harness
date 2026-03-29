@@ -1,55 +1,59 @@
 {
-  "scenario_id": "energy-tr-11117",
-  "title": "Hedging Strategy Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Hedging Strategy Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A portfolio manager wants to evaluate different hedging strategies for a wind farm to mitigate price volatility.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Trade Execution & Hedging",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Model the wind farm's expected generation profile for the next 12 months.",
-      "expected_outcome": "Agent produces an hourly generation forecast.",
-      "required_tools": [
-        "generate_wind_generation_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "forecast_accuracy_mae",
-          "threshold": 10.0,
-          "threshold_unit": "kWh",
-          "threshold_type": "min"
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Model the wind farm's expected generation profile for the next 12 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces an hourly generation forecast."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Simulate potential revenue under three different hedging strategies: 1) no hedging, 2) 50% fixed-price PPA, 3) 80% collar (cap and floor).",
-      "expected_outcome": "Agent runs simulations and provides a distribution of revenue outcomes for each strategy.",
-      "required_tools": [
-        "simulate_hedging_strategies"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Simulate potential revenue under three different hedging strategies: 1) no hedging, 2) 50% fixed-price PPA, 3) 80% collar (cap and floor).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs simulations and provides a distribution of revenue outcomes for each strategy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the strategies based on expected revenue, risk (standard deviation), and worst-case outcome.",
-      "expected_outcome": "Agent provides a summary table and a recommendation for the most suitable strategy.",
-      "required_tools": [
-        "compare_strategy_outcomes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the strategies based on expected revenue, risk (standard deviation), and worst-case outcome.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a summary table and a recommendation for the most suitable strategy."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

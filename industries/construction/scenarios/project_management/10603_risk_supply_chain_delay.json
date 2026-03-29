@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-pm-10603",
-  "title": "Assess Risk of Supply Chain Delay",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assess Risk of Supply Chain Delay",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager identifies a potential supply chain delay for custom windows and must assess the impact.",
-  "use_case": "Project Management",
-  "core_function": "Risk & Issue Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the project tasks dependent on the delivery of the custom windows.",
-      "expected_outcome": "Agent lists 'Window Installation' and 'Interior Drywall' as dependent tasks.",
-      "required_tools": [
-        "get_task_dependencies"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the project tasks dependent on the delivery of the custom windows.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists 'Window Installation' and 'Interior Drywall' as dependent tasks."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the supply chain issue in the project's risk register, classifying it as 'High Impact, Medium Probability'.",
-      "expected_outcome": "A new entry is created in the risk register with the correct details.",
-      "required_tools": [
-        "create_risk_register_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the supply chain issue in the project's risk register, classifying it as 'High Impact, Medium Probability'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new entry is created in the risk register with the correct details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Develop a mitigation plan, such as identifying an alternative supplier.",
-      "expected_outcome": "Agent proposes a viable mitigation strategy.",
-      "required_tools": [
-        "search_supplier_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Develop a mitigation plan, such as identifying an alternative supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proposes a viable mitigation strategy."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

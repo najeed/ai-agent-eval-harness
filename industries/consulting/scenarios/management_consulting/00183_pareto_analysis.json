@@ -1,62 +1,72 @@
 {
-  "scenario_id": "consulting-mc-183",
-  "title": "Pareto Analysis (80/20 Rule)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Pareto Analysis (80/20 Rule)",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must perform a Pareto analysis on sales data to identify the top 20% of products that generate 80% of revenue.",
-  "use_case": "Management Consulting",
-  "core_function": "Analysis & Modeling",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load product sales data, including product ID and total revenue per product.",
-      "expected_outcome": "Agent successfully loads the data.",
-      "required_tools": [
-        "load_csv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load product sales data, including product ID and total revenue per product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully loads the data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Sort the products by revenue in descending order and calculate the cumulative revenue percentage.",
-      "expected_outcome": "Agent correctly calculates the cumulative revenue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Sort the products by revenue in descending order and calculate the cumulative revenue percentage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the cumulative revenue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify the products that fall within the top 80% of cumulative revenue.",
-      "expected_outcome": "Agent generates a list of the most profitable products.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify the products that fall within the top 80% of cumulative revenue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of the most profitable products."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a report stating which products represent the 'vital few' according to the Pareto principle.",
-      "expected_outcome": "Agent produces a clear summary of the analysis.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a report stating which products represent the 'vital few' according to the Pareto principle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clear summary of the analysis."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

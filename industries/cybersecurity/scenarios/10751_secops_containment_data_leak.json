@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-so-10751",
-  "title": "Cloud Data Leak Containment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cloud Data Leak Containment",
+    "compliance_level": "Standard"
+  },
   "description": "A Data Loss Prevention (DLP) tool alerts that a file containing sensitive data has been uploaded to a public cloud storage site.",
-  "use_case": "Security Operations (SecOps)",
-  "core_function": "Containment & Eradication",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the DLP alert and identify the user, file, and destination URL.",
-      "expected_outcome": "Responder correctly identifies the key details of the data leak.",
-      "required_tools": [
-        "get_dlp_alert_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the DLP alert and identify the user, file, and destination URL.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Responder correctly identifies the key details of the data leak."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Immediately block the URL of the public cloud storage site at the network proxy to prevent further uploads.",
-      "expected_outcome": "Responder successfully blocks the destination site.",
-      "required_tools": [
-        "add_to_proxy_blocklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "containment_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Immediately block the URL of the public cloud storage site at the network proxy to prevent further uploads.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Responder successfully blocks the destination site."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the user to understand the context of the upload and have them delete the public file immediately.",
-      "expected_outcome": "Responder coordinates with the user to have the leaked file removed from the public site.",
-      "required_tools": [
-        "contact_user",
-        "verify_file_deletion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "remediation_speed",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the user to understand the context of the upload and have them delete the public file immediately.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Responder coordinates with the user to have the leaked file removed from the public site."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

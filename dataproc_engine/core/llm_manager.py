@@ -33,15 +33,17 @@ class LLMManager:
         """
         Extract data with V2.0 TokenGuard (Check-API-First).
         """
+        effective_strategy = self.strategy
+        
         # 0. V2: TokenGuard (Economic Interception)
         if source_hint and self.strategy != "mock":
              interception = self._token_guard_intercept(content, source_hint)
              if interception:
-                 logger.info(f"V2: TokenGuard intercepted request for {source_hint}. Routing to Tier 3 (Heuristic).")
-                 self.strategy = "heuristic" # Force bypass to cheap tier
+                 logger.info(f"V2: TokenGuard intercepted request for {source_hint}. Routing current call to Tier 3 (Heuristic).")
+                 effective_strategy = "heuristic" # Bypass for this call only
         
         # 0.5 Tier 0: Mock
-        if self.strategy == "mock":
+        if effective_strategy == "mock":
             import random
             mock_data = {}
             for key, expected_type in target_schema.items():
@@ -54,19 +56,19 @@ class LLMManager:
             return self._verify_schema(mock_data, target_schema)
 
         # 1. Tier 1: Cloud Providers (Preferred)
-        if self.strategy in ["auto", "cloud"]:
+        if effective_strategy in ["auto", "cloud"]:
             result = await self._try_cloud_providers(content, target_schema)
             if result:
                 return self._verify_schema(result, target_schema)
         
         # 2. Tier 2: Local Ollama (Fallback for text-only)
-        if self.strategy in ["auto", "ollama"] and len(content) < 50000:
+        if effective_strategy in ["auto", "ollama"] and len(content) < 50000:
              result = await self._try_ollama(content, target_schema)
              if result:
                  return self._verify_schema(result, target_schema)
                 
         # 3. Tier 3: Heuristics (Final fallback for structured patterns)
-        if self.strategy in ["auto", "heuristic"]:
+        if effective_strategy in ["auto", "heuristic"]:
             result = self._try_heuristics(content, target_schema)
             if result:
                 return self._verify_schema(result, target_schema)

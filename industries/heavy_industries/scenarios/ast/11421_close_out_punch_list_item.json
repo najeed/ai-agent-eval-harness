@@ -1,50 +1,59 @@
 {
-  "scenario_id": "heavy-industries-ast-11421",
-  "title": "Close Out a Punch List Item",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Close Out a Punch List Item",
+    "compliance_level": "Standard"
+  },
   "description": "A contractor reports they have fixed a punch list item (e.g., a leaking valve). A commissioning engineer must verify the fix and close the item.",
-  "use_case": "Asset & Maintenance Management",
-  "core_function": "Asset Commissioning",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the specific punch list item in the commissioning system.",
-      "expected_outcome": "Agent retrieves the punch list item for the leaking valve.",
-      "required_tools": [
-        "get_punch_list_item"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the specific punch list item in the commissioning system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the punch list item for the leaking valve."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Go to the field and visually inspect the valve to confirm it is no longer leaking.",
-      "expected_outcome": "The engineer physically verifies that the repair was successful.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Go to the field and visually inspect the valve to confirm it is no longer leaking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The engineer physically verifies that the repair was successful."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Change the status of the punch list item to 'Closed'.",
-      "expected_outcome": "Agent successfully closes the item, reducing the number of open items on the project.",
-      "required_tools": [
-        "update_punch_list_item_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Change the status of the punch list item to 'Closed'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully closes the item, reducing the number of open items on the project."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

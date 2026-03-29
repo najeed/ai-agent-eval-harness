@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-bm-13667",
-  "title": "Manage Closed Captioning for Live Stream",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Closed Captioning for Live Stream",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must ensure real-time closed captioning is working correctly for a live streamed press conference.",
-  "use_case": "Broadcasting & Media",
-  "core_function": "Digital Content & Streaming",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Connect the live audio feed to the automated real-time captioning service.",
-      "expected_outcome": "Agent successfully sets up the connection.",
-      "required_tools": [
-        "connect_to_captioning_service"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Connect the live audio feed to the automated real-time captioning service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sets up the connection."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Monitor the live captions for accuracy.",
-      "expected_outcome": "Agent watches the captions and makes minor corrections to names and technical terms in real time.",
-      "required_tools": [
-        "monitor_and_correct_captions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Monitor the live captions for accuracy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent watches the captions and makes minor corrections to names and technical terms in real time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Ensure the captions are properly embedded in the final live stream.",
-      "expected_outcome": "Agent verifies the captions are appearing correctly for viewers.",
-      "required_tools": [
-        "verify_caption_display"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Ensure the captions are properly embedded in the final live stream.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the captions are appearing correctly for viewers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

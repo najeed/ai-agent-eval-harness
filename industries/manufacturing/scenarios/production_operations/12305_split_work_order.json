@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-po-12305",
-  "title": "Split a Work Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Split a Work Order",
+    "compliance_level": "Standard"
+  },
   "description": "A planner needs to split a large work order into two smaller batches to run on different machines simultaneously.",
-  "use_case": "Production & Operations",
-  "core_function": "Work Order Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the original work order and verify the total quantity.",
-      "expected_outcome": "Agent retrieves the work order for 1000 units.",
-      "required_tools": [
-        "find_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the original work order and verify the total quantity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the work order for 1000 units."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate the 'split' function and specify the quantities for the two new work orders.",
-      "expected_outcome": "Agent splits the order into two new work orders of 500 units each.",
-      "required_tools": [
-        "split_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate the 'split' function and specify the quantities for the two new work orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent splits the order into two new work orders of 500 units each."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign each new work order to a different machine and release them to the floor.",
-      "expected_outcome": "Agent successfully assigns and releases the two new, smaller work orders.",
-      "required_tools": [
-        "update_work_order_assignment",
-        "release_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign each new work order to a different machine and release them to the floor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully assigns and releases the two new, smaller work orders."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "sports-lm-13610",
-  "title": "Review Player Misconduct for Disciplinary Action",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Player Misconduct for Disciplinary Action",
+    "compliance_level": "Standard"
+  },
   "description": "A player received a red card for a dangerous tackle. The league's disciplinary committee must review the incident to determine the length of the suspension.",
-  "use_case": "League & Competition Management",
-  "core_function": "Disciplinary Actions",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the official referee's report and video of the incident.",
-      "expected_outcome": "Agent gathers the primary evidence for the case.",
-      "required_tools": [
-        "get_referee_report",
-        "get_incident_video"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the official referee's report and video of the incident.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the primary evidence for the case."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the league's disciplinary code for precedents involving similar offenses.",
-      "expected_outcome": "Agent finds that similar tackles have typically resulted in a 3-game suspension.",
-      "required_tools": [
-        "search_disciplinary_precedents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the league's disciplinary code for precedents involving similar offenses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that similar tackles have typically resulted in a 3-game suspension."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on the evidence and precedents, issue a 3-game suspension to the player.",
-      "expected_outcome": "Agent formally issues the suspension.",
-      "required_tools": [
-        "issue_player_suspension"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on the evidence and precedents, issue a 3-game suspension to the player.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent formally issues the suspension."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Notify the player's team of the disciplinary action.",
-      "expected_outcome": "Agent sends a formal notification to the team.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Notify the player's team of the disciplinary action.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a formal notification to the team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

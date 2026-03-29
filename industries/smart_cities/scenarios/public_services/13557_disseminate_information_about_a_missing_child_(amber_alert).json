@@ -1,53 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13557",
-  "title": "Disseminate Information about a Missing Child (Amber Alert)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Disseminate Information about a Missing Child (Amber Alert)",
+    "compliance_level": "Standard"
+  },
   "description": "Police issue an Amber Alert for a missing child. An operator must broadcast the alert across the city's communication channels.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Public Information & Alerting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the Amber Alert details from the state police, including child's description and vehicle information.",
-      "expected_outcome": "Agent gets the critical information for the alert.",
-      "required_tools": [
-        "get_emergency_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the Amber Alert details from the state police, including child's description and vehicle information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the critical information for the alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the alert message for various platforms.",
-      "expected_outcome": "Agent prepares the message content.",
-      "required_tools": [
-        "get_alert_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the alert message for various platforms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares the message content."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Broadcast the Amber Alert on all city-controlled dynamic message signs on highways, public transit screens, and social media.",
-      "expected_outcome": "Agent successfully pushes the alert to all available public-facing systems.",
-      "required_tools": [
-        "publish_public_alert",
-        "update_dynamic_message_sign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Broadcast the Amber Alert on all city-controlled dynamic message signs on highways, public transit screens, and social media.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pushes the alert to all available public-facing systems."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

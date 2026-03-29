@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-com-13234",
-  "title": "Prepare Commercial Sale Marketing Package",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Commercial Sale Marketing Package",
+    "compliance_level": "Standard"
+  },
   "description": "An agent is listing a commercial building for sale and needs to create a comprehensive marketing package (offering memorandum).",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment & Sales Analysis",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all property information: financials, rent roll, site plan, photos, and market data.",
-      "expected_outcome": "Agent compiles a complete set of data for the property.",
-      "required_tools": [
-        "get_property_details",
-        "get_property_financials",
-        "get_market_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all property information: financials, rent roll, site plan, photos, and market data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a complete set of data for the property."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a template to create the offering memorandum, populating it with the gathered data and analysis.",
-      "expected_outcome": "Agent generates a professional and detailed marketing package.",
-      "required_tools": [
-        "generate_offering_memorandum"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a template to create the offering memorandum, populating it with the gathered data and analysis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a professional and detailed marketing package."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a confidentiality agreement for interested parties to sign before receiving the full package.",
-      "expected_outcome": "Agent drafts a standard confidentiality agreement.",
-      "required_tools": [
-        "generate_legal_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a confidentiality agreement for interested parties to sign before receiving the full package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a standard confidentiality agreement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

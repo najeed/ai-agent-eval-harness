@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12109",
-  "title": "Prepare a Privilege Log",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare a Privilege Log",
+    "compliance_level": "Standard"
+  },
   "description": "After a document review, a litigation paralegal needs to create a privilege log for all documents that were withheld from production based on attorney-client privilege.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all documents tagged as 'Privileged' from the e-discovery platform.",
-      "expected_outcome": "Agent retrieves the list of privileged documents.",
-      "required_tools": [
-        "ediscovery_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all documents tagged as 'Privileged' from the e-discovery platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the list of privileged documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each document, create a log entry that includes the date, author, recipients, a brief non-privileged description, and the specific privilege being asserted.",
-      "expected_outcome": "Agent creates a detailed log entry for each document without revealing privileged information.",
-      "required_tools": [
-        "spreadsheet_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each document, create a log entry that includes the date, author, recipients, a brief non-privileged description, and the specific privilege being asserted.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed log entry for each document without revealing privileged information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Format the entries into a formal privilege log document for production to the opposing counsel.",
-      "expected_outcome": "Agent produces a properly formatted privilege log.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Format the entries into a formal privilege log document for production to the opposing counsel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a properly formatted privilege log."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

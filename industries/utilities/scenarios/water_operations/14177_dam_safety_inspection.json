@@ -1,66 +1,72 @@
 {
-  "scenario_id": "utils-wo-14177",
-  "title": "Dam Safety Inspection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dam Safety Inspection",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer is performing a routine safety inspection of a dam.",
-  "use_case": "Water & Wastewater Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the dam safety inspection checklist from the asset management system.",
-      "expected_outcome": "Engineer accesses the standard inspection form on their mobile device.",
-      "required_tools": [
-        "get_inspection_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the dam safety inspection checklist from the asset management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Engineer accesses the standard inspection form on their mobile device."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Visually inspect the dam's structure for any signs of cracking, seepage, or erosion and document the findings.",
-      "expected_outcome": "Engineer documents observations and takes photos of any areas of concern.",
-      "required_tools": [
-        "log_field_observation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Visually inspect the dam's structure for any signs of cracking, seepage, or erosion and document the findings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Engineer documents observations and takes photos of any areas of concern."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the readings from instrumentation like piezometers and settlement monitors.",
-      "expected_outcome": "Engineer records the latest instrumentation readings and compares them to historical trends.",
-      "required_tools": [
-        "get_dam_instrumentation_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the readings from instrumentation like piezometers and settlement monitors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Engineer records the latest instrumentation readings and compares them to historical trends."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Complete and submit the inspection report.",
-      "expected_outcome": "Engineer submits the final report, noting that no critical issues were found.",
-      "required_tools": [
-        "submit_inspection_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Complete and submit the inspection report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Engineer submits the final report, noting that no critical issues were found."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

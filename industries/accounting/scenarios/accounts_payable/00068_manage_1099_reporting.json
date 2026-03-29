@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-ap-68",
-  "title": "Manage Year-End 1099 Reporting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Year-End 1099 Reporting",
+    "compliance_level": "Standard"
+  },
   "description": "At year-end, the AP team needs to identify all vendors who require a Form 1099-NEC for services and prepare the forms for filing.",
-  "use_case": "Accounts Payable",
-  "core_function": "Vendor Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a report of total payments made to all unincorporated vendors during the calendar year.",
-      "expected_outcome": "Agent generates the vendor payment summary report.",
-      "required_tools": [
-        "run_vendor_payment_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a report of total payments made to all unincorporated vendors during the calendar year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates the vendor payment summary report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify all vendors who were paid more than the $600 threshold and require a 1099 form.",
-      "expected_outcome": "Agent creates a list of all vendors who need a 1099.",
-      "required_tools": [
-        "identify_1099_vendors"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify all vendors who were paid more than the $600 threshold and require a 1099 form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a list of all vendors who need a 1099."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the Form 1099-NEC for each qualifying vendor.",
-      "expected_outcome": "Agent successfully generates the required tax forms.",
-      "required_tools": [
-        "generate_1099_forms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the Form 1099-NEC for each qualifying vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the required tax forms."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Prepare the electronic filing for the IRS.",
-      "expected_outcome": "Agent creates the electronic file in the correct format for submission to the IRS.",
-      "required_tools": [
-        "create_1099_efile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Prepare the electronic filing for the IRS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the electronic file in the correct format for submission to the IRS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

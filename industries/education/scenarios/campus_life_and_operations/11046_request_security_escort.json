@@ -1,49 +1,59 @@
 {
-  "scenario_id": "education-co-11046",
-  "title": "Request a Campus Security Escort",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request a Campus Security Escort",
+    "compliance_level": "Standard"
+  },
   "description": "A student studying late at the library wants a security escort to walk them back to their dorm.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Campus Safety & Security",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the student's name, current location (library), and destination (dorm building).",
-      "expected_outcome": "Agent collects all necessary logistical information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the student's name, current location (library), and destination (dorm building).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary logistical information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch a student safety patrol member or a security officer to the student's location.",
-      "expected_outcome": "Agent dispatches an available unit.",
-      "required_tools": [
-        "dispatch_security_escort"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch a student safety patrol member or a security officer to the student's location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches an available unit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the student with an estimated arrival time for the escort.",
-      "expected_outcome": "Agent informs the student that the escort will arrive in 5-10 minutes.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the student with an estimated arrival time for the escort.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent informs the student that the escort will arrive in 5-10 minutes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

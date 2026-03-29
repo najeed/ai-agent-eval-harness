@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-isr-10862",
-  "title": "Multi-INT Fusion for Threat Network",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Multi-INT Fusion for Threat Network",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must fuse HUMINT, SIGINT, and financial intelligence (FININT) to map a terrorist network.",
-  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
-  "core_function": "ISR Data Fusion & Analysis",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze HUMINT reports to identify key individuals in the network.",
-      "expected_outcome": "Analyst extracts the names and roles of key network members.",
-      "required_tools": [
-        "get_humint_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "entity_extraction_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze HUMINT reports to identify key individuals in the network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst extracts the names and roles of key network members."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze SIGINT to map communications between the identified individuals.",
-      "expected_outcome": "Analyst creates a link analysis chart showing who is talking to whom.",
-      "required_tools": [
-        "analyze_sigint_comms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "link_analysis_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze SIGINT to map communications between the identified individuals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst creates a link analysis chart showing who is talking to whom."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze FININT to identify financial transactions between the individuals, confirming the network's structure.",
-      "expected_outcome": "Analyst uses financial data to validate the network map and identify the leader.",
-      "required_tools": [
-        "analyze_finint_data",
-        "fuse_multi_source_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "network_mapping_completeness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze FININT to identify financial transactions between the individuals, confirming the network's structure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst uses financial data to validate the network map and identify the leader."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

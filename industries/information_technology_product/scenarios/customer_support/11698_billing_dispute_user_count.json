@@ -1,54 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11698",
-  "title": "Billing Dispute - User Count",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Billing Dispute - User Count",
+    "compliance_level": "Standard"
+  },
   "description": "A customer disputes their monthly bill, claiming they were charged for more user licenses than they have active.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Account & Billing Support",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's account and the specific invoice in question.",
-      "expected_outcome": "Agent correctly identifies the customer and the relevant invoice.",
-      "required_tools": [
-        "get_customer_details",
-        "get_invoice_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's account and the specific invoice in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and the relevant invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the user list in the customer's account and filter for users who were active during the billing period.",
-      "expected_outcome": "Agent finds that an employee who left the company was deactivated but not removed, thus consuming a license.",
-      "required_tools": [
-        "get_account_users"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the user list in the customer's account and filter for users who were active during the billing period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that an employee who left the company was deactivated but not removed, thus consuming a license."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the cause of the discrepancy, guide the customer on how to fully remove the user, and issue a credit for the single user license as a one-time courtesy.",
-      "expected_outcome": "Agent resolves the issue, educates the customer, and applies a credit.",
-      "required_tools": [
-        "apply_courtesy_credit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the cause of the discrepancy, guide the customer on how to fully remove the user, and issue a credit for the single user license as a one-time courtesy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent resolves the issue, educates the customer, and applies a credit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

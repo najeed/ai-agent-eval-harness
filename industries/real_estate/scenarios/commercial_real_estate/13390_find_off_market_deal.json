@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13390",
-  "title": "Find an Off-Market Deal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find an Off-Market Deal",
+    "compliance_level": "Standard"
+  },
   "description": "A well-funded investor wants to buy a specific type of property (e.g., a grocery-anchored retail center) in a market with low inventory. The agent must find an off-market opportunity.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment Sales",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use property ownership databases and local knowledge to create a list of all properties that meet the investor's criteria.",
-      "expected_outcome": "A target list of properties is created.",
-      "required_tools": [
-        "search_property_ownership_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use property ownership databases and local knowledge to create a list of all properties that meet the investor's criteria.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A target list of properties is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate a direct outreach campaign (letters, calls) to the owners of the target properties to see if they have any interest in selling.",
-      "expected_outcome": "The agent makes contact with property owners to gauge their interest.",
-      "required_tools": [
-        "initiate_outreach_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate a direct outreach campaign (letters, calls) to the owners of the target properties to see if they have any interest in selling.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent makes contact with property owners to gauge their interest."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "When an owner expresses potential interest, begin preliminary negotiations and analysis to see if a deal is feasible.",
-      "expected_outcome": "A potential off-market deal is identified and pursued.",
-      "required_tools": [
-        "log_negotiation_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "negotiation_success",
-          "threshold": 0.8
+      },
+      {
+        "id": "task-3",
+        "task_description": "When an owner expresses potential interest, begin preliminary negotiations and analysis to see if a deal is feasible.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A potential off-market deal is identified and pursued."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

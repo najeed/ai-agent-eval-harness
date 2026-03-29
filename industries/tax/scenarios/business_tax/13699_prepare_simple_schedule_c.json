@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tax-bus-13699",
-  "title": "Prepare Simple Schedule C",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Simple Schedule C",
+    "compliance_level": "Standard"
+  },
   "description": "A freelance graphic designer needs to file a Schedule C for their sole proprietorship business.",
-  "use_case": "Business Tax Services",
-  "core_function": "Corporate & Partnership Tax",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Input the gross receipts from the freelance business.",
-      "expected_outcome": "Agent correctly enters the total income earned.",
-      "required_tools": [
-        "enter_schedule_c_income"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Input the gross receipts from the freelance business.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly enters the total income earned."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Categorize and input business expenses such as software subscriptions and office supplies.",
-      "expected_outcome": "Agent correctly enters and categorizes all business expenses.",
-      "required_tools": [
-        "enter_schedule_c_expenses"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Categorize and input business expenses such as software subscriptions and office supplies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly enters and categorizes all business expenses."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the net profit or loss for the business.",
-      "expected_outcome": "Agent correctly calculates the final net profit, which will be subject to self-employment tax.",
-      "required_tools": [
-        "calculate_net_profit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the net profit or loss for the business.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the final net profit, which will be subject to self-employment tax."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-ue-13561",
-  "title": "Manage Landfill Methane Gas Levels",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Landfill Methane Gas Levels",
+    "compliance_level": "Standard"
+  },
   "description": "Sensors at the city landfill report rising methane gas levels, requiring an operator to activate the gas flare system.",
-  "use_case": "Utilities & Environment",
-  "core_function": "Waste Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a 'High Methane Level' alert from the landfill monitoring system.",
-      "expected_outcome": "Agent acknowledges the environmental safety alert.",
-      "required_tools": [
-        "get_landfill_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a 'High Methane Level' alert from the landfill monitoring system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the environmental safety alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the readings from multiple sensors to confirm the high methane levels are widespread.",
-      "expected_outcome": "Agent confirms the validity of the alert.",
-      "required_tools": [
-        "get_environmental_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the readings from multiple sensors to confirm the high methane levels are widespread.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the validity of the alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remotely activate the landfill's gas flare system to safely burn off the excess methane.",
-      "expected_outcome": "Agent successfully activates the flare system.",
-      "required_tools": [
-        "activate_landfill_flare"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remotely activate the landfill's gas flare system to safely burn off the excess methane.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully activates the flare system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

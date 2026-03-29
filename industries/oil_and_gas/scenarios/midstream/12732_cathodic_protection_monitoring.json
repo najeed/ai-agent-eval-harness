@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-mid-12732",
-  "title": "Monitor Pipeline Cathodic Protection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor Pipeline Cathodic Protection",
+    "compliance_level": "Standard"
+  },
   "description": "A corrosion engineer checks data from a pipeline's cathodic protection (CP) system to ensure it is effectively preventing corrosion.",
-  "use_case": "Midstream",
-  "core_function": "Compliance & Safety",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the latest pipe-to-soil potential readings from the CP test points along pipeline segment PL-451.",
-      "expected_outcome": "A list of recent voltage readings is retrieved from the monitoring system.",
-      "required_tools": [
-        "get_cp_readings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the latest pipe-to-soil potential readings from the CP test points along pipeline segment PL-451.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of recent voltage readings is retrieved from the monitoring system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the readings to ensure they meet the regulatory criteria for protection (e.g., more negative than -850 mV).",
-      "expected_outcome": "The analysis shows one test point reading is below the required threshold.",
-      "required_tools": [
-        "analyze_cp_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the readings to ensure they meet the regulatory criteria for protection (e.g., more negative than -850 mV).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis shows one test point reading is below the required threshold."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a work order for a technician to visit the low-reading test point and troubleshoot the CP rectifier.",
-      "expected_outcome": "A work order is generated to investigate and repair the CP system.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a work order for a technician to visit the low-reading test point and troubleshoot the CP rectifier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A work order is generated to investigate and repair the CP system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

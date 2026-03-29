@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-c2-10871",
-  "title": "Self-Defense ROE Compliance Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Self-Defense ROE Compliance Check",
+    "compliance_level": "Standard"
+  },
   "description": "A ship's captain is being approached by fast-attack craft and must determine if they have demonstrated hostile intent, authorizing engagement in self-defense under the ROE.",
-  "use_case": "Command & Control (C2)",
-  "core_function": "Rules of Engagement (ROE) Compliance",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Input the behavior of the approaching craft (high speed, ignoring hails, weapon systems uncovered).",
-      "expected_outcome": "Captain accurately documents the observed actions.",
-      "required_tools": [
-        "input_situation_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Input the behavior of the approaching craft (high speed, ignoring hails, weapon systems uncovered).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Captain accurately documents the observed actions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the ROE database for the definition of 'hostile intent' in the current operational area.",
-      "expected_outcome": "Agent retrieves the specific criteria that must be met to declare hostile intent.",
-      "required_tools": [
-        "query_roe_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the ROE database for the definition of 'hostile intent' in the current operational area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the specific criteria that must be met to declare hostile intent."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm that the observed behaviors match the criteria for hostile intent, thus authorizing engagement in self-defense.",
-      "expected_outcome": "Agent provides a clear justification for the self-defense action, ensuring the captain's decision is compliant.",
-      "required_tools": [
-        "analyze_roe"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm that the observed behaviors match the criteria for hostile intent, thus authorizing engagement in self-defense.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear justification for the self-defense action, ensuring the captain's decision is compliant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

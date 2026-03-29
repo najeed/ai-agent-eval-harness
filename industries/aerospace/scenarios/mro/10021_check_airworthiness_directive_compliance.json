@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10021",
-  "title": "Check Airworthiness Directive (AD) Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Airworthiness Directive (AD) Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor needs to verify that a specific aircraft is in compliance with a new FAA airworthiness directive.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Technical Documentation & Compliance",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific AD number and the aircraft tail number to be audited.",
-      "expected_outcome": "Agent correctly identifies the AD and aircraft.",
-      "required_tools": [
-        "get_audit_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific AD number and the aircraft tail number to be audited.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the AD and aircraft."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the aircraft's maintenance records for a logbook entry showing that the work required by the AD has been completed.",
-      "expected_outcome": "Agent finds a signed-off work order that references the specific AD.",
-      "required_tools": [
-        "search_maintenance_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the aircraft's maintenance records for a logbook entry showing that the work required by the AD has been completed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a signed-off work order that references the specific AD."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Record the finding that the aircraft is in compliance with the AD in the audit report.",
-      "expected_outcome": "Agent updates the audit report with a 'compliant' status.",
-      "required_tools": [
-        "update_audit_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Record the finding that the aircraft is in compliance with the AD in the audit report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the audit report with a 'compliant' status."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13832",
-  "title": "Troubleshooting - Caller ID Showing Wrong Name",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Troubleshooting - Caller ID Showing Wrong Name",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports that when they call people, the wrong name is appearing on the recipient's Caller ID.",
-  "use_case": "Technical Support",
-  "core_function": "Value-Added Service Support",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the customer's name as it is listed on the account.",
-      "expected_outcome": "Agent confirms the correct name is on the account.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the customer's name as it is listed on the account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the correct name is on the account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the public CNAM (Caller ID Name) database for the customer's number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the CNAM database has an old, incorrect name associated with the number."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the public CNAM (Caller ID Name) database for the customer's number.",
-      "expected_outcome": "Agent finds the CNAM database has an old, incorrect name associated with the number.",
-      "required_tools": [
-        "query_cnam_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit a request to update the CNAM database with the correct name.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the CNAM update request."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit a request to update the CNAM database with the correct name.",
-      "expected_outcome": "Agent successfully submits the CNAM update request.",
-      "required_tools": [
-        "submit_cnam_update"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "auto-sm-10451",
-  "title": "Query Warranty Coverage for a Repair",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Query Warranty Coverage for a Repair",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to know if a specific repair (a faulty water pump) will be covered by their warranty.",
-  "use_case": "Service & Maintenance",
-  "core_function": "Billing & Warranty Claims",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the vehicle's VIN and current mileage from the customer.",
-      "expected_outcome": "Agent collects the required vehicle information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the vehicle's VIN and current mileage from the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the required vehicle information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the vehicle's active warranties (e.g., bumper-to-bumper, powertrain).",
-      "expected_outcome": "Agent finds the vehicle has an active powertrain warranty (5 years/60,000 miles) and is within the limits.",
-      "required_tools": [
-        "get_vehicle_warranty_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the vehicle's active warranties (e.g., bumper-to-bumper, powertrain).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the vehicle has an active powertrain warranty (5 years/60,000 miles) and is within the limits."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm that the specific part (water pump) is covered under the powertrain warranty and inform the customer.",
-      "expected_outcome": "Agent checks the warranty coverage list, confirms the water pump is included, and informs the customer the repair will be covered.",
-      "required_tools": [
-        "get_warranty_coverage_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm that the specific part (water pump) is covered under the powertrain warranty and inform the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the warranty coverage list, confirms the water pump is included, and informs the customer the repair will be covered."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

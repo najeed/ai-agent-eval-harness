@@ -1,55 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10907",
-  "title": "Respond to a Negative Product Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a Negative Product Review",
+    "compliance_level": "Standard"
+  },
   "description": "A customer left a 1-star review complaining about a product defect. An agent needs to respond publicly and resolve the issue.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Feedback & Reviews",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the negative review and the customer who wrote it.",
-      "expected_outcome": "Agent locates the review and the associated customer account.",
-      "required_tools": [
-        "get_product_reviews",
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the negative review and the customer who wrote it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the review and the associated customer account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Post a public reply to the review, apologizing for the issue and offering to make it right.",
-      "expected_outcome": "Agent posts a well-worded, empathetic public response.",
-      "required_tools": [
-        "post_review_comment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Post a public reply to the review, apologizing for the issue and offering to make it right.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent posts a well-worded, empathetic public response."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a support ticket to proactively contact the customer via email and offer a replacement or refund.",
-      "expected_outcome": "Agent creates a support ticket to resolve the underlying issue privately.",
-      "required_tools": [
-        "create_support_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a support ticket to proactively contact the customer via email and offer a replacement or refund.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a support ticket to resolve the underlying issue privately."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

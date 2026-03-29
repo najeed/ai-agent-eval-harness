@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-pt-91",
-  "title": "Perform Full Physical Inventory Reconciliation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Full Physical Inventory Reconciliation",
+    "compliance_level": "Standard"
+  },
   "description": "After the annual full physical inventory count, the cost accountant needs to reconcile the count to the book inventory and post the overall adjustment.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Compliance & Cost Accounting",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Upload the final physical count data into the system.",
-      "expected_outcome": "Agent successfully uploads the count for every item.",
-      "required_tools": [
-        "upload_physical_count"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Upload the final physical count data into the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the count for every item."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a comparison report showing the variance (quantity and value) between the physical count and the book inventory for every item.",
-      "expected_outcome": "Agent generates the variance report.",
-      "required_tools": [
-        "run_inventory_variance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a comparison report showing the variance (quantity and value) between the physical count and the book inventory for every item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates the variance report."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Investigate the largest variances to identify potential root causes (e.g., receiving errors, unrecorded scrap).",
-      "expected_outcome": "Agent identifies the top 10 largest variances for further review.",
-      "required_tools": [
-        "analyze_inventory_variances"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Investigate the largest variances to identify potential root causes (e.g., receiving errors, unrecorded scrap).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the top 10 largest variances for further review."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create and post a summary journal entry for the net inventory adjustment.",
-      "expected_outcome": "Agent posts a single journal entry to adjust the inventory account for the net gain or loss.",
-      "required_tools": [
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create and post a summary journal entry for the net inventory adjustment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent posts a single journal entry to adjust the inventory account for the net gain or loss."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

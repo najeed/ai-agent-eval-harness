@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ag-pa-10190",
-  "title": "Plan a Drone Pollination Mission",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan a Drone Pollination Mission",
+    "compliance_level": "Standard"
+  },
   "description": "A greenhouse operator wants to use a small drone to pollinate their tomato plants.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Robotics & Automation",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the layout map of the greenhouse.",
-      "expected_outcome": "Agent gets the greenhouse map.",
-      "required_tools": [
-        "get_greenhouse_layout"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the layout map of the greenhouse.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the greenhouse map."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a flight path for the drone to fly over each row of tomato plants.",
-      "expected_outcome": "Agent creates an optimized path.",
-      "required_tools": [
-        "generate_drone_mission_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a flight path for the drone to fly over each row of tomato plants.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates an optimized path."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Configure the drone to create gentle air turbulence (simulating wind) to distribute pollen as it flies.",
-      "expected_outcome": "Agent sets the correct parameters for the drone's propellers.",
-      "required_tools": [
-        "configure_drone_payload"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Configure the drone to create gentle air turbulence (simulating wind) to distribute pollen as it flies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets the correct parameters for the drone's propellers."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Dispatch the drone to begin the pollination mission.",
-      "expected_outcome": "Agent successfully starts the mission.",
-      "required_tools": [
-        "dispatch_robot"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Dispatch the drone to begin the pollination mission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully starts the mission."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12881",
-  "title": "Perform Virtual Screening of Compounds",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Virtual Screening of Compounds",
+    "compliance_level": "Standard"
+  },
   "description": "A computational chemist wants to perform a virtual screen of a large compound library against a protein target structure.",
-  "use_case": "Research & Development",
-  "core_function": "Drug Discovery & Target Identification",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare the 3D structure of the target protein for docking.",
-      "expected_outcome": "Agent loads the protein structure and prepares it by adding hydrogens and assigning charges.",
-      "required_tools": [
-        "prepare_protein_for_docking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare the 3D structure of the target protein for docking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent loads the protein structure and prepares it by adding hydrogens and assigning charges."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Prepare the library of millions of compounds for screening.",
-      "expected_outcome": "Agent processes the compound library to generate 3D conformations for each molecule.",
-      "required_tools": [
-        "prepare_compound_library"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Prepare the library of millions of compounds for screening.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the compound library to generate 3D conformations for each molecule."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the virtual screening (docking) simulation.",
-      "expected_outcome": "Agent runs the docking program, which calculates a binding score for each compound.",
-      "required_tools": [
-        "run_virtual_screening"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the virtual screening (docking) simulation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the docking program, which calculates a binding score for each compound."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Analyze the results and select the top-scoring compounds for purchase and in vitro testing.",
-      "expected_outcome": "Agent sorts the results by score and selects the top 1000 compounds for follow-up.",
-      "required_tools": [
-        "analyze_docking_results",
-        "generate_compound_purchase_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Analyze the results and select the top-scoring compounds for purchase and in vitro testing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sorts the results by score and selects the top 1000 compounds for follow-up."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

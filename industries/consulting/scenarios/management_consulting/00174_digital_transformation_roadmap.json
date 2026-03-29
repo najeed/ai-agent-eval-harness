@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-174",
-  "title": "Digital Transformation Roadmap",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Digital Transformation Roadmap",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must create a high-level digital transformation roadmap for a traditional manufacturing client.",
-  "use_case": "Management Consulting",
-  "core_function": "Strategy & Recommendation",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify key areas for digital transformation in manufacturing (e.g., 'Smart Factory (IoT)', 'Digital Supply Chain', 'E-commerce Platform').",
-      "expected_outcome": "Agent brainstorms relevant transformation initiatives.",
-      "required_tools": [
-        "brainstorm_ideas"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify key areas for digital transformation in manufacturing (e.g., 'Smart Factory (IoT)', 'Digital Supply Chain', 'E-commerce Platform').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent brainstorms relevant transformation initiatives."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Organize these initiatives into a phased roadmap (Phase 1: Foundational, Phase 2: Growth, Phase 3: Optimization).",
-      "expected_outcome": "Agent creates a logical, phased plan.",
-      "required_tools": [
-        "create_project_timeline"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Organize these initiatives into a phased roadmap (Phase 1: Foundational, Phase 2: Growth, Phase 3: Optimization).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a logical, phased plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each initiative, list the key expected benefits.",
-      "expected_outcome": "Agent clearly articulates the value proposition of each part of the strategy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each initiative, list the key expected benefits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly articulates the value proposition of each part of the strategy."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

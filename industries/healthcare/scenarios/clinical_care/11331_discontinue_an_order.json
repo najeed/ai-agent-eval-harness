@@ -1,107 +1,74 @@
 {
-  "scenario_id": "hc-cc-11331",
-  "title": "Discontinue an Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Discontinue an Order",
+    "compliance_level": "Standard"
+  },
   "description": "A patient has had an adverse reaction to a medication. The physician needs to discontinue the order immediately.",
-  "use_case": "Clinical Care",
-  "core_function": "Orders & Results Management (CPOE)",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's chart and view their active orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician finds the list of current medication orders."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's chart and view their active orders.",
-      "expected_outcome": "Physician finds the list of current medication orders.",
-      "required_tools": [
-        "get_patient_record",
-        "get_active_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the medication order that needs to be stopped.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician correctly identifies the medication causing the reaction."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select the 'Discontinue' action, provide a reason ('Adverse reaction'), and sign the order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is immediately inactivated on the MAR and in the pharmacy system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the medication order that needs to be stopped.",
-      "expected_outcome": "Physician correctly identifies the medication causing the reaction.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_logic",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select the 'Discontinue' action, provide a reason ('Adverse reaction'), and sign the order.",
-      "expected_outcome": "The order is immediately inactivated on the MAR and in the pharmacy system.",
-      "required_tools": [
-        "discontinue_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

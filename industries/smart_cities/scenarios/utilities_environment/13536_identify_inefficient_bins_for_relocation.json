@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-ue-13536",
-  "title": "Identify Inefficient Bins for Relocation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Inefficient Bins for Relocation",
+    "compliance_level": "Standard"
+  },
   "description": "An operator analyzes waste collection data to find smart bins that are consistently underutilized, suggesting they could be relocated.",
-  "use_case": "Utilities & Environment",
-  "core_function": "Waste Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve historical fill-level data for all smart bins over the past 6 months.",
-      "expected_outcome": "Agent successfully queries the waste management database.",
-      "required_tools": [
-        "get_historical_bin_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve historical fill-level data for all smart bins over the past 6 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully queries the waste management database."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to identify bins whose average fill level at time of collection is below 20%.",
-      "expected_outcome": "Agent generates a list of underutilized bins.",
-      "required_tools": [
-        "analyze_bin_utilization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to identify bins whose average fill level at time of collection is below 20%.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of underutilized bins."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a report for the sanitation department recommending these bins for potential relocation to higher-traffic areas.",
-      "expected_outcome": "Agent provides a data-driven recommendation for asset optimization.",
-      "required_tools": [
-        "generate_asset_optimization_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a report for the sanitation department recommending these bins for potential relocation to higher-traffic areas.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a data-driven recommendation for asset optimization."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

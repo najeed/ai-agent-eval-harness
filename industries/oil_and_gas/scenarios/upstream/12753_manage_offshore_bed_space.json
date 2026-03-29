@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12753",
-  "title": "Manage Offshore Platform Bed Space",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Offshore Platform Bed Space",
+    "compliance_level": "Standard"
+  },
   "description": "A logistics planner manages the allocation of limited bed space (POB - Personnel on Board) on an offshore platform for an upcoming maintenance campaign.",
-  "use_case": "Upstream",
-  "core_function": "Asset & Maintenance Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Determine the number of extra personnel required for the maintenance campaign and for how long.",
-      "expected_outcome": "A list of required personnel and their stay durations is compiled.",
-      "required_tools": [
-        "get_campaign_personnel_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Determine the number of extra personnel required for the maintenance campaign and for how long.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of required personnel and their stay durations is compiled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the platform's bed space availability for the planned campaign dates.",
-      "expected_outcome": "The system shows a conflict, with not enough beds available for the peak week.",
-      "required_tools": [
-        "check_pob_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the platform's bed space availability for the planned campaign dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows a conflict, with not enough beds available for the peak week."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Adjust the maintenance schedule or personnel mobilization dates to resolve the bed space conflict.",
-      "expected_outcome": "The schedule is revised to smooth out the personnel peak, resolving the conflict.",
-      "required_tools": [
-        "update_maintenance_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Adjust the maintenance schedule or personnel mobilization dates to resolve the bed space conflict.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The schedule is revised to smooth out the personnel peak, resolving the conflict."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,65 +1,72 @@
 {
-  "scenario_id": "venues-gs-14277",
-  "title": "Handle an Intoxicated Guest",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an Intoxicated Guest",
+    "compliance_level": "Standard"
+  },
   "description": "An usher reports a guest who appears heavily intoxicated and is bothering other patrons.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Issue Resolution & Complaints",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Dispatch a security supervisor and a guest services manager to the location.",
-      "expected_outcome": "Agent sends both security and guest services management to assess the situation.",
-      "required_tools": [
-        "dispatch_security_team",
-        "dispatch_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Dispatch a security supervisor and a guest services manager to the location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends both security and guest services management to assess the situation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The on-site team assesses the guest and determines they need to be ejected.",
-      "expected_outcome": "The decision is made to remove the guest.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The on-site team assesses the guest and determines they need to be ejected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The decision is made to remove the guest."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the incident, including the decision to eject the guest.",
-      "expected_outcome": "Agent creates a detailed incident report.",
-      "required_tools": [
-        "log_incident_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the incident, including the decision to eject the guest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed incident report."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Arrange for safe transportation for the guest, such as calling a taxi or ride-sharing service.",
-      "expected_outcome": "Security ensures the guest has a safe way to leave the property.",
-      "required_tools": [
-        "arrange_transportation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Arrange for safe transportation for the guest, such as calling a taxi or ride-sharing service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Security ensures the guest has a safe way to leave the property."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

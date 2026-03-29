@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12861",
-  "title": "Perform In Silico Toxicity Prediction",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform In Silico Toxicity Prediction",
+    "compliance_level": "Standard"
+  },
   "description": "A computational chemist needs to predict the potential toxicity of a new drug candidate using a computer model before conducting animal studies.",
-  "use_case": "Research & Development",
-  "core_function": "Preclinical Research",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Input the chemical structure of the new drug candidate into a toxicity prediction software.",
-      "expected_outcome": "Agent successfully inputs the structure in SMILES or MOL format.",
-      "required_tools": [
-        "input_chemical_structure"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Input the chemical structure of the new drug candidate into a toxicity prediction software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully inputs the structure in SMILES or MOL format."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a panel of in silico toxicology models (e.g., for mutagenicity, carcinogenicity).",
-      "expected_outcome": "Agent successfully runs the prediction models.",
-      "required_tools": [
-        "run_toxicity_prediction_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a panel of in silico toxicology models (e.g., for mutagenicity, carcinogenicity).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs the prediction models."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the model outputs to identify any potential toxicity alerts.",
-      "expected_outcome": "Agent analyzes the report and finds a structural alert for potential hERG channel binding, indicating cardiotoxicity risk.",
-      "required_tools": [
-        "analyze_toxicity_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the model outputs to identify any potential toxicity alerts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent analyzes the report and finds a structural alert for potential hERG channel binding, indicating cardiotoxicity risk."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a report summarizing the potential risks to guide future preclinical testing.",
-      "expected_outcome": "Agent creates a report recommending a specific in vitro hERG assay be conducted.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a report summarizing the potential risks to guide future preclinical testing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a report recommending a specific in vitro hERG assay be conducted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

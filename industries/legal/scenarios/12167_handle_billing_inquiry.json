@@ -1,49 +1,59 @@
 {
-  "scenario_id": "legal-pm-12167",
-  "title": "Handle a Client Billing Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Client Billing Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A client has a question about a specific line item on their invoice. A billing coordinator needs to provide an explanation.",
-  "use_case": "Law Practice Management",
-  "core_function": "Billing & Timekeeping",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the specific invoice and the time entry for the line item in question.",
-      "expected_outcome": "Agent locates the exact time entry the client is asking about.",
-      "required_tools": [
-        "billing_software_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the specific invoice and the time entry for the line item in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the exact time entry the client is asking about."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the detailed description of the work performed for that time entry.",
-      "expected_outcome": "Agent understands what work the charge corresponds to.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the detailed description of the work performed for that time entry.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands what work the charge corresponds to."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a clear and detailed explanation to the client about the work that was done.",
-      "expected_outcome": "Agent successfully resolves the client's inquiry.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a clear and detailed explanation to the client about the work that was done.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully resolves the client's inquiry."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

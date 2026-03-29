@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-maint-12690",
-  "title": "Perform Electrical Thermography Inspection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Electrical Thermography Inspection",
+    "compliance_level": "Standard"
+  },
   "description": "An electrician uses a thermal imaging camera to inspect electrical switchgear for hot spots, which can indicate a poor connection and a fire risk.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Reliability & Condition Monitoring",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Perform a thermography scan of the main electrical substation.",
-      "expected_outcome": "Thermal images of all electrical cabinets are captured.",
-      "required_tools": [
-        "perform_thermography_scan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Perform a thermography scan of the main electrical substation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Thermal images of all electrical cabinets are captured."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the thermal images and identify a connection on a circuit breaker that is significantly hotter than the others.",
-      "expected_outcome": "A potential fire risk is identified.",
-      "required_tools": [
-        "analyze_thermal_images"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_identification_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the thermal images and identify a connection on a circuit breaker that is significantly hotter than the others.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A potential fire risk is identified."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a work order to de-energize the circuit and have an electrician clean and tighten the hot connection.",
-      "expected_outcome": "A corrective work order is created to eliminate the fire hazard.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_management_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a work order to de-energize the circuit and have an electrician clean and tighten the hot connection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A corrective work order is created to eliminate the fire hazard."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

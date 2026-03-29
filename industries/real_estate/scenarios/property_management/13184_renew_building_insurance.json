@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13184",
-  "title": "Renew Building's Hazard Insurance Policy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Renew Building's Hazard Insurance Policy",
+    "compliance_level": "Standard"
+  },
   "description": "A property's hazard insurance policy is up for renewal. The PM needs to get quotes and renew the policy.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management & Reporting",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the current insurance policy to review coverage and premium.",
-      "expected_outcome": "Agent has the details of the expiring policy.",
-      "required_tools": [
-        "get_property_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the current insurance policy to review coverage and premium.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the details of the expiring policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the insurance broker to request renewal quotes from multiple carriers.",
-      "expected_outcome": "A request is sent to the broker to shop for competitive insurance quotes.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the insurance broker to request renewal quotes from multiple carriers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A request is sent to the broker to shop for competitive insurance quotes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the quotes with the property owner and process the payment for the chosen policy.",
-      "expected_outcome": "After owner approval, the premium for the new policy is paid and the new declaration page is saved.",
-      "required_tools": [
-        "process_payment",
-        "log_compliance_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the quotes with the property owner and process the payment for the chosen policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "After owner approval, the premium for the new policy is paid and the new declaration page is saved."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

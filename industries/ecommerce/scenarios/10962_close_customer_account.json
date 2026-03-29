@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10962",
-  "title": "Close Customer Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Close Customer Account",
+    "compliance_level": "Standard"
+  },
   "description": "A customer requests to have their account and all associated data permanently deleted.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Account Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the customer's identity with a high level of scrutiny to prevent malicious closures.",
-      "expected_outcome": "Agent follows a strict verification process.",
-      "required_tools": [
-        "verify_customer_identity_enhanced"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the customer's identity with a high level of scrutiny to prevent malicious closures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent follows a strict verification process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Confirm with the customer that this action is irreversible and will delete their order history and saved information.",
-      "expected_outcome": "Agent clearly communicates the consequences of account closure.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Confirm with the customer that this action is irreversible and will delete their order history and saved information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the consequences of account closure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Initiate the account deletion process, which may involve anonymizing past orders for data retention purposes.",
-      "expected_outcome": "Agent successfully triggers the account closure and data deletion workflow.",
-      "required_tools": [
-        "delete_customer_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Initiate the account deletion process, which may involve anonymizing past orders for data retention purposes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully triggers the account closure and data deletion workflow."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-as-11024",
-  "title": "Request ASL Interpreter for Class",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request ASL Interpreter for Class",
+    "compliance_level": "Standard"
+  },
   "description": "A deaf student needs to request an American Sign Language (ASL) interpreter for one of their newly registered classes.",
-  "use_case": "Academic Support",
-  "core_function": "Disability & Accessibility Services",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and confirm their approved accommodation for ASL interpretation.",
-      "expected_outcome": "Agent verifies the student's record includes 'ASL Interpreter for lectures'.",
-      "required_tools": [
-        "get_student_disability_services_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and confirm their approved accommodation for ASL interpretation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the student's record includes 'ASL Interpreter for lectures'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the details of the course requiring the interpreter (course name, schedule, location).",
-      "expected_outcome": "Agent gathers all necessary logistical information.",
-      "required_tools": [
-        "get_student_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the details of the course requiring the interpreter (course name, schedule, location).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all necessary logistical information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit a request to the interpreter scheduling coordinator with the course details.",
-      "expected_outcome": "Agent creates a service request in the scheduling system.",
-      "required_tools": [
-        "schedule_interpreter_service"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit a request to the interpreter scheduling coordinator with the course details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a service request in the scheduling system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

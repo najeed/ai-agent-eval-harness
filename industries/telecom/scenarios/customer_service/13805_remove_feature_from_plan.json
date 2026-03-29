@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13805",
-  "title": "Remove Feature from Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Remove Feature from Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to remove the 'Premium Voicemail' feature from their plan to save money.",
-  "use_case": "Customer Service",
-  "core_function": "Plan Management",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and verify they have the 'Premium Voicemail' add-on.",
-      "expected_outcome": "Agent confirms the feature is active on the customer's account.",
-      "required_tools": [
-        "get_customer_details",
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and verify they have the 'Premium Voicemail' add-on.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the feature is active on the customer's account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the customer of the monthly savings and confirm they wish to proceed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly states the new, lower monthly cost."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the customer of the monthly savings and confirm they wish to proceed.",
-      "expected_outcome": "Agent clearly states the new, lower monthly cost.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remove the add-on from the customer's plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully removes the feature using the system tool."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remove the add-on from the customer's plan.",
-      "expected_outcome": "Agent successfully removes the feature using the system tool.",
-      "required_tools": [
-        "remove_plan_addon"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

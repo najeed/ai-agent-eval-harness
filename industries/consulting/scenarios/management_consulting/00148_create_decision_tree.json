@@ -1,50 +1,59 @@
 {
-  "scenario_id": "consulting-mc-148",
-  "title": "Create a Decision Tree",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Decision Tree",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must create a decision tree to help a client decide whether to launch a new product.",
-  "use_case": "Management Consulting",
-  "core_function": "Analysis & Modeling",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the key decision ('Launch' vs. 'Don't Launch') and the key uncertainties ('High Demand' vs. 'Low Demand') with their probabilities.",
-      "expected_outcome": "Agent correctly structures the initial nodes of the decision tree.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the key decision ('Launch' vs. 'Don't Launch') and the key uncertainties ('High Demand' vs. 'Low Demand') with their probabilities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly structures the initial nodes of the decision tree."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign financial outcomes (payoffs) to each final branch of the tree.",
-      "expected_outcome": "Agent correctly assigns the payoff values.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign financial outcomes (payoffs) to each final branch of the tree.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly assigns the payoff values."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the Expected Monetary Value (EMV) for the 'Launch' decision.",
-      "expected_outcome": "Agent correctly calculates the EMV to help make the optimal decision.",
-      "required_tools": [
-        "calculate_emv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the Expected Monetary Value (EMV) for the 'Launch' decision.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the EMV to help make the optimal decision."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

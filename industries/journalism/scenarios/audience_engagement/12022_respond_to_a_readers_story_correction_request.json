@@ -1,67 +1,72 @@
 {
-  "scenario_id": "journalism-ae-12022",
-  "title": "Respond to a Reader's Story Correction Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a Reader's Story Correction Request",
+    "compliance_level": "Standard"
+  },
   "description": "A reader has emailed to point out a factual error in a published article. An editor must investigate and, if necessary, issue a correction.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Community Interaction",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the reader's email and identify the specific error they are reporting.",
-      "expected_outcome": "Agent understands the nature of the potential error.",
-      "required_tools": [
-        "email_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehension_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the reader's email and identify the specific error they are reporting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the nature of the potential error."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Re-check the reporter's original notes and sources to verify the reader's claim.",
-      "expected_outcome": "Agent determines that the reader is correct and the article contains an error.",
-      "required_tools": [
-        "search_internal_archive"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Re-check the reporter's original notes and sources to verify the reader's claim.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines that the reader is correct and the article contains an error."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the online article with the correct information and add a formal correction notice at the bottom of the story.",
-      "expected_outcome": "The article is corrected and a transparent notice is added.",
-      "required_tools": [
-        "cms_interface"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the online article with the correct information and add a formal correction notice at the bottom of the story.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The article is corrected and a transparent notice is added."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Reply to the reader's email, thanking them for pointing out the error and informing them that it has been corrected.",
-      "expected_outcome": "A polite and professional response is sent to the reader.",
-      "required_tools": [
-        "draft_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Reply to the reader's email, thanking them for pointing out the error and informing them that it has been corrected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A polite and professional response is sent to the reader."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

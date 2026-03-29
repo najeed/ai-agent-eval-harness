@@ -1,82 +1,58 @@
 {
-  "scenario_id": "lw-tm-12219",
-  "title": "Manage Carrier On-Time Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Carrier On-Time Performance",
+    "compliance_level": "Standard"
+  },
   "description": "A carrier manager needs to review the on-time pickup and delivery performance for a specific carrier over the last quarter.",
-  "use_case": "Transportation Management",
-  "core_function": "Freight & Carrier Management",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a performance report for the selected carrier for the previous quarter.",
-      "expected_outcome": "Agent successfully generates the carrier scorecard report.",
-      "required_tools": [
-        "generate_carrier_scorecard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a performance report for the selected carrier for the previous quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the carrier scorecard report."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the report to identify the on-time pickup and on-time delivery percentages.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the carrier's on-time delivery is 85%, which is below the 95% target."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the report to identify the on-time pickup and on-time delivery percentages.",
-      "expected_outcome": "Agent finds the carrier's on-time delivery is 85%, which is below the 95% target.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft an email to the carrier representative with the performance data to request a corrective action plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares a data-driven communication to the carrier to address the performance issue."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft an email to the carrier representative with the performance data to request a corrective action plan.",
-      "expected_outcome": "Agent prepares a data-driven communication to the carrier to address the performance issue.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

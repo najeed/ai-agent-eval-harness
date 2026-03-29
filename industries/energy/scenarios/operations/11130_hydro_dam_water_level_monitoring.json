@@ -1,53 +1,59 @@
 {
-  "scenario_id": "energy-op-11130",
-  "title": "Hydro Dam Water Level Monitoring",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Hydro Dam Water Level Monitoring",
+    "compliance_level": "Standard"
+  },
   "description": "An operator at a hydroelectric dam needs to assess current water levels and inflow forecasts to plan generation for the coming week.",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Dispatch & Optimization",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the current reservoir water level and compare it to historical seasonal averages.",
-      "expected_outcome": "Agent reports the water level is 5% above the seasonal average.",
-      "required_tools": [
-        "get_reservoir_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the current reservoir water level and compare it to historical seasonal averages.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reports the water level is 5% above the seasonal average."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the 7-day forecast for precipitation and river inflow into the reservoir.",
-      "expected_outcome": "Agent retrieves a forecast showing significant rainfall is expected.",
-      "required_tools": [
-        "get_inflow_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the 7-day forecast for precipitation and river inflow into the reservoir.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a forecast showing significant rainfall is expected."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend a generation schedule that increases output to manage the expected inflow while respecting environmental flow requirements.",
-      "expected_outcome": "Agent provides an hourly generation plan for the next 7 days.",
-      "required_tools": [
-        "optimize_hydro_dispatch_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend a generation schedule that increases output to manage the expected inflow while respecting environmental flow requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an hourly generation plan for the next 7 days."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

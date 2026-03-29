@@ -1,65 +1,72 @@
 {
-  "scenario_id": "ag-cm-10115",
-  "title": "Predict Optimal Harvest Time for Wine Grapes",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Predict Optimal Harvest Time for Wine Grapes",
+    "compliance_level": "Standard"
+  },
   "description": "A vineyard manager needs to decide the optimal day to harvest their Cabernet Sauvignon grapes based on sugar levels and weather.",
-  "use_case": "Crop Management",
-  "core_function": "Harvesting & Logistics",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the latest grape maturity data, including Brix (sugar), pH, and acidity from field samples.",
-      "expected_outcome": "Agent retrieves the latest quality metrics.",
-      "required_tools": [
-        "get_crop_quality_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the latest grape maturity data, including Brix (sugar), pH, and acidity from field samples.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the latest quality metrics."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the trend of the maturity data to predict when the grapes will reach the target Brix level.",
-      "expected_outcome": "Agent predicts the target Brix will be reached in 5 days.",
-      "required_tools": [
-        "predict_crop_maturity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "prediction_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the trend of the maturity data to predict when the grapes will reach the target Brix level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent predicts the target Brix will be reached in 5 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the 10-day weather forecast for any upcoming rain or extreme heat that could impact the decision.",
-      "expected_outcome": "Agent notes a major rainstorm is forecast in 7 days.",
-      "required_tools": [
-        "get_weather_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the 10-day weather forecast for any upcoming rain or extreme heat that could impact the decision.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent notes a major rainstorm is forecast in 7 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Recommend a harvest date that balances optimal maturity with the risk of bad weather.",
-      "expected_outcome": "Agent recommends harvesting in 5-6 days, before the rain arrives.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Recommend a harvest date that balances optimal maturity with the risk of bad weather.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recommends harvesting in 5-6 days, before the rain arrives."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

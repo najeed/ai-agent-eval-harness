@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12784",
-  "title": "Calculate Value at Risk (VaR)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Value at Risk (VaR)",
+    "compliance_level": "Standard"
+  },
   "description": "A risk manager calculates the Value at Risk (VaR) for the company's trading portfolio to estimate the potential maximum loss over a single day.",
-  "use_case": "Downstream",
-  "core_function": "Supply & Trading",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all positions in the trading portfolio.",
-      "expected_outcome": "A complete list of all open positions is retrieved.",
-      "required_tools": [
-        "get_trader_portfolio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all positions in the trading portfolio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete list of all open positions is retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather historical market price data and calculate the volatility and correlations of the relevant commodities.",
-      "expected_outcome": "The statistical inputs for the VaR model are calculated.",
-      "required_tools": [
-        "get_historical_price_data",
-        "calculate_volatility_and_correlation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather historical market price data and calculate the volatility and correlations of the relevant commodities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The statistical inputs for the VaR model are calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the VaR model to calculate the 1-day, 95% confidence level VaR for the portfolio.",
-      "expected_outcome": "The model outputs the VaR figure, e.g., '$5 million', which is then compared against a set limit.",
-      "required_tools": [
-        "run_var_calculation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the VaR model to calculate the 1-day, 95% confidence level VaR for the portfolio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The model outputs the VaR figure, e.g., '$5 million', which is then compared against a set limit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "pharma-rc-12830",
-  "title": "Manage Adverse Event from Social Media",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Adverse Event from Social Media",
+    "compliance_level": "Standard"
+  },
   "description": "An agent monitoring social media finds a public post describing a potential adverse event for a company product.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Pharmacovigilance & Safety Reporting",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a social media post that contains the minimum criteria for a valid AE case (identifiable patient, identifiable reporter, specific product, specific event).",
-      "expected_outcome": "Agent identifies a tweet mentioning a specific drug and a side effect.",
-      "required_tools": [
-        "monitor_social_media"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a social media post that contains the minimum criteria for a valid AE case (identifiable patient, identifiable reporter, specific product, specific event).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a tweet mentioning a specific drug and a side effect."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to contact the reporter via direct message to request permission to discuss the event privately.",
-      "expected_outcome": "Agent sends a compliant, pre-approved message to the user.",
-      "required_tools": [
-        "send_direct_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to contact the reporter via direct message to request permission to discuss the event privately.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a compliant, pre-approved message to the user."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If contact is successful, capture the AE details. If not, create a case with the publicly available information.",
-      "expected_outcome": "Agent creates a new adverse event case in the safety database using the information from the tweet.",
-      "required_tools": [
-        "create_adverse_event_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If contact is successful, capture the AE details. If not, create a case with the publicly available information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new adverse event case in the safety database using the information from the tweet."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

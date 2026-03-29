@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12728",
-  "title": "Conduct Field Safety Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Field Safety Audit",
+    "compliance_level": "Standard"
+  },
   "description": "An HSE officer conducts a planned safety audit of a work crew performing maintenance, using a digital checklist.",
-  "use_case": "Downstream",
-  "core_function": "Health, Safety & Environment (HSE)",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the 'Field Maintenance Safety Audit' checklist on a tablet.",
-      "expected_outcome": "The correct digital audit form is loaded.",
-      "required_tools": [
-        "load_audit_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the 'Field Maintenance Safety Audit' checklist on a tablet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct digital audit form is loaded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Observe the work crew and complete the checklist items, such as verifying PPE usage, correct tool usage, and valid work permits.",
-      "expected_outcome": "The audit is conducted, and several items are marked as compliant, but one non-compliance (improperly stored ladder) is noted.",
-      "required_tools": [
-        "complete_digital_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Observe the work crew and complete the checklist items, such as verifying PPE usage, correct tool usage, and valid work permits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The audit is conducted, and several items are marked as compliant, but one non-compliance (improperly stored ladder) is noted."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the non-compliance finding, assign a corrective action to the crew supervisor, and submit the completed audit report.",
-      "expected_outcome": "The audit is submitted, and a corrective action is automatically tracked in the safety system.",
-      "required_tools": [
-        "log_corrective_action",
-        "submit_audit_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the non-compliance finding, assign a corrective action to the crew supervisor, and submit the completed audit report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The audit is submitted, and a corrective action is automatically tracked in the safety system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

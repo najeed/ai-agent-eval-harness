@@ -1,52 +1,59 @@
 {
-  "scenario_id": "pharma-ct-12864",
-  "title": "Code Clinical Trial Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Code Clinical Trial Data",
+    "compliance_level": "Standard"
+  },
   "description": "A clinical data coder must code raw text terms from an EDC system (like adverse events or concomitant medications) to standardized dictionaries.",
-  "use_case": "Clinical Trials",
-  "core_function": "Clinical Data Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Extract all uncoded adverse event terms from the EDC system.",
-      "expected_outcome": "Agent retrieves a list of raw terms like 'tummy ache' and 'sore head'.",
-      "required_tools": [
-        "get_uncoded_ae_terms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Extract all uncoded adverse event terms from the EDC system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of raw terms like 'tummy ache' and 'sore head'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use an auto-coding tool to automatically code the terms against the MedDRA dictionary.",
-      "expected_outcome": "The tool automatically codes 'sore head' to the MedDRA term 'Headache'. 'Tummy ache' is not found.",
-      "required_tools": [
-        "autocode_terms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use an auto-coding tool to automatically code the terms against the MedDRA dictionary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool automatically codes 'sore head' to the MedDRA term 'Headache'. 'Tummy ache' is not found."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Manually review the terms that could not be auto-coded.",
-      "expected_outcome": "Agent reviews 'tummy ache' and manually codes it to the MedDRA term 'Abdominal pain'.",
-      "required_tools": [
-        "manually_code_term"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Manually review the terms that could not be auto-coded.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews 'tummy ache' and manually codes it to the MedDRA term 'Abdominal pain'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-sa-11034",
-  "title": "Petition to Drop Course After Deadline",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Petition to Drop Course After Deadline",
+    "compliance_level": "Standard"
+  },
   "description": "A student needs to drop a course after the official drop/add deadline due to a medical emergency.",
-  "use_case": "Student Administration",
-  "core_function": "Registration & Course Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and the course they wish to drop.",
-      "expected_outcome": "Agent confirms the student's enrollment in the course.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and the course they wish to drop.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's enrollment in the course."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the petition process for a late withdrawal, including the need for supporting documentation.",
-      "expected_outcome": "Agent clearly outlines the required steps and forms.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the petition process for a late withdrawal, including the need for supporting documentation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly outlines the required steps and forms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the student with the official petition form and instructions on where to submit it.",
-      "expected_outcome": "Agent emails the correct form and submission link to the student.",
-      "required_tools": [
-        "send_form_to_student"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the student with the official petition form and instructions on where to submit it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent emails the correct form and submission link to the student."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

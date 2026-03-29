@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-pa-13055",
-  "title": "Publish an Agency's Annual Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Publish an Agency's Annual Report",
+    "compliance_level": "Standard"
+  },
   "description": "A public agency is ready to publish its annual financial report to its website for public access.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Budget & Financial Reporting",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Compile the final, approved annual report document.",
-      "expected_outcome": "The communications director has the final PDF of the report.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Compile the final, approved annual report document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The communications director has the final PDF of the report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ensure the document is in a web-accessible format (e.g., tagged PDF).",
-      "expected_outcome": "The director confirms the PDF meets accessibility standards.",
-      "required_tools": [
-        "check_document_accessibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ensure the document is in a web-accessible format (e.g., tagged PDF).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The director confirms the PDF meets accessibility standards."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upload and publish the report to the agency's public website.",
-      "expected_outcome": "The director successfully posts the report online.",
-      "required_tools": [
-        "upload_to_website"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upload and publish the report to the agency's public website.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The director successfully posts the report online."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,110 +1,74 @@
 {
-  "scenario_id": "hc-cc-11322",
-  "title": "Write a Progress Note",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write a Progress Note",
+    "compliance_level": "Standard"
+  },
   "description": "A resident physician needs to write a SOAP (Subjective, Objective, Assessment, Plan) note for a patient they have just examined.",
-  "use_case": "Clinical Care",
-  "core_function": "Clinical Documentation & Charting",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's chart and create a new note.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Resident opens the correct patient record and selects the 'Progress Note' template."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's chart and create a new note.",
-      "expected_outcome": "Resident opens the correct patient record and selects the 'Progress Note' template.",
-      "required_tools": [
-        "get_patient_record",
-        "create_note"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Document the subjective, objective, assessment, and plan sections of the note.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Resident accurately and completely documents their findings and clinical reasoning."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Sign the note and route it to the attending physician for co-signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Resident signs the note, and it appears in the attending's inbox for review and co-signature."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Document the subjective, objective, assessment, and plan sections of the note.",
-      "expected_outcome": "Resident accurately and completely documents their findings and clinical reasoning.",
-      "required_tools": [
-        "update_note_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Sign the note and route it to the attending physician for co-signature.",
-      "expected_outcome": "Resident signs the note, and it appears in the attending's inbox for review and co-signature.",
-      "required_tools": [
-        "sign_note",
-        "route_for_cosignature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12476",
-  "title": "Get Client Approval on Ad Copy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Get Client Approval on Ad Copy",
+    "compliance_level": "Standard"
+  },
   "description": "A copywriter has finished writing ad copy and needs to get approval from the client before it goes live.",
-  "use_case": "Content & Creative Development",
-  "core_function": "Copywriting & Content Creation",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Place the ad copy into a shared document.",
-      "expected_outcome": "The copy is in a format that is easy for the client to review.",
-      "required_tools": [
-        "document_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Place the ad copy into a shared document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The copy is in a format that is easy for the client to review."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Share the document with the client and request their feedback.",
-      "expected_outcome": "Agent sends an email to the client with a link to the document.",
-      "required_tools": [
-        "email_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Share the document with the client and request their feedback.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends an email to the client with a link to the document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once feedback is received, make any necessary revisions.",
-      "expected_outcome": "Agent updates the copy based on the client's feedback.",
-      "required_tools": [
-        "document_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once feedback is received, make any necessary revisions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the copy based on the client's feedback."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-cs-12997",
-  "title": "Apply for Unemployment Benefits",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply for Unemployment Benefits",
+    "compliance_level": "Standard"
+  },
   "description": "A recently laid-off citizen needs to apply for unemployment insurance benefits online.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Benefits Administration",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the citizen's personal information, social security number, and previous employment details.",
-      "expected_outcome": "Agent successfully collects all required information for the application.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the citizen's personal information, social security number, and previous employment details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully collects all required information for the application."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the applicant's identity and employment history against state records.",
-      "expected_outcome": "Agent successfully validates the applicant's information.",
-      "required_tools": [
-        "verify_citizen_identity",
-        "check_employment_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the applicant's identity and employment history against state records.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully validates the applicant's information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the application and provide the citizen with information on next steps, including how to certify for weekly benefits.",
-      "expected_outcome": "Agent submits the application and provides clear instructions for the citizen.",
-      "required_tools": [
-        "submit_benefits_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the application and provide the citizen with information on next steps, including how to certify for weekly benefits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the application and provides clear instructions for the citizen."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

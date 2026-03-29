@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11705",
-  "title": "Proactive Feature Recommendation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Proactive Feature Recommendation",
+    "compliance_level": "Standard"
+  },
   "description": "A system alert shows a customer is manually performing a task that could be automated with an existing feature. A success agent reaches out.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Onboarding & Feature Adoption",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the customer's usage logs that triggered the alert.",
-      "expected_outcome": "Agent confirms the customer is repeatedly exporting data and then re-importing it after making changes.",
-      "required_tools": [
-        "view_customer_usage_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the customer's usage logs that triggered the alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer is repeatedly exporting data and then re-importing it after making changes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the customer and explain how they can achieve the same outcome using the 'Bulk Edit' feature directly within the application.",
-      "expected_outcome": "Agent clearly explains the more efficient workflow.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the customer and explain how they can achieve the same outcome using the 'Bulk Edit' feature directly within the application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the more efficient workflow."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Offer to schedule a brief screen-share session to walk them through the feature.",
-      "expected_outcome": "Agent provides proactive support to improve customer efficiency and satisfaction.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Offer to schedule a brief screen-share session to walk them through the feature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides proactive support to improve customer efficiency and satisfaction."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

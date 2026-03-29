@@ -1,52 +1,59 @@
 {
-  "scenario_id": "venues-vo-14225",
-  "title": "Handle a Facility Spill",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Facility Spill",
+    "compliance_level": "Standard"
+  },
   "description": "A guest reports a large soda spill in a main concourse, creating a slip hazard.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Housekeeping & Maintenance",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the report and the exact location of the spill.",
-      "expected_outcome": "Agent creates a new housekeeping request with the location.",
-      "required_tools": [
-        "log_housekeeping_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the report and the exact location of the spill.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new housekeeping request with the location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch the nearest available housekeeping crew member to the location.",
-      "expected_outcome": "Agent assigns the task to a specific cleaner.",
-      "required_tools": [
-        "dispatch_housekeeping_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch the nearest available housekeeping crew member to the location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the task to a specific cleaner."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct a nearby usher or security guard to stand by the spill to warn guests until housekeeping arrives.",
-      "expected_outcome": "Agent dispatches another staff member to secure the area.",
-      "required_tools": [
-        "dispatch_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct a nearby usher or security guard to stand by the spill to warn guests until housekeeping arrives.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches another staff member to secure the area."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

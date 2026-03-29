@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-fs-11076",
-  "title": "Report on Grant Expenditures",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report on Grant Expenditures",
+    "compliance_level": "Standard"
+  },
   "description": "A PI needs an official report of all expenditures for a grant that is ending to submit to the funding agency.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "Grant & Research Administration",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the PI and the grant account.",
-      "expected_outcome": "Agent confirms the identity of the PI and the grant.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the PI and the grant account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the identity of the PI and the grant."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a complete financial report for the entire grant period from the financial system.",
-      "expected_outcome": "Agent successfully generates the detailed expenditure report.",
-      "required_tools": [
-        "generate_grant_financial_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a complete financial report for the entire grant period from the financial system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the detailed expenditure report."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the report with the PI to ensure accuracy before they submit it.",
-      "expected_outcome": "Agent and PI review the report together and confirm its accuracy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the report with the PI to ensure accuracy before they submit it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent and PI review the report together and confirm its accuracy."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

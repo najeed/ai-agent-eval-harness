@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-cs-14126",
-  "title": "Billing Dispute - Incorrect Meter Read",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Billing Dispute - Incorrect Meter Read",
+    "compliance_level": "Standard"
+  },
   "description": "A customer believes their bill is wrong because the meter read was estimated, not actual.",
-  "use_case": "Customer Service",
-  "core_function": "Billing & Account Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's bill and confirm that the read type was 'Estimated'.",
-      "expected_outcome": "Agent verifies the bill was based on an estimate.",
-      "required_tools": [
-        "get_billing_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's bill and confirm that the read type was 'Estimated'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the bill was based on an estimate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask the customer to provide a current, actual meter read.",
-      "expected_outcome": "Agent guides the customer on how to read their meter and records the value.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask the customer to provide a current, actual meter read.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent guides the customer on how to read their meter and records the value."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Re-bill the account using the actual meter read provided by the customer.",
-      "expected_outcome": "Agent cancels the old bill and issues a new, corrected bill, resolving the dispute.",
-      "required_tools": [
-        "rebill_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Re-bill the account using the actual meter read provided by the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent cancels the old bill and issues a new, corrected bill, resolving the dispute."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

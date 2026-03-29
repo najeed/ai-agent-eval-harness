@@ -1,64 +1,72 @@
 {
-  "scenario_id": "marketing-ar-12434",
-  "title": "Investigate a Data Anomaly",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate a Data Anomaly",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst notices a sudden, unexplained spike in website traffic in a report and needs to find the cause.",
-  "use_case": "Analytics & Reporting",
-  "core_function": "Data Analysis & Insights",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the exact date and time of the traffic spike from the analytics dashboard.",
-      "expected_outcome": "Agent pinpoints the anomaly.",
-      "required_tools": [
-        "analytics_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the exact date and time of the traffic spike from the analytics dashboard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pinpoints the anomaly."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the referral sources for the traffic during the spike.",
-      "expected_outcome": "Agent drills down into the traffic sources.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the referral sources for the traffic during the spike.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drills down into the traffic sources."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Discover that the spike was caused by a large amount of bot traffic from a single referral source.",
-      "expected_outcome": "Agent identifies the root cause as non-human traffic.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Discover that the spike was caused by a large amount of bot traffic from a single referral source.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the root cause as non-human traffic."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Apply a filter to the analytics view to exclude the bot traffic for more accurate reporting.",
-      "expected_outcome": "Agent creates and applies a filter to clean the data going forward.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_cleaning_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Apply a filter to the analytics view to exclude the bot traffic for more accurate reporting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates and applies a filter to clean the data going forward."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

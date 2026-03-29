@@ -1,110 +1,74 @@
 {
-  "scenario_id": "hc-as-11361",
-  "title": "Document a Physical Therapy Session",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document a Physical Therapy Session",
+    "compliance_level": "Standard"
+  },
   "description": "A physical therapist has completed a session with a patient and needs to document the activities and the patient's progress.",
-  "use_case": "Ancillary Services",
-  "core_function": "Therapy & Rehabilitation",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's chart and create a new therapy note.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Therapist accesses the correct patient and note template."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's chart and create a new therapy note.",
-      "expected_outcome": "Therapist accesses the correct patient and note template.",
-      "required_tools": [
-        "get_patient_record",
-        "create_note"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Document the specific exercises performed, the duration of the session, and subjective/objective observations of the patient's progress.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Therapist accurately documents the details of the session."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the appropriate billing codes for the services provided and sign the note.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The session is documented, and the charges are captured for billing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Document the specific exercises performed, the duration of the session, and subjective/objective observations of the patient's progress.",
-      "expected_outcome": "Therapist accurately documents the details of the session.",
-      "required_tools": [
-        "update_note_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the appropriate billing codes for the services provided and sign the note.",
-      "expected_outcome": "The session is documented, and the charges are captured for billing.",
-      "required_tools": [
-        "add_therapy_charge",
-        "sign_note"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

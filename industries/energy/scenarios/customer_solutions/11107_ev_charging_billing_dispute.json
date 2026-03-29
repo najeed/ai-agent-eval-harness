@@ -1,51 +1,59 @@
 {
-  "scenario_id": "energy-cs-11107",
-  "title": "EV Charging Billing Dispute",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "EV Charging Billing Dispute",
+    "compliance_level": "Standard"
+  },
   "description": "A customer claims they were overcharged for a public EV charging session.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "EV Charging Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the charging session details using the customer's account ID and the date of the session.",
-      "expected_outcome": "Agent pulls the session record showing start time, end time, and kWh delivered.",
-      "required_tools": [
-        "get_charging_session_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the charging session details using the customer's account ID and the date of the session.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls the session record showing start time, end time, and kWh delivered."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the pricing rate applied during the session against the published rates for that charger and time.",
-      "expected_outcome": "Agent confirms the correct time-of-use rate was applied.",
-      "required_tools": [
-        "get_charger_rate_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the pricing rate applied during the session against the published rates for that charger and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the correct time-of-use rate was applied."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the charges to the customer, breaking down the cost based on energy consumed and any session fees.",
-      "expected_outcome": "Agent clearly communicates the calculation of the final bill.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the charges to the customer, breaking down the cost based on energy consumed and any session fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the calculation of the final bill."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

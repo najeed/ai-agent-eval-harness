@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-fs-11060",
-  "title": "Check for Grant Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check for Grant Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "A grant administrator is conducting an audit and needs to confirm that all personnel paid from a specific grant have completed their mandatory effort reporting.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "Grant & Research Administration",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the grant account to be audited.",
-      "expected_outcome": "Agent correctly identifies the grant.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the grant account to be audited.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the grant."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a list of all personnel who have received salary payments from this grant in the last fiscal year.",
-      "expected_outcome": "Agent successfully pulls a list of 5 employees.",
-      "required_tools": [
-        "get_personnel_by_grant"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a list of all personnel who have received salary payments from this grant in the last fiscal year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pulls a list of 5 employees."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cross-reference this list with the effort reporting system to check for completion status.",
-      "expected_outcome": "Agent finds that 4 out of 5 employees have completed their effort reports and flags the non-compliant individual.",
-      "required_tools": [
-        "check_effort_reporting_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cross-reference this list with the effort reporting system to check for completion status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that 4 out of 5 employees have completed their effort reports and flags the non-compliant individual."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

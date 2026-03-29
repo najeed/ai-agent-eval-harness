@@ -1,51 +1,59 @@
 {
-  "scenario_id": "energy-cs-11175",
-  "title": "Renewable Natural Gas (RNG) Sourcing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Renewable Natural Gas (RNG) Sourcing",
+    "compliance_level": "Standard"
+  },
   "description": "A large industrial customer wants to source Renewable Natural Gas (RNG) to reduce the carbon footprint of their thermal processes.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Billing & Program Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify available RNG suppliers that can inject into the customer's local gas distribution network.",
-      "expected_outcome": "Agent finds two eligible RNG producers (from landfills and dairy farms).",
-      "required_tools": [
-        "find_rng_suppliers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify available RNG suppliers that can inject into the customer's local gas distribution network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds two eligible RNG producers (from landfills and dairy farms)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request quotes from the suppliers for a 5-year fixed-price contract for a specific volume of RNG.",
-      "expected_outcome": "Agent retrieves quotes from both suppliers.",
-      "required_tools": [
-        "request_rng_quotes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request quotes from the suppliers for a 5-year fixed-price contract for a specific volume of RNG.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves quotes from both suppliers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the quotes and advise the customer on the most cost-effective option.",
-      "expected_outcome": "Agent recommends a supplier and summarizes the contract terms.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the quotes and advise the customer on the most cost-effective option.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recommends a supplier and summarizes the contract terms."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

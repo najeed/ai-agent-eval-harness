@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12407",
-  "title": "Add Negative Keywords to Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add Negative Keywords to Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "An SEM manager reviews a search query report and finds irrelevant searches triggering ads. They need to add negative keywords to prevent this.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Paid Search (SEM)",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Pull the search query report for a specific campaign for the last 30 days.",
-      "expected_outcome": "Agent retrieves the list of actual search terms that triggered ads.",
-      "required_tools": [
-        "google_ads_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Pull the search query report for a specific campaign for the last 30 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the list of actual search terms that triggered ads."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify irrelevant search queries (e.g., 'free', 'jobs', 'reviews').",
-      "expected_outcome": "Agent compiles a list of terms that indicate non-commercial intent.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify irrelevant search queries (e.g., 'free', 'jobs', 'reviews').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a list of terms that indicate non-commercial intent."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the identified irrelevant terms to the campaign's negative keyword list.",
-      "expected_outcome": "Agent successfully updates the negative keyword list, improving campaign efficiency.",
-      "required_tools": [
-        "google_ads_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the identified irrelevant terms to the campaign's negative keyword list.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the negative keyword list, improving campaign efficiency."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

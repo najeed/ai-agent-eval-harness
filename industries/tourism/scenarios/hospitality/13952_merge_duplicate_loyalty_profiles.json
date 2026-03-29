@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13952",
-  "title": "Merge Duplicate Loyalty Profiles",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Merge Duplicate Loyalty Profiles",
+    "compliance_level": "Standard"
+  },
   "description": "A guest has accidentally created two loyalty profiles and wants to merge them into one.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Loyalty & Guest Relations",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the two duplicate profiles using the guest's name and email address.",
-      "expected_outcome": "Agent successfully locates both loyalty accounts.",
-      "required_tools": [
-        "search_loyalty_accounts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the two duplicate profiles using the guest's name and email address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully locates both loyalty accounts."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify ownership of both accounts with the guest.",
-      "expected_outcome": "Agent confirms the guest is the owner of both profiles.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify ownership of both accounts with the guest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the guest is the owner of both profiles."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Merge the two profiles, ensuring all points and stay history are consolidated into the primary account.",
-      "expected_outcome": "Agent successfully merges the accounts and confirms the new total points balance with the guest.",
-      "required_tools": [
-        "merge_loyalty_profiles"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_integrity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Merge the two profiles, ensuring all points and stay history are consolidated into the primary account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully merges the accounts and confirms the new total points balance with the guest."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

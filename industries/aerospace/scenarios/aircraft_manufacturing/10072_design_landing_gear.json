@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-am-10072",
-  "title": "Design a Landing Gear System",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Design a Landing Gear System",
+    "compliance_level": "Standard"
+  },
   "description": "An engineering team is designing the landing gear for a new aircraft, including the retraction mechanism and shock absorbers.",
-  "use_case": "Aircraft Manufacturing",
-  "core_function": "Design & Engineering",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Calculate the required strength and stroke of the shock absorbers based on the aircraft's maximum landing weight and sink rate.",
-      "expected_outcome": "Agent determines the required performance specs for the shock absorbers.",
-      "required_tools": [
-        "calculate_landing_loads"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Calculate the required strength and stroke of the shock absorbers based on the aircraft's maximum landing weight and sink rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the required performance specs for the shock absorbers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Design the retraction mechanism, ensuring it fits within the available space in the wing and fuselage when retracted.",
-      "expected_outcome": "Agent creates a CAD model of a retraction mechanism that meets all geometric constraints.",
-      "required_tools": [
-        "create_cad_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "model_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Design the retraction mechanism, ensuring it fits within the available space in the wing and fuselage when retracted.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a CAD model of a retraction mechanism that meets all geometric constraints."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a kinematic simulation of the retraction and deployment sequence to ensure there are no clashes and the sequence completes within the required time.",
-      "expected_outcome": "Agent runs the simulation and confirms the landing gear deploys and retracts smoothly.",
-      "required_tools": [
-        "run_kinematic_simulation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "simulation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a kinematic simulation of the retraction and deployment sequence to ensure there are no clashes and the sequence completes within the required time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the simulation and confirms the landing gear deploys and retracts smoothly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

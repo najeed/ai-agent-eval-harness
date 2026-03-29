@@ -1,53 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11994",
-  "title": "Handle a Diminished Value Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Diminished Value Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A third-party claimant is demanding payment for the diminished value of their vehicle after it was repaired following an accident with your insured.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Claims Processing",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the diminished value claim from the third party.",
-      "expected_outcome": "The adjuster logs the new demand in the claim file.",
-      "required_tools": [
-        "log_claim_demand"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the diminished value claim from the third party.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster logs the new demand in the claim file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the state's laws regarding diminished value claims.",
-      "expected_outcome": "The adjuster confirms that diminished value claims are permissible in the relevant state.",
-      "required_tools": [
-        "check_state_laws"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the state's laws regarding diminished value claims.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster confirms that diminished value claims are permissible in the relevant state."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the claim and make a reasonable settlement offer based on the vehicle's type, age, and damage severity.",
-      "expected_outcome": "The adjuster analyzes the case and makes a settlement offer, which may be less than the original demand.",
-      "required_tools": [
-        "offer_settlement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the claim and make a reasonable settlement offer based on the vehicle's type, age, and damage severity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster analyzes the case and makes a settlement offer, which may be less than the original demand."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-cs-13002",
-  "title": "Apply for SNAP Benefits",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply for SNAP Benefits",
+    "compliance_level": "Standard"
+  },
   "description": "A low-income individual wants to apply for the Supplemental Nutrition Assistance Program (SNAP).",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Benefits Administration",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather applicant's household information, income, and expenses.",
-      "expected_outcome": "Agent accurately collects all data needed for eligibility determination.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather applicant's household information, income, and expenses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately collects all data needed for eligibility determination."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Determine initial eligibility based on the provided information.",
-      "expected_outcome": "The system provides a preliminary determination that the applicant is likely eligible.",
-      "required_tools": [
-        "check_snap_eligibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Determine initial eligibility based on the provided information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system provides a preliminary determination that the applicant is likely eligible."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the application and schedule a follow-up interview with a caseworker.",
-      "expected_outcome": "Agent submits the application and schedules the required interview.",
-      "required_tools": [
-        "submit_benefits_application",
-        "schedule_caseworker_interview"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the application and schedule a follow-up interview with a caseworker.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the application and schedules the required interview."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

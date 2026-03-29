@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-pmc-11402",
-  "title": "Process Subcontractor Progress Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Subcontractor Progress Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "A subcontractor has submitted an invoice for work completed last month. The project controls team must verify the progress claimed before approving payment.",
-  "use_case": "Project Management & Controls",
-  "core_function": "Cost Engineering & Control",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the subcontractor's invoice and the associated contract.",
-      "expected_outcome": "Agent pulls up the invoice and the subcontract agreement.",
-      "required_tools": [
-        "get_supplier_invoice",
-        "get_contract_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the subcontractor's invoice and the associated contract.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the invoice and the subcontract agreement."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the progress claimed on the invoice against the daily progress reports submitted by the field engineer.",
-      "expected_outcome": "Agent verifies that the claimed work (e.g., '1000 cubic meters of concrete poured') matches the field reports.",
-      "required_tools": [
-        "get_daily_progress_reports"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the progress claimed on the invoice against the daily progress reports submitted by the field engineer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that the claimed work (e.g., '1000 cubic meters of concrete poured') matches the field reports."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Approve the invoice for the verified amount and route it to accounts payable for payment.",
-      "expected_outcome": "Agent approves the invoice, which is then sent to the AP department.",
-      "required_tools": [
-        "approve_invoice_for_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Approve the invoice for the verified amount and route it to accounts payable for payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent approves the invoice, which is then sent to the AP department."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

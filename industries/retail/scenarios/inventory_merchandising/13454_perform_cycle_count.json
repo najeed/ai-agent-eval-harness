@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-im-13454",
-  "title": "Perform a Cycle Count",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Cycle Count",
+    "compliance_level": "Standard"
+  },
   "description": "A store associate is assigned to perform a cycle count for the 'men's denim' category to verify inventory accuracy.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Stock Management",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the cycle count task on a handheld device.",
-      "expected_outcome": "The device displays a list of items in the men's denim category and their expected quantities.",
-      "required_tools": [
-        "open_cycle_count_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the cycle count task on a handheld device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The device displays a list of items in the men's denim category and their expected quantities."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the barcode of the first item and physically count the quantity on the shelf and in the back room.",
-      "expected_outcome": "The associate performs a physical count of the item.",
-      "required_tools": [
-        "scan_item_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the barcode of the first item and physically count the quantity on the shelf and in the back room.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate performs a physical count of the item."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the counted quantity into the device. Repeat for all items. Any discrepancies are automatically flagged for review.",
-      "expected_outcome": "The physical counts are entered, and the system's inventory record is updated or a recount is triggered.",
-      "required_tools": [
-        "enter_cycle_count_quantity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the counted quantity into the device. Repeat for all items. Any discrepancies are automatically flagged for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The physical counts are entered, and the system's inventory record is updated or a recount is triggered."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

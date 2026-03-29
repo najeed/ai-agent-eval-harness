@@ -105,10 +105,15 @@ class HealthcareProvider(BaseProvider):
                 else:
                     if self.allow_simulation:
                         logger.warning("cms_file_missing_using_sim", path=path)
-                        content = [
-                            {"Hospital Name": "SIM CLINIC A", "Provider ID": "001", "Hospital overall rating": 4, "Mortality national comparison": "Same"},
-                            {"Hospital Name": "SIM CLINIC B", "Provider ID": "002", "Hospital overall rating": 5, "Mortality national comparison": "Above"}
-                        ]
+                        mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "healthcare", "mock_cms.csv")
+                        if os.path.exists(mock_path):
+                            df = pd.read_csv(mock_path)
+                            content = df.head(limit).to_dict(orient="records")
+                        else:
+                            content = [
+                                {"Hospital Name": "SIM CLINIC A", "Provider ID": "001", "Hospital overall rating": 4, "Mortality national comparison": "Same"},
+                                {"Hospital Name": "SIM CLINIC B", "Provider ID": "002", "Hospital overall rating": 5, "Mortality national comparison": "Above"}
+                            ]
                     else:
                         return None
                 

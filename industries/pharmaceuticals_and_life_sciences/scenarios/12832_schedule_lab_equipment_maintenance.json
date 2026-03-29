@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12832",
-  "title": "Schedule Lab Equipment Maintenance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Lab Equipment Maintenance",
+    "compliance_level": "Standard"
+  },
   "description": "A lab manager needs to schedule preventative maintenance for a high-performance liquid chromatography (HPLC) machine.",
-  "use_case": "Research & Development",
-  "core_function": "Lab & Sample Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the maintenance schedule for the specific HPLC machine.",
-      "expected_outcome": "Agent finds that the annual preventative maintenance is due next month.",
-      "required_tools": [
-        "get_equipment_maintenance_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the maintenance schedule for the specific HPLC machine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that the annual preventative maintenance is due next month."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the equipment vendor to schedule a service visit.",
-      "expected_outcome": "Agent contacts the vendor and schedules a service engineer for a specific date.",
-      "required_tools": [
-        "contact_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the equipment vendor to schedule a service visit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent contacts the vendor and schedules a service engineer for a specific date."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Block off the equipment's time in the lab scheduling system for the day of the maintenance.",
-      "expected_outcome": "Agent successfully makes the HPLC unavailable for booking on the scheduled date.",
-      "required_tools": [
-        "update_equipment_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Block off the equipment's time in the lab scheduling system for the day of the maintenance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully makes the HPLC unavailable for booking on the scheduled date."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Log the completion of the maintenance and upload the service report once the visit is complete.",
-      "expected_outcome": "Agent updates the maintenance record and attaches the vendor's service report.",
-      "required_tools": [
-        "log_maintenance_activity",
-        "attach_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Log the completion of the maintenance and upload the service report once the visit is complete.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the maintenance record and attaches the vendor's service report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

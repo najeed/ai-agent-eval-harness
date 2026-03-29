@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tr-to-14010",
-  "title": "Assign Driver to a New Load",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assign Driver to a New Load",
+    "compliance_level": "Standard"
+  },
   "description": "A dispatcher needs to assign a newly available load to the most suitable driver based on location, hours of service (HOS), and equipment type.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Dispatch & Load Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the details of a new load, including origin, destination, and required equipment (e.g., refrigerated trailer).",
-      "expected_outcome": "Dispatcher understands the requirements of the load.",
-      "required_tools": [
-        "get_load_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the details of a new load, including origin, destination, and required equipment (e.g., refrigerated trailer).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher understands the requirements of the load."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Find available drivers who are near the load's origin, have sufficient available HOS, and have the correct equipment qualification.",
-      "expected_outcome": "System returns a list of 3 eligible drivers.",
-      "required_tools": [
-        "find_available_drivers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Find available drivers who are near the load's origin, have sufficient available HOS, and have the correct equipment qualification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System returns a list of 3 eligible drivers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the load to the best-fit driver and send them the dispatch information.",
-      "expected_outcome": "The load is assigned, and the driver receives all necessary pickup details.",
-      "required_tools": [
-        "assign_load_to_driver",
-        "send_dispatch_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the load to the best-fit driver and send them the dispatch information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The load is assigned, and the driver receives all necessary pickup details."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

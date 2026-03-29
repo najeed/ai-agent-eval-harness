@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13364",
-  "title": "Manage Property Tour for an Investor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Property Tour for an Investor",
+    "compliance_level": "Standard"
+  },
   "description": "An out-of-state investor is flying in to tour a portfolio of three potential investment properties.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment Sales",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a detailed tour schedule, including travel time between properties.",
-      "expected_outcome": "An efficient tour itinerary is created.",
-      "required_tools": [
-        "create_itinerary"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_effectiveness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a detailed tour schedule, including travel time between properties.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An efficient tour itinerary is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Coordinate with the listing agents or property managers of all three properties to ensure access.",
-      "expected_outcome": "Access is confirmed for all properties on the tour.",
-      "required_tools": [
-        "schedule_property_tour"
-      ],
-      "success_criteria": [
-        {
-          "metric": "coordination_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Coordinate with the listing agents or property managers of all three properties to ensure access.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Access is confirmed for all properties on the tour."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare a tour book with the Offering Memorandum for each property.",
-      "expected_outcome": "A professional package of materials is prepared for the investor.",
-      "required_tools": [
-        "compile_tour_book"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare a tour book with the Offering Memorandum for each property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A professional package of materials is prepared for the investor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

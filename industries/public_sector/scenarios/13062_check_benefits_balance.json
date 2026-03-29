@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-cs-13062",
-  "title": "Check EBT Card Balance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check EBT Card Balance",
+    "compliance_level": "Standard"
+  },
   "description": "A SNAP recipient wants to check the current balance on their EBT card.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Benefits Administration",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify and authenticate the benefits recipient using their card number and PIN or personal information.",
-      "expected_outcome": "Agent securely verifies the caller's identity.",
-      "required_tools": [
-        "verify_citizen_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify and authenticate the benefits recipient using their card number and PIN or personal information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely verifies the caller's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the current balance from the EBT system.",
-      "expected_outcome": "Agent successfully finds the current balance on the card.",
-      "required_tools": [
-        "get_ebt_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the current balance from the EBT system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully finds the current balance on the card."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the citizen of their current balance.",
-      "expected_outcome": "Agent clearly communicates the balance amount.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the citizen of their current balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the balance amount."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12469",
-  "title": "Update Ad Creative in a Live Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Ad Creative in a Live Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "An ad creative is experiencing fatigue (declining performance). A manager needs to swap it out with a new one.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Paid Social & Display",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the underperforming ad creative in the campaign.",
-      "expected_outcome": "Agent finds the ad with the declining CTR.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the underperforming ad creative in the campaign.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the ad with the declining CTR."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Pause the old ad.",
-      "expected_outcome": "Agent successfully pauses the fatigued ad.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Pause the old ad.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pauses the fatigued ad."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new ad within the same ad set using the new creative assets.",
-      "expected_outcome": "Agent successfully uploads and launches the new ad.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new ad within the same ad set using the new creative assets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads and launches the new ad."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

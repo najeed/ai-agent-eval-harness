@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11945",
-  "title": "Issue a Certificate of Insurance (COI)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue a Certificate of Insurance (COI)",
+    "compliance_level": "Standard"
+  },
   "description": "A small business owner needs a COI to provide to a client as proof of their general liability coverage.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Policy Administration",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the business policyholder.",
-      "expected_outcome": "Agent locates the correct business owner's policy.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the business policyholder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct business owner's policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the certificate holder's information (the client who is requesting the COI).",
-      "expected_outcome": "Agent accurately captures the certificate holder's name and address.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the certificate holder's information (the client who is requesting the COI).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures the certificate holder's name and address."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the Certificate of Insurance and send it to the policyholder.",
-      "expected_outcome": "Agent successfully generates and emails the COI.",
-      "required_tools": [
-        "generate_coi",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the Certificate of Insurance and send it to the policyholder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates and emails the COI."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "airline-las-10265",
-  "title": "Upgrade with a Certificate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Upgrade with a Certificate",
+    "compliance_level": "Standard"
+  },
   "description": "A top-tier frequent flyer wants to use a systemwide upgrade certificate to confirm an upgrade at the time of booking.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Frequent Flyer Program",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the member's account has an available upgrade certificate.",
-      "expected_outcome": "Agent confirms the member has a valid certificate.",
-      "required_tools": [
-        "get_frequent_flyer_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the member's account has an available upgrade certificate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the member has a valid certificate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for flights with confirmable upgrade space available.",
-      "expected_outcome": "Agent finds a flight where the upgrade can be confirmed immediately.",
-      "required_tools": [
-        "search_flights_with_upgrades"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for flights with confirmable upgrade space available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a flight where the upgrade can be confirmed immediately."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the flight, apply the upgrade certificate to move the passenger to Business Class, and reissue the ticket.",
-      "expected_outcome": "Agent successfully books and confirms the upgraded travel.",
-      "required_tools": [
-        "create_booking",
-        "apply_upgrade_certificate",
-        "reissue_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the flight, apply the upgrade certificate to move the passenger to Business Class, and reissue the ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books and confirms the upgraded travel."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -22,15 +22,23 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
     """
 
     scenario: Dict[str, Any] = {
-        "scenario_id": f"scenario-{uuid.uuid4().hex[:8]}",
-        "version": "2.0.0",
-        "tasks": [],
+        "aes_version": 1.2,
+        "metadata": {
+            "id": f"scenario-{uuid.uuid4().hex[:8]}",
+            "compliance_level": "Standard",
+        },
+        "description": "",
+        "industry": "general",
+        "workflow": {
+            "nodes": [],
+            "edges": [],
+        },
     }
 
     # 1. Extract Title (H1)
     title_match = re.search(r"^#\s+(?:PRD:\s*)?(.*)", markdown_text, re.MULTILINE | re.IGNORECASE)
     if title_match:
-        scenario["title"] = title_match.group(1).strip()
+        scenario["metadata"]["name"] = title_match.group(1).strip()
 
     # 2. Extract Metadata (Industry, Use Case, Core Function)
     industry_match = re.search(r"\*\*Industry:\*\*\s*(.*)", markdown_text, re.IGNORECASE)
@@ -58,54 +66,53 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
         if "overview" in header:
             scenario["description"] = body
         elif "tasks" in header:
-            # Find all H3 headers in the tasks section (numbered or unnumbered)
-            task_headers = list(re.finditer(r"^###\s+(?:\d+\.\s*)?(.*)", body, re.MULTILINE))
-            for i, match in enumerate(task_headers):
-                task_title = match.group(1).strip()
-                start_pos = match.end()
-                end_pos = task_headers[i + 1].start() if i + 1 < len(task_headers) else len(body)
+            # First, check if there are actual ### headers defined
+            if "###" in body:
+                # Find all H3 headers in the tasks section
+                task_headers = list(re.finditer(r"^###\s+(?:\d+\.\s*)?(.*)", body, re.MULTILINE))
+                for i, match in enumerate(task_headers):
+                    task_title = match.group(1).strip()
+                    start_pos = match.end()
+                    end_pos = task_headers[i + 1].start() if i + 1 < len(task_headers) else len(body)
 
-                task_body = body[start_pos:end_pos].strip()
-                t_lines = task_body.split("\n")
-
-                expected_outcome = ""
-                tools = []
-                criteria = []
-                final_desc = []
-
-                for t_line in t_lines:
-                    cl = t_line.strip()
-                    if not cl:
-                        continue
-                    if "**Expected Outcome:**" in cl:
-                        expected_outcome = cl.split("**Expected Outcome:**")[-1].strip()
-                    elif "**Tools:**" in cl:
-                        t_str = cl.split("**Tools:**")[-1].strip()
-                        tools = [t.strip().strip("`").strip("[]").strip('"') for t in t_str.split(",")]
-                    elif "**Criteria:**" in cl:
-                        c_str = cl.split("**Criteria:**")[-1].strip()
-                        c_match = re.search(r"([a-zA-Z_]+)(?:\s*\((.*)\))?", c_str)
-                        if c_match:
-                            m_name = c_match.group(1).strip()
-                            thr = 0.5
-                            if c_match.group(2):
-                                f_match = re.search(r"(\d+\.?\d*)", c_match.group(2))
-                                if f_match:
-                                    thr = float(f_match.group(1))
-                            criteria.append({"metric": m_name, "threshold": thr})
-                    else:
-                        final_desc.append(cl)
-
-                scenario["tasks"].append(
-                    {
-                        "task_id": f"task-{len(scenario['tasks']) + 1}",
-                        "title": task_title,
-                        "description": "\n".join(final_desc).strip(),
-                        "expected_outcome": expected_outcome,
-                        "required_tools": tools,
-                        "success_criteria": criteria or [{"metric": "generic_accuracy", "threshold": 0.5}],
+                    task_body = body[start_pos:end_pos].strip()
+                    node = {
+                        "id": f"task-{len(scenario['workflow']['nodes']) + 1}",
+                        "task_description": task_body or task_title,
                     }
-                )
+                    scenario["workflow"]["nodes"].append(node)
+                    # Simple linear edges by default from parser
+                    if len(scenario["workflow"]["nodes"]) > 1:
+                        scenario["workflow"]["edges"].append({
+                            "from": scenario["workflow"]["nodes"][-2]["id"],
+                            "to": node["id"]
+                        })
+            else:
+                # No structured tasks found - trigger LLM synthesis for real implementation
+                import asyncio
+                try:
+                    synthesized = asyncio.run(synthesize_tasks_from_prd(markdown_text))
+                    for i, task in enumerate(synthesized):
+                        node = {
+                            "id": task.get("task_id") or f"task-{i+1}",
+                            "task_description": task.get("description") or task.get("title") or "No description",
+                            "expected_outcome": task.get("expected_outcome"),
+                            "required_tools": task.get("required_tools", []),
+                            "success_criteria": task.get("success_criteria", [])
+                        }
+                        scenario["workflow"]["nodes"].append(node)
+                        if i > 0:
+                            scenario["workflow"]["edges"].append({
+                                "from": scenario["workflow"]["nodes"][-2]["id"],
+                                "to": node["id"]
+                            })
+                except Exception as e:
+                    print(f"   [SpecParser] Critical: LLM Synthesis failed and no manual tasks found: {e}")
+                    # Fallback to a single empty node to keep the scenario valid
+                    scenario["workflow"]["nodes"].append({
+                        "id": "task-1",
+                        "task_description": "Initial task (Generated as fallback)",
+                    })
         elif "topology" in header:
             topology = {}
             for t_line in lines[1:]:
@@ -130,7 +137,7 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                     "reads": [r for r in reads if r],
                 }
             if topology:
-                scenario["agent_topology"] = topology
+                scenario["metadata"]["agent_topology"] = topology
         elif "policies" in header:
             policies = {}
             for p_line in lines[1:]:
@@ -146,7 +153,7 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                         p_val = {"max_limit": 100}  # Default
                     policies[p_name] = p_val
             if policies:
-                scenario["policies"] = policies
+                scenario["metadata"]["policies"] = policies
 
     return scenario
 
@@ -214,9 +221,12 @@ async def synthesize_tasks_from_prd(markdown_text: str) -> List[Dict[str, Any]]:
         return []
 
 
-def save_scenario_stub(scenario: Dict[str, Any], output_path: Path):
+def save_scenario_json(scenario: Dict[str, Any], output_path: Path):
     """Saves the scenario object to a JSON file."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(scenario, f, indent=2)
-    print(f"   [SpecParser] Scenario stub saved to: {output_path}")
+        json.dump(scenario, f, indent=4)
+    print(f"   [SpecParser] Stub saved to: {output_path}")
+
+# Backward compatibility alias
+save_scenario_stub = save_scenario_json

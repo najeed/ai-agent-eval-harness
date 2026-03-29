@@ -1,86 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13804",
-  "title": "Change Billing Cycle Date",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Change Billing Cycle Date",
+    "compliance_level": "Standard"
+  },
   "description": "A customer requests to change their monthly billing date to align with their payday.",
-  "use_case": "Customer Service",
-  "core_function": "Billing and Payments",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their current billing cycle date.",
-      "expected_outcome": "Agent correctly identifies the customer and notes their bill is due on the 15th.",
-      "required_tools": [
-        "get_customer_details",
-        "get_billing_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their current billing cycle date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and notes their bill is due on the 15th."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check available billing cycle dates and explain how a change will affect the next bill (prorated charges).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent explains that changing to the 1st of the month will result in a one-time prorated bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check available billing cycle dates and explain how a change will affect the next bill (prorated charges).",
-      "expected_outcome": "Agent explains that changing to the 1st of the month will result in a one-time prorated bill.",
-      "required_tools": [
-        "get_available_billing_cycles"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the account with the new billing cycle date as requested by the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully changes the billing date in the system."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the account with the new billing cycle date as requested by the customer.",
-      "expected_outcome": "Agent successfully changes the billing date in the system.",
-      "required_tools": [
-        "update_billing_cycle"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

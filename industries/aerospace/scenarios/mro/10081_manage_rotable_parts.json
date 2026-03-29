@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10081",
-  "title": "Manage Rotable Parts Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Rotable Parts Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "An MRO facility manages a pool of rotable parts (repairable components). An agent must track a part through its entire repair and reuse cycle.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Spares & Logistics",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a broken component from an aircraft and update its status to 'unserviceable, awaiting repair'.",
-      "expected_outcome": "Agent correctly logs the incoming broken part.",
-      "required_tools": [
-        "update_inventory_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a broken component from an aircraft and update its status to 'unserviceable, awaiting repair'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly logs the incoming broken part."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the component to a repair shop and track its progress.",
-      "expected_outcome": "Agent sends the part for repair and monitors its status.",
-      "required_tools": [
-        "ship_for_repair"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the component to a repair shop and track its progress.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the part for repair and monitors its status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "When the repaired component returns, update its status to 'serviceable' and place it back into the rotable inventory pool, ready for use.",
-      "expected_outcome": "Agent receives the repaired part, verifies its certification, and updates its status to available.",
-      "required_tools": [
-        "receive_repaired_part",
-        "update_inventory_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "When the repaired component returns, update its status to 'serviceable' and place it back into the rotable inventory pool, ready for use.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the repaired part, verifies its certification, and updates its status to available."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

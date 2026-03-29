@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12194",
-  "title": "Create a Trial Exhibit List",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Trial Exhibit List",
+    "compliance_level": "Standard"
+  },
   "description": "In preparation for trial, a paralegal needs to create a list of all exhibits the party intends to use.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Pleadings & Motions Practice",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Compile all potential trial exhibits.",
-      "expected_outcome": "Agent has a collection of all documents and physical evidence.",
-      "required_tools": [
-        "case_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Compile all potential trial exhibits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a collection of all documents and physical evidence."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a list with columns for Exhibit Number, a brief description, and whether it has been admitted into evidence.",
-      "expected_outcome": "Agent creates a structured exhibit list.",
-      "required_tools": [
-        "spreadsheet_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a list with columns for Exhibit Number, a brief description, and whether it has been admitted into evidence.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a structured exhibit list."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Populate the list with all the potential exhibits.",
-      "expected_outcome": "Agent produces a complete list to be exchanged with the court and opposing counsel.",
-      "required_tools": [
-        "spreadsheet_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Populate the list with all the potential exhibits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a complete list to be exchanged with the court and opposing counsel."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

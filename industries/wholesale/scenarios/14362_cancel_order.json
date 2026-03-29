@@ -1,66 +1,72 @@
 {
-  "scenario_id": "wholesale-om-14362",
-  "title": "Customer Cancels an Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Cancels an Order",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to cancel an order they placed earlier in the day.",
-  "use_case": "Order Management & Sales",
-  "core_function": "Order Processing & Fulfillment",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the order the customer wishes to cancel.",
-      "expected_outcome": "Agent finds the correct order.",
-      "required_tools": [
-        "get_sales_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the order the customer wishes to cancel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the order's status to ensure it has not yet been shipped.",
-      "expected_outcome": "Agent confirms the order has not shipped.",
-      "required_tools": [
-        "get_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the order's status to ensure it has not yet been shipped.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the order has not shipped."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cancel the order in the system.",
-      "expected_outcome": "Agent successfully cancels the sales order.",
-      "required_tools": [
-        "cancel_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cancel the order in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully cancels the sales order."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Send a cancellation confirmation to the customer.",
-      "expected_outcome": "The customer receives an email confirming the cancellation.",
-      "required_tools": [
-        "send_cancellation_confirmation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Send a cancellation confirmation to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer receives an email confirming the cancellation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

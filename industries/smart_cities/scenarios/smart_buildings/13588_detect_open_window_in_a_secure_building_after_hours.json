@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13588",
-  "title": "Detect Open Window in a Secure Building After Hours",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Detect Open Window in a Secure Building After Hours",
+    "compliance_level": "Standard"
+  },
   "description": "A sensor in a secure city office building detects that a window was left open after the building has closed.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Building Automation & Control",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an 'Open Window' alert from the 'City Finance Office' after 6 PM.",
-      "expected_outcome": "Agent acknowledges the after-hours security alert.",
-      "required_tools": [
-        "get_bms_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an 'Open Window' alert from the 'City Finance Office' after 6 PM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the after-hours security alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Pivot the nearest interior camera to view the window and confirm it is open.",
-      "expected_outcome": "Agent gets visual confirmation of the open window.",
-      "required_tools": [
-        "control_ptz_camera"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Pivot the nearest interior camera to view the window and confirm it is open.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets visual confirmation of the open window."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a mobile security guard to close the window and secure the building.",
-      "expected_outcome": "Agent dispatches security to resolve the physical issue.",
-      "required_tools": [
-        "dispatch_security_guard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a mobile security guard to close the window and secure the building.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches security to resolve the physical issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

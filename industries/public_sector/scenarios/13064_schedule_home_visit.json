@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-cs-13064",
-  "title": "Schedule a Home Visit for a Case",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule a Home Visit for a Case",
+    "compliance_level": "Standard"
+  },
   "description": "A social worker needs to schedule a required monthly home visit with a client.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Case Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the client and their case.",
-      "expected_outcome": "The worker pulls up the correct case file.",
-      "required_tools": [
-        "get_case_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the client and their case.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker pulls up the correct case file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the client to coordinate a suitable date and time for the visit.",
-      "expected_outcome": "The worker and client agree on a time for the home visit.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the client to coordinate a suitable date and time for the visit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker and client agree on a time for the home visit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the visit in the case management system and the worker's calendar.",
-      "expected_outcome": "The worker successfully books the appointment in the system.",
-      "required_tools": [
-        "schedule_home_visit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the visit in the case management system and the worker's calendar.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker successfully books the appointment in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-om-12269",
-  "title": "Process a Drop-Ship Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Drop-Ship Order",
+    "compliance_level": "Standard"
+  },
   "description": "A customer orders an item that is not stocked in the warehouse but is instead shipped directly from a supplier (drop-shipped).",
-  "use_case": "Order & Customer Management",
-  "core_function": "Order Processing",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "When the order is placed, the system identifies the item as a drop-ship item.",
-      "expected_outcome": "The system correctly flags the order for drop-shipping.",
-      "required_tools": [
-        "get_product_fulfillment_type"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "When the order is placed, the system identifies the item as a drop-ship item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system correctly flags the order for drop-shipping."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system automatically generates a purchase order for the item and sends it to the designated supplier, including the customer's shipping address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A PO is created and sent to the supplier with the correct shipping details."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system automatically generates a purchase order for the item and sends it to the designated supplier, including the customer's shipping address.",
-      "expected_outcome": "A PO is created and sent to the supplier with the correct shipping details.",
-      "required_tools": [
-        "create_drop_ship_po"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system waits for a shipping confirmation (ASN) from the supplier to update the customer's order status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order remains in 'Processing' status until the supplier provides a tracking number."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system waits for a shipping confirmation (ASN) from the supplier to update the customer's order status.",
-      "expected_outcome": "The order remains in 'Processing' status until the supplier provides a tracking number.",
-      "required_tools": [
-        "monitor_supplier_asn"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

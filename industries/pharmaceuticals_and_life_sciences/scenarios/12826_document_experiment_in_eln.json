@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12826",
-  "title": "Document Experiment in Electronic Lab Notebook",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document Experiment in Electronic Lab Notebook",
+    "compliance_level": "Standard"
+  },
   "description": "A bench scientist needs to document a completed experiment, including protocol, results, and analysis, in an ELN.",
-  "use_case": "Research & Development",
-  "core_function": "Preclinical Research",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new experiment entry in the ELN using a standard template.",
-      "expected_outcome": "Agent creates a new entry and gives it a unique experiment ID.",
-      "required_tools": [
-        "create_eln_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new experiment entry in the ELN using a standard template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new entry and gives it a unique experiment ID."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Document the experimental protocol, including all reagents and steps.",
-      "expected_outcome": "Agent accurately transcribes the protocol into the ELN.",
-      "required_tools": [
-        "document_protocol"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Document the experimental protocol, including all reagents and steps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately transcribes the protocol into the ELN."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Attach the raw data files from the laboratory instrument.",
-      "expected_outcome": "Agent successfully uploads and links the raw data files to the ELN entry.",
-      "required_tools": [
-        "attach_data_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Attach the raw data files from the laboratory instrument.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads and links the raw data files to the ELN entry."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Sign and submit the ELN entry for witnessing by a colleague.",
-      "expected_outcome": "Agent electronically signs the entry and routes it to their lab partner for countersigning.",
-      "required_tools": [
-        "sign_and_submit_for_witness"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Sign and submit the ELN entry for witnessing by a colleague.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent electronically signs the entry and routes it to their lab partner for countersigning."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

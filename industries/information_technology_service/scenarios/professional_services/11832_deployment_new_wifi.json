@@ -1,62 +1,72 @@
 {
-  "scenario_id": "information_technology_service-ps-11832",
-  "title": "Deployment - New Wi-Fi Installation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Deployment - New Wi-Fi Installation",
+    "compliance_level": "Standard"
+  },
   "description": "A project requires the installation of a new Wi-Fi system across a client's office.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Technology Deployment & Migration",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Perform a wireless site survey to determine the optimal placement for new Wi-Fi access points (APs).",
-      "expected_outcome": "A site survey map is created, showing ideal AP locations.",
-      "required_tools": [
-        "perform_wifi_site_survey"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Perform a wireless site survey to determine the optimal placement for new Wi-Fi access points (APs).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A site survey map is created, showing ideal AP locations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Install the new APs and connect them to the network switches.",
-      "expected_outcome": "All APs are physically installed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Install the new APs and connect them to the network switches.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All APs are physically installed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Configure the wireless controller with the appropriate SSIDs, VLANs, and security settings.",
-      "expected_outcome": "The new Wi-Fi network is configured and broadcasting.",
-      "required_tools": [
-        "configure_wifi_controller"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Configure the wireless controller with the appropriate SSIDs, VLANs, and security settings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new Wi-Fi network is configured and broadcasting."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Test the coverage and performance of the new Wi-Fi network to ensure it meets requirements.",
-      "expected_outcome": "The new network is confirmed to be providing strong and fast coverage throughout the office.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Test the coverage and performance of the new Wi-Fi network to ensure it meets requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new network is confirmed to be providing strong and fast coverage throughout the office."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

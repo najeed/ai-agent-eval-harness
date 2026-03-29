@@ -1,65 +1,72 @@
 {
-  "scenario_id": "information_technology_product-po-11743",
-  "title": "Low Disk Space Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Low Disk Space Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A server is running low on disk space, which could cause a service failure if not addressed.",
-  "use_case": "Product Operations & Reliability (SRE)",
-  "core_function": "Performance Monitoring & Optimization",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the low disk space alert for the specific server.",
-      "expected_outcome": "Agent takes ownership of the alert.",
-      "required_tools": [
-        "acknowledge_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the low disk space alert for the specific server.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent takes ownership of the alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "SSH into the server and find which directory is consuming the most space.",
-      "expected_outcome": "Agent finds that old log files are consuming 90% of the disk.",
-      "required_tools": [
-        "ssh_into_server"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "SSH into the server and find which directory is consuming the most space.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that old log files are consuming 90% of the disk."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Archive and delete log files older than 30 days to free up space.",
-      "expected_outcome": "Agent successfully resolves the immediate issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Archive and delete log files older than 30 days to free up space.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully resolves the immediate issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a ticket to implement a log rotation policy to prevent the issue from recurring.",
-      "expected_outcome": "Agent ensures a long-term fix is put in place.",
-      "required_tools": [
-        "create_engineering_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a ticket to implement a log rotation policy to prevent the issue from recurring.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ensures a long-term fix is put in place."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

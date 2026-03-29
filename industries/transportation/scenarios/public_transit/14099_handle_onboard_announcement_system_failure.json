@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tr-pt-14099",
-  "title": "Handle Onboard Announcement System Failure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Onboard Announcement System Failure",
+    "compliance_level": "Standard"
+  },
   "description": "A bus driver reports that their automated next-stop announcement system has failed.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Real-time Operations & Control",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a radio call from a driver about the announcement system failure.",
-      "expected_outcome": "The dispatcher logs the vehicle defect.",
-      "required_tools": [
-        "log_vehicle_defect"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a radio call from a driver about the announcement system failure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The dispatcher logs the vehicle defect."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Instruct the driver to manually announce all stops for the remainder of their trip to ensure ADA compliance.",
-      "expected_outcome": "The driver is given clear instructions to maintain service accessibility.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Instruct the driver to manually announce all stops for the remainder of their trip to ensure ADA compliance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver is given clear instructions to maintain service accessibility."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a maintenance work order for the bus to have the announcement system repaired at the end of the day.",
-      "expected_outcome": "A repair ticket is created.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a maintenance work order for the bus to have the announcement system repaired at the end of the day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A repair ticket is created."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

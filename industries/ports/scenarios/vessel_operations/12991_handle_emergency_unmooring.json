@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ports-vo-12991",
-  "title": "Handle an Emergency Unmooring",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an Emergency Unmooring",
+    "compliance_level": "Standard"
+  },
   "description": "A fire breaks out on a vessel at berth. The harbormaster orders an emergency unmooring to move the vessel away from the quay.",
-  "use_case": "Vessel Operations",
-  "core_function": "Mooring & Unmooring Operations",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the emergency order from the harbormaster to cast off the vessel immediately.",
-      "expected_outcome": "The mooring gang supervisor receives the urgent command.",
-      "required_tools": [
-        "get_emergency_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the emergency order from the harbormaster to cast off the vessel immediately.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The mooring gang supervisor receives the urgent command."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use emergency release hooks or, if necessary, cut the mooring lines to free the vessel.",
-      "expected_outcome": "The mooring lines are released as quickly as possible.",
-      "required_tools": [
-        "activate_emergency_release"
-      ],
-      "success_criteria": [
-        {
-          "metric": "operational_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use emergency release hooks or, if necessary, cut the mooring lines to free the vessel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The mooring lines are released as quickly as possible."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm to the tugboats and pilot that the vessel is free so it can be towed away from the berth to a safe location.",
-      "expected_outcome": "The supervisor confirms 'all lines gone' so the emergency towage can begin.",
-      "required_tools": [
-        "report_lines_gone"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm to the tugboats and pilot that the vessel is free so it can be towed away from the berth to a safe location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The supervisor confirms 'all lines gone' so the emergency towage can begin."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

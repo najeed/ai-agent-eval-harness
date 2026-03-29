@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ports-go-12989",
-  "title": "Resolve Gate Camera Failure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Gate Camera Failure",
+    "compliance_level": "Standard"
+  },
   "description": "The OCR camera that reads container numbers at a gate lane fails. A technician must troubleshoot it.",
-  "use_case": "Gate & Landside Operations",
-  "core_function": "Asset Management & Maintenance",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a high-priority ticket that the OCR camera at Lane 2 is not reading containers.",
-      "expected_outcome": "Technician is assigned a ticket for the camera failure.",
-      "required_tools": [
-        "get_it_ticket_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a high-priority ticket that the OCR camera at Lane 2 is not reading containers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician is assigned a ticket for the camera failure."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Remotely connect to the camera's diagnostic software to check its status.",
-      "expected_outcome": "The technician logs in and sees a 'No Network Connection' error.",
-      "required_tools": [
-        "run_remote_diagnostics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Remotely connect to the camera's diagnostic software to check its status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician logs in and sees a 'No Network Connection' error."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Go to the physical location and find that the camera's network cable is unplugged. Plug it back in and verify the system is working.",
-      "expected_outcome": "The technician resolves the physical issue, reboots the camera, and confirms with the gate clerk that it is now working correctly.",
-      "required_tools": [
-        "update_it_ticket_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Go to the physical location and find that the camera's network cable is unplugged. Plug it back in and verify the system is working.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician resolves the physical issue, reboots the camera, and confirms with the gate clerk that it is now working correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "sports-bm-13657",
-  "title": "Sell Broadcast Ad Space",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Sell Broadcast Ad Space",
+    "compliance_level": "Standard"
+  },
   "description": "A company wants to buy a 30-second ad spot during the broadcast of an upcoming championship game.",
-  "use_case": "Broadcasting & Media",
-  "core_function": "Media Rights & Distribution",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the inventory of available ad spots for the championship game.",
-      "expected_outcome": "Agent finds there are still ad spots available in the third quarter.",
-      "required_tools": [
-        "get_ad_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the inventory of available ad spots for the championship game.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds there are still ad spots available in the third quarter."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the company with the rate card for the available ad spots.",
-      "expected_outcome": "Agent sends the pricing information to the potential advertiser.",
-      "required_tools": [
-        "get_ad_rate_card"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the company with the rate card for the available ad spots.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the pricing information to the potential advertiser."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Negotiate a price and process the sale of the ad spot.",
-      "expected_outcome": "Agent successfully sells the ad spot and generates an insertion order.",
-      "required_tools": [
-        "process_ad_sale"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Negotiate a price and process the sale of the ad spot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sells the ad spot and generates an insertion order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

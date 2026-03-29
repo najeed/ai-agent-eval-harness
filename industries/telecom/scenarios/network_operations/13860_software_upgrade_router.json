@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13860",
-  "title": "Provision Software Upgrade on Core Router",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provision Software Upgrade on Core Router",
+    "compliance_level": "Standard"
+  },
   "description": "A core network router needs a scheduled software upgrade during a maintenance window.",
-  "use_case": "Network Operations",
-  "core_function": "Network Provisioning",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the current software version of the target router.",
-      "expected_outcome": "Agent confirms the router is running an outdated version.",
-      "required_tools": [
-        "get_router_software_version"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the current software version of the target router.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the router is running an outdated version."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Push the new software image to the router's storage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully transfers the new software file to the router."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Push the new software image to the router's storage.",
-      "expected_outcome": "Agent successfully transfers the new software file to the router.",
-      "required_tools": [
-        "transfer_software_image"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule a reboot for the router during the approved maintenance window to apply the upgrade.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules the reboot for 2 AM."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule a reboot for the router during the approved maintenance window to apply the upgrade.",
-      "expected_outcome": "Agent successfully schedules the reboot for 2 AM.",
-      "required_tools": [
-        "schedule_reboot"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

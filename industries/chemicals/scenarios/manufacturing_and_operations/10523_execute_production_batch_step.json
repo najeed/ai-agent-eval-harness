@@ -1,53 +1,59 @@
 {
-  "scenario_id": "chemicals-mfg-10523",
-  "title": "Execute Production Batch Step",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Execute Production Batch Step",
+    "compliance_level": "Standard"
+  },
   "description": "A plant operator needs to execute a step in an electronic batch record, which involves charging a specific amount of a raw material to a reactor.",
-  "use_case": "Manufacturing & Operations",
-  "core_function": "Plant Operations",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the current active batch on the reactor control screen.",
-      "expected_outcome": "Agent correctly identifies the batch being manufactured.",
-      "required_tools": [
-        "get_active_batch_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the current active batch on the reactor control screen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the batch being manufactured."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the next step in the batch record, which instructs to 'Charge 500 kg of Methanol'.",
-      "expected_outcome": "Agent correctly identifies the material and quantity for the next step.",
-      "required_tools": [
-        "get_batch_instructions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the next step in the batch record, which instructs to 'Charge 500 kg of Methanol'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the material and quantity for the next step."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute the automated charge, monitor the weight addition, and apply an electronic signature to confirm the step's completion.",
-      "expected_outcome": "Agent initiates the charge, the system adds 500 kg, and the operator signs off on the completed step.",
-      "required_tools": [
-        "execute_material_charge",
-        "apply_electronic_signature_for_step"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute the automated charge, monitor the weight addition, and apply an electronic signature to confirm the step's completion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates the charge, the system adds 500 kg, and the operator signs off on the completed step."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

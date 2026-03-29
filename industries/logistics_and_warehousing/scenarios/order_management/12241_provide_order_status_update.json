@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-om-12241",
-  "title": "Provide Order Status Update to Customer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Order Status Update to Customer",
+    "compliance_level": "Standard"
+  },
   "description": "A customer contacts support to ask for the status of their recent order.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Customer Support",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the order using the customer's name or order number.",
-      "expected_outcome": "Agent successfully finds the customer's order.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the order using the customer's name or order number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully finds the customer's order."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the order's current status in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees the order status is 'Shipped'."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the order's current status in the system.",
-      "expected_outcome": "Agent sees the order status is 'Shipped'.",
-      "required_tools": [
-        "get_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Retrieve the tracking number and provide it to the customer, along with a direct link to the carrier's tracking page.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gives the customer all the necessary information to track their package themselves."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Retrieve the tracking number and provide it to the customer, along with a direct link to the carrier's tracking page.",
-      "expected_outcome": "Agent gives the customer all the necessary information to track their package themselves.",
-      "required_tools": [
-        "get_shipment_tracking_number"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

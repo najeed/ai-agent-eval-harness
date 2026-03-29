@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-fo-10116",
-  "title": "Farm Operating Loan Application Support",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Farm Operating Loan Application Support",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer needs to compile financial documents to apply for an annual operating loan.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Financial Management & Compliance",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a balance sheet from the farm's accounting software.",
-      "expected_outcome": "Agent successfully generates the balance sheet.",
-      "required_tools": [
-        "generate_financial_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a balance sheet from the farm's accounting software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the balance sheet."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a cash flow projection for the upcoming year based on planned crops and historical expenses.",
-      "expected_outcome": "Agent generates a detailed cash flow projection.",
-      "required_tools": [
-        "generate_cash_flow_projection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a cash flow projection for the upcoming year based on planned crops and historical expenses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a detailed cash flow projection."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile the generated reports into a single loan application package.",
-      "expected_outcome": "Agent creates a zip file with all the required financial documents.",
-      "required_tools": [
-        "compile_document_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile the generated reports into a single loan application package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a zip file with all the required financial documents."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

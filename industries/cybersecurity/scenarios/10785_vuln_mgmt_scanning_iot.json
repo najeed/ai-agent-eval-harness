@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10785",
-  "title": "IoT Device Vulnerability Scan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "IoT Device Vulnerability Scan",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must assess the security of a new IoT device (e.g., a smart camera) before it is approved for corporate use.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Vulnerability Scanning & Assessment",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Connect the IoT device to an isolated test network.",
-      "expected_outcome": "The device is safely isolated for testing.",
-      "required_tools": [
-        "setup_test_network"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Connect the IoT device to an isolated test network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The device is safely isolated for testing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a network vulnerability scanner against the device to identify open ports and known vulnerabilities in its services.",
-      "expected_outcome": "The scan reveals the device has an open Telnet port with default credentials.",
-      "required_tools": [
-        "run_vulnerability_scan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "vulnerability_detection_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a network vulnerability scanner against the device to identify open ports and known vulnerabilities in its services.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The scan reveals the device has an open Telnet port with default credentials."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Fail the device's security review and send a report to the vendor detailing the critical vulnerability.",
-      "expected_outcome": "Analyst prevents an insecure device from being added to the network and notifies the vendor.",
-      "required_tools": [
-        "generate_vulnerability_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_mitigation_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Fail the device's security review and send a report to the vendor detailing the critical vulnerability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst prevents an insecure device from being added to the network and notifies the vendor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

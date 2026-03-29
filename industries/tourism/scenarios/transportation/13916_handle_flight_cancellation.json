@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13916",
-  "title": "Handle a Flight Cancellation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Flight Cancellation",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger's flight has been cancelled by the airline due to weather. They need to be rebooked.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Disruption Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the passenger's original booking details.",
-      "expected_outcome": "Agent correctly identifies the affected passenger and flight.",
-      "required_tools": [
-        "get_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the passenger's original booking details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the affected passenger and flight."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for the next available flights to the same destination.",
-      "expected_outcome": "Agent finds alternative flights for the passenger.",
-      "required_tools": [
-        "search_flights"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for the next available flights to the same destination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds alternative flights for the passenger."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Rebook the passenger on the next available flight at no additional cost.",
-      "expected_outcome": "Agent successfully rebooks the passenger and issues a new ticket.",
-      "required_tools": [
-        "rebook_passenger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Rebook the passenger on the next available flight at no additional cost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully rebooks the passenger and issues a new ticket."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

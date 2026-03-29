@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tax-rep-13760",
-  "title": "Request Release of a Federal Tax Lien",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Release of a Federal Tax Lien",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer has paid their tax debt in full and needs to have the IRS release the Notice of Federal Tax Lien filed against their property.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Collections & Appeals",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the taxpayer's account balance with the IRS is zero.",
-      "expected_outcome": "Agent requests an account transcript and confirms the debt is fully paid.",
-      "required_tools": [
-        "request_irs_transcript"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the taxpayer's account balance with the IRS is zero.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent requests an account transcript and confirms the debt is fully paid."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the IRS to request the release of the tax lien.",
-      "expected_outcome": "Agent speaks with the IRS collections department.",
-      "required_tools": [
-        "contact_irs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the IRS to request the release of the tax lien.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent speaks with the IRS collections department."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Obtain a copy of the Certificate of Release of Federal Tax Lien (Form 668(Z)) for the client's records.",
-      "expected_outcome": "Agent secures proof that the lien has been released.",
-      "required_tools": [
-        "get_lien_release_certificate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Obtain a copy of the Certificate of Release of Federal Tax Lien (Form 668(Z)) for the client's records.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent secures proof that the lien has been released."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

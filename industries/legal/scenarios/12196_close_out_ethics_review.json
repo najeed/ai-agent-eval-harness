@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-pm-12196",
-  "title": "Close Out an Ethics Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Close Out an Ethics Review",
+    "compliance_level": "Standard"
+  },
   "description": "After a conflicts check revealed a potential issue, the firm's ethics committee reviewed it and cleared the firm to take the case. An administrator needs to document this.",
-  "use_case": "Law Practice Management",
-  "core_function": "Conflicts & Ethics",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the open conflicts check record for the matter.",
-      "expected_outcome": "Agent finds the correct record.",
-      "required_tools": [
-        "conflicts_database_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the open conflicts check record for the matter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a memo to the file summarizing the ethics committee's review and its conclusion that no disqualifying conflict exists.",
-      "expected_outcome": "Agent creates a formal record of the decision.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a memo to the file summarizing the ethics committee's review and its conclusion that no disqualifying conflict exists.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a formal record of the decision."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Attach the memo to the conflicts check record and change its status to 'Cleared'.",
-      "expected_outcome": "The conflict has been formally resolved and documented in the system.",
-      "required_tools": [
-        "conflicts_database_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Attach the memo to the conflicts check record and change its status to 'Cleared'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The conflict has been formally resolved and documented in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

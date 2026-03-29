@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14162",
-  "title": "Plan Gas Meter Change-Out Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Gas Meter Change-Out Program",
+    "compliance_level": "Standard"
+  },
   "description": "An asset manager needs to plan a program to replace all gas meters that are approaching their end-of-life.",
-  "use_case": "Gas Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query the asset database to identify all gas meters scheduled for replacement in the next fiscal year.",
-      "expected_outcome": "System generates a list of 10,000 meters to be replaced.",
-      "required_tools": [
-        "query_asset_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query the asset database to identify all gas meters scheduled for replacement in the next fiscal year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a list of 10,000 meters to be replaced."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Group the meters by geographic area to create efficient work packages for the field crews.",
-      "expected_outcome": "System clusters the meters into logical geographic zones.",
-      "required_tools": [
-        "cluster_assets_geographically"
-      ],
-      "success_criteria": [
-        {
-          "metric": "optimization_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Group the meters by geographic area to create efficient work packages for the field crews.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System clusters the meters into logical geographic zones."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Develop a schedule and budget for the replacement program.",
-      "expected_outcome": "System produces a project plan with a timeline and cost estimate.",
-      "required_tools": [
-        "create_project_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "plan_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Develop a schedule and budget for the replacement program.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System produces a project plan with a timeline and cost estimate."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

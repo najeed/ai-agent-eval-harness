@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-op-10396",
-  "title": "Audit a Company Reorganization",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit a Company Reorganization",
+    "compliance_level": "Standard"
+  },
   "description": "Following a major corporate reorganization, an auditor reviews the project to see if it achieved its goals.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Project & Program Audit",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the business case for the reorganization to identify the stated goals, such as 'reduce operating costs by 15%'.",
-      "expected_outcome": "The auditor understands the intended outcomes of the project.",
-      "required_tools": [
-        "get_business_case_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the business case for the reorganization to identify the stated goals, such as 'reduce operating costs by 15%'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor understands the intended outcomes of the project."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the financial data from before and after the reorganization.",
-      "expected_outcome": "The analysis shows that operating costs were only reduced by 5%, falling short of the goal.",
-      "required_tools": [
-        "analyze_financial_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the financial data from before and after the reorganization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis shows that operating costs were only reduced by 5%, falling short of the goal."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Interview senior leaders to understand the reasons for the shortfall and document lessons learned for future strategic projects.",
-      "expected_outcome": "The audit provides insights into why the project underdelivered on its financial goals.",
-      "required_tools": [
-        "conduct_interview",
-        "generate_lessons_learned_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Interview senior leaders to understand the reasons for the shortfall and document lessons learned for future strategic projects.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The audit provides insights into why the project underdelivered on its financial goals."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

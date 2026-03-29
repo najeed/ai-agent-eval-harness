@@ -1,64 +1,72 @@
 {
-  "scenario_id": "wholesale-im-14387",
-  "title": "Optimize Shipping Costs",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Optimize Shipping Costs",
+    "compliance_level": "Standard"
+  },
   "description": "A logistics manager needs to choose the most cost-effective shipping carrier for an order.",
-  "use_case": "Inventory & Warehouse Management",
-  "core_function": "Picking, Packing, & Shipping",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "For a packed order, get its weight, dimensions, and destination.",
-      "expected_outcome": "Agent has all the necessary shipment details.",
-      "required_tools": [
-        "get_shipment_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "For a packed order, get its weight, dimensions, and destination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has all the necessary shipment details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a rate shopping tool to get real-time shipping quotes from multiple carriers (e.g., UPS, FedEx, USPS).",
-      "expected_outcome": "The tool returns quotes from all available carriers.",
-      "required_tools": [
-        "get_shipping_rate_quotes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a rate shopping tool to get real-time shipping quotes from multiple carriers (e.g., UPS, FedEx, USPS).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool returns quotes from all available carriers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select the carrier with the lowest cost for the required service level.",
-      "expected_outcome": "Agent selects the most economical option.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select the carrier with the lowest cost for the required service level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the most economical option."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate the shipping label for the chosen carrier.",
-      "expected_outcome": "The correct shipping label is printed.",
-      "required_tools": [
-        "generate_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate the shipping label for the chosen carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct shipping label is printed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

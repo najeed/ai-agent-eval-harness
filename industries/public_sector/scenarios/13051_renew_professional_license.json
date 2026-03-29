@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ps-cs-13051",
-  "title": "Renew a Professional License",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Renew a Professional License",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer needs to renew their state professional engineering license.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Licensing & Permitting",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the engineer by their license number.",
-      "expected_outcome": "Agent retrieves the engineer's license record.",
-      "required_tools": [
-        "search_professional_licenses"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the engineer by their license number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the engineer's license record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the engineer has completed the required number of continuing education credits.",
-      "expected_outcome": "Agent confirms the continuing education requirements have been met.",
-      "required_tools": [
-        "verify_continuing_education"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the engineer has completed the required number of continuing education credits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the continuing education requirements have been met."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the renewal fee and update the license expiration date.",
-      "expected_outcome": "Agent takes payment and successfully renews the license.",
-      "required_tools": [
-        "process_payment",
-        "renew_license"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the renewal fee and update the license expiration date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent takes payment and successfully renews the license."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

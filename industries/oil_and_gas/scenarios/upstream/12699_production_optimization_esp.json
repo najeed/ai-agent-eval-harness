@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-up-12699",
-  "title": "Optimize ESP Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Optimize ESP Performance",
+    "compliance_level": "Standard"
+  },
   "description": "A production engineer analyzes real-time data from an Electrical Submersible Pump (ESP) to optimize its frequency for maximum oil production without causing damage.",
-  "use_case": "Upstream",
-  "core_function": "Production Operations",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve real-time sensor data for the target well's ESP, including frequency, intake pressure, and motor temperature.",
-      "expected_outcome": "Live data stream for the ESP is established and visualized.",
-      "required_tools": [
-        "get_realtime_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve real-time sensor data for the target well's ESP, including frequency, intake pressure, and motor temperature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Live data stream for the ESP is established and visualized."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the ESP performance curve against the current operating conditions to identify optimization potential.",
-      "expected_outcome": "The engineer determines the optimal operating frequency.",
-      "required_tools": [
-        "analyze_esp_performance_curve"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the ESP performance curve against the current operating conditions to identify optimization potential.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The engineer determines the optimal operating frequency."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a command to the SCADA system to adjust the ESP frequency to the new, optimized setpoint.",
-      "expected_outcome": "The ESP frequency is successfully adjusted, and production rate increases.",
-      "required_tools": [
-        "set_esp_frequency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a command to the SCADA system to adjust the ESP frequency to the new, optimized setpoint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The ESP frequency is successfully adjusted, and production rate increases."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

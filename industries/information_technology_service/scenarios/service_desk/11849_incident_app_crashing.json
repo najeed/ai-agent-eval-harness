@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11849",
-  "title": "Incident - Application Crashing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Incident - Application Crashing",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports that a specific line-of-business application crashes every time they try to run a certain report.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "Incident & Request Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the computer's event logs for application error details.",
-      "expected_outcome": "The technician finds an application error event related to a corrupted file.",
-      "required_tools": [
-        "get_event_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the computer's event logs for application error details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician finds an application error event related to a corrupted file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to repair the application's installation via the control panel.",
-      "expected_outcome": "The repair process does not fix the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to repair the application's installation via the control panel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The repair process does not fix the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Completely uninstall and then reinstall the application.",
-      "expected_outcome": "Reinstalling the application resolves the corrupted file issue, and the report now runs successfully.",
-      "required_tools": [
-        "deploy_software_via_rmm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Completely uninstall and then reinstall the application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Reinstalling the application resolves the corrupted file issue, and the report now runs successfully."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

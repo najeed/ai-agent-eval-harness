@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-wm-11238",
-  "title": "Distribute Funds from a Trust",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Distribute Funds from a Trust",
+    "compliance_level": "Standard"
+  },
   "description": "A trustee requests a distribution from a trust account to one of its beneficiaries.",
-  "use_case": "Wealth Management",
-  "core_function": "Financial Planning",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the identity of the trustee and their authority to make distributions.",
-      "expected_outcome": "Agent confirms the trustee's identity and legal authority.",
-      "required_tools": [
-        "verify_trustee_authority"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the identity of the trustee and their authority to make distributions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the trustee's identity and legal authority."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Confirm the distribution details: amount and beneficiary's receiving account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records the distribution instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Confirm the distribution details: amount and beneficiary's receiving account.",
-      "expected_outcome": "Agent accurately records the distribution instructions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the fund transfer from the trust account to the beneficiary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully executes the distribution."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the fund transfer from the trust account to the beneficiary.",
-      "expected_outcome": "Agent successfully executes the distribution.",
-      "required_tools": [
-        "execute_trust_distribution"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

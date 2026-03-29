@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-tm-12203",
-  "title": "Tender a Full Truckload (FTL) Shipment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Tender a Full Truckload (FTL) Shipment",
+    "compliance_level": "Standard"
+  },
   "description": "A logistics coordinator needs to find a carrier for a full truckload shipment and tender the load.",
-  "use_case": "Transportation Management",
-  "core_function": "Shipment Planning & Execution",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new shipment record with the origin, destination, weight, and required pickup/delivery dates.",
-      "expected_outcome": "Agent accurately enters all shipment details.",
-      "required_tools": [
-        "create_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new shipment record with the origin, destination, weight, and required pickup/delivery dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately enters all shipment details."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request spot quotes from a list of approved FTL carriers for the shipment's lane.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends out quote requests to multiple carriers."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request spot quotes from a list of approved FTL carriers for the shipment's lane.",
-      "expected_outcome": "Agent successfully sends out quote requests to multiple carriers.",
-      "required_tools": [
-        "request_carrier_quotes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the returned quotes and select the carrier with the best rate and service level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes an optimal decision based on the provided quotes."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Tender the load to the selected carrier, sending them all necessary pickup information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully tenders the load and receives a confirmation from the carrier."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the returned quotes and select the carrier with the best rate and service level.",
-      "expected_outcome": "Agent makes an optimal decision based on the provided quotes.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Tender the load to the selected carrier, sending them all necessary pickup information.",
-      "expected_outcome": "Agent successfully tenders the load and receives a confirmation from the carrier.",
-      "required_tools": [
-        "tender_load_to_carrier"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

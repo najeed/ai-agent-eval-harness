@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10978",
-  "title": "Verify Customer Age for Restricted Product",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify Customer Age for Restricted Product",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is trying to purchase an age-restricted item (e.g., wine, a rated video game) and must have their age verified.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Account Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "When an age-restricted item is added to the cart, prompt the user for their date of birth.",
-      "expected_outcome": "System displays an age verification prompt.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "When an age-restricted item is added to the cart, prompt the user for their date of birth.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System displays an age verification prompt."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a third-party service to verify that the customer's name and date of birth indicate they are of legal age.",
-      "expected_outcome": "The verification service returns a 'pass' status.",
-      "required_tools": [
-        "verify_customer_age"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a third-party service to verify that the customer's name and date of birth indicate they are of legal age.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The verification service returns a 'pass' status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If verification passes, allow the checkout to proceed. If it fails, block the purchase and display a message.",
-      "expected_outcome": "System correctly allows or blocks the transaction based on the verification result.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If verification passes, allow the checkout to proceed. If it fails, block the purchase and display a message.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System correctly allows or blocks the transaction based on the verification result."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-c2-10806",
-  "title": "Air Defense Asset Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Air Defense Asset Management",
+    "compliance_level": "Standard"
+  },
   "description": "An Air Defense Officer must allocate surface-to-air missile (SAM) systems to engage multiple incoming cruise missiles.",
-  "use_case": "Command & Control (C2)",
-  "core_function": "Asset & Task Management",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all available SAM batteries and their current readiness status and missile inventory.",
-      "expected_outcome": "Officer has a clear picture of all available air defense assets.",
-      "required_tools": [
-        "get_asset_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all available SAM batteries and their current readiness status and missile inventory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer has a clear picture of all available air defense assets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Prioritize the incoming missile threats based on their trajectory towards high-value assets.",
-      "expected_outcome": "Officer correctly ranks the threats from most to least dangerous.",
-      "required_tools": [
-        "prioritize_threats"
-      ],
-      "success_criteria": [
-        {
-          "metric": "prioritization_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Prioritize the incoming missile threats based on their trajectory towards high-value assets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer correctly ranks the threats from most to least dangerous."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign specific SAM batteries to engage specific targets to maximize probability of kill and conserve ammunition.",
-      "expected_outcome": "Officer creates an optimal pairing of shooters to targets.",
-      "required_tools": [
-        "assign_target_to_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "resource_optimization_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign specific SAM batteries to engage specific targets to maximize probability of kill and conserve ammunition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer creates an optimal pairing of shooters to targets."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

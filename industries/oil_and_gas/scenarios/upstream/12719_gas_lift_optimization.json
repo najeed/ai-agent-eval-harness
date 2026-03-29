@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-up-12719",
-  "title": "Gas Lift Injection Optimization",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Gas Lift Injection Optimization",
+    "compliance_level": "Standard"
+  },
   "description": "A production engineer adjusts the gas injection rate for a gas-lifted well to maximize oil production while minimizing gas consumption.",
-  "use_case": "Upstream",
-  "core_function": "Production Operations",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the current gas injection rate and oil production rate for well P-501.",
-      "expected_outcome": "The current operating parameters for the well are retrieved.",
-      "required_tools": [
-        "get_realtime_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the current gas injection rate and oil production rate for well P-501.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The current operating parameters for the well are retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Consult the well's performance curve to determine the optimal gas injection rate for the current reservoir conditions.",
-      "expected_outcome": "The analysis identifies that the well is being over-injected, wasting gas.",
-      "required_tools": [
-        "get_gas_lift_performance_curve"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Consult the well's performance curve to determine the optimal gas injection rate for the current reservoir conditions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis identifies that the well is being over-injected, wasting gas."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Adjust the injection valve setpoint via SCADA to reduce the gas injection rate to the optimal level.",
-      "expected_outcome": "The injection rate is lowered, resulting in a slight increase in oil production and significant gas savings.",
-      "required_tools": [
-        "set_injection_valve_setpoint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Adjust the injection valve setpoint via SCADA to reduce the gas injection rate to the optimal level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The injection rate is lowered, resulting in a slight increase in oil production and significant gas savings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-cf-11231",
-  "title": "Analyze Departmental Spending",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Departmental Spending",
+    "compliance_level": "Standard"
+  },
   "description": "A manager asks an FP&A analyst to analyze the Marketing department's spending for the year to date.",
-  "use_case": "Corporate Finance",
-  "core_function": "Financial Planning & Analysis (FP&A)",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all transactions coded to the Marketing department for the current year.",
-      "expected_outcome": "Agent successfully pulls the detailed transaction data.",
-      "required_tools": [
-        "get_departmental_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all transactions coded to the Marketing department for the current year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pulls the detailed transaction data."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Categorize the spending by expense type (e.g., advertising, software, events).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly categorizes the spending and identifies the top 3 spending categories."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Categorize the spending by expense type (e.g., advertising, software, events).",
-      "expected_outcome": "Agent correctly categorizes the spending and identifies the top 3 spending categories.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a summary report with charts to present the findings to the manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a clear, visual report summarizing the department's spending."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a summary report with charts to present the findings to the manager.",
-      "expected_outcome": "Agent creates a clear, visual report summarizing the department's spending.",
-      "required_tools": [
-        "create_summary_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 0.95
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

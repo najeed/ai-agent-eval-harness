@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13983",
-  "title": "Add a Meal Plan to Park Ticket",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add a Meal Plan to Park Ticket",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who has already purchased theme park tickets wants to add a one-day meal plan.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Package & Itinerary Creation",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's existing ticket order.",
-      "expected_outcome": "Agent locates the correct order.",
-      "required_tools": [
-        "get_activity_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's existing ticket order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the different meal plan options and their prices.",
-      "expected_outcome": "Agent clearly presents the meal plan choices.",
-      "required_tools": [
-        "get_package_addons"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the different meal plan options and their prices.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly presents the meal plan choices."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the selected meal plan to the customer's booking and process the payment.",
-      "expected_outcome": "Agent successfully adds the meal plan and updates the customer's tickets.",
-      "required_tools": [
-        "add_package_addon"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the selected meal plan to the customer's booking and process the payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the meal plan and updates the customer's tickets."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

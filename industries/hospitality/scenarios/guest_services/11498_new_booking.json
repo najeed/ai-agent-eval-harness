@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hosp-gs-11498",
-  "title": "New Room Reservation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Room Reservation",
+    "compliance_level": "Standard"
+  },
   "description": "A guest calls to book a standard king room for two nights.",
-  "use_case": "Guest Services & Front Office",
-  "core_function": "Reservations & Booking",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check room availability for the requested dates.",
-      "expected_outcome": "Agent confirms that standard king rooms are available.",
-      "required_tools": [
-        "pms_check_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check room availability for the requested dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that standard king rooms are available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the guest with the room rate and collect their personal details.",
-      "expected_outcome": "Agent quotes the correct rate and accurately records the guest's name and contact information.",
-      "required_tools": [
-        "pms_get_rate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the guest with the room rate and collect their personal details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent quotes the correct rate and accurately records the guest's name and contact information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create the reservation in the system and obtain credit card details to guarantee the booking.",
-      "expected_outcome": "Agent successfully creates the reservation and securely adds the payment guarantee.",
-      "required_tools": [
-        "pms_create_booking",
-        "pms_process_payment_guarantee"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create the reservation in the system and obtain credit card details to guarantee the booking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the reservation and securely adds the payment guarantee."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

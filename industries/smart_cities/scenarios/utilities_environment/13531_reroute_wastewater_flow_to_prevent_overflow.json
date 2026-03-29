@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-ue-13531",
-  "title": "Reroute Wastewater Flow to Prevent Overflow",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reroute Wastewater Flow to Prevent Overflow",
+    "compliance_level": "Standard"
+  },
   "description": "During a heavy storm, a wastewater interceptor is nearing capacity. An operator must reroute flow to a storage basin to prevent a sanitary sewer overflow.",
-  "use_case": "Utilities & Environment",
-  "core_function": "Water & Wastewater Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a 'High Level' alert for the 'Elm Street Interceptor'.",
-      "expected_outcome": "Agent acknowledges the critical wastewater system alert.",
-      "required_tools": [
-        "get_wastewater_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a 'High Level' alert for the 'Elm Street Interceptor'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the critical wastewater system alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the current level of the nearby 'Emergency Storage Basin'.",
-      "expected_outcome": "Agent confirms the storage basin has sufficient capacity.",
-      "required_tools": [
-        "get_storage_basin_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the current level of the nearby 'Emergency Storage Basin'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the storage basin has sufficient capacity."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remotely open a valve to divert a portion of the wastewater flow from the interceptor to the storage basin.",
-      "expected_outcome": "Agent successfully operates the valve to prevent an overflow.",
-      "required_tools": [
-        "control_wastewater_valve"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remotely open a valve to divert a portion of the wastewater flow from the interceptor to the storage basin.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully operates the valve to prevent an overflow."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

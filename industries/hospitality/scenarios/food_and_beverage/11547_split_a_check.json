@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-fb-11547",
-  "title": "Split a Check at Dinner",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Split a Check at Dinner",
+    "compliance_level": "Standard"
+  },
   "description": "A table of four guests asks their server to split the check evenly between them.",
-  "use_case": "Food & Beverage (F&B)",
-  "core_function": "Order Taking & Service",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the table's order from the POS system.",
-      "expected_outcome": "The server pulls up the correct check.",
-      "required_tools": [
-        "pos_lookup_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the table's order from the POS system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The server pulls up the correct check."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the 'Split Check' function in the POS to divide the total by four.",
-      "expected_outcome": "The system correctly calculates the amount due for each person.",
-      "required_tools": [
-        "pos_split_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the 'Split Check' function in the POS to divide the total by four.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system correctly calculates the amount due for each person."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process each of the four payments separately.",
-      "expected_outcome": "The server successfully processes four separate credit card payments.",
-      "required_tools": [
-        "pos_process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process each of the four payments separately.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The server successfully processes four separate credit card payments."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

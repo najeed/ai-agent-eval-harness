@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12823",
-  "title": "Investigate Manufacturing Deviation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Manufacturing Deviation",
+    "compliance_level": "Standard"
+  },
   "description": "A production supervisor discovers a deviation during a manufacturing process (e.g., an equipment failure) and must open an investigation.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Production & Batch Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Document the initial details of the deviation in the quality management system.",
-      "expected_outcome": "Agent creates a new deviation record, describing the event, time, and batch affected.",
-      "required_tools": [
-        "create_deviation_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Document the initial details of the deviation in the quality management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new deviation record, describing the event, time, and batch affected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform an initial risk assessment to determine the potential impact on product quality.",
-      "expected_outcome": "Agent assesses the risk as 'High' due to potential product contamination.",
-      "required_tools": [
-        "perform_risk_assessment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform an initial risk assessment to determine the potential impact on product quality.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assesses the risk as 'High' due to potential product contamination."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assemble a cross-functional team (Manufacturing, QA, Engineering) to investigate the root cause.",
-      "expected_outcome": "Agent identifies and assigns investigation tasks to the appropriate team members.",
-      "required_tools": [
-        "assign_tasks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assemble a cross-functional team (Manufacturing, QA, Engineering) to investigate the root cause.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies and assigns investigation tasks to the appropriate team members."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Document the root cause (e.g., 'failed pump seal') and create a CAPA plan to prevent recurrence.",
-      "expected_outcome": "Agent updates the deviation record with the root cause and links it to a new CAPA.",
-      "required_tools": [
-        "document_root_cause",
-        "create_capa_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Document the root cause (e.g., 'failed pump seal') and create a CAPA plan to prevent recurrence.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the deviation record with the root cause and links it to a new CAPA."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

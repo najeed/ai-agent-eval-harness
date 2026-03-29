@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-er-11609",
-  "title": "Investigate an Employee Misconduct Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate an Employee Misconduct Claim",
+    "compliance_level": "Standard"
+  },
   "description": "An employee files a formal complaint alleging harassment by a coworker. An HR business partner must investigate.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Disciplinary Actions",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Document the initial complaint from the employee in the case management system.",
-      "expected_outcome": "HRBP creates a new investigation case with all the initial details.",
-      "required_tools": [
-        "create_investigation_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Document the initial complaint from the employee in the case management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP creates a new investigation case with all the initial details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Schedule and conduct confidential interviews with the complainant, the accused, and any witnesses.",
-      "expected_outcome": "HRBP conducts and documents all interviews.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Schedule and conduct confidential interviews with the complainant, the accused, and any witnesses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP conducts and documents all interviews."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review relevant evidence (e.g., emails, chat logs) and make a recommendation based on the findings.",
-      "expected_outcome": "After a thorough review, the HRBP concludes the claim is substantiated and recommends disciplinary action.",
-      "required_tools": [
-        "review_employee_communications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review relevant evidence (e.g., emails, chat logs) and make a recommendation based on the findings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "After a thorough review, the HRBP concludes the claim is substantiated and recommends disciplinary action."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

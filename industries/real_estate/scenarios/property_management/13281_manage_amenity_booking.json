@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13281",
-  "title": "Manage Amenity Booking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Amenity Booking",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant in a managed apartment building wants to book the community party room for a weekend event.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the tenant's request to book the party room for a specific date and time.",
-      "expected_outcome": "Agent identifies the tenant and their request.",
-      "required_tools": [
-        "get_tenant_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the tenant's request to book the party room for a specific date and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the tenant and their request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the amenity booking calendar to see if the room is available at the requested time.",
-      "expected_outcome": "Agent confirms the party room is available.",
-      "required_tools": [
-        "check_amenity_calendar"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the amenity booking calendar to see if the room is available at the requested time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the party room is available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the room for the tenant, charge any applicable reservation fee to their ledger, and send them a confirmation.",
-      "expected_outcome": "Agent successfully reserves the room and communicates with the tenant.",
-      "required_tools": [
-        "book_amenity",
-        "apply_tenant_charge",
-        "send_tenant_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the room for the tenant, charge any applicable reservation fee to their ledger, and send them a confirmation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reserves the room and communicates with the tenant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

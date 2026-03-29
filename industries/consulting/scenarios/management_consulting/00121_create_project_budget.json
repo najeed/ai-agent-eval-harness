@@ -1,50 +1,59 @@
 {
-  "scenario_id": "consulting-mc-121",
-  "title": "Create a Project Budget",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Project Budget",
+    "compliance_level": "Standard"
+  },
   "description": "Based on a resource plan and standard consultant day rates, an agent must create a project budget.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load the resource plan (roles and number of days) and the rate card (cost per role per day).",
-      "expected_outcome": "Agent successfully loads both data sources.",
-      "required_tools": [
-        "load_csv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load the resource plan (roles and number of days) and the rate card (cost per role per day).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully loads both data sources."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total personnel cost by multiplying the number of days for each role by their day rate.",
-      "expected_outcome": "Agent correctly calculates the total cost for all personnel.",
-      "required_tools": [
-        "calculate_project_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total personnel cost by multiplying the number of days for each role by their day rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the total cost for all personnel."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add a 15% contingency and a fixed amount for travel expenses to arrive at the total project budget.",
-      "expected_outcome": "Agent correctly calculates the final budget including contingency and expenses.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add a 15% contingency and a fixed amount for travel expenses to arrive at the total project budget.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the final budget including contingency and expenses."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

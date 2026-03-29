@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11842",
-  "title": "User Account - Unlock Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "User Account - Unlock Account",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports their Active Directory account is locked out after too many failed password attempts.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "User Account & Device Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the user's identity.",
-      "expected_outcome": "The user is authenticated.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the user's identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user is authenticated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the account status in Active Directory and confirm it is locked.",
-      "expected_outcome": "The technician verifies the account's locked status.",
-      "required_tools": [
-        "get_ad_user_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the account status in Active Directory and confirm it is locked.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician verifies the account's locked status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Unlock the user's account.",
-      "expected_outcome": "The account is successfully unlocked, and the user can now attempt to log in again.",
-      "required_tools": [
-        "unlock_ad_user"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Unlock the user's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account is successfully unlocked, and the user can now attempt to log in again."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

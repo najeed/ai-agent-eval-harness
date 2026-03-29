@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13821",
-  "title": "Security - SIM Swap Fraud Investigation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Security - SIM Swap Fraud Investigation",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports they have lost service and suspect a fraudulent SIM swap. The agent must investigate and secure the account.",
-  "use_case": "Technical Support",
-  "core_function": "Advanced Diagnostics",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Immediately place a security freeze on the account to prevent further changes.",
-      "expected_outcome": "Agent successfully freezes the account.",
-      "required_tools": [
-        "freeze_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Immediately place a security freeze on the account to prevent further changes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully freezes the account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the account's recent activity logs to find evidence of a SIM change.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a log entry for a SIM card change processed 2 hours ago via an online channel."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the account's recent activity logs to find evidence of a SIM change.",
-      "expected_outcome": "Agent finds a log entry for a SIM card change processed 2 hours ago via an online channel.",
-      "required_tools": [
-        "get_account_activity_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the fraudulent activity and escalate the case to the fraud department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed fraud report and escalates it correctly."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the fraudulent activity and escalate the case to the fraud department.",
-      "expected_outcome": "Agent creates a detailed fraud report and escalates it correctly.",
-      "required_tools": [
-        "create_fraud_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

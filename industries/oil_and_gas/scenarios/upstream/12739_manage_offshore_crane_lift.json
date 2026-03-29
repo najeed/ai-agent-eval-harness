@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-up-12739",
-  "title": "Plan Offshore Crane Lift",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Offshore Crane Lift",
+    "compliance_level": "Standard"
+  },
   "description": "An offshore logistics coordinator plans a critical crane lift to move a large piece of equipment from a supply boat to the platform deck.",
-  "use_case": "Upstream",
-  "core_function": "Asset & Maintenance Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a lift plan, specifying the equipment to be lifted, its weight, and the start and end locations.",
-      "expected_outcome": "A draft lift plan is created in the system.",
-      "required_tools": [
-        "create_lift_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a lift plan, specifying the equipment to be lifted, its weight, and the start and end locations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A draft lift plan is created in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the weather forecast, specifically wind speed and sea state, to ensure the lift can be performed safely.",
-      "expected_outcome": "The forecast is checked and confirms conditions are within safe limits for the planned time.",
-      "required_tools": [
-        "get_marine_weather_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the weather forecast, specifically wind speed and sea state, to ensure the lift can be performed safely.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The forecast is checked and confirms conditions are within safe limits for the planned time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Finalize and issue the lift plan for approval by the offshore installation manager and crane operator.",
-      "expected_outcome": "The plan is submitted for final approval before the operation begins.",
-      "required_tools": [
-        "submit_plan_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Finalize and issue the lift plan for approval by the offshore installation manager and crane operator.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The plan is submitted for final approval before the operation begins."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

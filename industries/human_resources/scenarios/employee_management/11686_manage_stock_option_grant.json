@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-em-11686",
-  "title": "Manage a New Stock Option Grant",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a New Stock Option Grant",
+    "compliance_level": "Standard"
+  },
   "description": "A newly promoted employee is receiving a stock option grant as part of their promotion.",
-  "use_case": "Employee Management",
-  "core_function": "Compensation & Payroll",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the approved grant details (number of shares, strike price, vesting schedule).",
-      "expected_outcome": "The compensation analyst receives the grant information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the approved grant details (number of shares, strike price, vesting schedule).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The compensation analyst receives the grant information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the new grant into the equity administration platform (e.g., Carta, Shareworks).",
-      "expected_outcome": "Analyst successfully creates the new grant in the system.",
-      "required_tools": [
-        "create_equity_grant"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the new grant into the equity administration platform (e.g., Carta, Shareworks).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully creates the new grant in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate and send the grant agreement to the employee for acceptance.",
-      "expected_outcome": "Analyst sends the agreement for e-signature.",
-      "required_tools": [
-        "send_for_e_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate and send the grant agreement to the employee for acceptance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst sends the agreement for e-signature."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

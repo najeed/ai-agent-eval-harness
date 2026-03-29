@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-fo-10189",
-  "title": "Monthly Cash Flow Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monthly Cash Flow Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A farm's bookkeeper needs to generate a monthly cash flow statement to ensure the farm has enough liquidity to meet its obligations.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Financial Management & Compliance",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all income and expense transactions for the last month from the accounting software.",
-      "expected_outcome": "Agent gets all financial transactions.",
-      "required_tools": [
-        "get_financial_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all income and expense transactions for the last month from the accounting software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets all financial transactions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Categorize all transactions into operating, investing, and financing activities.",
-      "expected_outcome": "Agent correctly categorizes all transactions.",
-      "required_tools": [
-        "categorize_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Categorize all transactions into operating, investing, and financing activities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly categorizes all transactions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a statement of cash flows for the month.",
-      "expected_outcome": "Agent produces a formal cash flow statement.",
-      "required_tools": [
-        "generate_financial_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a statement of cash flows for the month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a formal cash flow statement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

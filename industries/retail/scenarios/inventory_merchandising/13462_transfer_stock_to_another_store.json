@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-im-13462",
-  "title": "Transfer Stock to Another Store",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Transfer Stock to Another Store",
+    "compliance_level": "Standard"
+  },
   "description": "A nearby store is out of a key item, and the district manager has asked this store to transfer some of its stock to them.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Stock Management",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a 'Stock Transfer Out' request in the inventory system.",
-      "expected_outcome": "The associate initiates the transfer process.",
-      "required_tools": [
-        "create_stock_transfer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a 'Stock Transfer Out' request in the inventory system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate initiates the transfer process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the item number, the quantity being transferred, and the destination store.",
-      "expected_outcome": "The details of the transfer are accurately recorded.",
-      "required_tools": [
-        "enter_transfer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the item number, the quantity being transferred, and the destination store.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The details of the transfer are accurately recorded."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Pack the items and ship them. The system deducts the inventory from the sending store and places it in an 'in-transit' status.",
-      "expected_outcome": "The inventory is accurately tracked as it moves between locations.",
-      "required_tools": [
-        "ship_stock_transfer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Pack the items and ship them. The system deducts the inventory from the sending store and places it in an 'in-transit' status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The inventory is accurately tracked as it moves between locations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

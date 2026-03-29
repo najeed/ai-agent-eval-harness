@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-fs-11012",
-  "title": "Check Grant Fund Balance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Grant Fund Balance",
+    "compliance_level": "Standard"
+  },
   "description": "A principal investigator (PI) for a research grant needs to know the remaining balance of their grant funds.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "Grant & Research Administration",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the PI and the specific grant account number.",
-      "expected_outcome": "Agent securely identifies the PI and the grant they are inquiring about.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the PI and the specific grant account number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely identifies the PI and the grant they are inquiring about."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the current balance and a summary of recent expenditures from the financial system.",
-      "expected_outcome": "Agent provides the PI with the exact remaining balance and a list of recent transactions.",
-      "required_tools": [
-        "get_grant_fund_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the current balance and a summary of recent expenditures from the financial system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the PI with the exact remaining balance and a list of recent transactions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Email a detailed financial report to the PI.",
-      "expected_outcome": "Agent successfully generates and sends the report.",
-      "required_tools": [
-        "email_grant_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Email a detailed financial report to the PI.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates and sends the report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

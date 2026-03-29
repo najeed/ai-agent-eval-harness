@@ -1,50 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11897",
-  "title": "Get Auto Insurance Quote",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Get Auto Insurance Quote",
+    "compliance_level": "Standard"
+  },
   "description": "A potential new customer wants a quote for auto insurance for their vehicle.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Underwriting & Quoting",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather personal information and vehicle details (make, model, year, VIN).",
-      "expected_outcome": "Agent successfully collects all required customer and vehicle data.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather personal information and vehicle details (make, model, year, VIN).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully collects all required customer and vehicle data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a Motor Vehicle Report (MVR) to check the customer's driving record.",
-      "expected_outcome": "Agent successfully retrieves the MVR and notes one speeding ticket from two years ago.",
-      "required_tools": [
-        "run_mvr_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a Motor Vehicle Report (MVR) to check the customer's driving record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the MVR and notes one speeding ticket from two years ago."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present a quote with different coverage options (liability, collision, comprehensive) and pricing.",
-      "expected_outcome": "Agent provides a clear, multi-option quote to the customer.",
-      "required_tools": [
-        "generate_auto_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present a quote with different coverage options (liability, collision, comprehensive) and pricing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear, multi-option quote to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

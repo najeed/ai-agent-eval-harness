@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13896",
-  "title": "Mobile Troubleshooting - No Data Connection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Mobile Troubleshooting - No Data Connection",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports they can make calls but have no mobile data connection.",
-  "use_case": "Technical Support",
-  "core_function": "Mobile Device Troubleshooting",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and check if their plan includes data.",
-      "expected_outcome": "Agent confirms the customer has an active data plan.",
-      "required_tools": [
-        "get_customer_details",
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and check if their plan includes data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer has an active data plan."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Instruct the customer to check if mobile data is enabled on their device and to restart their phone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear, basic troubleshooting steps."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Instruct the customer to check if mobile data is enabled on their device and to restart their phone.",
-      "expected_outcome": "Agent provides clear, basic troubleshooting steps.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the issue persists, trigger a network refresh for the customer's SIM card from the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uses the 'refresh SIM profile' tool."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the issue persists, trigger a network refresh for the customer's SIM card from the system.",
-      "expected_outcome": "Agent successfully uses the 'refresh SIM profile' tool.",
-      "required_tools": [
-        "refresh_sim_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

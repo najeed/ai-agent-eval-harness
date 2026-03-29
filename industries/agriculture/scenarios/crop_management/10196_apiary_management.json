@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-cm-10196",
-  "title": "Manage a Commercial Apiary",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Commercial Apiary",
+    "compliance_level": "Standard"
+  },
   "description": "A commercial beekeeper needs to manage inspection records and honey production for hundreds of hives.",
-  "use_case": "Crop Management",
-  "core_function": "Harvesting & Logistics",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Record the results of a hive inspection, including queen status, brood pattern, and signs of disease.",
-      "expected_outcome": "Agent successfully logs the inspection data for a specific hive.",
-      "required_tools": [
-        "record_hive_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Record the results of a hive inspection, including queen status, brood pattern, and signs of disease.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully logs the inspection data for a specific hive."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Record the amount of honey harvested from a specific hive.",
-      "expected_outcome": "Agent logs the honey yield.",
-      "required_tools": [
-        "record_honey_harvest"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Record the amount of honey harvested from a specific hive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the honey yield."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report showing the average honey production per hive and flag any underperforming hives for further inspection.",
-      "expected_outcome": "Agent creates a report that identifies the bottom 10% of hives by production.",
-      "required_tools": [
-        "generate_apiary_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report showing the average honey production per hive and flag any underperforming hives for further inspection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a report that identifies the bottom 10% of hives by production."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

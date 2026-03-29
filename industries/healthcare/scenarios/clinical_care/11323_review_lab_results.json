@@ -1,86 +1,61 @@
 {
-  "scenario_id": "hc-cc-11323",
-  "title": "Review Lab Results",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Lab Results",
+    "compliance_level": "Standard"
+  },
   "description": "A primary care physician needs to review and act on abnormal lab results that have arrived in their EHR inbox.",
-  "use_case": "Clinical Care",
-  "core_function": "Orders & Results Management (CPOE)",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the EHR inbox and identify the critical lab result notification.",
-      "expected_outcome": "Physician opens their inbox and sees a high-priority result.",
-      "required_tools": [
-        "open_provider_inbox"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the EHR inbox and identify the critical lab result notification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician opens their inbox and sees a high-priority result."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the lab result, noting that the patient's potassium level is critically high.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician correctly interprets the abnormal lab value."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the lab result, noting that the patient's potassium level is critically high.",
-      "expected_outcome": "Physician correctly interprets the abnormal lab value.",
-      "required_tools": [
-        "review_lab_result"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Acknowledge the result and send a message to their nurse to call the patient and instruct them to go to the emergency room.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician takes appropriate clinical action by acknowledging the result and delegating follow-up."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Acknowledge the result and send a message to their nurse to call the patient and instruct them to go to the emergency room.",
-      "expected_outcome": "Physician takes appropriate clinical action by acknowledging the result and delegating follow-up.",
-      "required_tools": [
-        "acknowledge_result",
-        "send_secure_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13934",
-  "title": "Validate Theme Park Entry Ticket",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Validate Theme Park Entry Ticket",
+    "compliance_level": "Standard"
+  },
   "description": "A family arrives at a theme park entrance and presents their pre-purchased e-tickets on a smartphone.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Access & Entry Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the QR code for each of the family member's tickets.",
-      "expected_outcome": "Agent successfully scans all tickets.",
-      "required_tools": [
-        "scan_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the QR code for each of the family member's tickets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully scans all tickets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Validate the tickets to ensure they are for the correct date and have not been used.",
-      "expected_outcome": "The system confirms all tickets are valid for entry.",
-      "required_tools": [
-        "validate_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Validate the tickets to ensure they are for the correct date and have not been used.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms all tickets are valid for entry."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Allow the family to enter the park.",
-      "expected_outcome": "Agent confirms the family can proceed into the park.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Allow the family to enter the park.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the family can proceed into the park."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-com-13219",
-  "title": "Conduct Due Diligence for Commercial Purchase",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Due Diligence for Commercial Purchase",
+    "compliance_level": "Standard"
+  },
   "description": "A client is under contract to buy a small apartment building. The agent must manage the due diligence process.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment & Sales Analysis",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a due diligence checklist including items like reviewing all leases, service contracts, and financial statements.",
-      "expected_outcome": "Agent generates a comprehensive checklist for the transaction.",
-      "required_tools": [
-        "create_due_diligence_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a due diligence checklist including items like reviewing all leases, service contracts, and financial statements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a comprehensive checklist for the transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request all necessary documents from the seller's agent.",
-      "expected_outcome": "Agent sends a formal request for all checklist items.",
-      "required_tools": [
-        "send_email_to_agent"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request all necessary documents from the seller's agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a formal request for all checklist items."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Track the received documents and follow up on outstanding items before the due diligence period expires.",
-      "expected_outcome": "Agent maintains an organized tracking system and ensures all documents are received on time.",
-      "required_tools": [
-        "track_document_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Track the received documents and follow up on outstanding items before the due diligence period expires.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent maintains an organized tracking system and ensures all documents are received on time."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

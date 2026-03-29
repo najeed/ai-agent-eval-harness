@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-proc-12665",
-  "title": "Monitor Overland Conveyor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor Overland Conveyor",
+    "compliance_level": "Standard"
+  },
   "description": "A control room operator monitors a long overland conveyor that transports ore from the mine to the processing plant.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Crushing & Grinding",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the conveyor's status on the control screen, checking motor amps, belt speed, and weightometer readings.",
-      "expected_outcome": "The operator confirms the conveyor is running normally.",
-      "required_tools": [
-        "get_conveyor_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the conveyor's status on the control screen, checking motor amps, belt speed, and weightometer readings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator confirms the conveyor is running normally."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Receive a 'Belt Misalignment' alarm from a sensor along the conveyor.",
-      "expected_outcome": "The operator acknowledges the alarm, which could lead to belt damage if not addressed.",
-      "required_tools": [
-        "acknowledge_alarm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "response_time_seconds",
-          "threshold": 90
+      },
+      {
+        "id": "task-2",
+        "task_description": "Receive a 'Belt Misalignment' alarm from a sensor along the conveyor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator acknowledges the alarm, which could lead to belt damage if not addressed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a field technician to the location of the alarm to inspect the conveyor belt and idlers and make any necessary adjustments.",
-      "expected_outcome": "A technician is sent to investigate and correct the belt tracking issue.",
-      "required_tools": [
-        "dispatch_field_operator"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a field technician to the location of the alarm to inspect the conveyor belt and idlers and make any necessary adjustments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A technician is sent to investigate and correct the belt tracking issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

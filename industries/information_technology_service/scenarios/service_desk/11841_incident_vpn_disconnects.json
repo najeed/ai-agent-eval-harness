@@ -1,49 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11841",
-  "title": "Incident - VPN Disconnects Frequently",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Incident - VPN Disconnects Frequently",
+    "compliance_level": "Standard"
+  },
   "description": "A remote user reports their VPN connection drops every 15-20 minutes.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "Incident & Request Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the firewall logs for the user's connection.",
-      "expected_outcome": "The firewall logs show no errors for the VPN session.",
-      "required_tools": [
-        "get_firewall_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the firewall logs for the user's connection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The firewall logs show no errors for the VPN session."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask the user to run a speed test and ping test from their home network to check for internet instability.",
-      "expected_outcome": "The user's local internet connection is found to be unstable with high packet loss.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask the user to run a speed test and ping test from their home network to check for internet instability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user's local internet connection is found to be unstable with high packet loss."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the user to reboot their home router and contact their Internet Service Provider if the issue persists.",
-      "expected_outcome": "The technician correctly identifies the issue as outside the company's network and advises the user accordingly.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the user to reboot their home router and contact their Internet Service Provider if the issue persists.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician correctly identifies the issue as outside the company's network and advises the user accordingly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

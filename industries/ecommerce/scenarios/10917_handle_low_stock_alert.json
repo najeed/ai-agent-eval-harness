@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-osm-10917",
-  "title": "Handle Low Stock Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Low Stock Alert",
+    "compliance_level": "Standard"
+  },
   "description": "An automated alert indicates that a popular product is about to run out of stock. The agent needs to take action.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Inventory Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the low-stock alert and identify the product.",
-      "expected_outcome": "Agent identifies the product SKU and current stock level.",
-      "required_tools": [
-        "get_low_stock_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the low-stock alert and identify the product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the product SKU and current stock level."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check if there are any pending purchase orders for this product from suppliers.",
-      "expected_outcome": "Agent finds a purchase order is scheduled to arrive in 5 days.",
-      "required_tools": [
-        "check_purchase_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check if there are any pending purchase orders for this product from suppliers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a purchase order is scheduled to arrive in 5 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the product page to display a 'More stock arriving soon' message to manage customer expectations.",
-      "expected_outcome": "Agent successfully updates the product page messaging.",
-      "required_tools": [
-        "update_product_messaging"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the product page to display a 'More stock arriving soon' message to manage customer expectations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the product page messaging."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

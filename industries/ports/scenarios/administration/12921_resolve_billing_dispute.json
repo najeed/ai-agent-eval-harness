@@ -1,55 +1,59 @@
 {
-  "scenario_id": "ports-af-12921",
-  "title": "Resolve a Customer Billing Dispute",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve a Customer Billing Dispute",
+    "compliance_level": "Standard"
+  },
   "description": "A trucking company disputes a charge on their invoice, claiming they were billed for storage fees on a container that was on hold by customs.",
-  "use_case": "Port Administration & Finance",
-  "core_function": "Billing & Invoicing",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the disputed invoice and the container's history.",
-      "expected_outcome": "Clerk finds the invoice and the container's movement history in the system.",
-      "required_tools": [
-        "get_invoice_details",
-        "get_container_movement_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the disputed invoice and the container's history.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Clerk finds the invoice and the container's movement history in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the dates of the customs hold and compare them to the storage (demurrage) charge period.",
-      "expected_outcome": "Clerk confirms the storage charges were for the same period the container was on customs hold.",
-      "required_tools": [
-        "check_container_customs_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the dates of the customs hold and compare them to the storage (demurrage) charge period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Clerk confirms the storage charges were for the same period the container was on customs hold."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on port policy that storage is not charged during a customs hold, waive the fee and issue a corrected invoice.",
-      "expected_outcome": "The disputed charge is credited, and a new invoice is generated and sent to the customer.",
-      "required_tools": [
-        "apply_account_credit",
-        "generate_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on port policy that storage is not charged during a customs hold, waive the fee and issue a corrected invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The disputed charge is credited, and a new invoice is generated and sent to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

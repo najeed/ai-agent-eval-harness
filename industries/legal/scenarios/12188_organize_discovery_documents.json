@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12188",
-  "title": "Organize Discovery Documents",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Organize Discovery Documents",
+    "compliance_level": "Standard"
+  },
   "description": "A firm has received a large production of documents from the opposing party. A paralegal needs to organize them.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load the received documents into the e-discovery platform.",
-      "expected_outcome": "All documents are successfully ingested.",
-      "required_tools": [
-        "ediscovery_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load the received documents into the e-discovery platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All documents are successfully ingested."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform OCR (Optical Character Recognition) on all documents to make them text-searchable.",
-      "expected_outcome": "All image-based documents are now searchable.",
-      "required_tools": [
-        "ediscovery_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform OCR (Optical Character Recognition) on all documents to make them text-searchable.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All image-based documents are now searchable."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Organize the documents by custodian (the person they came from) and date to prepare for review.",
-      "expected_outcome": "The documents are logically organized for the review team.",
-      "required_tools": [
-        "ediscovery_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Organize the documents by custodian (the person they came from) and date to prepare for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The documents are logically organized for the review team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

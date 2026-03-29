@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ports-hs-12933",
-  "title": "Manage an Emergency Response Drill (Fire)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage an Emergency Response Drill (Fire)",
+    "compliance_level": "Standard"
+  },
   "description": "The port is conducting a full-scale fire drill at a warehouse. The emergency manager must coordinate the response.",
-  "use_case": "Health, Safety, Security & Environment (HSSE)",
-  "core_function": "Emergency Response",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Activate the port's emergency alert system with a 'DRILL' message.",
-      "expected_outcome": "The alert system is activated, notifying all port personnel of the drill.",
-      "required_tools": [
-        "activate_emergency_alert_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Activate the port's emergency alert system with a 'DRILL' message.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The alert system is activated, notifying all port personnel of the drill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Coordinate the response of the port's internal fire brigade and the local city fire department.",
-      "expected_outcome": "The manager communicates with both teams, directing them to the scene as per the plan.",
-      "required_tools": [
-        "coordinate_emergency_responders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Coordinate the response of the port's internal fire brigade and the local city fire department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager communicates with both teams, directing them to the scene as per the plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log all actions and communications during the drill and conduct a debrief afterwards to assess performance.",
-      "expected_outcome": "A complete log of the drill is created, and a debriefing meeting is scheduled.",
-      "required_tools": [
-        "log_emergency_response_actions",
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log all actions and communications during the drill and conduct a debrief afterwards to assess performance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete log of the drill is created, and a debriefing meeting is scheduled."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

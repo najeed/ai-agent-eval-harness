@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-rc-13022",
-  "title": "Provide Documents for a Program Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Documents for a Program Audit",
+    "compliance_level": "Standard"
+  },
   "description": "A state auditor is conducting an audit of a public housing program and has requested specific case files.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Audit & Oversight",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the official request from the auditor, identifying the specific case files needed.",
-      "expected_outcome": "The program manager logs the audit request.",
-      "required_tools": [
-        "log_audit_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the official request from the auditor, identifying the specific case files needed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The program manager logs the audit request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for and retrieve the requested case files from the system.",
-      "expected_outcome": "The manager successfully gathers all requested digital case files.",
-      "required_tools": [
-        "search_case_files"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for and retrieve the requested case files from the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager successfully gathers all requested digital case files."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the documents to the auditor through a secure transfer method.",
-      "expected_outcome": "The manager securely transmits the files to the auditor.",
-      "required_tools": [
-        "send_secure_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the documents to the auditor through a secure transfer method.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager securely transmits the files to the auditor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

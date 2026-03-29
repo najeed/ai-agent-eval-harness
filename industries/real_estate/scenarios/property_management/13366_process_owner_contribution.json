@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13366",
-  "title": "Process an Owner Contribution",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an Owner Contribution",
+    "compliance_level": "Standard"
+  },
   "description": "A major repair (e.g., new roof) is needed that costs more than the property's reserve funds. The property manager must request a contribution from the owner.",
-  "use_case": "Property Management",
-  "core_function": "Rent Collection & Financials",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain multiple bids for the roof replacement and present them to the owner.",
-      "expected_outcome": "The owner is presented with several quotes to choose from.",
-      "required_tools": [
-        "request_vendor_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain multiple bids for the roof replacement and present them to the owner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The owner is presented with several quotes to choose from."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Formally request the necessary funds from the owner to cover the cost of the selected bid.",
-      "expected_outcome": "A formal request for an owner contribution is sent.",
-      "required_tools": [
-        "send_owner_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Formally request the necessary funds from the owner to cover the cost of the selected bid.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal request for an owner contribution is sent."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Receive the funds from the owner and record the contribution in the property's accounting ledger.",
-      "expected_outcome": "The owner contribution is received and correctly recorded.",
-      "required_tools": [
-        "record_owner_contribution"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Receive the funds from the owner and record the contribution in the property's accounting ledger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The owner contribution is received and correctly recorded."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ret-so-13396",
-  "title": "Find a Product for a Customer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find a Product for a Customer",
+    "compliance_level": "Standard"
+  },
   "description": "A customer asks a store associate for help finding a specific product.",
-  "use_case": "Store Operations",
-  "core_function": "In-Store Customer Assistance",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ask the customer for the product name or description.",
-      "expected_outcome": "The associate understands what product the customer is looking for.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ask the customer for the product name or description.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate understands what product the customer is looking for."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a handheld device to look up the product and find its location in the store.",
-      "expected_outcome": "The device shows the product is in 'Aisle 7, Bay 3'.",
-      "required_tools": [
-        "lookup_product_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a handheld device to look up the product and find its location in the store.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The device shows the product is in 'Aisle 7, Bay 3'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Escort the customer to the correct location and help them find the product on the shelf.",
-      "expected_outcome": "The customer successfully finds the product they were looking for.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Escort the customer to the correct location and help them find the product on the shelf.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer successfully finds the product they were looking for."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,66 +1,72 @@
 {
-  "scenario_id": "sports-vo-13658",
-  "title": "Respond to Medical Emergency in the Stands",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to Medical Emergency in the Stands",
+    "compliance_level": "Standard"
+  },
   "description": "A fan in the stands suffers a medical emergency. The venue's emergency response team must be dispatched.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Event Day Operations",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an alert from an usher about a medical emergency, including the fan's location.",
-      "expected_outcome": "Agent gets the location of the emergency.",
-      "required_tools": [
-        "get_staff_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an alert from an usher about a medical emergency, including the fan's location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the location of the emergency."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Immediately dispatch the on-site paramedic team to the fan's location.",
-      "expected_outcome": "Agent sends the paramedics to the correct location.",
-      "required_tools": [
-        "dispatch_medical_team"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Immediately dispatch the on-site paramedic team to the fan's location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the paramedics to the correct location."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch security to clear a path for the paramedics and ensure their privacy.",
-      "expected_outcome": "Agent sends security staff to assist.",
-      "required_tools": [
-        "dispatch_security_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch security to clear a path for the paramedics and ensure their privacy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends security staff to assist."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Log the incident in the event management system.",
-      "expected_outcome": "Agent creates a detailed log of the response.",
-      "required_tools": [
-        "create_incident_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Log the incident in the event management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed log of the response."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

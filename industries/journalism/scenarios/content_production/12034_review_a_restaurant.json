@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-cp-12034",
-  "title": "Review a Restaurant",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review a Restaurant",
+    "compliance_level": "Standard"
+  },
   "description": "A food critic has visited a new restaurant and needs to write a review, balancing description of the food, atmosphere, and service.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Writing & Drafting",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Consult notes taken during the restaurant visit about each dish, the decor, and the service.",
-      "expected_outcome": "Agent has all the raw material for the review.",
-      "required_tools": [
-        "note_taking_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "detail_of_notes",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Consult notes taken during the restaurant visit about each dish, the decor, and the service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has all the raw material for the review."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the review, using vivid and descriptive language to describe the flavors and textures of the food.",
-      "expected_outcome": "The review makes the reader feel like they can taste the food.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "descriptive_writing_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the review, using vivid and descriptive language to describe the flavors and textures of the food.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The review makes the reader feel like they can taste the food."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Conclude with a clear recommendation and a star rating, consistent with the publication's rating system.",
-      "expected_outcome": "The review provides a clear, final judgment for the reader.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "clarity_of_recommendation",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Conclude with a clear recommendation and a star rating, consistent with the publication's rating system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The review provides a clear, final judgment for the reader."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "auto-ms-10416",
-  "title": "Track a Shipment of Finished Vehicles",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track a Shipment of Finished Vehicles",
+    "compliance_level": "Standard"
+  },
   "description": "A dealership is asking for the status of a shipment of 10 vehicles that was supposed to arrive today.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Logistics & Parts Tracking",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the shipment order details using the dealership's ID.",
-      "expected_outcome": "Agent finds the shipment order and the carrier details.",
-      "required_tools": [
-        "get_shipment_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the shipment order details using the dealership's ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the shipment order and the carrier details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the GPS location of the transport truck carrying the vehicles.",
-      "expected_outcome": "Agent pings the carrier's GPS and finds the truck is 50 miles away, delayed by traffic.",
-      "required_tools": [
-        "track_carrier_gps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the GPS location of the transport truck carrying the vehicles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pings the carrier's GPS and finds the truck is 50 miles away, delayed by traffic."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the dealership with an updated estimated time of arrival.",
-      "expected_outcome": "Agent informs the dealership of the new ETA.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the dealership with an updated estimated time of arrival.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent informs the dealership of the new ETA."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

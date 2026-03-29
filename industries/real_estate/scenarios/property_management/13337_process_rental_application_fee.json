@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13337",
-  "title": "Process a Rental Application Fee",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Rental Application Fee",
+    "compliance_level": "Standard"
+  },
   "description": "A property manager needs to collect and process an application fee from a prospective tenant.",
-  "use_case": "Property Management",
-  "core_function": "Leasing & Tenant Screening",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Send the applicant a secure online link to pay the application fee.",
-      "expected_outcome": "Applicant receives a payment link.",
-      "required_tools": [
-        "send_payment_link"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Send the applicant a secure online link to pay the application fee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Applicant receives a payment link."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Receive confirmation that the payment has been successfully processed.",
-      "expected_outcome": "Payment confirmation is received and logged.",
-      "required_tools": [
-        "get_payment_confirmation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Receive confirmation that the payment has been successfully processed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Payment confirmation is received and logged."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once payment is confirmed, initiate the tenant screening process.",
-      "expected_outcome": "The screening workflow is triggered after payment.",
-      "required_tools": [
-        "initiate_tenant_screening_workflow"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once payment is confirmed, initiate the tenant screening process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The screening workflow is triggered after payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

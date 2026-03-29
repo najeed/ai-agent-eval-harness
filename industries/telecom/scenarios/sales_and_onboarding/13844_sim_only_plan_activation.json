@@ -1,81 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13844",
-  "title": "Onboarding - SIM-Only Plan Activation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Onboarding - SIM-Only Plan Activation",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has received their new SIM card for a SIM-only plan and needs to activate it.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Onboarding and Activation",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ask the customer for the ICCID number from the new SIM card.",
-      "expected_outcome": "Agent correctly captures the SIM card number.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ask the customer for the ICCID number from the new SIM card.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly captures the SIM card number."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Activate the SIM card in the billing system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully activates the SIM."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Activate the SIM card in the billing system.",
-      "expected_outcome": "Agent successfully activates the SIM.",
-      "required_tools": [
-        "activate_sim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the customer to insert the SIM and restart their phone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear final instructions."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the customer to insert the SIM and restart their phone.",
-      "expected_outcome": "Agent provides clear final instructions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

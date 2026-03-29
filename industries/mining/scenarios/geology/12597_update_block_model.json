@@ -1,54 +1,59 @@
 {
-  "scenario_id": "mining-geo-12597",
-  "title": "Update Geological Block Model",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Geological Block Model",
+    "compliance_level": "Standard"
+  },
   "description": "A resource geologist incorporates new drillhole assay data into the geological block model to refine the resource estimate.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Resource Modeling",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Import and validate the new drillhole data, checking for errors in location, depth, and assay values.",
-      "expected_outcome": "New drillhole data is successfully imported and validated in the geology software.",
-      "required_tools": [
-        "import_drillhole_data",
-        "validate_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Import and validate the new drillhole data, checking for errors in location, depth, and assay values.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "New drillhole data is successfully imported and validated in the geology software."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a geostatistical estimation (e.g., kriging) to interpolate grades from the drillholes into the block model.",
-      "expected_outcome": "The block model grades are updated based on the new data.",
-      "required_tools": [
-        "run_grade_estimation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "geostatistical_model_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a geostatistical estimation (e.g., kriging) to interpolate grades from the drillholes into the block model.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The block model grades are updated based on the new data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a new resource tonnage and grade report and compare it with the previous version.",
-      "expected_outcome": "A report is generated showing an increase in indicated resources.",
-      "required_tools": [
-        "generate_resource_report",
-        "compare_models"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a new resource tonnage and grade report and compare it with the previous version.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A report is generated showing an increase in indicated resources."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

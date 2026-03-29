@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tax-rep-13749",
-  "title": "Request Currently Not Collectible Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Currently Not Collectible Status",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer with a tax debt is experiencing extreme financial hardship and cannot afford any payments.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Collections & Appeals",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather detailed financial information from the taxpayer to prove financial hardship.",
-      "expected_outcome": "Agent collects all necessary income, expense, and asset information.",
-      "required_tools": [
-        "prepare_form_433f"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather detailed financial information from the taxpayer to prove financial hardship.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary income, expense, and asset information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the IRS to request that the account be placed in Currently Not Collectible (CNC) status.",
-      "expected_outcome": "Agent communicates with the IRS collections department.",
-      "required_tools": [
-        "contact_irs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the IRS to request that the account be placed in Currently Not Collectible (CNC) status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent communicates with the IRS collections department."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the required financial documentation to the IRS to support the CNC request.",
-      "expected_outcome": "Agent submits the financial forms, and the IRS agrees to place the account in CNC status.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the required financial documentation to the IRS to support the CNC request.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the financial forms, and the IRS agrees to place the account in CNC status."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-ago-10222",
-  "title": "Manage a Last-Minute Gate Change",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Last-Minute Gate Change",
+    "compliance_level": "Standard"
+  },
   "description": "Due to an operational issue, a flight's departure gate has been changed 45 minutes before departure. A gate agent must manage the change.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Gate & Boarding",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the gate change notification from operations control.",
-      "expected_outcome": "Agent identifies the new gate assignment.",
-      "required_tools": [
-        "get_gate_change_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the gate change notification from operations control.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the new gate assignment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Make a clear PA announcement at the original gate informing passengers of the new gate number.",
-      "expected_outcome": "Agent makes a timely and clear announcement.",
-      "required_tools": [
-        "make_pa_announcement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Make a clear PA announcement at the original gate informing passengers of the new gate number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a timely and clear announcement."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Move all gate equipment and staff to the new gate and update the airport's flight information display systems (FIDS).",
-      "expected_outcome": "Agent coordinates the physical move and updates the public displays.",
-      "required_tools": [
-        "update_fids"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Move all gate equipment and staff to the new gate and update the airport's flight information display systems (FIDS).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent coordinates the physical move and updates the public displays."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

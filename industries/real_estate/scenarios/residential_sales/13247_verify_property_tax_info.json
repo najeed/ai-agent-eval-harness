@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-res-13247",
-  "title": "Verify Property Tax Information",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify Property Tax Information",
+    "compliance_level": "Standard"
+  },
   "description": "When creating a new listing, an agent needs to verify the official property tax amount and check for any special assessments.",
-  "use_case": "Residential Sales",
-  "core_function": "Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the property's Parcel ID Number (APN).",
-      "expected_outcome": "Agent correctly finds the property's APN.",
-      "required_tools": [
-        "get_property_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the property's Parcel ID Number (APN).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly finds the property's APN."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the county tax assessor's public records database using the APN.",
-      "expected_outcome": "Agent successfully navigates to the property's tax record page.",
-      "required_tools": [
-        "search_public_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the county tax assessor's public records database using the APN.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully navigates to the property's tax record page."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Extract the most recent annual tax amount and note any Mello-Roos or other special assessments to include in the listing disclosures.",
-      "expected_outcome": "Agent accurately records all relevant tax information.",
-      "required_tools": [
-        "extract_data_from_webpage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_extraction_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Extract the most recent annual tax amount and note any Mello-Roos or other special assessments to include in the listing disclosures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records all relevant tax information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

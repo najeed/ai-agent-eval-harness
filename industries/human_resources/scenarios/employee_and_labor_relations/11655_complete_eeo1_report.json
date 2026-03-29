@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-er-11655",
-  "title": "Complete the Annual EEO-1 Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Complete the Annual EEO-1 Report",
+    "compliance_level": "Standard"
+  },
   "description": "A compliance specialist needs to compile and submit the company's annual EEO-1 report to the government.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Policy & Compliance",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a report from the HRIS of all employees and their demographic and job category data as of the required snapshot date.",
-      "expected_outcome": "Specialist generates the raw data needed for the report.",
-      "required_tools": [
-        "run_hris_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a report from the HRIS of all employees and their demographic and job category data as of the required snapshot date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist generates the raw data needed for the report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Format the data according to the EEO-1 reporting specifications.",
-      "expected_outcome": "Specialist correctly maps company job titles to the standard EEO-1 categories.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Format the data according to the EEO-1 reporting specifications.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist correctly maps company job titles to the standard EEO-1 categories."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the formatted data file through the official EEO-1 online filing portal.",
-      "expected_outcome": "Specialist successfully submits the report before the deadline.",
-      "required_tools": [
-        "submit_eeo1_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the formatted data file through the official EEO-1 online filing portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist successfully submits the report before the deadline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

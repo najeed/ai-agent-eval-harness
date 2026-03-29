@@ -1,51 +1,59 @@
 {
-  "scenario_id": "realestate-cs-13148",
-  "title": "Prepare a Lease Abstract",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare a Lease Abstract",
+    "compliance_level": "Standard"
+  },
   "description": "An investor who is buying a tenanted commercial building needs a summary of a key tenant's lease.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Valuation & Market Analysis",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the full commercial lease document.",
-      "expected_outcome": "Agent has the complete lease PDF.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the full commercial lease document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the complete lease PDF."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Extract key data points from the lease, including: tenant name, premises, term, rent schedule, renewal options, and use clause.",
-      "expected_outcome": "Agent accurately extracts all specified information from the lengthy legal document.",
-      "required_tools": [
-        "extract_data_from_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Extract key data points from the lease, including: tenant name, premises, term, rent schedule, renewal options, and use clause.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately extracts all specified information from the lengthy legal document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a concise lease abstract report summarizing the key data points.",
-      "expected_outcome": "A one-page summary document is created and provided to the investor client.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a concise lease abstract report summarizing the key data points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A one-page summary document is created and provided to the investor client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

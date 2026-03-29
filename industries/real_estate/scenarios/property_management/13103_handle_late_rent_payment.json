@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13103",
-  "title": "Handle Late Rent Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Late Rent Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant's rent has not been received by the due date. The system flags the account, and the PM must take action.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management & Reporting",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the tenant with the overdue balance from the system alert.",
-      "expected_outcome": "Agent confirms the tenant's name, unit, and overdue amount.",
-      "required_tools": [
-        "get_delinquency_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the tenant with the overdue balance from the system alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the tenant's name, unit, and overdue amount."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply the standard late fee to the tenant's ledger.",
-      "expected_outcome": "The correct late fee, as specified in the lease, is posted to the tenant's account.",
-      "required_tools": [
-        "apply_late_fee"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply the standard late fee to the tenant's ledger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct late fee, as specified in the lease, is posted to the tenant's account."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a formal 'Late Rent Notice' to the tenant via email.",
-      "expected_outcome": "The standard legal notice is generated and sent to the tenant, and the communication is logged in the system.",
-      "required_tools": [
-        "send_legal_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a formal 'Late Rent Notice' to the tenant via email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The standard legal notice is generated and sent to the tenant, and the communication is logged in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

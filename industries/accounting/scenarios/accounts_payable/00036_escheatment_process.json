@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-ap-36",
-  "title": "Handle Uncashed Vendor Checks (Escheatment)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Uncashed Vendor Checks (Escheatment)",
+    "compliance_level": "Standard"
+  },
   "description": "During a review, an accountant finds several vendor checks that were issued over a year ago but have never been cashed.",
-  "use_case": "Accounts Payable",
-  "core_function": "Accruals & Reconciliation",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all outstanding checks that are more than 180 days old.",
-      "expected_outcome": "Agent produces a list of stale-dated checks.",
-      "required_tools": [
-        "get_outstanding_checks_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all outstanding checks that are more than 180 days old.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a list of stale-dated checks."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform due diligence by attempting to contact the vendors to have them cash the checks or request a reissue.",
-      "expected_outcome": "Agent sends notification letters to the vendors.",
-      "required_tools": [
-        "send_due_diligence_letter"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform due diligence by attempting to contact the vendors to have them cash the checks or request a reissue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends notification letters to the vendors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For checks that remain uncashed after the due diligence period, prepare to remit the funds to the state as unclaimed property, following escheatment laws.",
-      "expected_outcome": "Agent prepares the necessary report and payment for the state comptroller's office.",
-      "required_tools": [
-        "prepare_escheatment_filing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For checks that remain uncashed after the due diligence period, prepare to remit the funds to the state as unclaimed property, following escheatment laws.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares the necessary report and payment for the state comptroller's office."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

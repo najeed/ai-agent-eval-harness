@@ -1,66 +1,72 @@
 {
-  "scenario_id": "utils-wo-14136",
-  "title": "Acoustic Leak Detection Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Acoustic Leak Detection Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "The system analyzes data from acoustic sensors in a District Metered Area (DMA) to pinpoint a non-surfacing water leak.",
-  "use_case": "Water & Wastewater Operations",
-  "core_function": "Network Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze overnight minimum flow data for the DMA, identifying higher-than-normal flow.",
-      "expected_outcome": "System flags the DMA for potential leakage.",
-      "required_tools": [
-        "analyze_minimum_night_flow"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze overnight minimum flow data for the DMA, identifying higher-than-normal flow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System flags the DMA for potential leakage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect and correlate noise data from acoustic sensors within the flagged DMA.",
-      "expected_outcome": "System gathers acoustic data from all relevant sensors.",
-      "required_tools": [
-        "get_acoustic_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect and correlate noise data from acoustic sensors within the flagged DMA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System gathers acoustic data from all relevant sensors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Triangulate the source of the leak noise to a specific point between two sensors.",
-      "expected_outcome": "System provides GPS coordinates for the suspected leak location.",
-      "required_tools": [
-        "pinpoint_leak_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "location_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Triangulate the source of the leak noise to a specific point between two sensors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System provides GPS coordinates for the suspected leak location."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a work order for a crew to investigate and repair the identified leak.",
-      "expected_outcome": "System dispatches a crew to the precise location.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a work order for a crew to investigate and repair the identified leak.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System dispatches a crew to the precise location."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

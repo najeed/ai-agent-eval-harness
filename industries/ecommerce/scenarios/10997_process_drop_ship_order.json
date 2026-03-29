@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10997",
-  "title": "Process a Drop-Ship Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Drop-Ship Order",
+    "compliance_level": "Standard"
+  },
   "description": "A customer orders an item that is not stocked in the warehouse but is instead shipped directly from a third-party supplier (drop-shipping).",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Order Processing",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "When a drop-ship item is ordered, identify the correct supplier for that item.",
-      "expected_outcome": "System identifies that the product is fulfilled by 'Supplier ABC'.",
-      "required_tools": [
-        "get_product_supplier"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "When a drop-ship item is ordered, identify the correct supplier for that item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System identifies that the product is fulfilled by 'Supplier ABC'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Automatically send a purchase order or fulfillment request to the supplier with the customer's shipping information.",
-      "expected_outcome": "System successfully transmits the order details to the supplier's system via API or email.",
-      "required_tools": [
-        "send_dropship_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Automatically send a purchase order or fulfillment request to the supplier with the customer's shipping information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully transmits the order details to the supplier's system via API or email."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the supplier provides a tracking number, update the customer's order with that information.",
-      "expected_outcome": "System ingests the tracking number from the supplier and updates the customer's order.",
-      "required_tools": [
-        "update_order_tracking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the supplier provides a tracking number, update the customer's order with that information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System ingests the tracking number from the supplier and updates the customer's order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

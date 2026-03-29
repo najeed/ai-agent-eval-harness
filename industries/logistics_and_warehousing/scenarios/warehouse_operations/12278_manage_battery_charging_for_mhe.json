@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-wo-12278",
-  "title": "Manage Battery Charging for MHE",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Battery Charging for MHE",
+    "compliance_level": "Standard"
+  },
   "description": "A forklift's battery is low. The operator must swap it for a charged one at a battery station.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Storage & Slotting",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The forklift's terminal displays a 'Low Battery' warning and directs the operator to the nearest battery charging station.",
-      "expected_outcome": "The operator is proactively notified and guided.",
-      "required_tools": [
-        "monitor_mhe_battery_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The forklift's terminal displays a 'Low Battery' warning and directs the operator to the nearest battery charging station.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator is proactively notified and guided."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The operator scans their forklift ID at the battery station.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system logs that this forklift is beginning a battery swap."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The operator scans their forklift ID at the battery station.",
-      "expected_outcome": "The system logs that this forklift is beginning a battery swap.",
-      "required_tools": [
-        "log_battery_swap_start"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The operator removes the depleted battery, places it in a charging slot, and takes a fully charged battery.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The physical battery swap is performed."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The operator scans the new battery's ID, and the system logs the completion of the swap, updating the forklift's status to 'Active'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system records the new battery association and shows the forklift is ready for work."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "The operator removes the depleted battery, places it in a charging slot, and takes a fully charged battery.",
-      "expected_outcome": "The physical battery swap is performed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "The operator scans the new battery's ID, and the system logs the completion of the swap, updating the forklift's status to 'Active'.",
-      "expected_outcome": "The system records the new battery association and shows the forklift is ready for work.",
-      "required_tools": [
-        "log_battery_swap_end"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

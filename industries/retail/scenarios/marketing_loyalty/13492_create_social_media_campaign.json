@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ret-ml-13492",
-  "title": "Create a Social Media Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Social Media Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "A social media manager is creating a campaign to promote a flash sale.",
-  "use_case": "Marketing & Loyalty",
-  "core_function": "Campaign Management",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Draft the text and select the images for the posts on different social media platforms (e.g., Instagram, Facebook).",
-      "expected_outcome": "The content for the campaign is created.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Draft the text and select the images for the posts on different social media platforms (e.g., Instagram, Facebook).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The content for the campaign is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a social media management tool to schedule the posts to go live at a specific time.",
-      "expected_outcome": "The posts are scheduled for optimal timing.",
-      "required_tools": [
-        "schedule_social_media_post"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a social media management tool to schedule the posts to go live at a specific time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The posts are scheduled for optimal timing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the posts for comments and engagement after they go live.",
-      "expected_outcome": "The manager can interact with customers and track the campaign's reach.",
-      "required_tools": [
-        "monitor_social_media"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the posts for comments and engagement after they go live.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager can interact with customers and track the campaign's reach."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

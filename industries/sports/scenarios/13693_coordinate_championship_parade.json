@@ -1,69 +1,72 @@
 {
-  "scenario_id": "sports-vo-13693",
-  "title": "Coordinate a Championship Parade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate a Championship Parade",
+    "compliance_level": "Standard"
+  },
   "description": "After winning a championship, a team needs to work with the city to plan a championship parade.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Event Day Operations",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Work with city officials to plan and approve a parade route.",
-      "expected_outcome": "A final parade route is agreed upon.",
-      "required_tools": [
-        "plan_parade_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Work with city officials to plan and approve a parade route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A final parade route is agreed upon."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Secure all necessary permits from the city for street closures and security.",
-      "expected_outcome": "Agent obtains all required permits.",
-      "required_tools": [
-        "apply_for_parade_permit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Secure all necessary permits from the city for street closures and security.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains all required permits."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Coordinate with local police for security and traffic management along the parade route.",
-      "expected_outcome": "A comprehensive security plan is in place.",
-      "required_tools": [
-        "coordinate_with_police"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Coordinate with local police for security and traffic management along the parade route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive security plan is in place."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Announce the details of the parade (date, time, route) to the public.",
-      "expected_outcome": "Agent releases the parade information to the media and fans.",
-      "required_tools": [
-        "draft_press_release",
-        "post_to_social_media"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Announce the details of the parade (date, time, route) to the public.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent releases the parade information to the media and fans."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

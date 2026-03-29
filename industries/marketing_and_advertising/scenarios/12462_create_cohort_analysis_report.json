@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-ar-12462",
-  "title": "Create a Cohort Analysis Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Cohort Analysis Report",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst wants to understand customer retention by creating a cohort analysis report that shows the percentage of new users who return in subsequent months.",
-  "use_case": "Analytics & Reporting",
-  "core_function": "Data Analysis & Insights",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "In the analytics tool, create a cohort analysis report.",
-      "expected_outcome": "Agent navigates to and sets up the cohort report.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "In the analytics tool, create a cohort analysis report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent navigates to and sets up the cohort report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Define the cohort by 'Acquisition Date' and the metric as 'User Retention'.",
-      "expected_outcome": "Agent sets the correct parameters for the analysis.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Define the cohort by 'Acquisition Date' and the metric as 'User Retention'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets the correct parameters for the analysis."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the resulting table to see how retention changes over time for different cohorts.",
-      "expected_outcome": "Agent identifies trends, such as 'The May cohort had higher Month 1 retention than the April cohort.'",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the resulting table to see how retention changes over time for different cohorts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies trends, such as 'The May cohort had higher Month 1 retention than the April cohort.'"
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

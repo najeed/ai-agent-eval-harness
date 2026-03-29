@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-mx-11083",
-  "title": "New Faculty Onboarding and Tech Setup",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Faculty Onboarding and Tech Setup",
+    "compliance_level": "Standard"
+  },
   "description": "A new faculty member, as part of their onboarding, needs to get their ID card and have their office computer set up.",
-  "use_case": "Mixed",
-  "core_function": "HR & Onboarding",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "As part of the HR onboarding checklist, direct the new faculty to the campus card office to have their photo taken and ID issued.",
-      "expected_outcome": "HR agent provides clear directions and instructions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "As part of the HR onboarding checklist, direct the new faculty to the campus card office to have their photo taken and ID issued.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR agent provides clear directions and instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "After the ID is issued, the card office system automatically generates an IT support ticket.",
-      "expected_outcome": "A ticket is created for desktop support to set up the new faculty's computer.",
-      "required_tools": [
-        "create_it_support_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "After the ID is issued, the card office system automatically generates an IT support ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A ticket is created for desktop support to set up the new faculty's computer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The IT technician uses the ticket to schedule a setup appointment with the new faculty member.",
-      "expected_outcome": "IT schedules and completes the computer setup.",
-      "required_tools": [
-        "schedule_it_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The IT technician uses the ticket to schedule a setup appointment with the new faculty member.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "IT schedules and completes the computer setup."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

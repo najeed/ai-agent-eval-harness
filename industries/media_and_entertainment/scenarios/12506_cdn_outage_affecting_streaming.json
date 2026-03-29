@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-bo-12506",
-  "title": "CDN Outage Affecting Video Streaming",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "CDN Outage Affecting Video Streaming",
+    "compliance_level": "Standard"
+  },
   "description": "Multiple users report widespread video playback failures. The agent must diagnose the issue, suspecting a CDN problem.",
-  "use_case": "Broadcasting & Streaming Operations",
-  "core_function": "Content Delivery & CDN",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the high volume of user complaints about playback errors.",
-      "expected_outcome": "Agent identifies a spike in playback error reports.",
-      "required_tools": [
-        "get_customer_support_ticket_volume"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the high volume of user complaints about playback errors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a spike in playback error reports."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status dashboards of all primary CDN providers.",
-      "expected_outcome": "Agent finds that a major CDN provider is reporting a partial outage in North America.",
-      "required_tools": [
-        "check_cdn_provider_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status dashboards of all primary CDN providers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that a major CDN provider is reporting a partial outage in North America."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute a command to reroute all North American traffic to the secondary CDN provider.",
-      "expected_outcome": "Agent successfully updates the CDN traffic management configuration.",
-      "required_tools": [
-        "reroute_cdn_traffic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute a command to reroute all North American traffic to the secondary CDN provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the CDN traffic management configuration."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12459",
-  "title": "Research a B2B Target Audience",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Research a B2B Target Audience",
+    "compliance_level": "Standard"
+  },
   "description": "A strategist needs to understand the key pain points of a B2B target audience (e.g., VPs of HR).",
-  "use_case": "Strategy & Planning",
-  "core_function": "Market & Audience Research",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use LinkedIn Sales Navigator or a similar tool to identify the demographics and firmographics of the target role.",
-      "expected_outcome": "Agent gathers data on company size, industry, and seniority of the target audience.",
-      "required_tools": [
-        "b2b_data_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use LinkedIn Sales Navigator or a similar tool to identify the demographics and firmographics of the target role.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers data on company size, industry, and seniority of the target audience."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for industry reports, articles, and forum discussions where this audience discusses their professional challenges.",
-      "expected_outcome": "Agent finds common themes like 'employee retention', 'recruitment costs', and 'compliance'.",
-      "required_tools": [
-        "web_search"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for industry reports, articles, and forum discussions where this audience discusses their professional challenges.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds common themes like 'employee retention', 'recruitment costs', and 'compliance'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a summary of the top 3-5 pain points to inform marketing messaging.",
-      "expected_outcome": "Agent produces a concise list of challenges that the product can solve.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "insight_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a summary of the top 3-5 pain points to inform marketing messaging.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a concise list of challenges that the product can solve."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

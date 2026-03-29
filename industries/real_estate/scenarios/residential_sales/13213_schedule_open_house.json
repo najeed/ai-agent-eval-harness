@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13213",
-  "title": "Schedule and Market an Open House",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule and Market an Open House",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to schedule an open house for a new listing and market it online.",
-  "use_case": "Residential Sales",
-  "core_function": "Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select a date and time for the open house (e.g., Sunday, 1-4 PM) and add it to the MLS listing.",
-      "expected_outcome": "Agent successfully updates the MLS with the open house details.",
-      "required_tools": [
-        "update_mls_listing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select a date and time for the open house (e.g., Sunday, 1-4 PM) and add it to the MLS listing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the MLS with the open house details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a social media post and a digital flyer to promote the open house.",
-      "expected_outcome": "Agent generates marketing materials for the event.",
-      "required_tools": [
-        "create_social_media_post",
-        "generate_flyer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a social media post and a digital flyer to promote the open house.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates marketing materials for the event."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the social media post to be published a few days before the event.",
-      "expected_outcome": "Agent schedules the post for optimal visibility.",
-      "required_tools": [
-        "schedule_social_media_post"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the social media post to be published a few days before the event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent schedules the post for optimal visibility."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

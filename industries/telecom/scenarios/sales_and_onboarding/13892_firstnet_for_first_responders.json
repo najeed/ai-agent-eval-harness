@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13892",
-  "title": "New Customer - FirstNet for First Responder",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Customer - FirstNet for First Responder",
+    "compliance_level": "Standard"
+  },
   "description": "A first responder (e.g., paramedic, firefighter) wants to sign up for a specialized FirstNet plan.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "New Customer Acquisition",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the benefits of the FirstNet plan, including network priority and preemption.",
-      "expected_outcome": "Agent clearly explains the unique features.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the benefits of the FirstNet plan, including network priority and preemption.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the unique features."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the customer's status as a first responder using a verification portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent guides the customer through the verification process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the customer's status as a first responder using a verification portal.",
-      "expected_outcome": "Agent guides the customer through the verification process.",
-      "required_tools": [
-        "verify_first_responder_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create the new account and process the order for the FirstNet plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the specialized account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create the new account and process the order for the FirstNet plan.",
-      "expected_outcome": "Agent successfully creates the specialized account.",
-      "required_tools": [
-        "create_customer_account",
-        "process_new_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

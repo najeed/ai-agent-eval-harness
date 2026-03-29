@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-proc-12671",
-  "title": "Manage Autogenous (AG) Grinding Mill",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Autogenous (AG) Grinding Mill",
+    "compliance_level": "Standard"
+  },
   "description": "An operator manages an AG mill, which uses large rocks from the mine as the grinding media instead of steel balls.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Crushing & Grinding",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the mill's performance, paying close attention to the rock charge level inside the mill.",
-      "expected_outcome": "The operator has a clear view of the mill's key parameters.",
-      "required_tools": [
-        "get_mill_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the mill's performance, paying close attention to the rock charge level inside the mill.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator has a clear view of the mill's key parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Notice that the charge level is too low, which will reduce grinding efficiency.",
-      "expected_outcome": "The operator identifies the need to add more large rocks to the feed.",
-      "required_tools": [
-        "analyze_mill_performance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_identification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Notice that the charge level is too low, which will reduce grinding efficiency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator identifies the need to add more large rocks to the feed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the mine to prioritize sending a load of coarse, hard ore to the crusher to generate more large rocks for the AG mill feed.",
-      "expected_outcome": "A request is sent to the mine, and the AG mill feed is adjusted to restore the optimal charge level.",
-      "required_tools": [
-        "send_request_to_mine_operations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the mine to prioritize sending a load of coarse, hard ore to the crusher to generate more large rocks for the AG mill feed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A request is sent to the mine, and the AG mill feed is adjusted to restore the optimal charge level."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

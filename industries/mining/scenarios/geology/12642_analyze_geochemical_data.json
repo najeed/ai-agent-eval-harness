@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-geo-12642",
-  "title": "Analyze Soil Geochemical Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Soil Geochemical Data",
+    "compliance_level": "Standard"
+  },
   "description": "An exploration geologist analyzes data from a soil sampling survey to identify anomalies that could indicate buried mineralization.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Exploration & Targeting",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Import the soil sample locations and their assay results (e.g., copper, gold concentrations) into a GIS software.",
-      "expected_outcome": "The geochemical data is loaded and displayed on a map.",
-      "required_tools": [
-        "import_geochemical_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Import the soil sample locations and their assay results (e.g., copper, gold concentrations) into a GIS software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The geochemical data is loaded and displayed on a map."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a statistical analysis of the data to define what constitutes an anomalous result (e.g., anything above the 95th percentile).",
-      "expected_outcome": "A threshold for anomalous values is determined.",
-      "required_tools": [
-        "run_statistical_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a statistical analysis of the data to define what constitutes an anomalous result (e.g., anything above the 95th percentile).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A threshold for anomalous values is determined."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a contour map of the copper concentrations to visualize the size and shape of the anomalies, identifying targets for follow-up work.",
-      "expected_outcome": "A map is generated that clearly shows several coherent anomalies worthy of further investigation.",
-      "required_tools": [
-        "create_contour_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_visualization_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a contour map of the copper concentrations to visualize the size and shape of the anomalies, identifying targets for follow-up work.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A map is generated that clearly shows several coherent anomalies worthy of further investigation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

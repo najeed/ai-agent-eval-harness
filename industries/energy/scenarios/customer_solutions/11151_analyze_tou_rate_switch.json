@@ -1,65 +1,72 @@
 {
-  "scenario_id": "energy-cs-11151",
-  "title": "Analyze Customer Switch to Time-of-Use Rate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Customer Switch to Time-of-Use Rate",
+    "compliance_level": "Standard"
+  },
   "description": "A customer on a flat electricity rate wants to know if they would save money by switching to a Time-of-Use (TOU) rate.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Energy Efficiency & Audits",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's hourly consumption data for the past 12 months.",
-      "expected_outcome": "Agent gathers all necessary interval data.",
-      "required_tools": [
-        "get_historical_consumption_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's hourly consumption data for the past 12 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all necessary interval data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Simulate the customer's annual electricity bill using their current flat rate.",
-      "expected_outcome": "Agent calculates the total cost under the current plan.",
-      "required_tools": [
-        "simulate_bill_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Simulate the customer's annual electricity bill using their current flat rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the total cost under the current plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Simulate the customer's annual bill again using the same data but applying the TOU rate structure.",
-      "expected_outcome": "Agent calculates the total cost under the proposed TOU plan.",
-      "required_tools": [
-        "simulate_bill_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Simulate the customer's annual bill again using the same data but applying the TOU rate structure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the total cost under the proposed TOU plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Compare the two simulated bills and advise the customer whether they would save money.",
-      "expected_outcome": "Agent advises the customer they would save an estimated $250 per year by switching.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Compare the two simulated bills and advise the customer whether they would save money.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent advises the customer they would save an estimated $250 per year by switching."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

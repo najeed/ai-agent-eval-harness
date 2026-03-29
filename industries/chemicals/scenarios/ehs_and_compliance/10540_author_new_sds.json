@@ -1,54 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10540",
-  "title": "Author a New SDS",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Author a New SDS",
+    "compliance_level": "Standard"
+  },
   "description": "A new product has been developed, and an EHS specialist needs to author a new Safety Data Sheet (SDS) from scratch.",
-  "use_case": "EHS & Compliance",
-  "core_function": "Safety Data Sheet (SDS) Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new SDS document linked to the new product code.",
-      "expected_outcome": "Agent initiates a blank, 16-section SDS template.",
-      "required_tools": [
-        "create_sds_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new SDS document linked to the new product code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates a blank, 16-section SDS template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the product's formulation and use it to populate Section 3 (Composition).",
-      "expected_outcome": "Agent correctly lists the product's components and their percentages.",
-      "required_tools": [
-        "get_product_formulation",
-        "update_sds_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the product's formulation and use it to populate Section 3 (Composition).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly lists the product's components and their percentages."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use a built-in calculation engine to determine the GHS classification (e.g., pictograms, hazard statements) based on the components and populate Section 2.",
-      "expected_outcome": "Agent runs the GHS classification tool and populates the hazard information correctly.",
-      "required_tools": [
-        "calculate_ghs_classification",
-        "update_sds_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use a built-in calculation engine to determine the GHS classification (e.g., pictograms, hazard statements) based on the components and populate Section 2.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the GHS classification tool and populates the hazard information correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

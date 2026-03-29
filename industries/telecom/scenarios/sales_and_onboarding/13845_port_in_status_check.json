@@ -1,60 +1,48 @@
 {
-  "scenario_id": "telecom-sl-13845",
-  "title": "Check Status of Port-in Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Status of Port-in Request",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who requested to port their number in yesterday is calling to check the status.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Competitive Port-in",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their pending port-in request.",
-      "expected_outcome": "Agent locates the active port-in request.",
-      "required_tools": [
-        "get_customer_details",
-        "check_port_in_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their pending port-in request.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the active port-in request."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the customer of the current status and the scheduled completion time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent informs the customer the port is scheduled to complete by 5 PM today."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the customer of the current status and the scheduled completion time.",
-      "expected_outcome": "Agent informs the customer the port is scheduled to complete by 5 PM today.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

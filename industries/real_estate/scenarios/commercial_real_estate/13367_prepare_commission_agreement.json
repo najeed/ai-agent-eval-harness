@@ -1,50 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13367",
-  "title": "Prepare a Commission Agreement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare a Commission Agreement",
+    "compliance_level": "Standard"
+  },
   "description": "Two brokers, one representing the landlord and one the tenant, must execute a commission agreement before lease negotiations begin.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Leasing & Tenant Representation",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The landlord's agent drafts a commission agreement specifying the percentage of the lease value that will be paid as commission.",
-      "expected_outcome": "A draft commission agreement is created.",
-      "required_tools": [
-        "generate_commission_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The landlord's agent drafts a commission agreement specifying the percentage of the lease value that will be paid as commission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A draft commission agreement is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The agreement specifies how the commission will be split between the two brokerage firms.",
-      "expected_outcome": "The commission split (e.g., 50/50) is clearly stated.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The agreement specifies how the commission will be split between the two brokerage firms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The commission split (e.g., 50/50) is clearly stated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Both brokers sign the agreement before the lease is sent to the tenant.",
-      "expected_outcome": "A legally binding commission agreement is in place.",
-      "required_tools": [
-        "send_document_for_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Both brokers sign the agreement before the lease is sent to the tenant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A legally binding commission agreement is in place."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

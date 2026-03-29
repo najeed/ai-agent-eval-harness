@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ps-rc-13074",
-  "title": "Request Public Meeting Minutes",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Public Meeting Minutes",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen wants a copy of the approved minutes from last month's school board meeting.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Public Records & FOIA",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific meeting and date the citizen is requesting.",
-      "expected_outcome": "The agent understands the request.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific meeting and date the citizen is requesting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent understands the request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the public records portal for the requested minutes.",
-      "expected_outcome": "The agent finds the approved minutes for the specified meeting.",
-      "required_tools": [
-        "search_public_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the public records portal for the requested minutes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent finds the approved minutes for the specified meeting."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a copy of the minutes to the citizen.",
-      "expected_outcome": "The agent provides a link to download the PDF of the minutes.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a copy of the minutes to the citizen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent provides a link to download the PDF of the minutes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

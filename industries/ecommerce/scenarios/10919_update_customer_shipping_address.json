@@ -1,39 +1,46 @@
 {
-  "scenario_id": "ecommerce-css-10919",
-  "title": "Update Customer Shipping Address",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Customer Shipping Address",
+    "compliance_level": "Standard"
+  },
   "description": "A customer needs to update their default shipping address in their account.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Account Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's account and authenticate their identity.",
-      "expected_outcome": "Agent verifies the customer's identity.",
-      "required_tools": [
-        "get_customer_by_email",
-        "verify_customer_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's account and authenticate their identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the customer's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Remove the old shipping address and add the new one provided by the customer.",
-      "expected_outcome": "Agent successfully updates the address book in the customer's profile.",
-      "required_tools": [
-        "update_customer_address"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Remove the old shipping address and add the new one provided by the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the address book in the customer's profile."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

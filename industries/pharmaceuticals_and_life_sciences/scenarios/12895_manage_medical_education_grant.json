@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12895",
-  "title": "Manage a Medical Education Grant",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Medical Education Grant",
+    "compliance_level": "Standard"
+  },
   "description": "A medical affairs coordinator receives a request for a medical education grant from a professional society and must process it.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Patient Support Programs",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the incoming grant request into the grant management system.",
-      "expected_outcome": "Agent creates a new record for the request.",
-      "required_tools": [
-        "log_grant_proposal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the incoming grant request into the grant management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new record for the request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the request is for a legitimate, independent educational activity and not promotional.",
-      "expected_outcome": "Agent reviews the request and confirms it meets the criteria for an independent medical education grant.",
-      "required_tools": [
-        "verify_grant_compliance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the request is for a legitimate, independent educational activity and not promotional.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the request and confirms it meets the criteria for an independent medical education grant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Route the request to the grant review committee for a decision.",
-      "expected_outcome": "Agent routes the request to the committee.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Route the request to the grant review committee for a decision.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent routes the request to the committee."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "If approved, process the payment to the professional society.",
-      "expected_outcome": "Agent initiates the payment process for the approved grant amount.",
-      "required_tools": [
-        "submit_payment_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "If approved, process the payment to the professional society.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates the payment process for the approved grant amount."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

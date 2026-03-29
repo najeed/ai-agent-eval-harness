@@ -1,54 +1,59 @@
 {
-  "scenario_id": "energy-tr-11161",
-  "title": "Energy Storage Asset Valuation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Energy Storage Asset Valuation",
+    "compliance_level": "Standard"
+  },
   "description": "An investment analyst needs to determine the valuation of a standalone battery storage asset based on its potential future revenues.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Portfolio Optimization",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Forecast the asset's potential revenue streams for the next 10 years, including energy arbitrage and ancillary services.",
-      "expected_outcome": "Agent produces a detailed annual revenue forecast.",
-      "required_tools": [
-        "forecast_storage_revenue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "forecast_accuracy_mae",
-          "threshold": 25.0,
-          "threshold_unit": "kWh",
-          "threshold_type": "min"
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Forecast the asset's potential revenue streams for the next 10 years, including energy arbitrage and ancillary services.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a detailed annual revenue forecast."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Model the asset's operational costs, including battery degradation and maintenance.",
-      "expected_outcome": "Agent creates a forecast of annual operational expenditures.",
-      "required_tools": [
-        "estimate_opex"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Model the asset's operational costs, including battery degradation and maintenance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a forecast of annual operational expenditures."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a discounted cash flow (DCF) analysis to calculate the Net Present Value (NPV) of the asset.",
-      "expected_outcome": "Agent provides a final valuation for the battery storage system.",
-      "required_tools": [
-        "run_dcf_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a discounted cash flow (DCF) analysis to calculate the Net Present Value (NPV) of the asset.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a final valuation for the battery storage system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

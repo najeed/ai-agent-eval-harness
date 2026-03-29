@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11803",
-  "title": "Server & Network - Apply OS Patches",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Server & Network - Apply OS Patches",
+    "compliance_level": "Standard"
+  },
   "description": "A technician needs to apply the latest critical security patches to a client's servers during the scheduled maintenance window.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Server & Network Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the list of pending patches for the client's servers in the RMM tool.",
-      "expected_outcome": "The technician identifies the list of approved critical patches for deployment.",
-      "required_tools": [
-        "get_pending_patches"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the list of pending patches for the client's servers in the RMM tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician identifies the list of approved critical patches for deployment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "During the maintenance window, execute the patch deployment job.",
-      "expected_outcome": "The RMM tool begins deploying the patches to the servers.",
-      "required_tools": [
-        "deploy_patches"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "During the maintenance window, execute the patch deployment job.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The RMM tool begins deploying the patches to the servers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After deployment, reboot the servers and verify they come back online and that the patches are installed successfully.",
-      "expected_outcome": "The servers are successfully patched and operational.",
-      "required_tools": [
-        "reboot_server",
-        "get_patch_install_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After deployment, reboot the servers and verify they come back online and that the patches are installed successfully.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The servers are successfully patched and operational."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "cyber-so-10766",
-  "title": "Threat Hunting with Command Line Auditing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Threat Hunting with Command Line Auditing",
+    "compliance_level": "Standard"
+  },
   "description": "A threat hunter is searching for suspicious command line arguments that might indicate malicious activity.",
-  "use_case": "Security Operations (SecOps)",
-  "core_function": "Threat Hunting",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Formulate a hypothesis: 'An attacker is using built-in Windows tools like net.exe and tasklist.exe for reconnaissance'.",
-      "expected_outcome": "Analyst defines a clear, testable hypothesis.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "hypothesis_clarity",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Formulate a hypothesis: 'An attacker is using built-in Windows tools like net.exe and tasklist.exe for reconnaissance'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst defines a clear, testable hypothesis."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query endpoint logs for suspicious sequences of command line activity, such as 'whoami' followed by 'net user' and 'net group'.",
-      "expected_outcome": "Analyst writes a query to find behavioral patterns, not just single indicators.",
-      "required_tools": [
-        "query_endpoint_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "query_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query endpoint logs for suspicious sequences of command line activity, such as 'whoami' followed by 'net user' and 'net group'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst writes a query to find behavioral patterns, not just single indicators."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Discover a host where a user account ran a series of reconnaissance commands, then created a new local admin account, and flag it for investigation.",
-      "expected_outcome": "Analyst discovers an active intrusion by piecing together a sequence of suspicious behaviors.",
-      "required_tools": [
-        "flag_host_for_investigation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "threat_discovery_rate",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Discover a host where a user account ran a series of reconnaissance commands, then created a new local admin account, and flag it for investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst discovers an active intrusion by piecing together a sequence of suspicious behaviors."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

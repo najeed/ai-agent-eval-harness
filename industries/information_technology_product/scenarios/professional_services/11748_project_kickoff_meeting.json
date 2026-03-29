@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11748",
-  "title": "Project Kickoff Meeting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Kickoff Meeting",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager is leading the official kickoff meeting for a new implementation project.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Implementation & Configuration",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare and distribute a kickoff meeting agenda.",
-      "expected_outcome": "Project manager creates a clear agenda covering introductions, project goals, roles, and timeline.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare and distribute a kickoff meeting agenda.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Project manager creates a clear agenda covering introductions, project goals, roles, and timeline."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Lead the kickoff meeting, presenting the project plan and establishing communication protocols.",
-      "expected_outcome": "Project manager successfully aligns all stakeholders and sets expectations.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Lead the kickoff meeting, presenting the project plan and establishing communication protocols.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Project manager successfully aligns all stakeholders and sets expectations."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Follow up with meeting minutes and action items.",
-      "expected_outcome": "Project manager documents the meeting outcomes and assigned tasks.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Follow up with meeting minutes and action items.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Project manager documents the meeting outcomes and assigned tasks."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13827",
-  "title": "Mobile Troubleshooting - No Service While Roaming",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Mobile Troubleshooting - No Service While Roaming",
+    "compliance_level": "Standard"
+  },
   "description": "A customer traveling internationally reports having no service, despite having a roaming plan.",
-  "use_case": "Technical Support",
-  "core_function": "Mobile Device Troubleshooting",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the customer has an active international roaming package.",
-      "expected_outcome": "Agent confirms the 'Global Pass' is active on the account.",
-      "required_tools": [
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the customer has an active international roaming package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the 'Global Pass' is active on the account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Instruct the customer to manually search for and select a partner network on their device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides instructions for manual network selection on iOS/Android."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Instruct the customer to manually search for and select a partner network on their device.",
-      "expected_outcome": "Agent provides instructions for manual network selection on iOS/Android.",
-      "required_tools": [
-        "provide_manual_network_selection_guide"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If manual selection fails, check for any international service blocks on the account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds no blocks and confirms the service should be working."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If manual selection fails, check for any international service blocks on the account.",
-      "expected_outcome": "Agent finds no blocks and confirms the service should be working.",
-      "required_tools": [
-        "check_service_blocks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "smartcities-ue-13551",
-  "title": "Schedule Street Sweeping Based on Air Quality Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Street Sweeping Based on Air Quality Data",
+    "compliance_level": "Standard"
+  },
   "description": "To combat particulate matter pollution, an operator schedules street sweeping on roads with high dust levels detected by mobile sensors.",
-  "use_case": "Utilities & Environment",
-  "core_function": "Environmental Monitoring",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the latest air quality map, which highlights several streets with high levels of road dust (PM10).",
-      "expected_outcome": "Agent identifies the problem streets from the environmental data.",
-      "required_tools": [
-        "get_air_quality_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the latest air quality map, which highlights several streets with high levels of road dust (PM10).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the problem streets from the environmental data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate an optimized route for a street sweeper to clean only the identified high-pollution streets.",
-      "expected_outcome": "Agent creates a targeted cleaning route.",
-      "required_tools": [
-        "generate_optimized_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate an optimized route for a street sweeper to clean only the identified high-pollution streets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a targeted cleaning route."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a work order and dispatch the street sweeping crew.",
-      "expected_outcome": "Agent dispatches the crew with the specific route.",
-      "required_tools": [
-        "create_work_order",
-        "dispatch_utility_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a work order and dispatch the street sweeping crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches the crew with the specific route."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

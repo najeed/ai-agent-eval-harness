@@ -1,66 +1,72 @@
 {
-  "scenario_id": "venues-sh-14298",
-  "title": "Manage Tour Bus Parking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Tour Bus Parking",
+    "compliance_level": "Standard"
+  },
   "description": "The production manager for a touring show needs to arrange parking for three tour buses and two equipment trucks.",
-  "use_case": "Sales & Hospitality",
-  "core_function": "VIP & Hospitality Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the vehicle parking request from the tour manager.",
-      "expected_outcome": "Agent logs the number and type of vehicles.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the vehicle parking request from the tour manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the number and type of vehicles."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the venue's loading dock and bus parking schedule to ensure there is space.",
-      "expected_outcome": "Agent confirms there is adequate space for the vehicles.",
-      "required_tools": [
-        "check_parking_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the venue's loading dock and bus parking schedule to ensure there is space.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there is adequate space for the vehicles."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reserve the required parking spots and arrange for any necessary shore power hookups.",
-      "expected_outcome": "Agent reserves the spots and creates a work order for the electricians.",
-      "required_tools": [
-        "reserve_parking_spots",
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reserve the required parking spots and arrange for any necessary shore power hookups.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reserves the spots and creates a work order for the electricians."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Send a parking map and instructions to the tour manager.",
-      "expected_outcome": "Agent provides clear directions for the drivers.",
-      "required_tools": [
-        "send_parking_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Send a parking map and instructions to the tour manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear directions for the drivers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

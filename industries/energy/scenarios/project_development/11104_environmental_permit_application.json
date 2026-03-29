@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-pd-11104",
-  "title": "Draft Environmental Permit Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft Environmental Permit Application",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to compile and draft an environmental permit application for a new battery storage facility.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Permitting & Compliance",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all required local, state, and federal environmental permits for a battery storage project at the given location.",
-      "expected_outcome": "Agent produces a checklist of all necessary permits.",
-      "required_tools": [
-        "get_required_permits_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all required local, state, and federal environmental permits for a battery storage project at the given location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a checklist of all necessary permits."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather project specifications, including battery chemistry, thermal management system, and fire suppression plan.",
-      "expected_outcome": "Agent compiles all relevant technical documents.",
-      "required_tools": [
-        "get_project_technical_specifications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather project specifications, including battery chemistry, thermal management system, and fire suppression plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles all relevant technical documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft the main application form, referencing the compiled technical data and impact assessments.",
-      "expected_outcome": "Agent generates a completed draft of the primary permit application.",
-      "required_tools": [
-        "draft_permit_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft the main application form, referencing the compiled technical data and impact assessments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a completed draft of the primary permit application."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-bm-13597",
-  "title": "Handle Broadcast Rights Negotiation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Broadcast Rights Negotiation",
+    "compliance_level": "Standard"
+  },
   "description": "A sports league is negotiating the sale of its broadcast rights for the next five years. An agent must analyze two competing offers.",
-  "use_case": "Broadcasting & Media",
-  "core_function": "Media Rights & Distribution",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the detailed offers from both competing broadcasters.",
-      "expected_outcome": "Agent has the structured data for both offers, including guaranteed payments and revenue sharing models.",
-      "required_tools": [
-        "get_broadcast_offer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the detailed offers from both competing broadcasters.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the structured data for both offers, including guaranteed payments and revenue sharing models."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Model the projected total value of each offer over the five-year term, including the variable revenue sharing component.",
-      "expected_outcome": "The model shows that Offer B has a higher potential value despite a lower upfront guarantee.",
-      "required_tools": [
-        "model_financial_offer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Model the projected total value of each offer over the five-year term, including the variable revenue sharing component.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The model shows that Offer B has a higher potential value despite a lower upfront guarantee."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a comparison report for the league executive, recommending Offer B.",
-      "expected_outcome": "Agent produces a clear report comparing the two offers and justifying the recommendation.",
-      "required_tools": [
-        "generate_comparison_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a comparison report for the league executive, recommending Offer B.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clear report comparing the two offers and justifying the recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

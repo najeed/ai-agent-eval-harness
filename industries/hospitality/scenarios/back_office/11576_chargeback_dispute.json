@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-bo-11576",
-  "title": "Handle a Credit Card Chargeback",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Credit Card Chargeback",
+    "compliance_level": "Standard"
+  },
   "description": "The hotel receives a chargeback notice from a credit card company; a former guest is disputing their entire stay's charges.",
-  "use_case": "Back Office & Administration",
-  "core_function": "Financial Reporting",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all documentation related to the guest's stay: the reservation, the signed registration card, and the itemized folio.",
-      "expected_outcome": "The agent gathers all evidence for the stay.",
-      "required_tools": [
-        "pms_lookup_reservation",
-        "pms_get_guest_folio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all documentation related to the guest's stay: the reservation, the signed registration card, and the itemized folio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent gathers all evidence for the stay."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a formal response to the chargeback, providing the documentation as evidence that the charges were valid.",
-      "expected_outcome": "A detailed response with supporting evidence is created.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a formal response to the chargeback, providing the documentation as evidence that the charges were valid.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A detailed response with supporting evidence is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the response and evidence to the credit card company through their merchant portal.",
-      "expected_outcome": "The chargeback dispute is formally submitted.",
-      "required_tools": [
-        "acct_submit_chargeback_response"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the response and evidence to the credit card company through their merchant portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The chargeback dispute is formally submitted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

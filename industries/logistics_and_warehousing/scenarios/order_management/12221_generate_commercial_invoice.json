@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-om-12221",
-  "title": "Generate Commercial Invoice for International Shipment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Commercial Invoice for International Shipment",
+    "compliance_level": "Standard"
+  },
   "description": "An international order is being shipped, and it requires a commercial invoice for customs purposes.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Reporting & Documentation",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the details for the international order.",
-      "expected_outcome": "Agent correctly identifies the order and its items.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the details for the international order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the order and its items."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each item, verify the country of origin, value, and Harmonized System (HS) code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all customs-related data is present and accurate."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each item, verify the country of origin, value, and Harmonized System (HS) code.",
-      "expected_outcome": "Agent confirms all customs-related data is present and accurate.",
-      "required_tools": [
-        "get_product_customs_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_validation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the commercial invoice document with all required information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates a complete and accurate commercial invoice."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the commercial invoice document with all required information.",
-      "expected_outcome": "Agent successfully generates a complete and accurate commercial invoice.",
-      "required_tools": [
-        "generate_commercial_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

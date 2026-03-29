@@ -1,54 +1,59 @@
 {
-  "scenario_id": "defense-isr-10822",
-  "title": "Ground Force Activity Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Ground Force Activity Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must fuse ground sensor data, drone video, and communications intelligence to assess an enemy's intent in a specific sector.",
-  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
-  "core_function": "ISR Data Fusion & Analysis",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze ground sensor alerts indicating movement of multiple vehicles.",
-      "expected_outcome": "Analyst correctly identifies the time and location of ground movement.",
-      "required_tools": [
-        "get_ground_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze ground sensor alerts indicating movement of multiple vehicles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies the time and location of ground movement."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Correlate the sensor data with drone imagery showing the formation of an armored column.",
-      "expected_outcome": "Analyst successfully links the sensor data to a visual confirmation.",
-      "required_tools": [
-        "analyze_drone_imagery",
-        "correlate_sensor_video"
-      ],
-      "success_criteria": [
-        {
-          "metric": "cross_source_correlation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Correlate the sensor data with drone imagery showing the formation of an armored column.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully links the sensor data to a visual confirmation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Fuse the findings with communications intelligence suggesting an imminent attack and issue a high-priority warning.",
-      "expected_outcome": "Analyst combines all data to correctly assess the enemy's intent and issues a timely warning.",
-      "required_tools": [
-        "fuse_multi_source_data",
-        "issue_intelligence_warning"
-      ],
-      "success_criteria": [
-        {
-          "metric": "threat_assessment_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Fuse the findings with communications intelligence suggesting an imminent attack and issue a high-priority warning.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst combines all data to correctly assess the enemy's intent and issues a timely warning."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

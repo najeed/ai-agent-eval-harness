@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-cp-12088",
-  "title": "Write a Film Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write a Film Review",
+    "compliance_level": "Standard"
+  },
   "description": "A film critic needs to write a review of a new movie.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Writing & Drafting",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Briefly summarize the plot of the film without giving away major spoilers.",
-      "expected_outcome": "A concise, spoiler-free summary is written.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_clarity",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Briefly summarize the plot of the film without giving away major spoilers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A concise, spoiler-free summary is written."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the film's strengths and weaknesses, commenting on the acting, directing, screenplay, and cinematography.",
-      "expected_outcome": "A balanced and critical analysis is provided.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "critical_analysis_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the film's strengths and weaknesses, commenting on the acting, directing, screenplay, and cinematography.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A balanced and critical analysis is provided."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Conclude with an overall assessment and a recommendation for who would enjoy this film.",
-      "expected_outcome": "The review gives a clear final verdict.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "persuasiveness_of_argument",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Conclude with an overall assessment and a recommendation for who would enjoy this film.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The review gives a clear final verdict."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

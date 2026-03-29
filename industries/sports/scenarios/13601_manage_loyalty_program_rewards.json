@@ -1,54 +1,59 @@
 {
-  "scenario_id": "sports-fe-13601",
-  "title": "Manage Fan Loyalty Program Rewards",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Fan Loyalty Program Rewards",
+    "compliance_level": "Standard"
+  },
   "description": "A fan wants to redeem their loyalty points for a signed jersey.",
-  "use_case": "Fan Engagement & Ticketing",
-  "core_function": "Membership & Loyalty Programs",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the fan and check their current loyalty point balance.",
-      "expected_outcome": "Agent confirms the fan has enough points for the jersey.",
-      "required_tools": [
-        "get_fan_account_details",
-        "get_loyalty_points_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the fan and check their current loyalty point balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the fan has enough points for the jersey."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the inventory of available signed jerseys.",
-      "expected_outcome": "Agent confirms there are jerseys in stock.",
-      "required_tools": [
-        "check_merchandise_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the inventory of available signed jerseys.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there are jerseys in stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the redemption, deducting the points from the fan's account and creating a shipping order for the jersey.",
-      "expected_outcome": "Agent successfully completes the redemption and schedules the jersey for shipment.",
-      "required_tools": [
-        "deduct_loyalty_points",
-        "create_shipping_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the redemption, deducting the points from the fan's account and creating a shipping order for the jersey.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the redemption and schedules the jersey for shipment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

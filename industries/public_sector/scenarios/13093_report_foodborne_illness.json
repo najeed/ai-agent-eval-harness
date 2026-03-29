@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-rc-13093",
-  "title": "Report a Suspected Foodborne Illness",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report a Suspected Foodborne Illness",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen is calling the health department to report getting sick after eating at a local restaurant.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Inspections & Enforcement",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather details from the citizen: restaurant name, date they ate there, what they ate, and their symptoms.",
-      "expected_outcome": "The public health nurse documents all the key information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather details from the citizen: restaurant name, date they ate there, what they ate, and their symptoms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The public health nurse documents all the key information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the report in the communicable disease tracking system.",
-      "expected_outcome": "The nurse creates a new case file for the potential foodborne illness.",
-      "required_tools": [
-        "log_complaint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the report in the communicable disease tracking system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The nurse creates a new case file for the potential foodborne illness."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the system for other similar reports linked to the same restaurant.",
-      "expected_outcome": "The nurse checks for other cases to see if this is part of a larger outbreak.",
-      "required_tools": [
-        "search_for_linked_cases"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the system for other similar reports linked to the same restaurant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The nurse checks for other cases to see if this is part of a larger outbreak."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-wo-14135",
-  "title": "Water Quality Monitoring Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Water Quality Monitoring Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A sensor at the water treatment plant shows a sudden spike in turbidity levels in the raw water intake.",
-  "use_case": "Water & Wastewater Operations",
-  "core_function": "Treatment & Quality",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive and acknowledge the high turbidity alarm from the plant's SCADA system.",
-      "expected_outcome": "System logs the critical water quality alarm.",
-      "required_tools": [
-        "get_scada_alarm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive and acknowledge the high turbidity alarm from the plant's SCADA system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System logs the critical water quality alarm."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check upstream sensors and weather data to identify a potential cause, such as a heavy rainfall event causing runoff.",
-      "expected_outcome": "System correlates the turbidity spike with a recent thunderstorm in the watershed.",
-      "required_tools": [
-        "query_water_network_data",
-        "get_historical_weather_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check upstream sensors and weather data to identify a potential cause, such as a heavy rainfall event causing runoff.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System correlates the turbidity spike with a recent thunderstorm in the watershed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Automatically adjust the coagulant dosage in the treatment process to handle the increased turbidity.",
-      "expected_outcome": "System sends a new setpoint to the chemical dosing pumps.",
-      "required_tools": [
-        "adjust_treatment_parameters"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Automatically adjust the coagulant dosage in the treatment process to handle the increased turbidity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System sends a new setpoint to the chemical dosing pumps."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

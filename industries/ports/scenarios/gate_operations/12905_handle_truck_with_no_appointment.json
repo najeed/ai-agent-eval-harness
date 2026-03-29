@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ports-go-12905",
-  "title": "Handle a Truck Arriving with No Appointment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Truck Arriving with No Appointment",
+    "compliance_level": "Standard"
+  },
   "description": "A truck arrives at the gate but does not have a Vehicle Booking System (VBS) appointment. The clerk must handle the exception.",
-  "use_case": "Gate & Landside Operations",
-  "core_function": "Gate Processing & Appointments",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that no appointment exists for the truck's license plate.",
-      "expected_outcome": "Clerk confirms in the VBS that there is no matching appointment.",
-      "required_tools": [
-        "check_vbs_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that no appointment exists for the truck's license plate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Clerk confirms in the VBS that there is no matching appointment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the driver they cannot enter without an appointment and direct them to the truck parking area.",
-      "expected_outcome": "Clerk clearly communicates the policy to the driver.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the driver they cannot enter without an appointment and direct them to the truck parking area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Clerk clearly communicates the policy to the driver."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the driver to contact their dispatch to book an appointment.",
-      "expected_outcome": "Clerk provides instructions for the driver to resolve the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the driver to contact their dispatch to book an appointment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Clerk provides instructions for the driver to resolve the issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

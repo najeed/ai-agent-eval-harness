@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-ops-12667",
-  "title": "Manage Cable Bolt Installation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Cable Bolt Installation",
+    "compliance_level": "Standard"
+  },
   "description": "An underground ground support crew installs long cable bolts into the roof of a tunnel to ensure long-term stability.",
-  "use_case": "Mine Operations",
-  "core_function": "Underground Production",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the ground support plan for the area, which specifies the location, length, and angle of the required cable bolts.",
-      "expected_outcome": "The crew is aware of the design requirements.",
-      "required_tools": [
-        "get_ground_support_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the ground support plan for the area, which specifies the location, length, and angle of the required cable bolts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew is aware of the design requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Drill the long holes for the cables to the specified length and angle.",
-      "expected_outcome": "The holes are drilled according to the design.",
-      "required_tools": [
-        "drill_cable_bolt_holes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "drilling_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Drill the long holes for the cables to the specified length and angle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The holes are drilled according to the design."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Insert the steel cables, pump grout into the holes to anchor them, and then tension the cables to the required load.",
-      "expected_outcome": "The cable bolts are installed and tensioned correctly, and the installation is recorded as complete.",
-      "required_tools": [
-        "install_cable_bolts",
-        "log_support_installation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Insert the steel cables, pump grout into the holes to anchor them, and then tension the cables to the required load.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The cable bolts are installed and tensioned correctly, and the installation is recorded as complete."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

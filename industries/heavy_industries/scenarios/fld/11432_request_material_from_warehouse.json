@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11432",
-  "title": "Request Material from Site Warehouse",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Material from Site Warehouse",
+    "compliance_level": "Standard"
+  },
   "description": "A field supervisor needs to request a pallet of cement from the on-site warehouse for the next day's work.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Site Management & Logistics",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the material request system.",
-      "expected_outcome": "Agent successfully accesses the system.",
-      "required_tools": [
-        "open_material_request_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the material request system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully accesses the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new request for one pallet of cement, specifying the required delivery location on site and the date needed.",
-      "expected_outcome": "Agent correctly fills out and submits the material request.",
-      "required_tools": [
-        "create_material_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new request for one pallet of cement, specifying the required delivery location on site and the date needed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly fills out and submits the material request."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the status of the request later to confirm it has been approved and scheduled for delivery by the warehouse team.",
-      "expected_outcome": "Agent checks the system and sees the request status is now 'Approved'.",
-      "required_tools": [
-        "check_material_request_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the status of the request later to confirm it has been approved and scheduled for delivery by the warehouse team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the system and sees the request status is now 'Approved'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

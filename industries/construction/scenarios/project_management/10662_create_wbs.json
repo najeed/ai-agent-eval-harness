@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-pm-10662",
-  "title": "Create a Work Breakdown Structure (WBS)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Work Breakdown Structure (WBS)",
+    "compliance_level": "Standard"
+  },
   "description": "For a new residential home project, a PM needs to create an initial Work Breakdown Structure (WBS).",
-  "use_case": "Project Management",
-  "core_function": "Project Planning & Scheduling",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create the top-level WBS elements: 'Design', 'Pre-Construction', 'Construction', and 'Closeout'.",
-      "expected_outcome": "The main phases of the project are created as the top level of the WBS.",
-      "required_tools": [
-        "create_wbs_element"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create the top-level WBS elements: 'Design', 'Pre-Construction', 'Construction', and 'Closeout'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The main phases of the project are created as the top level of the WBS."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Under the 'Construction' element, add the sub-elements: 'Foundations', 'Framing', 'MEP', and 'Finishes'.",
-      "expected_outcome": "The 'Construction' phase is broken down into its major components.",
-      "required_tools": [
-        "create_wbs_element"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Under the 'Construction' element, add the sub-elements: 'Foundations', 'Framing', 'MEP', and 'Finishes'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The 'Construction' phase is broken down into its major components."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

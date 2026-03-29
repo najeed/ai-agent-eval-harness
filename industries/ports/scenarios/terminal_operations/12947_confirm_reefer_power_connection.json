@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ports-to-12947",
-  "title": "Confirm Reefer Power Connection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Confirm Reefer Power Connection",
+    "compliance_level": "Standard"
+  },
   "description": "A reefer container has been stacked in the yard. A technician must confirm it has been plugged into a power source.",
-  "use_case": "Terminal Operations",
-  "core_function": "Special Cargo Handling",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a work order to plug in a newly arrived reefer container at a specific yard location.",
-      "expected_outcome": "Technician's mobile device receives the job to connect the reefer.",
-      "required_tools": [
-        "get_mobile_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a work order to plug in a newly arrived reefer container at a specific yard location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician's mobile device receives the job to connect the reefer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Physically plug the reefer's power cable into the corresponding power socket on the reefer rack.",
-      "expected_outcome": "The technician connects the power cable.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "operational_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Physically plug the reefer's power cable into the corresponding power socket on the reefer rack.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician connects the power cable."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the work order as 'complete' in the mobile system, which updates the TOS to show the reefer is now powered on.",
-      "expected_outcome": "The technician marks the job as complete, and the container's status in the TOS changes to 'Powered'.",
-      "required_tools": [
-        "update_mobile_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the work order as 'complete' in the mobile system, which updates the TOS to show the reefer is now powered on.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician marks the job as complete, and the container's status in the TOS changes to 'Powered'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

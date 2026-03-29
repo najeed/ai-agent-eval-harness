@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-vo-14255",
-  "title": "Monitor CCTV for Suspicious Activity",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor CCTV for Suspicious Activity",
+    "compliance_level": "Standard"
+  },
   "description": "A security operator watching the CCTV monitors notices an individual leaving a backpack unattended in a high-traffic area.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Security & Emergency Response",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the location of the unattended bag on the CCTV feed.",
-      "expected_outcome": "Agent notes the location (e.g., near the main escalator).",
-      "required_tools": [
-        "monitor_cctv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the location of the unattended bag on the CCTV feed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent notes the location (e.g., near the main escalator)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Continue to monitor the bag and the surrounding area for the owner to return.",
-      "expected_outcome": "Agent observes the bag for several minutes, and no one returns.",
-      "required_tools": [
-        "monitor_cctv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Continue to monitor the bag and the surrounding area for the owner to return.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent observes the bag for several minutes, and no one returns."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a security guard to the location to investigate the package.",
-      "expected_outcome": "Agent sends a guard to the location.",
-      "required_tools": [
-        "dispatch_security_team"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a security guard to the location to investigate the package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a guard to the location."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "If the package is deemed suspicious, the on-site guard will escalate to the bomb squad or local police as per protocol.",
-      "expected_outcome": "Agent logs the incident and stands by to assist with further emergency protocols if needed.",
-      "required_tools": [
-        "log_security_incident",
-        "contact_emergency_services"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "If the package is deemed suspicious, the on-site guard will escalate to the bomb squad or local police as per protocol.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the incident and stands by to assist with further emergency protocols if needed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

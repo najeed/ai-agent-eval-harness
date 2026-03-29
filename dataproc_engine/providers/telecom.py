@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import asyncio
 import aiohttp
@@ -65,10 +65,15 @@ class TelecomProvider(BaseProvider):
                 # In a real scenario, we would fetch from Ookla API here
             
             if self.allow_simulation:
-                simulated_tiles = [
-                    {"quadkey": "02313013", "avg_d_kbps": 150400, "avg_u_kbps": 45000, "avg_lat_ms": 12, "tests": 50, "devices": 12},
-                    {"quadkey": "02313014", "avg_d_kbps": 98000, "avg_u_kbps": 22000, "avg_lat_ms": 24, "tests": 120, "devices": 45}
-                ]
+                mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "telecom", "mock_ookla.json")
+                if os.path.exists(mock_path):
+                    with open(mock_path, "r") as f:
+                        simulated_tiles = json.load(f)
+                else:
+                    simulated_tiles = [
+                        {"quadkey": "02313013", "avg_d_kbps": 150400, "avg_u_kbps": 45000, "avg_lat_ms": 12, "tests": 50, "devices": 12},
+                        {"quadkey": "02313014", "avg_d_kbps": 98000, "avg_u_kbps": 22000, "avg_lat_ms": 24, "tests": 120, "devices": 45}
+                    ]
                 return [self.create_simulated_artifact(
                     id="OOKLA-TILE",
                     content=simulated_tiles,
@@ -105,6 +110,10 @@ class TelecomProvider(BaseProvider):
                             return data.get("features", [])[:limit]
                         # Simulated Fallback for FCC
                         logger.warning("fcc_api_failure_using_sim", url=url)
+                        mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "telecom", "mock_ookla.json")
+                        if os.path.exists(mock_path):
+                            with open(mock_path, "r") as f:
+                                return json.load(f)[:limit]
                         return [{"id": "SIM_FCC_1", "technology_type": "Fiber", "max_ad_down": 1000, "max_ad_up": 1000}]
 
                 try:

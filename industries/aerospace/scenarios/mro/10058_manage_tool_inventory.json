@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10058",
-  "title": "Manage Tool Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Tool Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A tool crib attendant must manage the checkout and return of tools to maintenance technicians.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Spares & Logistics",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "A technician requests a specific tool. Check the tool out to the technician in the inventory system.",
-      "expected_outcome": "Agent successfully logs the tool as checked out to the specific technician.",
-      "required_tools": [
-        "checkout_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "A technician requests a specific tool. Check the tool out to the technician in the inventory system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully logs the tool as checked out to the specific technician."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "When the technician returns the tool, inspect it for damage.",
-      "expected_outcome": "Agent inspects the tool and finds it in good condition.",
-      "required_tools": [
-        "inspect_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "When the technician returns the tool, inspect it for damage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent inspects the tool and finds it in good condition."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the tool back into the inventory system and return it to its designated storage location.",
-      "expected_outcome": "Agent updates the tool's status to 'Available' and logs its return.",
-      "required_tools": [
-        "checkin_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the tool back into the inventory system and return it to its designated storage location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the tool's status to 'Available' and logs its return."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

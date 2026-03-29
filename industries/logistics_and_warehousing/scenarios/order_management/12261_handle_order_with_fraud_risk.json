@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-om-12261",
-  "title": "Handle an Order with High Fraud Risk",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an Order with High Fraud Risk",
+    "compliance_level": "Standard"
+  },
   "description": "An online order is automatically flagged by the system as having a high risk of fraud (e.g., mismatched billing/shipping addresses, proxy IP).",
-  "use_case": "Order & Customer Management",
-  "core_function": "Order Processing",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system places a new order on 'Fraud Review' hold and creates an alert.",
-      "expected_outcome": "The order is prevented from being fulfilled automatically.",
-      "required_tools": [
-        "monitor_order_holds"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system places a new order on 'Fraud Review' hold and creates an alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is prevented from being fulfilled automatically."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "A fraud analyst reviews the order details and the reasons it was flagged.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analyst confirms the high-risk indicators."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "A fraud analyst reviews the order details and the reasons it was flagged.",
-      "expected_outcome": "The analyst confirms the high-risk indicators.",
-      "required_tools": [
-        "get_order_fraud_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The analyst attempts to contact the customer via phone to verify the order details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The phone number is out of service, increasing the suspicion of fraud."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The analyst cancels the order to prevent a fraudulent shipment and chargeback.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is cancelled with 'Suspected Fraud' as the reason."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "The analyst attempts to contact the customer via phone to verify the order details.",
-      "expected_outcome": "The phone number is out of service, increasing the suspicion of fraud.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "The analyst cancels the order to prevent a fraudulent shipment and chargeback.",
-      "expected_outcome": "The order is cancelled with 'Suspected Fraud' as the reason.",
-      "required_tools": [
-        "cancel_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

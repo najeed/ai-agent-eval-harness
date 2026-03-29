@@ -1,108 +1,74 @@
 {
-  "scenario_id": "telecom-no-13907",
-  "title": "Provision New 5G Site",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provision New 5G Site",
+    "compliance_level": "Standard"
+  },
   "description": "A new 5G cell site has been physically installed. The agent must remotely configure and activate it.",
-  "use_case": "Network Operations",
-  "core_function": "Network Provisioning",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Connect to the new cell site using its management IP address.",
-      "expected_outcome": "Agent establishes a successful connection to the new hardware.",
-      "required_tools": [
-        "connect_to_network_element"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Connect to the new cell site using its management IP address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent establishes a successful connection to the new hardware."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Load the standard 5G configuration template onto the device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies the configuration template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Load the standard 5G configuration template onto the device.",
-      "expected_outcome": "Agent successfully applies the configuration template.",
-      "required_tools": [
-        "apply_configuration_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run post-configuration diagnostics to ensure the site is ready for activation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs diagnostics and receives a 'pass' status."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Activate the site, making it live on the public network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent executes the activation command and the site appears as 'active' on the network map."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run post-configuration diagnostics to ensure the site is ready for activation.",
-      "expected_outcome": "Agent runs diagnostics and receives a 'pass' status.",
-      "required_tools": [
-        "run_network_diagnostics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Activate the site, making it live on the public network.",
-      "expected_outcome": "Agent executes the activation command and the site appears as 'active' on the network map.",
-      "required_tools": [
-        "activate_network_element"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

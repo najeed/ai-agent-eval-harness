@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10932",
-  "title": "Segment Customers for a Marketing Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Segment Customers for a Marketing Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "A marketer wants to create a customer segment of 'high-value' customers for an exclusive offer.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Campaign Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the criteria for a 'high-value' customer (e.g., lifetime spend > $1000 and at least 3 orders in the last year).",
-      "expected_outcome": "Agent correctly sets the filtering parameters.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the criteria for a 'high-value' customer (e.g., lifetime spend > $1000 and at least 3 orders in the last year).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sets the filtering parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the customer database to generate a list of all customers who meet these criteria.",
-      "expected_outcome": "Agent successfully generates the customer segment.",
-      "required_tools": [
-        "query_customer_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the customer database to generate a list of all customers who meet these criteria.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the customer segment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Save the generated list as a new audience segment named 'VIP Customers'.",
-      "expected_outcome": "Agent saves the segment for future use.",
-      "required_tools": [
-        "save_customer_segment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Save the generated list as a new audience segment named 'VIP Customers'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent saves the segment for future use."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

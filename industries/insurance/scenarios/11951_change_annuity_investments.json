@@ -1,50 +1,59 @@
 {
-  "scenario_id": "insurance-la-11951",
-  "title": "Change Investment Allocation in a Variable Annuity",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Change Investment Allocation in a Variable Annuity",
+    "compliance_level": "Standard"
+  },
   "description": "A contract holder wants to change their future contribution allocation to be more aggressive.",
-  "use_case": "Life & Annuities",
-  "core_function": "Annuity Management",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the contract holder and their current allocation for new premiums.",
-      "expected_outcome": "Agent finds the customer and their current investment choices.",
-      "required_tools": [
-        "get_annuity_contract_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the contract holder and their current allocation for new premiums.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the customer and their current investment choices."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take the customer's new allocation instructions (e.g., 80% equity fund, 20% international fund).",
-      "expected_outcome": "Agent accurately records the new desired allocation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take the customer's new allocation instructions (e.g., 80% equity fund, 20% international fund).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records the new desired allocation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the future premium allocation in the system.",
-      "expected_outcome": "Agent successfully updates the investment instructions for all future payments.",
-      "required_tools": [
-        "update_future_allocation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the future premium allocation in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the investment instructions for all future payments."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

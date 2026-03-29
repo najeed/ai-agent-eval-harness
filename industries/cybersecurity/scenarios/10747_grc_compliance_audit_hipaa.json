@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10747",
-  "title": "HIPAA Compliance Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "HIPAA Compliance Audit",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must audit access logs for a database containing patient data to ensure only authorized medical personnel have accessed it.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Compliance Auditing & Reporting",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all access logs for the patient database for the last 90 days.",
-      "expected_outcome": "Analyst successfully gathers the required audit evidence.",
-      "required_tools": [
-        "get_database_access_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all access logs for the patient database for the last 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully gathers the required audit evidence."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Correlate the access logs with a list of authorized medical personnel.",
-      "expected_outcome": "Analyst performs the correlation to check for unauthorized access.",
-      "required_tools": [
-        "get_authorized_user_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "correlation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Correlate the access logs with a list of authorized medical personnel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst performs the correlation to check for unauthorized access."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify several instances where IT administrators accessed the database without a valid support ticket and flag this as a HIPAA compliance violation.",
-      "expected_outcome": "Analyst correctly identifies and documents a compliance failure.",
-      "required_tools": [
-        "document_audit_finding"
-      ],
-      "success_criteria": [
-        {
-          "metric": "finding_accuracy_and_relevance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify several instances where IT administrators accessed the database without a valid support ticket and flag this as a HIPAA compliance violation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies and documents a compliance failure."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

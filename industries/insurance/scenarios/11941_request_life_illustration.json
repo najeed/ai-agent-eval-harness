@@ -1,49 +1,59 @@
 {
-  "scenario_id": "insurance-la-11941",
-  "title": "Request a Life Insurance Illustration",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request a Life Insurance Illustration",
+    "compliance_level": "Standard"
+  },
   "description": "A potential customer wants to see an illustration showing how a universal life policy's cash value might perform over time.",
-  "use_case": "Life & Annuities",
-  "core_function": "New Business & Underwriting",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the client's age, gender, health class, and proposed premium amount.",
-      "expected_outcome": "Agent collects all necessary inputs for the illustration.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the client's age, gender, health class, and proposed premium amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary inputs for the illustration."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a policy illustration based on the current and guaranteed interest rates.",
-      "expected_outcome": "Agent successfully generates the detailed, multi-page illustration.",
-      "required_tools": [
-        "generate_life_illustration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a policy illustration based on the current and guaranteed interest rates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the detailed, multi-page illustration."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the illustration to the customer, being sure to clarify the difference between guaranteed and non-guaranteed elements.",
-      "expected_outcome": "Agent clearly walks the customer through the illustration.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the illustration to the customer, being sure to clarify the difference between guaranteed and non-guaranteed elements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly walks the customer through the illustration."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

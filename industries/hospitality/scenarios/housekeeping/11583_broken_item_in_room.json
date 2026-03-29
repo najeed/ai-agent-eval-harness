@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hosp-hk-11583",
-  "title": "Report a Broken Item in a Room",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report a Broken Item in a Room",
+    "compliance_level": "Standard"
+  },
   "description": "A housekeeper discovers a broken lamp while cleaning a room.",
-  "use_case": "Housekeeping & Maintenance",
-  "core_function": "Maintenance Requests",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The housekeeper reports the broken lamp to their supervisor.",
-      "expected_outcome": "The issue is reported.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The housekeeper reports the broken lamp to their supervisor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The issue is reported."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The supervisor creates a maintenance work order for a 'Broken Lamp'.",
-      "expected_outcome": "A work order is created in the system.",
-      "required_tools": [
-        "mms_create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The supervisor creates a maintenance work order for a 'Broken Lamp'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A work order is created in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "An engineer is dispatched to replace the lamp.",
-      "expected_outcome": "A technician is assigned to fix the issue.",
-      "required_tools": [
-        "mms_assign_technician"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "An engineer is dispatched to replace the lamp.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A technician is assigned to fix the issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

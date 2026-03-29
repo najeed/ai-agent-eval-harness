@@ -67,33 +67,36 @@ class TestEvaluationEngine:
     def sample_scenario(self):
         """Provide a sample scenario for testing."""
         return {
-            "scenario_id": "test_001",
-            "title": "Test Scenario",
-            "tasks": [
-                {
-                    "task_id": "task_1",
-                    "description": "Test task",
-                    "required_tools": ["search"],
-                    "success_criteria": [
-                        {
-                            "metric": "tool_call_correctness",
-                            "threshold": 1.0
-                        }
-                    ]
-                }
-            ]
+            "aes_version": 1.2,
+            "metadata": {"name": "Test Scenario"},
+            "workflow": {
+                "nodes": [
+                    {
+                        "id": "task_1",
+                        "task_description": "Test task",
+                        "required_tools": ["search"],
+                        "success_criteria": [
+                            {
+                                "metric": "tool_call_correctness",
+                                "threshold": 1.0
+                            }
+                        ]
+                    }
+                ],
+                "edges": []
+            }
         }
     
     def test_run_evaluation_with_valid_scenario(self, sample_scenario):
-        """Test evaluation engine with a valid scenario."""
+        """Test evaluation engine with a valid v1.2 scenario."""
         # Arrange
-        expected_tasks = 1
+        expected_nodes = 1
         
         # Act
         results = engine.run_evaluation(sample_scenario)
         
         # Assert
-        assert len(results) == expected_tasks
+        assert len(results) == expected_nodes
         assert results[0]["task_id"] == "task_1"
         assert "metrics" in results[0]
 
@@ -153,7 +156,7 @@ class TestMetrics:
         assert result == 0.0
 
     def test_state_verification_nested_path(self):
-        """Test state verification with nested dot-notation paths (v1.1+)."""
+        """Test state verification with nested dot-notation paths (v1.2+)."""
         # Arrange
         expected = {"user.profile.status": "active"}
         actual = {"user": {"profile": {"status": "active"}}}
@@ -165,7 +168,7 @@ class TestMetrics:
         assert result == 1.0
 
     async def test_judge_required_guard(self):
-        """Test judge guarding for required metrics (v1.1+)."""
+        """Test judge guarding for required metrics (v1.2+)."""
         # Arrange
         criterion = {"metric": "luna_judge_score", "required": True}
         
@@ -379,19 +382,22 @@ class TestScenarioValidation:
             "title": "Test Scenario",
             "industry": "test",
             "description": "A test scenario",
-            "tasks": [
-                {
-                    "task_id": "task_1",
-                    "description": "Test task",
-                    "required_tools": ["search"],
-                    "success_criteria": [
-                        {
-                            "metric": "tool_call_correctness",
-                            "threshold": 1.0
-                        }
-                    ]
-                }
-            ]
+            "workflow": {
+                "nodes": [
+                    {
+                        "id": "task_1",
+                        "task_description": "Test task",
+                        "required_tools": ["search"],
+                        "success_criteria": [
+                            {
+                                "metric": "tool_call_correctness",
+                                "threshold": 1.0
+                            }
+                        ]
+                    }
+                ],
+                "edges": []
+            }
         }
     
     def test_valid_scenario_passes_validation(self, valid_scenario):

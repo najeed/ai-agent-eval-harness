@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13210",
-  "title": "Generate Monthly Owner Statement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Monthly Owner Statement",
+    "compliance_level": "Standard"
+  },
   "description": "It's the end of the month, and the agent needs to generate a financial statement for a property owner.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the property owner and the correct reporting period (e.g., last month).",
-      "expected_outcome": "Agent correctly identifies the owner and date range.",
-      "required_tools": [
-        "get_owner_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the property owner and the correct reporting period (e.g., last month).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the owner and date range."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compile all income (rent) and expenses (management fees, repairs) for the property during that period.",
-      "expected_outcome": "Agent successfully gathers all financial transactions for the property.",
-      "required_tools": [
-        "get_property_ledger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compile all income (rent) and expenses (management fees, repairs) for the property during that period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully gathers all financial transactions for the property."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a formatted owner statement and send it to the property owner's email.",
-      "expected_outcome": "Agent creates and delivers an accurate financial report.",
-      "required_tools": [
-        "generate_owner_statement",
-        "send_email_to_owner"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a formatted owner statement and send it to the property owner's email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates and delivers an accurate financial report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

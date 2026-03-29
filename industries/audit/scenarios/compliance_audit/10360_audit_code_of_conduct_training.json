@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-cp-10360",
-  "title": "Audit Code of Conduct Training",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Code of Conduct Training",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor verifies that all new hires have completed the mandatory Code of Conduct training.",
-  "use_case": "Compliance & Regulatory Audit",
-  "core_function": "Policy & Procedure Adherence",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain a list of all employees hired in the last 6 months.",
-      "expected_outcome": "Auditor has the list of new hires.",
-      "required_tools": [
-        "get_new_hire_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain a list of all employees hired in the last 6 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has the list of new hires."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Obtain the training completion report from the Learning Management System (LMS).",
-      "expected_outcome": "Auditor has the list of all employees who completed the training.",
-      "required_tools": [
-        "get_training_completion_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Obtain the training completion report from the Learning Management System (LMS).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has the list of all employees who completed the training."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the two lists to ensure all new hires completed the training within 30 days of their start date, as required by policy.",
-      "expected_outcome": "The comparison shows that 15 new hires are overdue for the training.",
-      "required_tools": [
-        "compare_datasets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the two lists to ensure all new hires completed the training within 30 days of their start date, as required by policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The comparison shows that 15 new hires are overdue for the training."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

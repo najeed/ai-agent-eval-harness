@@ -1,82 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13887",
-  "title": "Mobile Troubleshooting - Wi-Fi Hotspot Not Working",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Mobile Troubleshooting - Wi-Fi Hotspot Not Working",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is trying to use their phone as a Wi-Fi hotspot, but other devices cannot connect.",
-  "use_case": "Technical Support",
-  "core_function": "Mobile Device Troubleshooting",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the customer's plan includes a mobile hotspot feature.",
-      "expected_outcome": "Agent confirms the plan has hotspot capability.",
-      "required_tools": [
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the customer's plan includes a mobile hotspot feature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the plan has hotspot capability."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the customer to check their hotspot settings on their phone, including the password and network name (SSID).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions for checking hotspot settings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the customer to check their hotspot settings on their phone, including the password and network name (SSID).",
-      "expected_outcome": "Agent provides clear instructions for checking hotspot settings.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reset the network settings on the customer's device to resolve any configuration glitches.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent guides the customer through a network settings reset."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reset the network settings on the customer's device to resolve any configuration glitches.",
-      "expected_outcome": "Agent guides the customer through a network settings reset.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

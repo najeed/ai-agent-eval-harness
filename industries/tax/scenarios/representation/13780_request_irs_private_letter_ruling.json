@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tax-rep-13780",
-  "title": "Request an IRS Private Letter Ruling",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request an IRS Private Letter Ruling",
+    "compliance_level": "Standard"
+  },
   "description": "A company is about to undertake a complex transaction with unclear tax consequences and wants a binding ruling from the IRS in advance.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Notice & Correspondence Management",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Research the issue to confirm the IRS will issue a ruling on this type of transaction.",
-      "expected_outcome": "Agent confirms the issue is not on the IRS's no-rule list.",
-      "required_tools": [
-        "research_irs_ruling_procedures"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Research the issue to confirm the IRS will issue a ruling on this type of transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the issue is not on the IRS's no-rule list."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a detailed request for a Private Letter Ruling (PLR), including a full statement of facts and legal analysis.",
-      "expected_outcome": "Agent prepares a comprehensive legal document for the IRS.",
-      "required_tools": [
-        "draft_plr_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a detailed request for a Private Letter Ruling (PLR), including a full statement of facts and legal analysis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares a comprehensive legal document for the IRS."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the PLR request to the IRS National Office along with the required user fee.",
-      "expected_outcome": "Agent successfully files the request.",
-      "required_tools": [
-        "file_document_with_irs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the PLR request to the IRS National Office along with the required user fee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully files the request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

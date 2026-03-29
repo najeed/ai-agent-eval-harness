@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13155",
-  "title": "Draft a Counter Offer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft a Counter Offer",
+    "compliance_level": "Standard"
+  },
   "description": "A seller wants to accept a buyer's offer but with a higher price. The agent must draft a counter offer.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Transaction Coordination",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Confirm the exact terms of the counter offer with the seller (e.g., new price).",
-      "expected_outcome": "Agent has clear instructions on the new price to propose.",
-      "required_tools": [
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Confirm the exact terms of the counter offer with the seller (e.g., new price).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has clear instructions on the new price to propose."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the counter offer form with the new price, referencing the original purchase agreement.",
-      "expected_outcome": "The counter offer document is accurately filled out.",
-      "required_tools": [
-        "draft_counter_offer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the counter offer form with the new price, referencing the original purchase agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The counter offer document is accurately filled out."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the counter offer to the seller for signature, and then forward the signed copy to the buyer's agent.",
-      "expected_outcome": "The counter offer is signed and delivered to the other party.",
-      "required_tools": [
-        "send_document_for_signature",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the counter offer to the seller for signature, and then forward the signed copy to the buyer's agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The counter offer is signed and delivered to the other party."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

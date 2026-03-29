@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-dev-13341",
-  "title": "Manage Project Budget and Variance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Project Budget and Variance",
+    "compliance_level": "Standard"
+  },
   "description": "A development project manager must track construction costs against the budget and report on any variances.",
-  "use_case": "Real Estate Development",
-  "core_function": "Project Management & Entitlements",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Input all contractor invoices and change orders into the project accounting system.",
-      "expected_outcome": "All project costs are accurately recorded.",
-      "required_tools": [
-        "enter_invoice_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Input all contractor invoices and change orders into the project accounting system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All project costs are accurately recorded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a monthly budget variance report that compares actual costs to the budgeted amounts for each line item.",
-      "expected_outcome": "A report highlighting any cost overruns or savings is produced.",
-      "required_tools": [
-        "generate_budget_variance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a monthly budget variance report that compares actual costs to the budgeted amounts for each line item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A report highlighting any cost overruns or savings is produced."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the variances to identify the root cause of any significant overruns and present the findings to the project stakeholders.",
-      "expected_outcome": "Agent provides an explanation for budget variances and suggests corrective actions.",
-      "required_tools": [
-        "analyze_financial_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the variances to identify the root cause of any significant overruns and present the findings to the project stakeholders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an explanation for budget variances and suggests corrective actions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

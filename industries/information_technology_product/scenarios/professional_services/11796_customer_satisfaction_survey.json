@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11796",
-  "title": "Send Post-Project CSAT Survey",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Send Post-Project CSAT Survey",
+    "compliance_level": "Standard"
+  },
   "description": "After a project is closed, a project manager sends a Customer Satisfaction (CSAT) survey to the main project sponsor.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Project Scoping & SOW",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the primary contact/sponsor for the recently closed project.",
-      "expected_outcome": "Project manager finds the correct contact person.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the primary contact/sponsor for the recently closed project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Project manager finds the correct contact person."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the standard post-project CSAT survey.",
-      "expected_outcome": "The survey is successfully sent to the customer.",
-      "required_tools": [
-        "send_survey"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the standard post-project CSAT survey.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The survey is successfully sent to the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the submitted feedback and share it with the project team.",
-      "expected_outcome": "The team receives feedback on their performance.",
-      "required_tools": [
-        "analyze_survey_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the submitted feedback and share it with the project team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team receives feedback on their performance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

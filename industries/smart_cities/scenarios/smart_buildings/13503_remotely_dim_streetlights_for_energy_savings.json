@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13503",
-  "title": "Remotely Dim Streetlights for Energy Savings",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Remotely Dim Streetlights for Energy Savings",
+    "compliance_level": "Standard"
+  },
   "description": "During late-night hours, an operator needs to dim streetlights in a commercial district to save energy.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Smart Street Lighting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the 'Downtown Commercial' lighting zone.",
-      "expected_outcome": "Agent selects the correct group of streetlights.",
-      "required_tools": [
-        "get_lighting_zones"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the 'Downtown Commercial' lighting zone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the correct group of streetlights."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Execute a command to dim all lights within the zone to 40% brightness.",
-      "expected_outcome": "Agent successfully sends the dimming command.",
-      "required_tools": [
-        "set_lighting_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Execute a command to dim all lights within the zone to 40% brightness.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends the dimming command."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that the lights in the zone have reported the new, lower power consumption level.",
-      "expected_outcome": "Agent checks the dashboard and confirms the energy savings.",
-      "required_tools": [
-        "get_lighting_power_consumption"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that the lights in the zone have reported the new, lower power consumption level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the dashboard and confirms the energy savings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-co-11080",
-  "title": "Request Alumni Directory Access",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Alumni Directory Access",
+    "compliance_level": "Standard"
+  },
   "description": "An alumnus wants to access the online alumni directory to find a former classmate.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Alumni Relations & Development",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the alumnus and verify their identity.",
-      "expected_outcome": "Agent securely identifies the alumnus.",
-      "required_tools": [
-        "get_alumnus_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the alumnus and verify their identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely identifies the alumnus."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the alumnus to the login page for the alumni portal.",
-      "expected_outcome": "Agent provides the correct URL.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the alumnus to the login page for the alumni portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct URL."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the privacy policies of the directory and how to use the search function.",
-      "expected_outcome": "Agent clearly communicates the rules and functionality of the directory.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the privacy policies of the directory and how to use the search function.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the rules and functionality of the directory."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

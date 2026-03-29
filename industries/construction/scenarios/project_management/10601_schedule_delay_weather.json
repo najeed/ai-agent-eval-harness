@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-pm-10601",
-  "title": "Project Schedule Delay Due to Weather",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Schedule Delay Due to Weather",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager must update the project schedule to account for three days of lost work due to severe weather.",
-  "use_case": "Project Management",
-  "core_function": "Project Planning & Scheduling",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all tasks on the critical path affected by the 3-day weather delay.",
-      "expected_outcome": "A list of critical path tasks that were scheduled during the lost days is generated.",
-      "required_tools": [
-        "get_project_schedule",
-        "get_critical_path"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all tasks on the critical path affected by the 3-day weather delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of critical path tasks that were scheduled during the lost days is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the Gantt chart by shifting the affected tasks and their dependencies forward by three days.",
-      "expected_outcome": "The project schedule is correctly updated to reflect the delay.",
-      "required_tools": [
-        "update_project_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the Gantt chart by shifting the affected tasks and their dependencies forward by three days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project schedule is correctly updated to reflect the delay."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify all project stakeholders of the revised project completion date.",
-      "expected_outcome": "A notification is sent to all relevant stakeholders with the new timeline.",
-      "required_tools": [
-        "send_stakeholder_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify all project stakeholders of the revised project completion date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A notification is sent to all relevant stakeholders with the new timeline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

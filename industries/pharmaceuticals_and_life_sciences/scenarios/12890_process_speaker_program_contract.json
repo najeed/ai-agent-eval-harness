@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12890",
-  "title": "Process a Speaker Program Contract",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Speaker Program Contract",
+    "compliance_level": "Standard"
+  },
   "description": "A medical affairs coordinator needs to process a contract and payment for a physician who is speaking at a company-sponsored event.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Key Opinion Leader (KOL) Engagement",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a speaker contract using an approved legal template.",
-      "expected_outcome": "Agent creates a new contract populated with the speaker's details and the honorarium amount.",
-      "required_tools": [
-        "generate_contract_from_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a speaker contract using an approved legal template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new contract populated with the speaker's details and the honorarium amount."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the contract to the physician for their electronic signature.",
-      "expected_outcome": "Agent sends the contract via a secure e-signature platform.",
-      "required_tools": [
-        "send_for_esignature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the contract to the physician for their electronic signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the contract via a secure e-signature platform."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the contract is executed, process the payment for the honorarium.",
-      "expected_outcome": "Agent submits a payment request to the finance department.",
-      "required_tools": [
-        "submit_payment_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the contract is executed, process the payment for the honorarium.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits a payment request to the finance department."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Report the payment to comply with transparency regulations (e.g., the Sunshine Act).",
-      "expected_outcome": "Agent logs the payment in the transparency reporting system.",
-      "required_tools": [
-        "log_transparency_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Report the payment to comply with transparency regulations (e.g., the Sunshine Act).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the payment in the transparency reporting system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "media-go-12592",
-  "title": "Resolve In-Game Guild Dispute",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve In-Game Guild Dispute",
+    "compliance_level": "Standard"
+  },
   "description": "The leader of a guild (a player group) reports that a disruptive member is stealing from the shared guild bank.",
-  "use_case": "Gaming Operations",
-  "core_function": "Player Support & Account Management",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the guild bank transaction logs.",
-      "expected_outcome": "Agent gets a log of all item withdrawals from the guild bank.",
-      "required_tools": [
-        "get_guild_bank_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the guild bank transaction logs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a log of all item withdrawals from the guild bank."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the logs to identify the disruptive member and the items they took without permission.",
-      "expected_outcome": "Agent confirms one member withdrew a large number of valuable items.",
-      "required_tools": [
-        "analyze_transaction_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the logs to identify the disruptive member and the items they took without permission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms one member withdrew a large number of valuable items."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue a temporary ban to the disruptive member and return the stolen items to the guild bank.",
-      "expected_outcome": "Agent bans the player and restores the stolen items.",
-      "required_tools": [
-        "issue_player_ban",
-        "restore_guild_bank_items"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue a temporary ban to the disruptive member and return the stolen items to the guild bank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent bans the player and restores the stolen items."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

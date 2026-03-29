@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-hse-12676",
-  "title": "Manage Biodiversity and Land Clearing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Biodiversity and Land Clearing",
+    "compliance_level": "Standard"
+  },
   "description": "Before clearing land for a new waste dump, an environmental officer surveys the area for protected species.",
-  "use_case": "Health, Safety & Environment (HSE)",
-  "core_function": "Water Management",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the planned land clearing area on a map.",
-      "expected_outcome": "The area to be cleared is identified.",
-      "required_tools": [
-        "get_land_clearing_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the planned land clearing area on a map.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The area to be cleared is identified."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Conduct a field survey of the area to identify any protected flora or fauna.",
-      "expected_outcome": "The survey identifies a population of a protected orchid species within the clearing footprint.",
-      "required_tools": [
-        "conduct_biodiversity_survey"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Conduct a field survey of the area to identify any protected flora or fauna.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The survey identifies a population of a protected orchid species within the clearing footprint."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Develop a plan to translocate the protected orchids to a suitable, safe habitat before clearing begins.",
-      "expected_outcome": "A species management plan is created and approved, allowing the project to proceed while protecting biodiversity.",
-      "required_tools": [
-        "create_species_management_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_management_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Develop a plan to translocate the protected orchids to a suitable, safe habitat before clearing begins.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A species management plan is created and approved, allowing the project to proceed while protecting biodiversity."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

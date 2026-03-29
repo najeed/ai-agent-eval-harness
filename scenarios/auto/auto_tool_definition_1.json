@@ -1,15 +1,32 @@
 {
-  "scenario_id": "auto_tool_definition_1",
-  "title": "Auto-generated for def refund_tool()",
-  "description": "Verification of tool_definition discovered in tools/support.py",
-  "tasks": [
-    {
-      "task_id": "t1",
-      "description": "Interact with def refund_tool() and verify its output."
-    }
-  ],
+  "aes_version": 1.2,
   "metadata": {
-    "source_file": "tools/support.py",
-    "pattern": "def refund_tool()"
+    "name": "Auto-generated for def refund_tool()",
+    "compliance_level": "Standard"
+  },
+  "description": "Verification of tool_definition discovered in tools/support.py",
+  "industry": "unknown",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "t1",
+        "task_description": "Interact with def refund_tool() and verify its output.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": null
+        }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hosp-hk-11523",
-  "title": "Maintenance Request - TV Not Working",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Maintenance Request - TV Not Working",
+    "compliance_level": "Standard"
+  },
   "description": "A guest reports that the TV in their room is not turning on.",
-  "use_case": "Housekeeping & Maintenance",
-  "core_function": "Maintenance Requests",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Apologize and create a high-priority maintenance work order for the guest's room.",
-      "expected_outcome": "A priority work order is created.",
-      "required_tools": [
-        "mms_create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Apologize and create a high-priority maintenance work order for the guest's room.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A priority work order is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the guest through basic troubleshooting (e.g., 'Is it plugged in? Can you try the power button on the TV itself?').",
-      "expected_outcome": "Basic troubleshooting steps are provided.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the guest through basic troubleshooting (e.g., 'Is it plugged in? Can you try the power button on the TV itself?').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Basic troubleshooting steps are provided."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If troubleshooting fails, dispatch a technician and offer to move the guest to a new room if one is available.",
-      "expected_outcome": "Troubleshooting fails. A technician is dispatched, and the agent offers a room change as a service recovery option.",
-      "required_tools": [
-        "mms_assign_technician",
-        "pms_change_room"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "If troubleshooting fails, dispatch a technician and offer to move the guest to a new room if one is available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Troubleshooting fails. A technician is dispatched, and the agent offers a room change as a service recovery option."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

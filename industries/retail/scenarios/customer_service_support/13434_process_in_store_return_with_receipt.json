@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-cs-13434",
-  "title": "Process In-Store Return with Receipt",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process In-Store Return with Receipt",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to return an item they bought last week and has the original receipt.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Returns & Exchanges",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the barcode on the customer's receipt.",
-      "expected_outcome": "The POS system retrieves the original transaction details.",
-      "required_tools": [
-        "scan_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the barcode on the customer's receipt.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The POS system retrieves the original transaction details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the item being returned and visually inspect it to ensure it is in returnable condition.",
-      "expected_outcome": "The system confirms the item was on the original transaction, and the associate verifies its condition.",
-      "required_tools": [
-        "scan_item_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the item being returned and visually inspect it to ensure it is in returnable condition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms the item was on the original transaction, and the associate verifies its condition."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the return, issuing a refund to the customer's original form of payment (e.g., credit card).",
-      "expected_outcome": "The return is completed, and the refund is successfully processed.",
-      "required_tools": [
-        "process_return"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the return, issuing a refund to the customer's original form of payment (e.g., credit card).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The return is completed, and the refund is successfully processed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

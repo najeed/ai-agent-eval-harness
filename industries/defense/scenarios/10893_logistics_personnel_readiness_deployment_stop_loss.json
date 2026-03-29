@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-log-10893",
-  "title": "Managing Personnel Readiness Under Stop-Loss",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Managing Personnel Readiness Under Stop-Loss",
+    "compliance_level": "Standard"
+  },
   "description": "A unit is under 'Stop-Loss' (personnel cannot leave the military) for a deployment. A personnel officer must track the status of soldiers whose contracts would have otherwise expired.",
-  "use_case": "Logistics & Sustainment",
-  "core_function": "Personnel & Readiness Management",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query the personnel database to identify all soldiers in the unit affected by the stop-loss policy.",
-      "expected_outcome": "Officer generates an accurate list of all affected soldiers.",
-      "required_tools": [
-        "query_personnel_database_by_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query the personnel database to identify all soldiers in the unit affected by the stop-loss policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer generates an accurate list of all affected soldiers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Monitor the morale and well-being of these specific soldiers, flagging any who may require additional support.",
-      "expected_outcome": "Officer uses available tools to track morale indicators for the affected cohort.",
-      "required_tools": [
-        "monitor_personnel_morale_indicators"
-      ],
-      "success_criteria": [
-        {
-          "metric": "monitoring_effectiveness",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-2",
+        "task_description": "Monitor the morale and well-being of these specific soldiers, flagging any who may require additional support.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer uses available tools to track morale indicators for the affected cohort."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Ensure that the administrative and pay processes are correctly handled for these soldiers to reflect their extended service.",
-      "expected_outcome": "Officer verifies that all administrative actions are completed correctly for the stop-lossed soldiers.",
-      "required_tools": [
-        "verify_personnel_administrative_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Ensure that the administrative and pay processes are correctly handled for these soldiers to reflect their extended service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer verifies that all administrative actions are completed correctly for the stop-lossed soldiers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

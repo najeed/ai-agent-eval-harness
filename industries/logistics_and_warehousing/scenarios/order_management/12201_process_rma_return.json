@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-om-12201",
-  "title": "Process a Customer Return (RMA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Customer Return (RMA)",
+    "compliance_level": "Standard"
+  },
   "description": "A customer service agent needs to process a return request for a customer who received a damaged item.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Customer Support",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the customer's original order using their order number.",
-      "expected_outcome": "Agent correctly locates the customer's order details.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the customer's original order using their order number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly locates the customer's order details."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a Return Merchandise Authorization (RMA) for the damaged item, specifying 'Damaged' as the reason.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates an RMA number."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a Return Merchandise Authorization (RMA) for the damaged item, specifying 'Damaged' as the reason.",
-      "expected_outcome": "Agent successfully generates an RMA number.",
-      "required_tools": [
-        "create_rma"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a prepaid return shipping label and email it to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates and sends the return label."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a prepaid return shipping label and email it to the customer.",
-      "expected_outcome": "Agent successfully creates and sends the return label.",
-      "required_tools": [
-        "generate_return_label",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

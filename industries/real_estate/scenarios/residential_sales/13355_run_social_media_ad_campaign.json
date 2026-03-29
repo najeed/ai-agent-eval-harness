@@ -1,54 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13355",
-  "title": "Run a 'Just Listed' Social Media Ad Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Run a 'Just Listed' Social Media Ad Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "An agent wants to run a paid ad campaign on Facebook and Instagram for a new luxury listing.",
-  "use_case": "Residential Sales",
-  "core_function": "Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the target audience for the ad based on demographics, interests (e.g., luxury goods), and location.",
-      "expected_outcome": "A specific target audience profile is created for the ad campaign.",
-      "required_tools": [
-        "define_ad_audience"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the target audience for the ad based on demographics, interests (e.g., luxury goods), and location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A specific target audience profile is created for the ad campaign."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create compelling ad copy and select the best photos or a video for the ad creative.",
-      "expected_outcome": "All components for the ad are prepared.",
-      "required_tools": [
-        "write_ad_copy",
-        "select_ad_creative"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create compelling ad copy and select the best photos or a video for the ad creative.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All components for the ad are prepared."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Launch the ad campaign with a set budget and duration, and monitor its performance (reach, clicks, leads).",
-      "expected_outcome": "The ad campaign is live and its analytics are being tracked.",
-      "required_tools": [
-        "launch_social_media_ad",
-        "track_ad_analytics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Launch the ad campaign with a set budget and duration, and monitor its performance (reach, clicks, leads).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The ad campaign is live and its analytics are being tracked."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-cp-10355",
-  "title": "Audit Environmental Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Environmental Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "For a manufacturing company, an auditor reviews compliance with environmental regulations.",
-  "use_case": "Compliance & Regulatory Audit",
-  "core_function": "Regulatory Compliance Testing",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the company's environmental permits to understand the requirements for air and water emissions.",
-      "expected_outcome": "Auditor understands the specific compliance requirements.",
-      "required_tools": [
-        "get_environmental_permits"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the company's environmental permits to understand the requirements for air and water emissions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor understands the specific compliance requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the emission monitoring reports that have been submitted to the environmental agency.",
-      "expected_outcome": "Auditor has the submitted compliance reports.",
-      "required_tools": [
-        "get_emission_reports"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the emission monitoring reports that have been submitted to the environmental agency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has the submitted compliance reports."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the reported emissions to the permit limits and find that on two occasions, the limit for a specific chemical was exceeded.",
-      "expected_outcome": "A compliance violation is identified.",
-      "required_tools": [
-        "compare_data_to_limits"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the reported emissions to the permit limits and find that on two occasions, the limit for a specific chemical was exceeded.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A compliance violation is identified."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

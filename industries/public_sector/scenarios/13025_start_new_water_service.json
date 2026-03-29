@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pw-13025",
-  "title": "Start New Water Service",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Start New Water Service",
+    "compliance_level": "Standard"
+  },
   "description": "A new resident who just moved into town needs to set up water and sewer service at their new address.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Utility Billing",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the resident's name, service address, and contact information.",
-      "expected_outcome": "Agent accurately collects the new customer's details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the resident's name, service address, and contact information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately collects the new customer's details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the identity of the new resident.",
-      "expected_outcome": "Agent successfully completes identity verification.",
-      "required_tools": [
-        "verify_citizen_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the identity of the new resident.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes identity verification."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new utility account and schedule a technician to turn on the water service.",
-      "expected_outcome": "Agent successfully creates the account and schedules the service activation.",
-      "required_tools": [
-        "create_utility_account",
-        "schedule_technician_visit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new utility account and schedule a technician to turn on the water service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the account and schedules the service activation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

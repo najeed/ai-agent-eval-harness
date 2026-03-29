@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-125",
-  "title": "Redact Sensitive Information from Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Redact Sensitive Information from Report",
+    "compliance_level": "Standard"
+  },
   "description": "Before sharing a report externally, an agent must redact all personally identifiable information (PII) and client-confidential terms.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the document to identify all instances of PII (names, emails, phone numbers).",
-      "expected_outcome": "Agent correctly identifies all PII in the text.",
-      "required_tools": [
-        "identify_pii"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the document to identify all instances of PII (names, emails, phone numbers).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies all PII in the text."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the document for a predefined list of confidential project codenames.",
-      "expected_outcome": "Agent correctly identifies all instances of the codenames.",
-      "required_tools": [
-        "find_keywords"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the document for a predefined list of confidential project codenames.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies all instances of the codenames."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new version of the document with all identified sensitive information replaced with '[REDACTED]'.",
-      "expected_outcome": "Agent produces a clean, redacted version of the report.",
-      "required_tools": [
-        "redact_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new version of the document with all identified sensitive information replaced with '[REDACTED]'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clean, redacted version of the report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

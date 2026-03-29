@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10074",
-  "title": "Strip and Repaint an Aircraft",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Strip and Repaint an Aircraft",
+    "compliance_level": "Standard"
+  },
   "description": "An aircraft is being rebranded with a new livery. An MRO facility must strip the old paint and apply the new one.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Component Repair & Overhaul",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Apply chemical stripper to the aircraft to remove the old paint.",
-      "expected_outcome": "Agent safely manages the paint stripping process.",
-      "required_tools": [
-        "apply_paint_stripper"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Apply chemical stripper to the aircraft to remove the old paint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent safely manages the paint stripping process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inspect the bare metal skin for any corrosion or damage that was hidden by the old paint.",
-      "expected_outcome": "Agent performs an inspection and finds no hidden damage.",
-      "required_tools": [
-        "inspect_aircraft_skin"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inspect the bare metal skin for any corrosion or damage that was hidden by the old paint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent performs an inspection and finds no hidden damage."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply the new livery according to the customer's engineering drawings.",
-      "expected_outcome": "Agent successfully paints the aircraft in the new colors and logos.",
-      "required_tools": [
-        "apply_paint",
-        "apply_decals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply the new livery according to the customer's engineering drawings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully paints the aircraft in the new colors and logos."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

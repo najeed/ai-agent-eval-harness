@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tax-rep-13735",
-  "title": "File an Appeal on an Audit Decision",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File an Appeal on an Audit Decision",
+    "compliance_level": "Standard"
+  },
   "description": "A client disagrees with the final decision of an IRS audit and wants to appeal.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Collections & Appeals",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the final audit report (Revenue Agent Report) and the client's objections.",
-      "expected_outcome": "Agent understands the points of disagreement.",
-      "required_tools": [
-        "analyze_audit_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the final audit report (Revenue Agent Report) and the client's objections.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the points of disagreement."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Prepare a formal protest letter outlining the client's position and the laws that support it.",
-      "expected_outcome": "Agent drafts a detailed legal and factual argument.",
-      "required_tools": [
-        "draft_protest_letter"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Prepare a formal protest letter outlining the client's position and the laws that support it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a detailed legal and factual argument."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "File the protest letter with the IRS Appeals Office within the specified time limit.",
-      "expected_outcome": "Agent successfully submits the appeal.",
-      "required_tools": [
-        "file_appeal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "File the protest letter with the IRS Appeals Office within the specified time limit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the appeal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,48 +1,59 @@
 {
-  "scenario_id": "tax-plan-13739",
-  "title": "Project Tax Liability Using Annualized Income Method",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Tax Liability Using Annualized Income Method",
+    "compliance_level": "Standard"
+  },
   "description": "A freelancer with fluctuating income wants to calculate their estimated tax payments using the more complex annualized income method.",
-  "use_case": "Tax Planning & Advisory",
-  "core_function": "Estimated Tax & Projections",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the freelancer's income and expenses for the year to date.",
-      "expected_outcome": "Agent collects all financial data for the period.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the freelancer's income and expenses for the year to date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all financial data for the period."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use Form 2210, Schedule AI (Annualized Income Installment Method), to project the income over the full year.",
-      "expected_outcome": "Agent correctly uses the form to annualize the income.",
-      "required_tools": [
-        "prepare_form_2210_ai"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use Form 2210, Schedule AI (Annualized Income Installment Method), to project the income over the full year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly uses the form to annualize the income."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the required estimated tax payment for the current quarter based on the annualized calculation.",
-      "expected_outcome": "Agent determines the precise payment needed for the quarter to avoid penalties.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the required estimated tax payment for the current quarter based on the annualized calculation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the precise payment needed for the quarter to avoid penalties."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10936",
-  "title": "Redeem a Gift Card",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Redeem a Gift Card",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to apply a gift card to their purchase during checkout.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Loyalty Programs",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Take the gift card code from the customer.",
-      "expected_outcome": "Agent receives the gift card code.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Take the gift card code from the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the gift card code."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Validate the gift card code and check its balance.",
-      "expected_outcome": "Agent confirms the gift card is valid and has a balance of $50.",
-      "required_tools": [
-        "validate_gift_card"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Validate the gift card code and check its balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the gift card is valid and has a balance of $50."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply the gift card balance to the order total.",
-      "expected_outcome": "Agent successfully discounts the order total by $50.",
-      "required_tools": [
-        "apply_gift_card_to_cart"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply the gift card balance to the order total.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully discounts the order total by $50."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

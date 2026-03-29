@@ -1,65 +1,72 @@
 {
-  "scenario_id": "venues-sh-14264",
-  "title": "Handle Lost Season Tickets",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Lost Season Tickets",
+    "compliance_level": "Standard"
+  },
   "description": "A season ticket holder reports that they have lost their physical season ticket booklet.",
-  "use_case": "Sales & Hospitality",
-  "core_function": "Group Sales",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the season ticket holder's account.",
-      "expected_outcome": "Agent finds the account and verifies their identity.",
-      "required_tools": [
-        "get_season_ticket_holder_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the season ticket holder's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the account and verifies their identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Deactivate the barcodes for the lost physical tickets to prevent fraudulent use.",
-      "expected_outcome": "Agent successfully voids the old ticket barcodes.",
-      "required_tools": [
-        "deactivate_ticket_barcodes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Deactivate the barcodes for the lost physical tickets to prevent fraudulent use.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully voids the old ticket barcodes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Re-issue the rest of the season's tickets as digital, mobile-only tickets.",
-      "expected_outcome": "Agent sends the customer a new set of digital tickets.",
-      "required_tools": [
-        "reissue_digital_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Re-issue the rest of the season's tickets as digital, mobile-only tickets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the customer a new set of digital tickets."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Explain to the customer how to access and use their new digital tickets.",
-      "expected_outcome": "Agent clearly explains the new process to the customer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Explain to the customer how to access and use their new digital tickets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the new process to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

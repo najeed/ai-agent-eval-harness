@@ -1,50 +1,59 @@
 {
-  "scenario_id": "media-bo-12575",
-  "title": "Handle Live Sports Rain Delay",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Live Sports Rain Delay",
+    "compliance_level": "Standard"
+  },
   "description": "A live broadcast of a baseball game is interrupted by a rain delay. The agent must switch to filler content.",
-  "use_case": "Broadcasting & Streaming Operations",
-  "core_function": "Live Event Broadcasting",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive notification of the rain delay from the on-site production crew.",
-      "expected_outcome": "Agent is informed of the delay.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive notification of the rain delay from the on-site production crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is informed of the delay."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Switch the live broadcast feed to a pre-prepared 'rain delay' content package (e.g., highlights, interviews).",
-      "expected_outcome": "Agent successfully switches the feed to the filler content.",
-      "required_tools": [
-        "switch_live_broadcast_feed"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Switch the live broadcast feed to a pre-prepared 'rain delay' content package (e.g., highlights, interviews).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully switches the feed to the filler content."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Display a message on screen informing viewers of the delay.",
-      "expected_outcome": "Agent activates an on-screen graphic with the rain delay information.",
-      "required_tools": [
-        "activate_on_screen_graphic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Display a message on screen informing viewers of the delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent activates an on-screen graphic with the rain delay information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

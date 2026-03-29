@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12795",
-  "title": "Analyze Production Log",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Production Log",
+    "compliance_level": "Standard"
+  },
   "description": "A well is producing more water than expected. An engineer runs a production log (PLT) to determine which perforated interval is producing the unwanted water.",
-  "use_case": "Upstream",
-  "core_function": "Production Operations",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run the PLT tool in the well, which measures flow rate, fluid density, and water holdup at different depths.",
-      "expected_outcome": "A complete set of production log data is acquired over the reservoir interval.",
-      "required_tools": [
-        "run_production_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run the PLT tool in the well, which measures flow rate, fluid density, and water holdup at different depths.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete set of production log data is acquired over the reservoir interval."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the log data to create a profile of where oil, gas, and water are entering the wellbore.",
-      "expected_outcome": "The analysis clearly shows that the bottom-most set of perforations is producing 100% water.",
-      "required_tools": [
-        "analyze_plt_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the log data to create a profile of where oil, gas, and water are entering the wellbore.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis clearly shows that the bottom-most set of perforations is producing 100% water."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend a workover to set a plug to shut off the water-producing perforations.",
-      "expected_outcome": "A workover recommendation is created to isolate the water zone and improve the well's oil cut.",
-      "required_tools": [
-        "create_workover_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend a workover to set a plug to shut off the water-producing perforations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A workover recommendation is created to isolate the water zone and improve the well's oil cut."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

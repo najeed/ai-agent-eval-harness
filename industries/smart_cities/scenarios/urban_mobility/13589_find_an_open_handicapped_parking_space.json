@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-um-13589",
-  "title": "Find an Open Handicapped Parking Space",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find an Open Handicapped Parking Space",
+    "compliance_level": "Standard"
+  },
   "description": "A user with a disability uses the city app to find the nearest available handicapped parking space.",
-  "use_case": "Urban Mobility & Transport",
-  "core_function": "Parking Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a request for the nearest available handicapped parking space, using the user's current GPS location.",
-      "expected_outcome": "The system receives the request and the user's location.",
-      "required_tools": [
-        "get_user_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a request for the nearest available handicapped parking space, using the user's current GPS location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system receives the request and the user's location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the parking management system for all spaces designated as 'Handicapped' and filter for those with a status of 'Vacant'.",
-      "expected_outcome": "The system retrieves a list of available handicapped spaces.",
-      "required_tools": [
-        "get_parking_space_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the parking management system for all spaces designated as 'Handicapped' and filter for those with a status of 'Vacant'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system retrieves a list of available handicapped spaces."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Return the location of the nearest available space to the user's app and provide navigation.",
-      "expected_outcome": "The user's app displays a map and directions to the open spot.",
-      "required_tools": [
-        "send_location_to_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Return the location of the nearest available space to the user's app and provide navigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user's app displays a map and directions to the open spot."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-cc-10685",
-  "title": "Check Subcontractor Bonding Capacity",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Subcontractor Bonding Capacity",
+    "compliance_level": "Standard"
+  },
   "description": "Before awarding a large subcontract, a contract manager must verify that the subcontractor has sufficient bonding capacity.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Contract Administration",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Request a letter from the subcontractor's surety company stating their single project and aggregate bonding limits.",
-      "expected_outcome": "A formal request is sent to the subcontractor.",
-      "required_tools": [
-        "send_vendor_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Request a letter from the subcontractor's surety company stating their single project and aggregate bonding limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal request is sent to the subcontractor."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Receive and review the surety letter.",
-      "expected_outcome": "The letter is received.",
-      "required_tools": [
-        "receive_vendor_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Receive and review the surety letter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The letter is received."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that the subcontract value is within the subcontractor's stated single project limit.",
-      "expected_outcome": "Agent confirms the subcontractor has adequate bonding capacity for the job.",
-      "required_tools": [
-        "verify_bonding_capacity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that the subcontract value is within the subcontractor's stated single project limit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the subcontractor has adequate bonding capacity for the job."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

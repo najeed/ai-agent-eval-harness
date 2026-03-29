@@ -1,67 +1,72 @@
 {
-  "scenario_id": "wholesale-im-14327",
-  "title": "Investigate an Inventory Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate an Inventory Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "A significant discrepancy is found for a high-value item during a stock take. A manager must investigate the cause.",
-  "use_case": "Inventory & Warehouse Management",
-  "core_function": "Inventory Control",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the item with the discrepancy.",
-      "expected_outcome": "Agent confirms the item and the size of the discrepancy.",
-      "required_tools": [
-        "get_inventory_discrepancy_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the item with the discrepancy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the item and the size of the discrepancy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review all transaction history for the item (shipments, receipts, adjustments) for the last 90 days.",
-      "expected_outcome": "Agent reviews the transaction log.",
-      "required_tools": [
-        "get_item_transaction_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review all transaction history for the item (shipments, receipts, adjustments) for the last 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the transaction log."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review warehouse security footage for the item's location around the time of the last known accurate count.",
-      "expected_outcome": "The footage reveals nothing unusual.",
-      "required_tools": [
-        "review_security_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review warehouse security footage for the item's location around the time of the last known accurate count.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The footage reveals nothing unusual."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Conclude the cause is likely a mis-shipment and create a report.",
-      "expected_outcome": "Agent writes a report on the investigation, concluding the items were likely shipped in error on another order.",
-      "required_tools": [
-        "generate_investigation_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Conclude the cause is likely a mis-shipment and create a report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a report on the investigation, concluding the items were likely shipped in error on another order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

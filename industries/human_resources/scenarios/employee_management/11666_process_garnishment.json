@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-em-11666",
-  "title": "Process a Wage Garnishment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Wage Garnishment",
+    "compliance_level": "Standard"
+  },
   "description": "HR has received a legal order to garnish an employee's wages for child support.",
-  "use_case": "Employee Management",
-  "core_function": "Payroll & Compensation",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive and validate the legal garnishment order.",
-      "expected_outcome": "Payroll specialist confirms the order is legally valid.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive and validate the legal garnishment order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Payroll specialist confirms the order is legally valid."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the garnishment details (e.g., amount, recipient) into the payroll system for the specified employee.",
-      "expected_outcome": "Specialist correctly sets up the recurring deduction in the HRIS.",
-      "required_tools": [
-        "setup_wage_garnishment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the garnishment details (e.g., amount, recipient) into the payroll system for the specified employee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist correctly sets up the recurring deduction in the HRIS."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a notification to the employee informing them that the company has received the order and will begin deductions.",
-      "expected_outcome": "Specialist sends the required legal notification to the employee.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a notification to the employee informing them that the company has received the order and will begin deductions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist sends the required legal notification to the employee."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

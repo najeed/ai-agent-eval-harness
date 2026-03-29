@@ -1,65 +1,72 @@
 {
-  "scenario_id": "energy-pd-11124",
-  "title": "Compare LCOE for Solar vs. Wind",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Compare LCOE for Solar vs. Wind",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst needs to compare the Levelized Cost of Energy (LCOE) for a new solar project versus a new wind project at the same location.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Financial Modeling & Investment Analysis",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather cost and performance data for both a 100 MW solar farm and a 100 MW wind farm (CAPEX, OPEX, capacity factor).",
-      "expected_outcome": "Agent compiles the necessary input data for both project types.",
-      "required_tools": [
-        "get_project_cost_benchmarks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather cost and performance data for both a 100 MW solar farm and a 100 MW wind farm (CAPEX, OPEX, capacity factor).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles the necessary input data for both project types."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the LCOE for the solar project.",
-      "expected_outcome": "Agent computes the LCOE for solar.",
-      "required_tools": [
-        "calculate_lcoe"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the LCOE for the solar project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent computes the LCOE for solar."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the LCOE for the wind project.",
-      "expected_outcome": "Agent computes the LCOE for wind.",
-      "required_tools": [
-        "calculate_lcoe"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the LCOE for the wind project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent computes the LCOE for wind."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Present a comparison and conclude which technology offers a lower LCOE at this site.",
-      "expected_outcome": "Agent provides a clear summary table and states that solar has a 15% lower LCOE.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Present a comparison and conclude which technology offers a lower LCOE at this site.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear summary table and states that solar has a 15% lower LCOE."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

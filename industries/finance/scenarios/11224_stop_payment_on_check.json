@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-rb-11224",
-  "title": "Stop Payment on a Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Stop Payment on a Check",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has lost a check and wants to place a stop payment on it.",
-  "use_case": "Retail Banking",
-  "core_function": "Payments & Transfers",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and gather details of the check: check number, amount, and payee.",
-      "expected_outcome": "Agent collects all necessary information about the lost check.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and gather details of the check: check number, amount, and payee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary information about the lost check."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check if the check has already been cashed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the check has not yet been presented for payment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check if the check has already been cashed.",
-      "expected_outcome": "Agent confirms the check has not yet been presented for payment.",
-      "required_tools": [
-        "check_check_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place a stop payment order on the check and inform the customer of any associated fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully issues the stop payment and clearly communicates the fee."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place a stop payment order on the check and inform the customer of any associated fees.",
-      "expected_outcome": "Agent successfully issues the stop payment and clearly communicates the fee.",
-      "required_tools": [
-        "issue_stop_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

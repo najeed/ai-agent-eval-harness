@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-ia-10356",
-  "title": "Collect and Analyze Control Environment Survey Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Collect and Analyze Control Environment Survey Data",
+    "compliance_level": "Standard"
+  },
   "description": "As part of an audit, the team sends a survey to employees to gauge their perception of the company's control environment.",
-  "use_case": "Internal Audit",
-  "core_function": "Fieldwork & Data Collection",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Develop a survey questionnaire with questions about ethics, management oversight, and communication.",
-      "expected_outcome": "A well-designed survey is created.",
-      "required_tools": [
-        "create_survey"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Develop a survey questionnaire with questions about ethics, management oversight, and communication.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A well-designed survey is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Distribute the survey to all employees in the department being audited.",
-      "expected_outcome": "The survey is sent out.",
-      "required_tools": [
-        "distribute_survey"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Distribute the survey to all employees in the department being audited.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The survey is sent out."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the anonymous survey results, noting that a high percentage of respondents feel pressure to meet unrealistic targets.",
-      "expected_outcome": "The survey analysis reveals a potential risk area to focus on during the audit.",
-      "required_tools": [
-        "analyze_survey_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the anonymous survey results, noting that a high percentage of respondents feel pressure to meet unrealistic targets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The survey analysis reveals a potential risk area to focus on during the audit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "utils-cs-14170",
-  "title": "High Gas Bill Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "High Gas Bill Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls because their gas bill doubled in the winter and they want to understand why.",
-  "use_case": "Customer Service",
-  "core_function": "Billing & Account Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's gas usage history and compare it with the heating degree days (HDD) for the billing period.",
-      "expected_outcome": "Agent confirms that usage increased, and it correlates with a much colder than average month.",
-      "required_tools": [
-        "get_usage_history",
-        "get_historical_weather_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's gas usage history and compare it with the heating degree days (HDD) for the billing period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that usage increased, and it correlates with a much colder than average month."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the relationship between colder weather and higher heating usage.",
-      "expected_outcome": "Agent clearly communicates why the bill was higher.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the relationship between colder weather and higher heating usage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates why the bill was higher."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Offer the customer information on energy conservation tips and the budget billing program to help manage seasonal bill swings.",
-      "expected_outcome": "Agent provides helpful information on savings and bill management programs.",
-      "required_tools": [
-        "get_conservation_tips",
-        "explain_billing_programs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Offer the customer information on energy conservation tips and the budget billing program to help manage seasonal bill swings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides helpful information on savings and bill management programs."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

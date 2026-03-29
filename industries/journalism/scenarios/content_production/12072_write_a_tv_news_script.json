@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-cp-12072",
-  "title": "Write a TV News Script",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write a TV News Script",
+    "compliance_level": "Standard"
+  },
   "description": "A broadcast journalist needs to write a 90-second script for the evening news about a city council meeting.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Writing & Drafting",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the video footage and notes from the meeting to find the most important or dramatic moment.",
-      "expected_outcome": "The key soundbite and event are identified.",
-      "required_tools": [
-        "video_player",
-        "note_taking_app"
-      ],
-      "success_criteria": [
-        {
-          "metric": "relevance_of_selection",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the video footage and notes from the meeting to find the most important or dramatic moment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The key soundbite and event are identified."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write a script in a standard two-column format (video cues on the left, audio/narration on the right).",
-      "expected_outcome": "A properly formatted broadcast script is created.",
-      "required_tools": [
-        "script_writing_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "structural_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write a script in a standard two-column format (video cues on the left, audio/narration on the right).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A properly formatted broadcast script is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Time the script by reading it aloud to ensure it fits within the 90-second slot.",
-      "expected_outcome": "The script is confirmed to be the correct length.",
-      "required_tools": [
-        "stopwatch"
-      ],
-      "success_criteria": [
-        {
-          "metric": "timing_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Time the script by reading it aloud to ensure it fits within the 90-second slot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The script is confirmed to be the correct length."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

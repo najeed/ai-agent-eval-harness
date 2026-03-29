@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13231",
-  "title": "Handle Tenant Move-In",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Tenant Move-In",
+    "compliance_level": "Standard"
+  },
   "description": "A new tenant is moving in today. The agent must ensure the unit is ready and the tenant has all necessary information.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Confirm that the first month's rent and security deposit have been paid in full.",
-      "expected_outcome": "Agent verifies the tenant's ledger is paid up.",
-      "required_tools": [
-        "get_tenant_ledger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Confirm that the first month's rent and security deposit have been paid in full.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the tenant's ledger is paid up."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the unit has been cleaned and keys are ready for pickup.",
-      "expected_outcome": "Agent checks the status of the unit turnover.",
-      "required_tools": [
-        "check_unit_turnover_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the unit has been cleaned and keys are ready for pickup.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the status of the unit turnover."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a welcome email to the tenant with move-in instructions, including how to pick up keys and set up utilities.",
-      "expected_outcome": "Agent sends a comprehensive and helpful welcome email.",
-      "required_tools": [
-        "send_welcome_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a welcome email to the tenant with move-in instructions, including how to pick up keys and set up utilities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a comprehensive and helpful welcome email."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

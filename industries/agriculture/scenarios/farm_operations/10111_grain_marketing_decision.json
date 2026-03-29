@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-fo-10111",
-  "title": "Grain Marketing Decision Support",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Grain Marketing Decision Support",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer has harvested their wheat and needs to decide whether to sell it now or store it based on market prices and storage costs.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Supply Chain & Inventory",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the current local cash price and futures market prices for wheat.",
-      "expected_outcome": "Agent gets the latest prices from local elevators and the futures exchange.",
-      "required_tools": [
-        "get_commodity_prices"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the current local cash price and futures market prices for wheat.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the latest prices from local elevators and the futures exchange."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the cost of on-farm storage per month, including interest, shrinkage, and energy costs.",
-      "expected_outcome": "Agent calculates an accurate monthly storage cost.",
-      "required_tools": [
-        "calculate_storage_costs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the cost of on-farm storage per month, including interest, shrinkage, and energy costs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates an accurate monthly storage cost."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze historical price trends and provide a recommendation on the potential profitability of storing the grain for 3 months versus selling now.",
-      "expected_outcome": "Agent provides a data-driven recommendation, outlining the risks and potential rewards.",
-      "required_tools": [
-        "analyze_market_trends"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze historical price trends and provide a recommendation on the potential profitability of storing the grain for 3 months versus selling now.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a data-driven recommendation, outlining the risks and potential rewards."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

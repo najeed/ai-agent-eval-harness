@@ -1,64 +1,72 @@
 {
-  "scenario_id": "utils-go-14203",
-  "title": "Gas Quality Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Gas Quality Check",
+    "compliance_level": "Standard"
+  },
   "description": "A technician checks the quality of natural gas being received from a supplier to ensure it meets the utility's tariff specifications.",
-  "use_case": "Gas Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use a portable gas chromatograph to take a sample of the gas.",
-      "expected_outcome": "Technician successfully obtains a gas sample.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use a portable gas chromatograph to take a sample of the gas.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician successfully obtains a gas sample."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the sample to determine its composition and heating value (BTU content).",
-      "expected_outcome": "The analysis provides the exact composition of the gas.",
-      "required_tools": [
-        "analyze_gas_sample"
-      ],
-      "success_criteria": [
-        {
-          "metric": "measurement_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the sample to determine its composition and heating value (BTU content).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis provides the exact composition of the gas."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the results to the specifications in the gas tariff.",
-      "expected_outcome": "Technician confirms the gas quality is within the acceptable range.",
-      "required_tools": [
-        "get_gas_tariff_specs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the results to the specifications in the gas tariff.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician confirms the gas quality is within the acceptable range."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Log the results in the gas management system.",
-      "expected_outcome": "Technician successfully logs the quality test results.",
-      "required_tools": [
-        "log_field_test_result"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-4",
+        "task_description": "Log the results in the gas management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician successfully logs the quality test results."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-fe-13681",
-  "title": "Run a Flash Sale on Merchandise",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Run a Flash Sale on Merchandise",
+    "compliance_level": "Standard"
+  },
   "description": "To clear out old inventory, a team's marketing department wants to run a 24-hour flash sale on last season's merchandise.",
-  "use_case": "Fan Engagement & Ticketing",
-  "core_function": "Merchandise & Concessions",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific items to be included in the sale.",
-      "expected_outcome": "Agent has a list of all items from last season.",
-      "required_tools": [
-        "get_inventory_by_season"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific items to be included in the sale.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a list of all items from last season."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply a discount to all the selected items in the e-commerce system.",
-      "expected_outcome": "Agent successfully applies a 50% discount to all sale items.",
-      "required_tools": [
-        "apply_bulk_discount"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply a discount to all the selected items in the e-commerce system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies a 50% discount to all sale items."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Announce the flash sale on social media and through an email blast to fans.",
-      "expected_outcome": "Agent successfully promotes the sale.",
-      "required_tools": [
-        "post_to_social_media",
-        "send_email_to_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Announce the flash sale on social media and through an email blast to fans.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully promotes the sale."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

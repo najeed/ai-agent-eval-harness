@@ -1,64 +1,72 @@
 {
-  "scenario_id": "tr-rs-14096",
-  "title": "Handle an Airport Pickup Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an Airport Pickup Request",
+    "compliance_level": "Standard"
+  },
   "description": "A rider at an airport requests a ride. The system must guide them to the designated ride-share pickup area and manage the driver queue.",
-  "use_case": "Ride-Sharing & On-Demand Mobility",
-  "core_function": "Matching & Dispatch",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "A rider requests a ride from within the airport's geofence.",
-      "expected_outcome": "The system identifies it as an airport pickup.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "A rider requests a ride from within the airport's geofence.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system identifies it as an airport pickup."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The app displays instructions for the rider to proceed to the designated pickup zone (e.g., 'Level 3, Zone C').",
-      "expected_outcome": "The rider is given clear walking directions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "The app displays instructions for the rider to proceed to the designated pickup zone (e.g., 'Level 3, Zone C').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The rider is given clear walking directions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system places the request in a virtual queue and offers it to the next driver waiting in the airport's designated driver waiting area (geofenced lot).",
-      "expected_outcome": "The request is offered to the first driver in the queue.",
-      "required_tools": [
-        "manage_airport_driver_queue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system places the request in a virtual queue and offers it to the next driver waiting in the airport's designated driver waiting area (geofenced lot).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The request is offered to the first driver in the queue."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "A driver accepts, and is given a specific lane number to meet their rider.",
-      "expected_outcome": "The rider and driver are matched and guided to each other efficiently.",
-      "required_tools": [
-        "assign_pickup_lane"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "A driver accepts, and is given a specific lane number to meet their rider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The rider and driver are matched and guided to each other efficiently."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

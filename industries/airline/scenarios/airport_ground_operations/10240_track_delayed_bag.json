@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-ago-10240",
-  "title": "Track a Delayed Bag",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track a Delayed Bag",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger whose bag was delayed is calling for a status update. An agent must check the tracking system.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Baggage Handling & Resolution",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the passenger's mishandled baggage report using their name or file reference number.",
-      "expected_outcome": "Agent finds the existing claim file.",
-      "required_tools": [
-        "get_mishandled_bag_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the passenger's mishandled baggage report using their name or file reference number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the existing claim file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the baggage tracking system for the latest updates on the bag's location.",
-      "expected_outcome": "Agent finds the bag has been located and is scheduled to arrive on the next flight.",
-      "required_tools": [
-        "trace_bag"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the baggage tracking system for the latest updates on the bag's location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the bag has been located and is scheduled to arrive on the next flight."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the passenger of the update and confirm their delivery address for when the bag arrives.",
-      "expected_outcome": "Agent provides a clear update and confirms delivery details.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the passenger of the update and confirm their delivery address for when the bag arrives.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear update and confirms delivery details."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

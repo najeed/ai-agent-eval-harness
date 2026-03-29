@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10769",
-  "title": "Cloud Security Posture Scan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cloud Security Posture Scan",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must run a Cloud Security Posture Management (CSPM) scan to find misconfigurations in the company's AWS environment.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Vulnerability Scanning & Assessment",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Configure the CSPM tool with read-only credentials to the AWS environment.",
-      "expected_outcome": "Analyst securely configures the tool's access.",
-      "required_tools": [
-        "configure_cspm_scan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "configuration_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Configure the CSPM tool with read-only credentials to the AWS environment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst securely configures the tool's access."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Launch the scan against the AWS environment.",
-      "expected_outcome": "The scan runs to completion.",
-      "required_tools": [
-        "launch_cspm_scan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_execution_success",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Launch the scan against the AWS environment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The scan runs to completion."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the results and identify a critical misconfiguration: an S3 bucket containing sensitive data that is open to the public internet.",
-      "expected_outcome": "Analyst correctly identifies and prioritizes a critical cloud misconfiguration.",
-      "required_tools": [
-        "analyze_scan_results",
-        "create_remediation_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "vulnerability_prioritization_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the results and identify a critical misconfiguration: an S3 bucket containing sensitive data that is open to the public internet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies and prioritizes a critical cloud misconfiguration."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

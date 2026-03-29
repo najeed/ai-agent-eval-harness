@@ -1,53 +1,59 @@
 {
-  "scenario_id": "insurance-la-11957",
-  "title": "Process a Full Policy Surrender",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Full Policy Surrender",
+    "compliance_level": "Standard"
+  },
   "description": "A whole life policyholder wants to surrender their policy for its cash value.",
-  "use_case": "Life & Annuities",
-  "core_function": "Policy Servicing",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the policyholder and explain the consequences of surrendering the policy, including loss of death benefit and potential tax implications.",
-      "expected_outcome": "Agent verifies the customer and clearly explains what a surrender means.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the policyholder and explain the consequences of surrendering the policy, including loss of death benefit and potential tax implications.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the customer and clearly explains what a surrender means."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the net cash surrender value after any outstanding loans or surrender charges.",
-      "expected_outcome": "Agent accurately calculates the final amount the customer will receive.",
-      "required_tools": [
-        "calculate_surrender_value"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the net cash surrender value after any outstanding loans or surrender charges.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the final amount the customer will receive."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the surrender request and issue the payment.",
-      "expected_outcome": "Agent successfully processes the surrender and disburses the funds.",
-      "required_tools": [
-        "process_policy_surrender"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the surrender request and issue the payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the surrender and disburses the funds."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

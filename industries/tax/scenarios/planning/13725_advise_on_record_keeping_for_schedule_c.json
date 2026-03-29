@@ -1,49 +1,59 @@
 {
-  "scenario_id": "tax-plan-13725",
-  "title": "Advise on Record-Keeping for Schedule C",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Advise on Record-Keeping for Schedule C",
+    "compliance_level": "Standard"
+  },
   "description": "A new freelancer asks for advice on what records they need to keep for their business expenses.",
-  "use_case": "Tax Planning & Advisory",
-  "core_function": "Compliance & Risk Assessment",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the client's type of business (freelance writing).",
-      "expected_outcome": "Agent understands the nature of the client's business.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the client's type of business (freelance writing).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the nature of the client's business."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide a list of common deductible expenses for their industry (e.g., home office, internet, software, supplies).",
-      "expected_outcome": "Agent gives a relevant list of potential deductions.",
-      "required_tools": [
-        "get_common_deductions_by_industry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide a list of common deductible expenses for their industry (e.g., home office, internet, software, supplies).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gives a relevant list of potential deductions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the documentation requirements for each type of expense (e.g., receipts, logs, bank statements).",
-      "expected_outcome": "Agent provides clear and actionable advice on how to properly document expenses to withstand an audit.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the documentation requirements for each type of expense (e.g., receipts, logs, bank statements).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear and actionable advice on how to properly document expenses to withstand an audit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "energy-op-11142",
-  "title": "Substation Transformer Health Monitoring",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Substation Transformer Health Monitoring",
+    "compliance_level": "Standard"
+  },
   "description": "An agent is monitoring a large substation transformer for signs of degradation using dissolved gas analysis (DGA).",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Asset Performance Monitoring",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the latest DGA sensor readings (e.g., hydrogen, acetylene, ethylene) from the transformer's monitoring system.",
-      "expected_outcome": "Agent fetches the current gas concentration levels.",
-      "required_tools": [
-        "get_dga_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the latest DGA sensor readings (e.g., hydrogen, acetylene, ethylene) from the transformer's monitoring system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fetches the current gas concentration levels."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the trends of key gases over the past 6 months.",
-      "expected_outcome": "Agent identifies a rising trend in acetylene levels.",
-      "required_tools": [
-        "analyze_dga_trends"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the trends of key gases over the past 6 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a rising trend in acetylene levels."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use the Duval Triangle method to diagnose the potential fault type based on the gas ratios.",
-      "expected_outcome": "Agent diagnoses the issue as a high-energy electrical discharge (arcing).",
-      "required_tools": [
-        "run_duval_triangle_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "diagnostic_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use the Duval Triangle method to diagnose the potential fault type based on the gas ratios.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent diagnoses the issue as a high-energy electrical discharge (arcing)."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Issue a high-priority alert and recommend taking the transformer offline for internal inspection.",
-      "expected_outcome": "Agent creates a critical maintenance alert.",
-      "required_tools": [
-        "create_maintenance_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Issue a high-priority alert and recommend taking the transformer offline for internal inspection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a critical maintenance alert."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

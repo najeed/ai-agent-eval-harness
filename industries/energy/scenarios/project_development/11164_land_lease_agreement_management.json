@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-pd-11164",
-  "title": "Land Lease Agreement Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Land Lease Agreement Management",
+    "compliance_level": "Standard"
+  },
   "description": "A land manager needs to track and manage upcoming payments for dozens of land lease agreements for a solar project.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Permitting & Compliance",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the database of all land lease agreements and identify all payments due in the next 90 days.",
-      "expected_outcome": "Agent produces a list of 15 upcoming payments with amounts and due dates.",
-      "required_tools": [
-        "query_lease_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the database of all land lease agreements and identify all payments due in the next 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a list of 15 upcoming payments with amounts and due dates."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each payment, verify the landowner's contact and payment information is up to date.",
-      "expected_outcome": "Agent confirms all information is current.",
-      "required_tools": [
-        "verify_landowner_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each payment, verify the landowner's contact and payment information is up to date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all information is current."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate payment authorization requests for the finance department for all due payments.",
-      "expected_outcome": "Agent creates and submits all necessary payment requests.",
-      "required_tools": [
-        "create_payment_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate payment authorization requests for the finance department for all due payments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates and submits all necessary payment requests."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

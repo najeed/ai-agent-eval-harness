@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-las-10280",
-  "title": "Handle Disruption on a Partner Airline",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Disruption on a Partner Airline",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger booked through Airline A is affected by a cancellation on a connecting flight operated by partner Airline B. Airline A's agent must assist.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Partnerships & Interlining",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the cancellation on the partner-operated flight.",
-      "expected_outcome": "Agent identifies the disruption.",
-      "required_tools": [
-        "get_flight_status_update"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the cancellation on the partner-operated flight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the disruption."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the partner airline's liaison desk to find rebooking options.",
-      "expected_outcome": "Agent coordinates with the partner to find a solution.",
-      "required_tools": [
-        "contact_partner_airline"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the partner airline's liaison desk to find rebooking options.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent coordinates with the partner to find a solution."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Re-issue the passenger's ticket on the new itinerary provided by the partner airline.",
-      "expected_outcome": "Agent successfully updates the ticket to reflect the new flights.",
-      "required_tools": [
-        "reissue_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Re-issue the passenger's ticket on the new itinerary provided by the partner airline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the ticket to reflect the new flights."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

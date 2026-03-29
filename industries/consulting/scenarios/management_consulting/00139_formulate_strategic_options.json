@@ -1,69 +1,72 @@
 {
-  "scenario_id": "consulting-mc-139",
-  "title": "Formulate Strategic Options",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Formulate Strategic Options",
+    "compliance_level": "Standard"
+  },
   "description": "Based on a SWOT analysis, an agent must formulate three distinct strategic options for the client.",
-  "use_case": "Management Consulting",
-  "core_function": "Strategy & Recommendation",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the provided SWOT analysis.",
-      "expected_outcome": "Agent correctly ingests the SWOT data.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the provided SWOT analysis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly ingests the SWOT data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Formulate a 'Growth' strategy that uses Strengths to capitalize on Opportunities.",
-      "expected_outcome": "Agent proposes a relevant growth strategy.",
-      "required_tools": [
-        "formulate_strategy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.85,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Formulate a 'Growth' strategy that uses Strengths to capitalize on Opportunities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proposes a relevant growth strategy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Formulate a 'Defensive' strategy that uses Strengths to mitigate Threats.",
-      "expected_outcome": "Agent proposes a relevant defensive strategy.",
-      "required_tools": [
-        "formulate_strategy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.85,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Formulate a 'Defensive' strategy that uses Strengths to mitigate Threats.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proposes a relevant defensive strategy."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Formulate a 'Turnaround' strategy that addresses Weaknesses to mitigate Threats.",
-      "expected_outcome": "Agent proposes a relevant turnaround strategy.",
-      "required_tools": [
-        "formulate_strategy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.85,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Formulate a 'Turnaround' strategy that addresses Weaknesses to mitigate Threats.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proposes a relevant turnaround strategy."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-po-12306",
-  "title": "Log Production Output",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Log Production Output",
+    "compliance_level": "Standard"
+  },
   "description": "An operator at the end of a shift needs to log the quantity of good parts produced for a specific work order.",
-  "use_case": "Production & Operations",
-  "core_function": "Work Order Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the work order that was being processed.",
-      "expected_outcome": "Agent correctly identifies the active work order for their station.",
-      "required_tools": [
-        "get_active_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the work order that was being processed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the active work order for their station."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the total quantity of 'good' units produced during the shift.",
-      "expected_outcome": "Agent enters the correct count of completed parts.",
-      "required_tools": [
-        "log_production_output"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the total quantity of 'good' units produced during the shift.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent enters the correct count of completed parts."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the transaction and verify that the work order's completed quantity has been updated.",
-      "expected_outcome": "Agent confirms the system has accepted the entry and the work order shows the new total.",
-      "required_tools": [
-        "get_work_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the transaction and verify that the work order's completed quantity has been updated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the system has accepted the entry and the work order shows the new total."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

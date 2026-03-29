@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-ta-11601",
-  "title": "Generate an Offer Letter",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate an Offer Letter",
+    "compliance_level": "Standard"
+  },
   "description": "A recruiter needs to generate an official offer letter for a successful candidate.",
-  "use_case": "Talent Acquisition",
-  "core_function": "Interview & Selection",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the approved offer details (salary, start date, title) from the ATS.",
-      "expected_outcome": "Recruiter confirms all final offer terms.",
-      "required_tools": [
-        "get_approved_offer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the approved offer details (salary, start date, title) from the ATS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter confirms all final offer terms."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the offer letter using the company's standard template and the approved details.",
-      "expected_outcome": "Recruiter successfully generates a populated offer letter document.",
-      "required_tools": [
-        "generate_document_from_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the offer letter using the company's standard template and the approved details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter successfully generates a populated offer letter document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the offer letter to the candidate for electronic signature.",
-      "expected_outcome": "Recruiter sends the letter via an e-signature platform.",
-      "required_tools": [
-        "send_for_e_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the offer letter to the candidate for electronic signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter sends the letter via an e-signature platform."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

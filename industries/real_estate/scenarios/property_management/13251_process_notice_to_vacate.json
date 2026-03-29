@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13251",
-  "title": "Process a Tenant's Notice to Vacate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Tenant's Notice to Vacate",
+    "compliance_level": "Standard"
+  },
   "description": "A month-to-month tenant has submitted their 30-day notice to vacate. The agent must process it.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the tenant's written notice to vacate.",
-      "expected_outcome": "Agent logs the notice and the date it was received.",
-      "required_tools": [
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the tenant's written notice to vacate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the notice and the date it was received."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the official move-out date based on the notice period and update the tenant's lease record.",
-      "expected_outcome": "Agent determines the correct lease end date and updates the system.",
-      "required_tools": [
-        "calculate_lease_end_date",
-        "update_lease_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the official move-out date based on the notice period and update the tenant's lease record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the correct lease end date and updates the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a confirmation to the tenant acknowledging their notice and providing them with move-out procedures and a cleaning checklist.",
-      "expected_outcome": "Agent sends a comprehensive email with all necessary move-out information.",
-      "required_tools": [
-        "send_tenant_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a confirmation to the tenant acknowledging their notice and providing them with move-out procedures and a cleaning checklist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a comprehensive email with all necessary move-out information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

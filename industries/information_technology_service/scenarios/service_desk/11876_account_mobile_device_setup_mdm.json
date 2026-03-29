@@ -1,49 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11876",
-  "title": "User Account - Mobile Device Setup (MDM)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "User Account - Mobile Device Setup (MDM)",
+    "compliance_level": "Standard"
+  },
   "description": "A new executive needs their new company-issued iPhone set up and enrolled in Mobile Device Management (MDM).",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "User Account & Device Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Guide the user through the initial iPhone setup process until they reach the Remote Management screen.",
-      "expected_outcome": "The user is ready for enrollment.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Guide the user through the initial iPhone setup process until they reach the Remote Management screen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user is ready for enrollment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Have the user log in with their corporate credentials to enroll the device in the MDM system.",
-      "expected_outcome": "The device successfully enrolls.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Have the user log in with their corporate credentials to enroll the device in the MDM system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The device successfully enrolls."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify in the MDM console that the device is now managed and that security policies are being applied.",
-      "expected_outcome": "The device appears in the MDM console as compliant.",
-      "required_tools": [
-        "check_mdm_device_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify in the MDM console that the device is now managed and that security policies are being applied.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The device appears in the MDM console as compliant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

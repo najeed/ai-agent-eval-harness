@@ -1,55 +1,59 @@
 {
-  "scenario_id": "sports-lm-13665",
-  "title": "Handle a Team's Protest of a Game Result",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Team's Protest of a Game Result",
+    "compliance_level": "Standard"
+  },
   "description": "A team files a formal protest of a game's result, claiming a rule was misapplied by the officials on the final play.",
-  "use_case": "League & Competition Management",
-  "core_function": "Standings & Results Management",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the formal protest from the team.",
-      "expected_outcome": "Agent logs the protest.",
-      "required_tools": [
-        "receive_formal_protest"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the formal protest from the team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the protest."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the official rulebook and the video of the play in question.",
-      "expected_outcome": "Agent reviews the play and determines the officials did, in fact, misapply the rule.",
-      "required_tools": [
-        "get_rulebook",
-        "review_game_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the official rulebook and the video of the play in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the play and determines the officials did, in fact, misapply the rule."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Uphold the protest and schedule the final play of the game to be replayed.",
-      "expected_outcome": "Agent makes a ruling and schedules the replay.",
-      "required_tools": [
-        "uphold_protest",
-        "reschedule_game_segment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Uphold the protest and schedule the final play of the game to be replayed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a ruling and schedules the replay."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

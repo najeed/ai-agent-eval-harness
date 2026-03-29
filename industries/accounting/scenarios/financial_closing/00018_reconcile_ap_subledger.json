@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ac-fc-18",
-  "title": "Reconcile AP Sub-Ledger to General Ledger",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reconcile AP Sub-Ledger to General Ledger",
+    "compliance_level": "Standard"
+  },
   "description": "At month-end, an accountant needs to ensure the total of the Accounts Payable aging report ties to the AP account balance in the general ledger.",
-  "use_case": "Financial Closing & Reporting",
-  "core_function": "Account Reconciliation",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run the Accounts Payable aging report as of the last day of the month.",
-      "expected_outcome": "Agent generates the report showing a total AP balance of $550,123.",
-      "required_tools": [
-        "run_ap_aging_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run the Accounts Payable aging report as of the last day of the month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates the report showing a total AP balance of $550,123."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the month-end balance for the Accounts Payable account from the general ledger.",
-      "expected_outcome": "Agent finds the GL balance is $550,123.",
-      "required_tools": [
-        "get_gl_account_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the month-end balance for the Accounts Payable account from the general ledger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the GL balance is $550,123."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the two totals and confirm that they match.",
-      "expected_outcome": "Agent confirms the sub-ledger reconciles to the general ledger.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the two totals and confirm that they match.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the sub-ledger reconciles to the general ledger."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

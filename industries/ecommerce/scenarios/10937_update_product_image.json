@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-osm-10937",
-  "title": "Update Main Product Image",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Main Product Image",
+    "compliance_level": "Standard"
+  },
   "description": "The marketing team has provided a new, higher-quality main image for a best-selling product.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Product Information Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the product by its SKU.",
-      "expected_outcome": "Agent finds the correct product.",
-      "required_tools": [
-        "get_product_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the product by its SKU.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct product."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Upload the new image.",
-      "expected_outcome": "Agent successfully uploads the new image file.",
-      "required_tools": [
-        "upload_product_images"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Upload the new image.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the new image file."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set the newly uploaded image as the primary display image for the product.",
-      "expected_outcome": "Agent updates the product's primary image setting.",
-      "required_tools": [
-        "set_primary_product_image"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set the newly uploaded image as the primary display image for the product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the product's primary image setting."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

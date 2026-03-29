@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-os-10625",
-  "title": "Document As-Built Condition",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document As-Built Condition",
+    "compliance_level": "Standard"
+  },
   "description": "During construction, a pipe had to be rerouted from its planned location. A foreman must document this change on the as-built drawings.",
-  "use_case": "On-Site Operations",
-  "core_function": "Quality & Punch Lists",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the as-built drawings for the second-floor plumbing.",
-      "expected_outcome": "The correct as-built drawing file is opened.",
-      "required_tools": [
-        "get_as_built_drawings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the as-built drawings for the second-floor plumbing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct as-built drawing file is opened."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Mark the original pipe location as 'deleted' and draw the new route, adding dimensions and notes.",
-      "expected_outcome": "The drawing is updated with a clear 'red-line' markup of the change.",
-      "required_tools": [
-        "update_as_built_drawing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Mark the original pipe location as 'deleted' and draw the new route, adding dimensions and notes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The drawing is updated with a clear 'red-line' markup of the change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

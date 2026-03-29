@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ret-im-13465",
-  "title": "Verify Promotional Price at POS",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify Promotional Price at POS",
+    "compliance_level": "Standard"
+  },
   "description": "A customer disputes the price of an item at checkout, saying it was on sale. The associate needs to verify the promotion.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Pricing & Promotions",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the item, which shows the full price.",
-      "expected_outcome": "The POS displays the non-promotional price.",
-      "required_tools": [
-        "scan_item_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the item, which shows the full price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The POS displays the non-promotional price."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the 'Price Check' function to look up the item.",
-      "expected_outcome": "The associate accesses the item's detailed pricing information.",
-      "required_tools": [
-        "price_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the 'Price Check' function to look up the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate accesses the item's detailed pricing information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm that a promotion is active for the item and override the price to the correct promotional price.",
-      "expected_outcome": "The customer is charged the correct sale price, and the associate can flag the signage or system issue for correction.",
-      "required_tools": [
-        "price_override"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm that a promotion is active for the item and override the price to the correct promotional price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer is charged the correct sale price, and the associate can flag the signage or system issue for correction."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

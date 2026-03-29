@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-rb-11248",
-  "title": "Cancel a Scheduled Bill Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cancel a Scheduled Bill Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A customer scheduled a bill payment but now needs to cancel it before it is sent.",
-  "use_case": "Retail Banking",
-  "core_function": "Payments & Transfers",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and locate the scheduled bill payment.",
-      "expected_outcome": "Agent finds the upcoming payment to the utility company.",
-      "required_tools": [
-        "get_scheduled_payments"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and locate the scheduled bill payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the upcoming payment to the utility company."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the payment has not yet been processed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the payment is still in 'Scheduled' status."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the payment has not yet been processed.",
-      "expected_outcome": "Agent confirms the payment is still in 'Scheduled' status.",
-      "required_tools": [
-        "get_payment_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cancel the scheduled payment and confirm the cancellation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully cancels the payment and informs the customer."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cancel the scheduled payment and confirm the cancellation.",
-      "expected_outcome": "Agent successfully cancels the payment and informs the customer.",
-      "required_tools": [
-        "cancel_scheduled_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

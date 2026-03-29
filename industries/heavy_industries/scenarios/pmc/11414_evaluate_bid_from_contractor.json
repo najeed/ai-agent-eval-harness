@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-pmc-11414",
-  "title": "Evaluate Bid from Contractor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Evaluate Bid from Contractor",
+    "compliance_level": "Standard"
+  },
   "description": "The project has received three bids for the electrical installation package. The procurement manager must evaluate them and recommend a winner.",
-  "use_case": "Project Management & Controls",
-  "core_function": "Contract & Procurement Management",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the three submitted bids and the project's technical and commercial requirements.",
-      "expected_outcome": "Agent gathers all the necessary documents for the evaluation.",
-      "required_tools": [
-        "get_bid_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the three submitted bids and the project's technical and commercial requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all the necessary documents for the evaluation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a technical evaluation to ensure all bidders meet the minimum requirements.",
-      "expected_outcome": "Agent confirms all three bidders are technically qualified.",
-      "required_tools": [
-        "perform_technical_bid_evaluation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a technical evaluation to ensure all bidders meet the minimum requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all three bidders are technically qualified."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a commercial evaluation, comparing the prices, and recommend awarding the contract to the lowest-priced, technically acceptable bidder.",
-      "expected_outcome": "Agent compares the prices, identifies the lowest bidder, and creates a formal recommendation for award.",
-      "required_tools": [
-        "perform_commercial_bid_evaluation",
-        "create_award_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a commercial evaluation, comparing the prices, and recommend awarding the contract to the lowest-priced, technically acceptable bidder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compares the prices, identifies the lowest bidder, and creates a formal recommendation for award."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

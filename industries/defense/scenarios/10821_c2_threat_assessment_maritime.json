@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-c2-10821",
-  "title": "Subsurface Threat Assessment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Subsurface Threat Assessment",
+    "compliance_level": "Standard"
+  },
   "description": "A naval operator must assess an unidentified subsurface contact detected by sonar to determine if it is a hostile submarine.",
-  "use_case": "Command & Control (C2)",
-  "core_function": "Threat Assessment & Prioritization",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the acoustic signature of the subsurface contact.",
-      "expected_outcome": "Operator correctly analyzes the sonar data.",
-      "required_tools": [
-        "analyze_acoustic_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the acoustic signature of the subsurface contact.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator correctly analyzes the sonar data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the signature against a database of known friendly, neutral, and hostile submarine classes.",
-      "expected_outcome": "Operator finds a potential match with a known adversary submarine class.",
-      "required_tools": [
-        "query_acoustic_signature_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the signature against a database of known friendly, neutral, and hostile submarine classes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator finds a potential match with a known adversary submarine class."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend deploying a maritime patrol aircraft to gain secondary confirmation of the contact.",
-      "expected_outcome": "Operator makes a timely and appropriate recommendation for further action.",
-      "required_tools": [
-        "recommend_course_of_action",
-        "task_maritime_patrol_aircraft"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend deploying a maritime patrol aircraft to gain secondary confirmation of the contact.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator makes a timely and appropriate recommendation for further action."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

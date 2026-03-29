@@ -1,50 +1,59 @@
 {
-  "scenario_id": "cyber-so-10734",
-  "title": "Threat Hunting for Lateral Movement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Threat Hunting for Lateral Movement",
+    "compliance_level": "Standard"
+  },
   "description": "A threat hunter is looking for signs of lateral movement by searching for suspicious use of administrative tools like PsExec.",
-  "use_case": "Security Operations (SecOps)",
-  "core_function": "Threat Hunting",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Formulate a hypothesis: 'An attacker is using PsExec to move from workstation to workstation'.",
-      "expected_outcome": "Analyst defines a clear, testable hypothesis.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "hypothesis_clarity",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Formulate a hypothesis: 'An attacker is using PsExec to move from workstation to workstation'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst defines a clear, testable hypothesis."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query endpoint logs for the creation of the 'PSEXESVC.exe' service on any host, which is a key indicator of PsExec usage.",
-      "expected_outcome": "Analyst writes an effective query to find the specific artifact.",
-      "required_tools": [
-        "query_endpoint_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "query_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query endpoint logs for the creation of the 'PSEXESVC.exe' service on any host, which is a key indicator of PsExec usage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst writes an effective query to find the specific artifact."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify a pattern of PsExec usage between non-administrator workstations, which is highly anomalous, and begin an investigation.",
-      "expected_outcome": "Analyst discovers an active breach by identifying anomalous use of a legitimate tool.",
-      "required_tools": [
-        "flag_host_for_investigation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "threat_discovery_rate",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify a pattern of PsExec usage between non-administrator workstations, which is highly anomalous, and begin an investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst discovers an active breach by identifying anomalous use of a legitimate tool."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

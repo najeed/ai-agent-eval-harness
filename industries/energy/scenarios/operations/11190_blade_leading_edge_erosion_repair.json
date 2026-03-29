@@ -1,67 +1,72 @@
 {
-  "scenario_id": "energy-op-11190",
-  "title": "Schedule Wind Turbine Blade Leading Edge Erosion Repair",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Wind Turbine Blade Leading Edge Erosion Repair",
+    "compliance_level": "Standard"
+  },
   "description": "Drone inspections have revealed significant leading-edge erosion on several wind turbine blades, which reduces aerodynamic efficiency and energy production.",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Maintenance & Outage Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the drone inspection reports to identify all turbines with severe (Category 4 or 5) leading-edge erosion.",
-      "expected_outcome": "Agent creates a list of 12 turbines requiring repair.",
-      "required_tools": [
-        "get_inspection_reports"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the drone inspection reports to identify all turbines with severe (Category 4 or 5) leading-edge erosion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a list of 12 turbines requiring repair."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Estimate the annual energy production (AEP) loss caused by the erosion.",
-      "expected_outcome": "Agent calculates that the erosion is causing a 2% AEP loss.",
-      "required_tools": [
-        "calculate_aep_loss"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Estimate the annual energy production (AEP) loss caused by the erosion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates that the erosion is causing a 2% AEP loss."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Obtain quotes from specialized contractors for leading-edge repair.",
-      "expected_outcome": "Agent gets quotes from three different repair companies.",
-      "required_tools": [
-        "get_service_quotes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Obtain quotes from specialized contractors for leading-edge repair.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets quotes from three different repair companies."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Schedule the repair campaign, creating work orders and coordinating turbine downtime with grid operators.",
-      "expected_outcome": "Agent creates a full project plan for the repair campaign.",
-      "required_tools": [
-        "create_maintenance_work_order",
-        "submit_iso_outage_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "plan_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Schedule the repair campaign, creating work orders and coordinating turbine downtime with grid operators.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a full project plan for the repair campaign."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

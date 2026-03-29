@@ -1,89 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13795",
-  "title": "Customer Reports Service Outage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Reports Service Outage",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to report a total loss of mobile service. The agent must check for known outages and provide an estimated time for resolution.",
-  "use_case": "Customer Service",
-  "core_function": "Service Lifecycle",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and verify their service location using their address.",
-      "expected_outcome": "Agent correctly identifies the customer account and their primary service location.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and verify their service location using their address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer account and their primary service location."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the network status map for known outages affecting the customer's verified area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly uses the outage map tool to confirm a regional outage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the network status map for known outages affecting the customer's verified area.",
-      "expected_outcome": "Agent correctly uses the outage map tool to confirm a regional outage.",
-      "required_tools": [
-        "check_network_outage_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer about the known outage, provide the ETR, and offer to set up an SMS notification for when service is restored.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the outage status and ETR and successfully sets up an alert."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer about the known outage, provide the ETR, and offer to set up an SMS notification for when service is restored.",
-      "expected_outcome": "Agent clearly communicates the outage status and ETR and successfully sets up an alert.",
-      "required_tools": [
-        "create_service_alert_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

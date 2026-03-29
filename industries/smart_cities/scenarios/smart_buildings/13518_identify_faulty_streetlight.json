@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13518",
-  "title": "Identify Faulty Streetlight",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Faulty Streetlight",
+    "compliance_level": "Standard"
+  },
   "description": "The smart lighting system reports that a specific streetlight is consuming no power, indicating a fault.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Smart Street Lighting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a 'Zero Power Consumption' alert for a specific streetlight ID.",
-      "expected_outcome": "Agent acknowledges the fault alert.",
-      "required_tools": [
-        "get_lighting_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a 'Zero Power Consumption' alert for a specific streetlight ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the fault alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a remote diagnostic on the streetlight, which fails to connect.",
-      "expected_outcome": "Agent confirms the light is offline and likely has a bulb or ballast failure.",
-      "required_tools": [
-        "run_lighting_diagnostic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a remote diagnostic on the streetlight, which fails to connect.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the light is offline and likely has a bulb or ballast failure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a work order for the lighting maintenance team to replace the faulty component.",
-      "expected_outcome": "Agent successfully creates and assigns a repair ticket.",
-      "required_tools": [
-        "create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a work order for the lighting maintenance team to replace the faulty component.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates and assigns a repair ticket."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

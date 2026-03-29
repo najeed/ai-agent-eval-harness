@@ -1,53 +1,59 @@
 {
-  "scenario_id": "smartcities-um-13519",
-  "title": "Implement Dynamic Pricing for Parking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Implement Dynamic Pricing for Parking",
+    "compliance_level": "Standard"
+  },
   "description": "To manage demand, an operator implements dynamic pricing for a downtown parking garage where prices increase as occupancy rises.",
-  "use_case": "Urban Mobility & Transport",
-  "core_function": "Parking Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the current occupancy for 'Garage A', which is at 92%.",
-      "expected_outcome": "Agent confirms the high occupancy level.",
-      "required_tools": [
-        "get_parking_occupancy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the current occupancy for 'Garage A', which is at 92%.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the high occupancy level."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Based on the high occupancy, increase the hourly parking rate by 25% according to the dynamic pricing rules.",
-      "expected_outcome": "Agent successfully applies the price increase.",
-      "required_tools": [
-        "set_parking_rate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Based on the high occupancy, increase the hourly parking rate by 25% according to the dynamic pricing rules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies the price increase."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the pricing information on the garage's entrance sign and in the city parking app.",
-      "expected_outcome": "Agent ensures the new price is publicly displayed.",
-      "required_tools": [
-        "update_dynamic_message_sign",
-        "publish_parking_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the pricing information on the garage's entrance sign and in the city parking app.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ensures the new price is publicly displayed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

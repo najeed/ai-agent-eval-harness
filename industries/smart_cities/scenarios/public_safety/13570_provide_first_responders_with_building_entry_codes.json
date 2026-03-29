@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-ps-13570",
-  "title": "Provide First Responders with Building Entry Codes",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide First Responders with Building Entry Codes",
+    "compliance_level": "Standard"
+  },
   "description": "Firefighters responding to an alarm at a commercial building need the entry codes to get inside.",
-  "use_case": "Public Safety & Security",
-  "core_function": "Emergency Response",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a request for access codes from a fire captain at the scene of an alarm.",
-      "expected_outcome": "Agent acknowledges the request from the first responder.",
-      "required_tools": [
-        "get_emergency_vehicle_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a request for access codes from a fire captain at the scene of an alarm.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the request from the first responder."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Look up the building address in the secure 'Knox Box' database.",
-      "expected_outcome": "Agent accesses the secure database.",
-      "required_tools": [
-        "query_knox_box_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Look up the building address in the secure 'Knox Box' database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses the secure database."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Securely transmit the building's door and elevator access codes to the fire captain's authenticated device.",
-      "expected_outcome": "Agent provides the critical access information securely.",
-      "required_tools": [
-        "send_secure_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Securely transmit the building's door and elevator access codes to the fire captain's authenticated device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the critical access information securely."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

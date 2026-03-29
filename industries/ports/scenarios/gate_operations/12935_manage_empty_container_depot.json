@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ports-go-12935",
-  "title": "Manage an Empty Container Depot",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage an Empty Container Depot",
+    "compliance_level": "Standard"
+  },
   "description": "A trucking company wants to drop off an empty container at the port's empty depot. The operator must process it.",
-  "use_case": "Gate & Landside Operations",
-  "core_function": "Gate Processing & Appointments",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the truck at the empty depot gate and identify the container number and shipping line owner.",
-      "expected_outcome": "Operator identifies the container and its owner (e.g., Maersk).",
-      "required_tools": [
-        "get_ocr_gate_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the truck at the empty depot gate and identify the container number and shipping line owner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator identifies the container and its owner (e.g., Maersk)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the shipping line is currently accepting returns of that container type at this depot.",
-      "expected_outcome": "Operator confirms that Maersk is accepting 40' dry containers.",
-      "required_tools": [
-        "check_empty_return_acceptance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the shipping line is currently accepting returns of that container type at this depot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator confirms that Maersk is accepting 40' dry containers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign a stacking location in the empty yard and instruct the driver where to go.",
-      "expected_outcome": "The driver is given a location, and the empty container is added to the depot's inventory.",
-      "required_tools": [
-        "assign_empty_yard_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign a stacking location in the empty yard and instruct the driver where to go.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver is given a location, and the empty container is added to the depot's inventory."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

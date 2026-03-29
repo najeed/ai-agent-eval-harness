@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-eng-11435",
-  "title": "Define an Inspection and Test Plan (ITP)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Define an Inspection and Test Plan (ITP)",
+    "compliance_level": "Standard"
+  },
   "description": "A quality engineer needs to create an ITP for the fabrication of a new pressure vessel, outlining all required quality checks.",
-  "use_case": "Engineering & Design",
-  "core_function": "Quality Engineering",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new ITP document linked to the pressure vessel's equipment tag.",
-      "expected_outcome": "Agent initiates a new ITP using the standard template.",
-      "required_tools": [
-        "create_itp"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new ITP document linked to the pressure vessel's equipment tag.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates a new ITP using the standard template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add inspection points for each stage of fabrication, such as 'Material Receiving Inspection', 'Weld Inspection', and 'Pressure Test'.",
-      "expected_outcome": "Agent adds all the required quality checkpoints to the plan.",
-      "required_tools": [
-        "add_inspection_point_to_itp"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add inspection points for each stage of fabrication, such as 'Material Receiving Inspection', 'Weld Inspection', and 'Pressure Test'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds all the required quality checkpoints to the plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each point, specify the acceptance criteria, the responsible party (e.g., contractor, third-party inspector), and whether it is a hold point. Submit for approval.",
-      "expected_outcome": "Agent details the requirements for each checkpoint and submits the ITP for review.",
-      "required_tools": [
-        "update_itp",
-        "submit_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each point, specify the acceptance criteria, the responsible party (e.g., contractor, third-party inspector), and whether it is a hold point. Submit for approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent details the requirements for each checkpoint and submits the ITP for review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

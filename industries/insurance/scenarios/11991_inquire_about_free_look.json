@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-la-11991",
-  "title": "Inquire About the Free Look Period",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About the Free Look Period",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who just purchased an annuity wants to know if they can still cancel it without penalty.",
-  "use_case": "Life & Annuities",
-  "core_function": "Annuity Management",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the contract holder and the date the policy was issued.",
-      "expected_outcome": "Agent finds the contract and sees it was issued 15 days ago.",
-      "required_tools": [
-        "get_annuity_contract_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the contract holder and the date the policy was issued.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the contract and sees it was issued 15 days ago."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the 'free look' period and its duration for the customer's state.",
-      "expected_outcome": "Agent explains that the customer is still within their 30-day free look period.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the 'free look' period and its duration for the customer's state.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent explains that the customer is still within their 30-day free look period."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the customer wishes to proceed, process the cancellation and provide a full refund.",
-      "expected_outcome": "Agent processes the cancellation and full refund of premium.",
-      "required_tools": [
-        "cancel_contract_free_look"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the customer wishes to proceed, process the cancellation and provide a full refund.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the cancellation and full refund of premium."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

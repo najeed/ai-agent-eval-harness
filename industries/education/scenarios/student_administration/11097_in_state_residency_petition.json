@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-sa-11097",
-  "title": "Petition for In-State Residency",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Petition for In-State Residency",
+    "compliance_level": "Standard"
+  },
   "description": "A student who was previously classified as out-of-state believes they now qualify for in-state tuition.",
-  "use_case": "Student Administration",
-  "core_function": "Student Records & Transcripts",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and their current residency status.",
-      "expected_outcome": "Agent confirms the student is currently 'Out-of-State'.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and their current residency status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student is currently 'Out-of-State'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the requirements for establishing in-state residency for tuition purposes.",
-      "expected_outcome": "Agent clearly communicates the state's legal requirements (e.g., 12 months of residency, proof of intent).",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the requirements for establishing in-state residency for tuition purposes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the state's legal requirements (e.g., 12 months of residency, proof of intent)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the student with the residency petition form and a list of required supporting documents (e.g., lease, driver's license, tax returns).",
-      "expected_outcome": "Agent provides the student with all necessary forms and information.",
-      "required_tools": [
-        "send_form_to_student"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the student with the residency petition form and a list of required supporting documents (e.g., lease, driver's license, tax returns).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the student with all necessary forms and information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

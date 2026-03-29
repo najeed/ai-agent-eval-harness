@@ -1,50 +1,59 @@
 {
-  "scenario_id": "smartcities-um-13564",
-  "title": "Detect Pedestrian Jaywalking Hotspot",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Detect Pedestrian Jaywalking Hotspot",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst reviews camera footage to identify locations where pedestrians frequently cross the street unsafely, suggesting the need for a new crosswalk.",
-  "use_case": "Urban Mobility & Transport",
-  "core_function": "Traffic Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use camera analytics to scan for 'mid-block crossing' events along a major road over the past month.",
-      "expected_outcome": "The system generates a list of locations with frequent jaywalking events.",
-      "required_tools": [
-        "get_camera_analytics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use camera analytics to scan for 'mid-block crossing' events along a major road over the past month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a list of locations with frequent jaywalking events."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify one specific location with a particularly high number of unsafe crossings.",
-      "expected_outcome": "Agent pinpoints a hotspot for unsafe pedestrian behavior.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify one specific location with a particularly high number of unsafe crossings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pinpoints a hotspot for unsafe pedestrian behavior."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a report for the transportation department recommending a study for a new marked crosswalk at that location.",
-      "expected_outcome": "Agent provides a data-driven recommendation to improve pedestrian safety.",
-      "required_tools": [
-        "generate_safety_recommendation_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a report for the transportation department recommending a study for a new marked crosswalk at that location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a data-driven recommendation to improve pedestrian safety."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

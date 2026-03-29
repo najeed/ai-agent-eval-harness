@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12849",
-  "title": "Manage Drug Serialization Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Drug Serialization Data",
+    "compliance_level": "Standard"
+  },
   "description": "A supply chain analyst must ensure that serialization data for a batch of product is correctly commissioned and sent to downstream partners.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Supply Chain & Traceability",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a file of serialized product identifiers for a newly packaged batch.",
-      "expected_outcome": "Agent successfully ingests the file of unique serial numbers.",
-      "required_tools": [
-        "import_serialization_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_import_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a file of serialized product identifiers for a newly packaged batch.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully ingests the file of unique serial numbers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Commission the serial numbers in the central repository, associating them with the product code and lot number.",
-      "expected_outcome": "Agent successfully updates the status of the serial numbers to 'Commissioned'.",
-      "required_tools": [
-        "commission_serial_numbers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Commission the serial numbers in the central repository, associating them with the product code and lot number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the status of the serial numbers to 'Commissioned'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate an EPCIS (Electronic Product Code Information Services) event to record the shipment of the batch to a wholesale distributor.",
-      "expected_outcome": "Agent creates a valid EPCIS file detailing the shipment.",
-      "required_tools": [
-        "generate_epcis_event"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate an EPCIS (Electronic Product Code Information Services) event to record the shipment of the batch to a wholesale distributor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a valid EPCIS file detailing the shipment."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Transmit the EPCIS file to the trading partner.",
-      "expected_outcome": "Agent successfully sends the file and receives a confirmation of receipt.",
-      "required_tools": [
-        "transmit_epcis_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Transmit the EPCIS file to the trading partner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends the file and receives a confirmation of receipt."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

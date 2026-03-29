@@ -50,11 +50,6 @@ class MyCustomPlugin(BaseEvalPlugin):
 | `on_tool_request` | `context`, `tool_name`, `args` | **Interception Point**. Return `False` to block. |
 | `on_tool_result` | `context`, `tool_name`, `result` | Observe the output of a tool call. |
 | `on_error` | `context`, `exception` | Called on unhandled exceptions. |
-| `on_discover_adapters` | `registry` | Register custom agent protocols (e.g., `grpc://`). |
-| `on_metrics_calculated` | `context`, `results` | Post-metric hook for cross-attempt aggregation. |
-| `after_evaluation` | `context`, `results` | Final hook after evaluation completes. |
-| `on_register_commands` | `registry: CommandRegistry` | Register CLI subcommands under the plugin namespace. |
-| `on_register_simulators`| `registry: dict` | Shim Registration. Add your World Shims to the registry. |
 | `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React navigation links. |
 
 > **⚠️ Security Note:** All plugins must use `on_register_commands` which isolates commands under `multiagent-eval plugin <plugin_name>`.
@@ -217,7 +212,9 @@ my_analysis = "my_package.plugin:MyAnalysisPlugin"
 
 ## Framework Adapters (Advanced)
 
-There is built-in support for extending agent communication protocols without touching the core engine. Using the `on_discover_adapters` hook, a plugin can register custom protocol schemes (e.g., `langgraph://`).
+There is built-in support for extending agent communication protocols without touching the core engine. Using the `on_discover_adapters` hook, a plugin can register custom protocol schemes (e.g., `langgraph://`). 
+
+**Note on Discovery Timing**: Agent adapters and subcommands are discovered dynamically from active plugins. For execution commands (`evaluate`, `run`, `record`, `playground`), the harness triggers the full discovery lifecycle to ensure all custom protocols are available.
 
 Built-in Ecosystem Adapters:
 - **`langgraph://`**: Integration with LangChain's LangGraph.

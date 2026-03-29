@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11879",
-  "title": "Monitoring - Server Room Temperature Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitoring - Server Room Temperature Alert",
+    "compliance_level": "Standard"
+  },
   "description": "An RMM alert indicates the temperature in a client's server room has exceeded the safe threshold.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Monitoring & Alerting",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the critical alert.",
-      "expected_outcome": "A technician takes ownership.",
-      "required_tools": [
-        "acknowledge_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the critical alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A technician takes ownership."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Immediately contact the client's emergency on-site contact to inform them of the issue.",
-      "expected_outcome": "The client is notified of the urgent situation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Immediately contact the client's emergency on-site contact to inform them of the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client is notified of the urgent situation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Ask the on-site contact to check the status of the air conditioning (AC) unit in the server room.",
-      "expected_outcome": "The on-site contact reports the AC unit has failed. The technician advises the client to contact an HVAC repair company and to begin a graceful shutdown of servers if the temperature continues to rise.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Ask the on-site contact to check the status of the air conditioning (AC) unit in the server room.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The on-site contact reports the AC unit has failed. The technician advises the client to contact an HVAC repair company and to begin a graceful shutdown of servers if the temperature continues to rise."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

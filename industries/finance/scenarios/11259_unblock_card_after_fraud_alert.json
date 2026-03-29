@@ -1,85 +1,61 @@
 {
-  "scenario_id": "finance-rb-11259",
-  "title": "Unblock Card After False Fraud Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Unblock Card After False Fraud Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A customer's card was blocked due to a suspected fraudulent transaction which the customer confirms was legitimate.",
-  "use_case": "Retail Banking",
-  "core_function": "Fraud & Security",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the customer and identify the transaction that triggered the fraud alert.",
-      "expected_outcome": "Agent verifies the customer and identifies the $500 online purchase.",
-      "required_tools": [
-        "verify_customer_identity",
-        "get_fraud_alert_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the customer and identify the transaction that triggered the fraud alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the customer and identifies the $500 online purchase."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Confirm with the customer that the transaction was legitimate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer confirms they made the purchase. Agent marks the alert as a false positive."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Confirm with the customer that the transaction was legitimate.",
-      "expected_outcome": "The customer confirms they made the purchase. Agent marks the alert as a false positive.",
-      "required_tools": [
-        "resolve_fraud_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remove the block from the customer's card.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully unblocks the card, making it available for immediate use."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remove the block from the customer's card.",
-      "expected_outcome": "Agent successfully unblocks the card, making it available for immediate use.",
-      "required_tools": [
-        "set_card_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

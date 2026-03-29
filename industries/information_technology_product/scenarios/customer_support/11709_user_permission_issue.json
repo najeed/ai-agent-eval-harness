@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11709",
-  "title": "User Permission Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "User Permission Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports they cannot access a feature they believe they should have access to.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Technical Troubleshooting",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the user and their assigned user role within the system.",
-      "expected_outcome": "Agent finds the user has a 'Standard User' role.",
-      "required_tools": [
-        "get_user_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the user and their assigned user role within the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the user has a 'Standard User' role."
         }
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the permission settings for the 'Standard User' role.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the feature the user wants to access is restricted to the 'Admin User' role."
+        }
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain to the user that they need to contact their account administrator to request a role change.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly explains the permission structure and directs the user to the appropriate internal contact."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the permission settings for the 'Standard User' role.",
-      "expected_outcome": "Agent confirms that the feature the user wants to access is restricted to the 'Admin User' role.",
-      "required_tools": [
-        "get_role_permissions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain to the user that they need to contact their account administrator to request a role change.",
-      "expected_outcome": "Agent correctly explains the permission structure and directs the user to the appropriate internal contact.",
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "required_tools": []
     }
-  ]
+  }
 }

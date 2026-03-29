@@ -1,49 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13374",
-  "title": "Explain Closing Costs to a First-Time Buyer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Explain Closing Costs to a First-Time Buyer",
+    "compliance_level": "Standard"
+  },
   "description": "A first-time home buyer is confused by the list of closing costs on their loan estimate. Their agent must explain the different fees.",
-  "use_case": "Residential Sales",
-  "core_function": "Client Onboarding & Qualification",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the buyer's Loan Estimate document.",
-      "expected_outcome": "Agent is familiar with the specific figures and fees listed.",
-      "required_tools": [
-        "review_loan_estimate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the buyer's Loan Estimate document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is familiar with the specific figures and fees listed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain each major closing cost, such as lender fees, title insurance, appraisal fee, and pre-paid items (taxes, insurance).",
-      "expected_outcome": "Agent provides a clear, line-by-line explanation of the costs.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain each major closing cost, such as lender fees, title insurance, appraisal fee, and pre-paid items (taxes, insurance).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear, line-by-line explanation of the costs."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the buyer to compare the Loan Estimate with the final Closing Disclosure to ensure there are no major changes.",
-      "expected_outcome": "The buyer understands how to review their final closing documents.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "strategic_advice_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the buyer to compare the Loan Estimate with the final Closing Disclosure to ensure there are no major changes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The buyer understands how to review their final closing documents."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

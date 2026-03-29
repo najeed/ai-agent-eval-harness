@@ -1,49 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13592",
-  "title": "Provide Information on Voting Locations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Information on Voting Locations",
+    "compliance_level": "Standard"
+  },
   "description": "On election day, a citizen calls the city's information line to find their assigned polling station.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Public Information & Alerting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ask the citizen for their residential address.",
-      "expected_outcome": "Agent gathers the necessary information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ask the citizen for their residential address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the necessary information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the address to look up the citizen's assigned polling station in the voter registration database.",
-      "expected_outcome": "The system returns the name and address of the correct polling location.",
-      "required_tools": [
-        "lookup_polling_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the address to look up the citizen's assigned polling station in the voter registration database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system returns the name and address of the correct polling location."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the citizen with the polling station's address and hours of operation.",
-      "expected_outcome": "Agent clearly communicates the requested information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the citizen with the polling station's address and hours of operation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the requested information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

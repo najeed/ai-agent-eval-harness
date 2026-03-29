@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-tm-13679",
-  "title": "Track Player Development on Loan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Player Development on Loan",
+    "compliance_level": "Standard"
+  },
   "description": "A young player has been sent on loan to another team to get more playing time. A manager needs to track their progress.",
-  "use_case": "Team & Player Management",
-  "core_function": "Player Performance & Health",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the player's game statistics from their loan club.",
-      "expected_outcome": "Agent gets a report of the player's minutes played, goals, and other key stats.",
-      "required_tools": [
-        "get_loan_player_stats"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the player's game statistics from their loan club.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a report of the player's minutes played, goals, and other key stats."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request and review scouting reports from scouts who have watched the player's games.",
-      "expected_outcome": "Agent reviews reports on the player's development.",
-      "required_tools": [
-        "get_scouting_reports"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request and review scouting reports from scouts who have watched the player's games.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews reports on the player's development."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a summary report on the player's loan spell for the head coach.",
-      "expected_outcome": "Agent creates a report concluding that the loan has been successful for the player's development.",
-      "required_tools": [
-        "generate_loan_player_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a summary report on the player's loan spell for the head coach.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a report concluding that the loan has been successful for the player's development."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

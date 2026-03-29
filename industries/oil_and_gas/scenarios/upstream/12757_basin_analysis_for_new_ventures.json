@@ -1,54 +1,59 @@
 {
-  "scenario_id": "og-up-12757",
-  "title": "Basin Analysis for New Ventures",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Basin Analysis for New Ventures",
+    "compliance_level": "Standard"
+  },
   "description": "A new ventures geologist evaluates a frontier basin to assess its overall hydrocarbon potential before the company considers acquiring exploration acreage.",
-  "use_case": "Upstream",
-  "core_function": "Geoscience & Exploration",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all available public domain data for the basin, including well data, seismic surveys, and geological maps.",
-      "expected_outcome": "A comprehensive dataset for the basin is compiled.",
-      "required_tools": [
-        "search_public_data_portals",
-        "download_geological_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all available public domain data for the basin, including well data, seismic surveys, and geological maps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive dataset for the basin is compiled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Develop a petroleum systems model for the basin, identifying potential source rocks, reservoirs, and traps.",
-      "expected_outcome": "A model illustrating the basin's potential for generating and trapping hydrocarbons is created.",
-      "required_tools": [
-        "create_petroleum_systems_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "geological_interpretation_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Develop a petroleum systems model for the basin, identifying potential source rocks, reservoirs, and traps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A model illustrating the basin's potential for generating and trapping hydrocarbons is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report summarizing the basin's prospectivity and recommend whether to proceed with acreage acquisition.",
-      "expected_outcome": "A summary report with a clear recommendation is produced for management.",
-      "required_tools": [
-        "generate_assessment_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report summarizing the basin's prospectivity and recommend whether to proceed with acreage acquisition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A summary report with a clear recommendation is produced for management."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

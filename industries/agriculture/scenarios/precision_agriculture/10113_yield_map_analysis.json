@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-pa-10113",
-  "title": "Analyze Post-Harvest Yield Map",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Post-Harvest Yield Map",
+    "compliance_level": "Standard"
+  },
   "description": "After harvest, a farmer uploads a yield map from their combine. The agent needs to identify and explain areas of low yield.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Yield Forecasting & Mapping",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process and clean the raw yield map data, removing errors and outliers.",
-      "expected_outcome": "Agent produces a clean, accurate yield map.",
-      "required_tools": [
-        "clean_yield_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_processing_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process and clean the raw yield map data, removing errors and outliers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clean, accurate yield map."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify statistically significant low-yielding zones within the field.",
-      "expected_outcome": "Agent outlines specific polygons on the map indicating problem areas.",
-      "required_tools": [
-        "identify_yield_zones"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify statistically significant low-yielding zones within the field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent outlines specific polygons on the map indicating problem areas."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Correlate the low-yield zones with other data layers like soil type and topography to suggest a probable cause.",
-      "expected_outcome": "Agent determines the low-yield areas correspond with a sandy, low-lying part of the field, suggesting poor drainage was the cause.",
-      "required_tools": [
-        "correlate_farm_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Correlate the low-yield zones with other data layers like soil type and topography to suggest a probable cause.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the low-yield areas correspond with a sandy, low-lying part of the field, suggesting poor drainage was the cause."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

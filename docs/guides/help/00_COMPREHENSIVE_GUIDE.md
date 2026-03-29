@@ -69,8 +69,9 @@ The harness uses a **Zero-Touch Core** design, where all major capabilities are 
 1. **Runner**: Orchestrates high-level loop (e.g., pass@k).
 2. **Session**: Manages multi-turn conversation and context.
 3. **EventEmitter**: Broadcasts state changes through a central bus.
-4. **AgentAdapterRegistry**: Dynamically discovers and registers agent protocols at runtime.
-5. **Plugins**: Standard lifecycle listeners and interceptors.
+4. **Discovery Engine**: Centrally manages dynamic discovery of plugins and adapters via `eval_runner/discovery.py`.
+5. **AgentAdapterRegistry**: Dynamically registers agent protocols at runtime using discovery.
+6. **Plugins**: Standard lifecycle listeners and interceptors, discovered automatically.
 
 ### 3.2 Extensibility
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.

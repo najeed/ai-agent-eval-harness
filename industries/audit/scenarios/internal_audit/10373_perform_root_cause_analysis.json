@@ -1,51 +1,59 @@
 {
-  "scenario_id": "audit-ia-10373",
-  "title": "Perform Root Cause Analysis for a Finding",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Root Cause Analysis for a Finding",
+    "compliance_level": "Standard"
+  },
   "description": "For a significant audit finding, the auditor performs a root cause analysis to understand the underlying cause.",
-  "use_case": "Internal Audit",
-  "core_function": "Workpaper & Finding Documentation",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "State the finding: 'The company paid $50,000 in penalties for late tax filings'.",
-      "expected_outcome": "The problem is clearly defined.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "State the finding: 'The company paid $50,000 in penalties for late tax filings'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The problem is clearly defined."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the '5 Whys' technique to drill down. Why were the filings late? The tax manager was on leave. Why was there no backup? The backup person was not trained. Why were they not trained? It was not in the budget.",
-      "expected_outcome": "The auditor moves beyond the symptom to the underlying cause.",
-      "required_tools": [
-        "perform_5_whys_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the '5 Whys' technique to drill down. Why were the filings late? The tax manager was on leave. Why was there no backup? The backup person was not trained. Why were they not trained? It was not in the budget.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor moves beyond the symptom to the underlying cause."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the root cause as 'Inadequate resource planning and cross-training in the tax department' rather than just 'The manager was on leave'.",
-      "expected_outcome": "The documented cause addresses the systemic issue, leading to a more effective recommendation.",
-      "required_tools": [
-        "draft_finding_component"
-      ],
-      "success_criteria": [
-        {
-          "metric": "strategic_advice_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the root cause as 'Inadequate resource planning and cross-training in the tax department' rather than just 'The manager was on leave'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The documented cause addresses the systemic issue, leading to a more effective recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

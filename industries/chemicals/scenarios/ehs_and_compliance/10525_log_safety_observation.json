@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10525",
-  "title": "Log a Safety Observation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Log a Safety Observation",
+    "compliance_level": "Standard"
+  },
   "description": "An employee observes a colleague wearing incorrect PPE and wants to log it in the safety observation system for trend analysis.",
-  "use_case": "EHS & Compliance",
-  "core_function": "Incident Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open a new safety observation report.",
-      "expected_outcome": "Agent successfully initiates a new report.",
-      "required_tools": [
-        "create_safety_observation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open a new safety observation report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully initiates a new report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the details of the observation: location, date, type of observation (e.g., 'At-Risk Behavior'), and a description of the event.",
-      "expected_outcome": "Agent correctly fills in all required fields for the observation.",
-      "required_tools": [
-        "update_safety_observation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the details of the observation: location, date, type of observation (e.g., 'At-Risk Behavior'), and a description of the event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly fills in all required fields for the observation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the observation. The system should automatically categorize it and add it to the monthly safety metrics dashboard.",
-      "expected_outcome": "Agent submits the report, and it is logged anonymously for trending.",
-      "required_tools": [
-        "submit_safety_observation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the observation. The system should automatically categorize it and add it to the monthly safety metrics dashboard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the report, and it is logged anonymously for trending."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

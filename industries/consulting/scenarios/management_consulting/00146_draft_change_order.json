@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-146",
-  "title": "Draft a Change Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft a Change Order",
+    "compliance_level": "Standard"
+  },
   "description": "The scope of a project has changed. An agent must draft a change order document.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze a description of the requested scope change.",
-      "expected_outcome": "Agent correctly understands the new requirements.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze a description of the requested scope change.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly understands the new requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Describe the impact of the change on the project timeline and budget.",
-      "expected_outcome": "Agent provides a reasonable estimate of the impact (e.g., '2-week timeline extension', '$10,000 budget increase').",
-      "required_tools": [
-        "estimate_project_impact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-2",
+        "task_description": "Describe the impact of the change on the project timeline and budget.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a reasonable estimate of the impact (e.g., '2-week timeline extension', '$10,000 budget increase')."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Populate a standard change order template with the scope change description and its impact.",
-      "expected_outcome": "Agent generates a formal change order document ready for client review.",
-      "required_tools": [
-        "populate_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Populate a standard change order template with the scope change description and its impact.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a formal change order document ready for client review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

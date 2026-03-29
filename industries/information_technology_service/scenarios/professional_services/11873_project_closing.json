@@ -1,64 +1,72 @@
 {
-  "scenario_id": "information_technology_service-ps-11873",
-  "title": "Project Management - Project Closing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Management - Project Closing",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager is formally closing out a completed project.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Project Execution & Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ensure all project deliverables have been completed and signed off on by the client.",
-      "expected_outcome": "The PM confirms all SOW items are complete.",
-      "required_tools": [
-        "get_project_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ensure all project deliverables have been completed and signed off on by the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PM confirms all SOW items are complete."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ensure all project time and expenses have been logged and the final invoice has been sent.",
-      "expected_outcome": "The PM confirms the project is financially closed.",
-      "required_tools": [
-        "get_project_financials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ensure all project time and expenses have been logged and the final invoice has been sent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PM confirms the project is financially closed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Conduct an internal project post-mortem with the technical team to discuss lessons learned.",
-      "expected_outcome": "The team reflects on the project to improve future work.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Conduct an internal project post-mortem with the technical team to discuss lessons learned.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team reflects on the project to improve future work."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Archive the project in the PSA tool.",
-      "expected_outcome": "The project is formally closed in the system.",
-      "required_tools": [
-        "archive_project"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Archive the project in the PSA tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project is formally closed in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

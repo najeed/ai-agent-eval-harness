@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12698",
-  "title": "Create Well Drilling Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Well Drilling Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A drilling engineer designs a well plan for a new offshore exploration well, including casing design and trajectory.",
-  "use_case": "Upstream",
-  "core_function": "Drilling & Completions",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Using offset well data, determine the required casing points and design the casing strings.",
-      "expected_outcome": "A safe and compliant casing design is generated.",
-      "required_tools": [
-        "get_offset_well_data",
-        "design_casing_program"
-      ],
-      "success_criteria": [
-        {
-          "metric": "engineering_design_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Using offset well data, determine the required casing points and design the casing strings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A safe and compliant casing design is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Plan the optimal well trajectory to intersect multiple reservoir targets while avoiding hazards.",
-      "expected_outcome": "An efficient and safe well path is designed.",
-      "required_tools": [
-        "plan_well_trajectory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "trajectory_optimization_effectiveness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Plan the optimal well trajectory to intersect multiple reservoir targets while avoiding hazards.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An efficient and safe well path is designed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the final drilling program document, including all operational steps and risk assessments.",
-      "expected_outcome": "A complete and approved drilling program is ready for operations.",
-      "required_tools": [
-        "generate_drilling_program"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the final drilling program document, including all operational steps and risk assessments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete and approved drilling program is ready for operations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

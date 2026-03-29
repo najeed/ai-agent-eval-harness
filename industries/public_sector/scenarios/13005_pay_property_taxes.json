@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-pa-13005",
-  "title": "Pay Property Taxes Online",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Pay Property Taxes Online",
+    "compliance_level": "Standard"
+  },
   "description": "A homeowner wants to pay their semi-annual property tax bill online.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Taxation & Revenue",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the property using the parcel number or address.",
-      "expected_outcome": "Agent successfully locates the property and the outstanding tax bill.",
-      "required_tools": [
-        "get_property_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the property using the parcel number or address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully locates the property and the outstanding tax bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Securely process the payment via credit card or e-check.",
-      "expected_outcome": "Agent successfully processes the payment.",
-      "required_tools": [
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Securely process the payment via credit card or e-check.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the payment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the homeowner with a receipt and confirmation of payment.",
-      "expected_outcome": "Agent provides a digital receipt.",
-      "required_tools": [
-        "generate_payment_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the homeowner with a receipt and confirmation of payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a digital receipt."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-res-13216",
-  "title": "Review Closing Settlement Statement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Closing Settlement Statement",
+    "compliance_level": "Standard"
+  },
   "description": "Prior to closing, the agent must review the settlement statement (Closing Disclosure or HUD-1) for accuracy.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Post-Sale",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the draft settlement statement from the escrow or title company.",
-      "expected_outcome": "Agent successfully retrieves the document.",
-      "required_tools": [
-        "get_transaction_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the draft settlement statement from the escrow or title company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the document."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify key financial figures: sales price, commission amount, seller concessions, and prorated taxes.",
-      "expected_outcome": "Agent cross-references the statement with the purchase agreement and identifies all figures are correct.",
-      "required_tools": [
-        "compare_document_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify key financial figures: sales price, commission amount, seller concessions, and prorated taxes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent cross-references the statement with the purchase agreement and identifies all figures are correct."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Approve the statement or send a list of required corrections back to the escrow officer.",
-      "expected_outcome": "Agent confirms the statement is accurate and notifies escrow to proceed.",
-      "required_tools": [
-        "send_email_to_escrow"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Approve the statement or send a list of required corrections back to the escrow officer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the statement is accurate and notifies escrow to proceed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

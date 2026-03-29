@@ -1,66 +1,72 @@
 {
-  "scenario_id": "venues-vo-14278",
-  "title": "Manage a Broken Escalator",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Broken Escalator",
+    "compliance_level": "Standard"
+  },
   "description": "An escalator suddenly stops working during a busy ingress period.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Housekeeping & Maintenance",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an alert that the escalator has malfunctioned.",
-      "expected_outcome": "Agent acknowledges the system alert.",
-      "required_tools": [
-        "get_system_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an alert that the escalator has malfunctioned.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the system alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch a maintenance technician to investigate the escalator.",
-      "expected_outcome": "Agent sends an elevator/escalator technician to the location.",
-      "required_tools": [
-        "dispatch_technician"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch a maintenance technician to investigate the escalator.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends an elevator/escalator technician to the location."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch staff to the top and bottom of the escalator to direct guests to the nearest stairs or elevators.",
-      "expected_outcome": "Agent sends staff to manage crowd flow around the hazard.",
-      "required_tools": [
-        "dispatch_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch staff to the top and bottom of the escalator to direct guests to the nearest stairs or elevators.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends staff to manage crowd flow around the hazard."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the venue's digital signage to indicate the escalator is out of service.",
-      "expected_outcome": "Agent posts a notice on nearby digital signs.",
-      "required_tools": [
-        "update_digital_signage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the venue's digital signage to indicate the escalator is out of service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent posts a notice on nearby digital signs."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

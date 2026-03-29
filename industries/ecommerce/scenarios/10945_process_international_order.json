@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10945",
-  "title": "Process an International Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an International Order",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to process an order being shipped internationally, which requires customs documentation.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Shipping & Logistics",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a new order with an international shipping address.",
-      "expected_outcome": "System identifies the order as international.",
-      "required_tools": [
-        "get_new_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a new order with an international shipping address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System identifies the order as international."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate international shipping costs and any applicable duties or taxes.",
-      "expected_outcome": "System correctly calculates the total cost for the customer.",
-      "required_tools": [
-        "calculate_international_shipping",
-        "calculate_duties_and_taxes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate international shipping costs and any applicable duties or taxes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System correctly calculates the total cost for the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the necessary customs declaration forms (e.g., CN22) with product information and value.",
-      "expected_outcome": "Agent successfully generates the required customs paperwork.",
-      "required_tools": [
-        "generate_customs_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the necessary customs declaration forms (e.g., CN22) with product information and value.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the required customs paperwork."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

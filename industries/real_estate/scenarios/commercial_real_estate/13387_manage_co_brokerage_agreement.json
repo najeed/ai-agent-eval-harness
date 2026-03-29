@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13387",
-  "title": "Manage a Co-Brokerage Agreement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Co-Brokerage Agreement",
+    "compliance_level": "Standard"
+  },
   "description": "Two brokers from different firms are working together on a large transaction and need to formalize their commission split.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment Sales",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Draft a co-brokerage agreement that clearly defines each broker's roles, responsibilities, and the agreed-upon commission split.",
-      "expected_outcome": "A clear and comprehensive agreement is drafted.",
-      "required_tools": [
-        "generate_co_brokerage_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Draft a co-brokerage agreement that clearly defines each broker's roles, responsibilities, and the agreed-upon commission split.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear and comprehensive agreement is drafted."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the agreement to the other broker for review and signature.",
-      "expected_outcome": "The agreement is sent for execution.",
-      "required_tools": [
-        "send_document_for_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the agreement to the other broker for review and signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agreement is sent for execution."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the transaction closes, ensure the title company is aware of the agreement and disburses the commission checks correctly to each brokerage.",
-      "expected_outcome": "The commission is paid out correctly according to the agreement.",
-      "required_tools": [
-        "contact_title_company"
-      ],
-      "success_criteria": [
-        {
-          "metric": "coordination_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the transaction closes, ensure the title company is aware of the agreement and disburses the commission checks correctly to each brokerage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The commission is paid out correctly according to the agreement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

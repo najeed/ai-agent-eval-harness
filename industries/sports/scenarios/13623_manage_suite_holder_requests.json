@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-vo-13623",
-  "title": "Manage VIP Suite Holder Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage VIP Suite Holder Request",
+    "compliance_level": "Standard"
+  },
   "description": "During a game, a VIP suite holder requests extra chairs for their suite.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Hospitality & VIP Services",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the request from the suite holder via the venue's mobile app.",
-      "expected_outcome": "Agent gets the request, including the suite number and number of chairs needed.",
-      "required_tools": [
-        "get_vip_service_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the request from the suite holder via the venue's mobile app.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the request, including the suite number and number of chairs needed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the inventory of available chairs.",
-      "expected_outcome": "Agent confirms there are enough chairs in storage.",
-      "required_tools": [
-        "check_furniture_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the inventory of available chairs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there are enough chairs in storage."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a member of the event staff to deliver the chairs to the suite.",
-      "expected_outcome": "Agent creates a task for the event staff and dispatches it to the nearest staff member.",
-      "required_tools": [
-        "dispatch_event_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a member of the event staff to deliver the chairs to the suite.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a task for the event staff and dispatches it to the nearest staff member."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

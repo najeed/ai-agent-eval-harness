@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-rb-11235",
-  "title": "Customer Reports Phishing Email",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Reports Phishing Email",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports receiving a suspicious email that claims to be from the bank.",
-  "use_case": "Retail Banking",
-  "core_function": "Fraud & Security",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Instruct the customer not to click any links and to forward the email to the bank's abuse department.",
-      "expected_outcome": "Agent provides clear, safe instructions to the customer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Instruct the customer not to click any links and to forward the email to the bank's abuse department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear, safe instructions to the customer."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask the customer if they entered any personal information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Customer confirms they did not enter any information. Agent documents this."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask the customer if they entered any personal information.",
-      "expected_outcome": "Customer confirms they did not enter any information. Agent documents this.",
-      "required_tools": [
-        "log_security_incident"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend the customer monitor their account for any unusual activity as a precaution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a sensible security recommendation."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend the customer monitor their account for any unusual activity as a precaution.",
-      "expected_outcome": "Agent provides a sensible security recommendation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

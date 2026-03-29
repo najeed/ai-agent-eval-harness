@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-cf-11233",
-  "title": "Consolidate Financial Statements",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Consolidate Financial Statements",
+    "compliance_level": "Standard"
+  },
   "description": "An accountant needs to consolidate the financial statements of a parent company and its three subsidiaries.",
-  "use_case": "Corporate Finance",
-  "core_function": "Audit & Reporting",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the individual financial statements for the parent company and all subsidiaries.",
-      "expected_outcome": "Agent successfully gathers all four sets of financial statements.",
-      "required_tools": [
-        "get_financial_statements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the individual financial statements for the parent company and all subsidiaries.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully gathers all four sets of financial statements."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify and process all intercompany transactions that need to be eliminated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies and lists all intercompany loans and sales."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify and process all intercompany transactions that need to be eliminated.",
-      "expected_outcome": "Agent correctly identifies and lists all intercompany loans and sales.",
-      "required_tools": [
-        "identify_intercompany_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the consolidated balance sheet and income statement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces the final consolidated financial reports."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the consolidated balance sheet and income statement.",
-      "expected_outcome": "Agent produces the final consolidated financial reports.",
-      "required_tools": [
-        "generate_consolidated_statements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ag-fo-10146",
-  "title": "Ensure Water Rights Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Ensure Water Rights Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer in a regulated water basin needs to track their water usage to ensure they do not exceed their annual allocation.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Financial Management & Compliance",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the farm's annual water allocation from the regional water board database.",
-      "expected_outcome": "Agent finds the farm has an allocation of 500 acre-feet.",
-      "required_tools": [
-        "get_water_allocation_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the farm's annual water allocation from the regional water board database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the farm has an allocation of 500 acre-feet."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the cumulative water usage for the farm for the current year from flow meters.",
-      "expected_outcome": "Agent finds the farm has used 450 acre-feet to date.",
-      "required_tools": [
-        "get_water_usage_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the cumulative water usage for the farm for the current year from flow meters.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the farm has used 450 acre-feet to date."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the remaining water allocation and send a notification to the farmer.",
-      "expected_outcome": "Agent notifies the farmer that they have 50 acre-feet of water remaining for the year.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the remaining water allocation and send a notification to the farmer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent notifies the farmer that they have 50 acre-feet of water remaining for the year."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

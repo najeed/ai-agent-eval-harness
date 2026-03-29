@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hosp-bo-11535",
-  "title": "Onboard a New Vendor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Onboard a New Vendor",
+    "compliance_level": "Standard"
+  },
   "description": "The hotel is switching to a new local bakery for its morning pastries and needs to set them up as a vendor.",
-  "use_case": "Back Office & Administration",
-  "core_function": "Supplier & Vendor Management",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Collect the new vendor's information, including their business license and payment details.",
-      "expected_outcome": "All required vendor documentation is collected.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Collect the new vendor's information, including their business license and payment details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All required vendor documentation is collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new vendor profile in the accounting system.",
-      "expected_outcome": "The new vendor is successfully added to the system.",
-      "required_tools": [
-        "acct_create_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new vendor profile in the accounting system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new vendor is successfully added to the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set up a recurring purchase order for daily pastry delivery.",
-      "expected_outcome": "A recurring PO is created to automate future ordering.",
-      "required_tools": [
-        "proc_create_purchase_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set up a recurring purchase order for daily pastry delivery.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A recurring PO is created to automate future ordering."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

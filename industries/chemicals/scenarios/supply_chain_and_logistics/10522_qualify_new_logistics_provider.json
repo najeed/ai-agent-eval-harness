@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-scl-10522",
-  "title": "Qualify New Logistics Provider",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Qualify New Logistics Provider",
+    "compliance_level": "Standard"
+  },
   "description": "A logistics manager needs to add a new freight carrier to the system, including their certifications for handling hazardous materials.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Logistics & Distribution",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new vendor profile for the logistics provider.",
-      "expected_outcome": "Agent successfully creates the new vendor record with their address and contact information.",
-      "required_tools": [
-        "create_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new vendor profile for the logistics provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the new vendor record with their address and contact information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Upload the carrier's insurance certificate and their DOT hazardous material transportation license.",
-      "expected_outcome": "Agent attaches the required compliance documents to the vendor profile.",
-      "required_tools": [
-        "upload_vendor_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Upload the carrier's insurance certificate and their DOT hazardous material transportation license.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent attaches the required compliance documents to the vendor profile."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Activate the vendor in the system, making them available for selection on future shipments.",
-      "expected_outcome": "Agent changes the vendor status to 'Approved'.",
-      "required_tools": [
-        "update_vendor_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Activate the vendor in the system, making them available for selection on future shipments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent changes the vendor status to 'Approved'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-pa-13041",
-  "title": "Request a Copy of a Previous Tax Return",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request a Copy of a Previous Tax Return",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen needs a copy of their state income tax return from two years ago.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Taxation & Revenue",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify and authenticate the citizen.",
-      "expected_outcome": "Agent securely verifies the citizen's identity.",
-      "required_tools": [
-        "verify_citizen_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify and authenticate the citizen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely verifies the citizen's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Locate the requested tax return in the archive.",
-      "expected_outcome": "Agent successfully finds the tax return from the specified year.",
-      "required_tools": [
-        "get_tax_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Locate the requested tax return in the archive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully finds the tax return from the specified year."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a digital copy of the tax return to the citizen through a secure portal.",
-      "expected_outcome": "Agent makes the document available for the citizen to download securely.",
-      "required_tools": [
-        "send_secure_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a digital copy of the tax return to the citizen through a secure portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes the document available for the citizen to download securely."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

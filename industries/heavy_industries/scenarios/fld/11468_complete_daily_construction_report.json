@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11468",
-  "title": "Complete Daily Construction Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Complete Daily Construction Report",
+    "compliance_level": "Standard"
+  },
   "description": "At the end of the day, a field engineer needs to complete the daily report, summarizing work completed, resources used, and any issues.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Site Management & Logistics",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open a new daily report for the current date.",
-      "expected_outcome": "Agent initiates a new report.",
-      "required_tools": [
-        "create_daily_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open a new daily report for the current date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates a new report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the number of personnel from each contractor that were on site.",
-      "expected_outcome": "Agent correctly logs the manpower for the day.",
-      "required_tools": [
-        "update_daily_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the number of personnel from each contractor that were on site.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly logs the manpower for the day."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Describe the main construction activities completed and note any delays or safety incidents, then submit the report.",
-      "expected_outcome": "Agent provides a summary of the day's work and submits the report to the project manager.",
-      "required_tools": [
-        "update_daily_report",
-        "submit_daily_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Describe the main construction activities completed and note any delays or safety incidents, then submit the report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a summary of the day's work and submits the report to the project manager."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-co-11078",
-  "title": "Review Security Camera Footage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Security Camera Footage",
+    "compliance_level": "Standard"
+  },
   "description": "Campus safety needs to review security camera footage following a report of a bicycle theft.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Campus Safety & Security",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the location and time frame of the reported theft.",
-      "expected_outcome": "Agent confirms the incident occurred near the library between 2 PM and 4 PM.",
-      "required_tools": [
-        "get_security_incident_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the location and time frame of the reported theft.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the incident occurred near the library between 2 PM and 4 PM."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the video management system and retrieve footage from the relevant cameras and time frame.",
-      "expected_outcome": "Agent successfully pulls the requested video clips.",
-      "required_tools": [
-        "retrieve_camera_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the video management system and retrieve footage from the relevant cameras and time frame.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pulls the requested video clips."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Securely save the relevant footage as evidence and attach it to the incident report.",
-      "expected_outcome": "Agent archives the video evidence in accordance with policy.",
-      "required_tools": [
-        "save_evidence_to_incident_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Securely save the relevant footage as evidence and attach it to the incident report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent archives the video evidence in accordance with policy."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

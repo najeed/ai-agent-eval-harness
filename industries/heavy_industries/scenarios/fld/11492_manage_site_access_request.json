@@ -1,51 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11492",
-  "title": "Manage Site Access Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Site Access Request",
+    "compliance_level": "Standard"
+  },
   "description": "A new subcontractor employee needs to be granted access to the construction site.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Site Management & Logistics",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the site access request form from the subcontractor.",
-      "expected_outcome": "The site administrator has the new employee's details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the site access request form from the subcontractor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The site administrator has the new employee's details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the new employee has completed the mandatory site safety orientation.",
-      "expected_outcome": "Agent checks the training records and confirms the orientation is complete.",
-      "required_tools": [
-        "check_training_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the new employee has completed the mandatory site safety orientation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the training records and confirms the orientation is complete."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new profile for the employee in the site access control system and issue them an access badge.",
-      "expected_outcome": "Agent creates the profile and activates a new badge, allowing the employee to enter the site.",
-      "required_tools": [
-        "create_personnel_profile",
-        "issue_access_badge"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new profile for the employee in the site access control system and issue them an access badge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the profile and activates a new badge, allowing the employee to enter the site."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

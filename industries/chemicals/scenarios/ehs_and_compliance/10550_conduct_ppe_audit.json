@@ -1,53 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10550",
-  "title": "Conduct PPE Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct PPE Audit",
+    "compliance_level": "Standard"
+  },
   "description": "An EHS specialist is conducting a planned audit of a production area to ensure all employees are using the correct Personal Protective Equipment (PPE).",
-  "use_case": "EHS & Compliance",
-  "core_function": "Regulatory Compliance",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the PPE requirements for the specified production area.",
-      "expected_outcome": "Agent finds the requirements are: hard hat, safety glasses, steel-toed boots, and chemical-resistant gloves.",
-      "required_tools": [
-        "get_ppe_requirements_for_area"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the PPE requirements for the specified production area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the requirements are: hard hat, safety glasses, steel-toed boots, and chemical-resistant gloves."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Observe employees in the area and note any non-compliance on an audit form.",
-      "expected_outcome": "Agent observes 10 employees and notes one is not wearing safety glasses.",
-      "required_tools": [
-        "create_audit_finding"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Observe employees in the area and note any non-compliance on an audit form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent observes 10 employees and notes one is not wearing safety glasses."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Finalize the audit report and assign a corrective action to the area supervisor to address the finding.",
-      "expected_outcome": "Agent generates the final audit report and creates a CAPA for the supervisor.",
-      "required_tools": [
-        "finalize_audit_report",
-        "create_capa"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Finalize the audit report and assign a corrective action to the area supervisor to address the finding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates the final audit report and creates a CAPA for the supervisor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,64 +1,72 @@
 {
-  "scenario_id": "tr-to-14086",
-  "title": "Process a Fuel Purchase",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Fuel Purchase",
+    "compliance_level": "Standard"
+  },
   "description": "A driver uses a company fuel card to buy fuel. The transaction must be logged and associated with their truck.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Billing & Settlements",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system receives a transaction feed from the fuel card provider.",
-      "expected_outcome": "A new fuel purchase transaction is received.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system receives a transaction feed from the fuel card provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new fuel purchase transaction is received."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system uses the card number to identify the driver and their assigned truck.",
-      "expected_outcome": "The transaction is linked to the correct driver and vehicle.",
-      "required_tools": [
-        "get_driver_by_fuel_card"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system uses the card number to identify the driver and their assigned truck.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The transaction is linked to the correct driver and vehicle."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system prompts the driver to enter their current odometer reading.",
-      "expected_outcome": "The odometer reading is captured to calculate fuel economy.",
-      "required_tools": [
-        "prompt_driver_for_odometer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system prompts the driver to enter their current odometer reading.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The odometer reading is captured to calculate fuel economy."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The fuel purchase (gallons, cost, location) is logged in the system for IFTA and fuel economy reporting.",
-      "expected_outcome": "The transaction is successfully logged.",
-      "required_tools": [
-        "log_fuel_purchase"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The fuel purchase (gallons, cost, location) is logged in the system for IFTA and fuel economy reporting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The transaction is successfully logged."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

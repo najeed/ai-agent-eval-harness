@@ -1,50 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13187",
-  "title": "Handle a Reasonable Accommodation Request for a Service Animal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Reasonable Accommodation Request for a Service Animal",
+    "compliance_level": "Standard"
+  },
   "description": "A new applicant for a 'no pets' building states they have a service animal. The PM must handle the request correctly under the Fair Housing Act.",
-  "use_case": "Property Management",
-  "core_function": "Compliance & Legal",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the request and understand that service animals are not pets and 'no pets' policies do not apply.",
-      "expected_outcome": "Agent correctly identifies this as a fair housing accommodation issue, not a pet policy issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "knowledge_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the request and understand that service animals are not pets and 'no pets' policies do not apply.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies this as a fair housing accommodation issue, not a pet policy issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "If the disability is not obvious, request reliable documentation that the animal performs a necessary service related to a disability.",
-      "expected_outcome": "Agent sends a formal, legally compliant request for verification of the animal's status.",
-      "required_tools": [
-        "request_accommodation_verification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "If the disability is not obvious, request reliable documentation that the animal performs a necessary service related to a disability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a formal, legally compliant request for verification of the animal's status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upon receiving valid documentation, approve the accommodation and proceed with the application process.",
-      "expected_outcome": "The accommodation is approved, and the applicant is not charged any pet fees or deposits.",
-      "required_tools": [
-        "update_application_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upon receiving valid documentation, approve the accommodation and proceed with the application process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The accommodation is approved, and the applicant is not charged any pet fees or deposits."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

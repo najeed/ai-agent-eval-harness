@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12406",
-  "title": "Create a Weekly Email Newsletter",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Weekly Email Newsletter",
+    "compliance_level": "Standard"
+  },
   "description": "An email marketer needs to assemble and write the content for the weekly newsletter.",
-  "use_case": "Content & Creative Development",
-  "core_function": "Copywriting & Content Creation",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the top 3 blog posts from the past week to feature in the newsletter.",
-      "expected_outcome": "Agent identifies the most popular recent content.",
-      "required_tools": [
-        "get_blog_performance_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the top 3 blog posts from the past week to feature in the newsletter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the most popular recent content."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write a short, engaging introduction for the newsletter.",
-      "expected_outcome": "Agent writes a compelling opening paragraph.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "copywriting_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write a short, engaging introduction for the newsletter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a compelling opening paragraph."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assemble the newsletter in the email marketing platform, including the intro, links to the blog posts, and a featured product.",
-      "expected_outcome": "Agent builds the complete newsletter in the email tool, ready for sending.",
-      "required_tools": [
-        "email_marketing_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assemble the newsletter in the email marketing platform, including the intro, links to the blog posts, and a featured product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent builds the complete newsletter in the email tool, ready for sending."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

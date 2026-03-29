@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-mr-12374",
-  "title": "Re-open a Maintenance Ticket",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Re-open a Maintenance Ticket",
+    "compliance_level": "Standard"
+  },
   "description": "A repair that was marked as 'complete' yesterday has failed again. The operator needs to re-open the original ticket.",
-  "use_case": "Maintenance & Repair",
-  "core_function": "Corrective Maintenance & Repair",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the recently closed maintenance ticket for the asset.",
-      "expected_outcome": "Agent locates the work order that was closed yesterday.",
-      "required_tools": [
-        "get_asset_maintenance_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the recently closed maintenance ticket for the asset.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the work order that was closed yesterday."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Change the status of the ticket from 'Closed' back to 'Open' or 'Re-opened'.",
-      "expected_outcome": "Agent successfully re-opens the ticket.",
-      "required_tools": [
-        "update_maintenance_ticket_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Change the status of the ticket from 'Closed' back to 'Open' or 'Re-opened'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully re-opens the ticket."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add a new log entry explaining that the issue has recurred and re-assign it to the maintenance team.",
-      "expected_outcome": "Agent adds notes and the ticket appears back in the maintenance queue with a high priority.",
-      "required_tools": [
-        "update_maintenance_log",
-        "assign_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add a new log entry explaining that the issue has recurred and re-assign it to the maintenance team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds notes and the ticket appears back in the maintenance queue with a high priority."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

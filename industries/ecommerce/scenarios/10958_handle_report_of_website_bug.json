@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10958",
-  "title": "Handle Report of a Website Bug",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Report of a Website Bug",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports that the 'Add to Cart' button is not working on a specific product page.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Issue Resolution",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Thank the customer for the report and gather details (product, browser, device).",
-      "expected_outcome": "Agent collects all necessary information to reproduce the bug.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Thank the customer for the report and gather details (product, browser, device).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary information to reproduce the bug."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to reproduce the error based on the customer's description.",
-      "expected_outcome": "Agent confirms that the button is unresponsive on the specified page.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to reproduce the error based on the customer's description.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the button is unresponsive on the specified page."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-priority ticket for the web development team, including all details and steps to reproduce.",
-      "expected_outcome": "Agent creates a clear and actionable bug report.",
-      "required_tools": [
-        "create_bug_report_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-priority ticket for the web development team, including all details and steps to reproduce.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a clear and actionable bug report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

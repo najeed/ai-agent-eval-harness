@@ -1,53 +1,59 @@
 {
-  "scenario_id": "wholesale-sp-14372",
-  "title": "Handle a Supplier Bankruptcy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Supplier Bankruptcy",
+    "compliance_level": "Standard"
+  },
   "description": "A key supplier suddenly declares bankruptcy, creating a major supply chain risk.",
-  "use_case": "Supplier & Procurement Management",
-  "core_function": "Supplier Relationship Management",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the news of the supplier's bankruptcy.",
-      "expected_outcome": "The procurement team is alerted to the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the news of the supplier's bankruptcy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The procurement team is alerted to the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Immediately identify all products sourced from that supplier and their current inventory levels.",
-      "expected_outcome": "Agent generates a list of at-risk products.",
-      "required_tools": [
-        "get_products_by_supplier",
-        "check_inventory_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Immediately identify all products sourced from that supplier and their current inventory levels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of at-risk products."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Begin an emergency sourcing process to find alternative suppliers for the at-risk products.",
-      "expected_outcome": "Agent starts searching for and contacting potential new suppliers.",
-      "required_tools": [
-        "search_supplier_database",
-        "request_supplier_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Begin an emergency sourcing process to find alternative suppliers for the at-risk products.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent starts searching for and contacting potential new suppliers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

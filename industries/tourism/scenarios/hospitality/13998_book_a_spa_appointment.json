@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13998",
-  "title": "Book a Spa Appointment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book a Spa Appointment",
+    "compliance_level": "Standard"
+  },
   "description": "A hotel guest wants to book a 60-minute deep tissue massage at the hotel spa.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Guest Services & In-Stay Support",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the spa's availability for a 60-minute deep tissue massage.",
-      "expected_outcome": "Agent finds an open appointment slot for the desired time.",
-      "required_tools": [
-        "check_spa_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the spa's availability for a 60-minute deep tissue massage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an open appointment slot for the desired time."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Book the appointment under the guest's name and room number.",
-      "expected_outcome": "Agent successfully reserves the spa appointment.",
-      "required_tools": [
-        "book_spa_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Book the appointment under the guest's name and room number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reserves the spa appointment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the appointment details with the guest and inform them the charge will be posted to their room folio.",
-      "expected_outcome": "Agent provides a clear confirmation of the booking.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the appointment details with the guest and inform them the charge will be posted to their room folio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear confirmation of the booking."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

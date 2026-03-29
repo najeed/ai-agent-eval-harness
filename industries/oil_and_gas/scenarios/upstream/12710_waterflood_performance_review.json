@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12710",
-  "title": "Waterflood Performance Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Waterflood Performance Review",
+    "compliance_level": "Standard"
+  },
   "description": "A reservoir engineer reviews the performance of a waterflood project to ensure it is improving oil recovery as expected.",
-  "use_case": "Upstream",
-  "core_function": "Production Operations",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a Hall Plot for a specific injection well to assess its performance.",
-      "expected_outcome": "A Hall Plot is correctly generated, showing a potential plugging issue.",
-      "required_tools": [
-        "generate_hall_plot"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_visualization_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a Hall Plot for a specific injection well to assess its performance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A Hall Plot is correctly generated, showing a potential plugging issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the production response of offset producing wells to the water injection.",
-      "expected_outcome": "The analysis shows a delayed and weaker than expected production response.",
-      "required_tools": [
-        "get_production_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the production response of offset producing wells to the water injection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis shows a delayed and weaker than expected production response."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend a workover on the injection well to acidize the formation and improve injectivity.",
-      "expected_outcome": "A workover recommendation with a clear justification is created.",
-      "required_tools": [
-        "create_workover_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend a workover on the injection well to acidize the formation and improve injectivity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A workover recommendation with a clear justification is created."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

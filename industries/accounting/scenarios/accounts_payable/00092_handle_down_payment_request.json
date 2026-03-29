@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-ap-92",
-  "title": "Process a Vendor Down Payment Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Vendor Down Payment Request",
+    "compliance_level": "Standard"
+  },
   "description": "A vendor requires a 20% down payment before they will begin work on a large custom order.",
-  "use_case": "Accounts Payable",
-  "core_function": "Payment Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the down payment request from the vendor, referencing the purchase order.",
-      "expected_outcome": "Agent receives the request.",
-      "required_tools": [
-        "get_vendor_down_payment_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the down payment request from the vendor, referencing the purchase order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a down payment request in the ERP system linked to the purchase order.",
-      "expected_outcome": "Agent successfully creates the special transaction.",
-      "required_tools": [
-        "create_down_payment_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a down payment request in the ERP system linked to the purchase order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the special transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the payment for the down payment request.",
-      "expected_outcome": "Agent issues the 20% down payment to the vendor.",
-      "required_tools": [
-        "execute_payment_run"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the payment for the down payment request.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent issues the 20% down payment to the vendor."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Ensure the down payment is recorded as a prepaid asset on the balance sheet, to be cleared against the final invoice.",
-      "expected_outcome": "Agent verifies the down payment is correctly posted to 'Prepaid Expenses' or a similar account.",
-      "required_tools": [
-        "get_gl_account_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Ensure the down payment is recorded as a prepaid asset on the balance sheet, to be cleared against the final invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the down payment is correctly posted to 'Prepaid Expenses' or a similar account."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

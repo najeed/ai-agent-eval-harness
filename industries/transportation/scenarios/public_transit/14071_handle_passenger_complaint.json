@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-pt-14071",
-  "title": "Handle a Passenger Complaint",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Passenger Complaint",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger submits a complaint about a bus driver's unprofessional behavior. A customer service manager must investigate.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Real-time Operations & Control",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the complaint, noting the route, vehicle number, date, and time.",
-      "expected_outcome": "The complaint details are logged.",
-      "required_tools": [
-        "log_customer_complaint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the complaint, noting the route, vehicle number, date, and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The complaint details are logged."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the driver who was operating that specific bus at that time.",
-      "expected_outcome": "The system correctly identifies the driver on duty.",
-      "required_tools": [
-        "get_driver_assignment_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the driver who was operating that specific bus at that time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system correctly identifies the driver on duty."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the on-board video footage from the bus for the time of the incident.",
-      "expected_outcome": "The manager reviews the video to see the interaction.",
-      "required_tools": [
-        "get_onboard_video_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the on-board video footage from the bus for the time of the incident.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager reviews the video to see the interaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Based on the findings, schedule a meeting with the driver to discuss the incident and any necessary disciplinary action.",
-      "expected_outcome": "The complaint is investigated, and appropriate follow-up action is taken.",
-      "required_tools": [
-        "schedule_employee_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Based on the findings, schedule a meeting with the driver to discuss the incident and any necessary disciplinary action.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The complaint is investigated, and appropriate follow-up action is taken."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

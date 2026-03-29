@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-it-10358",
-  "title": "Review Mobile Device Management (MDM) Policy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Mobile Device Management (MDM) Policy",
+    "compliance_level": "Standard"
+  },
   "description": "An IT auditor reviews the controls over mobile devices that connect to the corporate network.",
-  "use_case": "IT Audit",
-  "core_function": "Cybersecurity & Privacy Audit",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the MDM policy to ensure it requires all mobile devices to have a passcode and be encrypted.",
-      "expected_outcome": "Auditor confirms the policy has the required security settings.",
-      "required_tools": [
-        "review_policy_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the MDM policy to ensure it requires all mobile devices to have a passcode and be encrypted.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor confirms the policy has the required security settings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Obtain a report from the MDM system to verify that all enrolled devices are compliant with the policy.",
-      "expected_outcome": "The report shows 10 devices that are not encrypted.",
-      "required_tools": [
-        "get_mdm_compliance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Obtain a report from the MDM system to verify that all enrolled devices are compliant with the policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report shows 10 devices that are not encrypted."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that the MDM system has the capability to remotely wipe a device if it is lost or stolen.",
-      "expected_outcome": "Auditor confirms the remote wipe functionality is enabled and tested.",
-      "required_tools": [
-        "check_mdm_configuration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that the MDM system has the capability to remotely wipe a device if it is lost or stolen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor confirms the remote wipe functionality is enabled and tested."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,104 +1,71 @@
 {
-  "scenario_id": "lw-om-12229",
-  "title": "Process an EDI 850 Purchase Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an EDI 850 Purchase Order",
+    "compliance_level": "Standard"
+  },
   "description": "An EDI 850 (Purchase Order) document is received from a major retail partner and must be automatically processed.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Order Processing",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system receives an EDI 850 file and parses its contents.",
-      "expected_outcome": "The system successfully translates the EDI data into a structured format.",
-      "required_tools": [
-        "parse_edi_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_parsing_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system receives an EDI 850 file and parses its contents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system successfully translates the EDI data into a structured format."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system validates the data (e.g., item numbers, pricing) against master data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All data is validated successfully."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system validates the data (e.g., item numbers, pricing) against master data.",
-      "expected_outcome": "All data is validated successfully.",
-      "required_tools": [
-        "validate_order_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_validation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "A new sales order is automatically created in the OMS from the validated data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A sales order is created without manual intervention."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The system sends back an EDI 855 (Purchase Order Acknowledgment) to the partner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An automated acknowledgment is sent, confirming receipt of the order."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "A new sales order is automatically created in the OMS from the validated data.",
-      "expected_outcome": "A sales order is created without manual intervention.",
-      "required_tools": [
-        "create_sales_order_from_edi"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "The system sends back an EDI 855 (Purchase Order Acknowledgment) to the partner.",
-      "expected_outcome": "An automated acknowledgment is sent, confirming receipt of the order.",
-      "required_tools": [
-        "send_edi_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10941",
-  "title": "Flag Order for Fraud Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Flag Order for Fraud Review",
+    "compliance_level": "Standard"
+  },
   "description": "An order is placed with a high-risk score (e.g., shipping address doesn't match billing, large order amount, new customer). The system must flag it for manual review.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Order Processing",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a new order and analyze it against fraud detection rules.",
-      "expected_outcome": "The system calculates a high fraud score for the order.",
-      "required_tools": [
-        "analyze_order_for_fraud"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_assessment_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a new order and analyze it against fraud detection rules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system calculates a high fraud score for the order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Change the order status to 'Pending Manual Review' instead of 'Processing'.",
-      "expected_outcome": "Agent successfully updates the order status.",
-      "required_tools": [
-        "update_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Change the order status to 'Pending Manual Review' instead of 'Processing'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the order status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a ticket in the fraud review queue for a human agent to investigate.",
-      "expected_outcome": "Agent creates a detailed ticket for the fraud team.",
-      "required_tools": [
-        "create_review_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a ticket in the fraud review queue for a human agent to investigate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed ticket for the fraud team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

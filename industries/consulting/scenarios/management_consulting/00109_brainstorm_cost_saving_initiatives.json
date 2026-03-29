@@ -1,51 +1,59 @@
 {
-  "scenario_id": "consulting-mc-109",
-  "title": "Brainstorm Cost-Saving Initiatives",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Brainstorm Cost-Saving Initiatives",
+    "compliance_level": "Standard"
+  },
   "description": "Given a client's main expense categories, an agent must brainstorm a list of potential cost-saving initiatives.",
-  "use_case": "Management Consulting",
-  "core_function": "Strategy & Recommendation",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the list of top expense categories (e.g., 'Logistics', 'Software Licensing', 'Travel').",
-      "expected_outcome": "Agent correctly ingests the input data.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the list of top expense categories (e.g., 'Logistics', 'Software Licensing', 'Travel').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly ingests the input data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each category, generate at least three potential cost-saving ideas.",
-      "expected_outcome": "Agent generates relevant ideas, such as 'renegotiate software contracts' or 'implement a stricter travel policy'.",
-      "required_tools": [
-        "brainstorm_ideas"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.8,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each category, generate at least three potential cost-saving ideas.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates relevant ideas, such as 'renegotiate software contracts' or 'implement a stricter travel policy'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Categorize the generated ideas by potential impact (High, Medium, Low) and implementation difficulty (High, Medium, Low).",
-      "expected_outcome": "Agent provides a reasonable categorization for each idea.",
-      "required_tools": [
-        "categorize_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-3",
+        "task_description": "Categorize the generated ideas by potential impact (High, Medium, Low) and implementation difficulty (High, Medium, Low).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a reasonable categorization for each idea."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

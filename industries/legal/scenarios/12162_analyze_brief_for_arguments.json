@@ -1,50 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12162",
-  "title": "Analyze Opponent's Brief for Key Arguments",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Opponent's Brief for Key Arguments",
+    "compliance_level": "Standard"
+  },
   "description": "An attorney needs to analyze an opponent's motion brief to identify their key legal arguments in order to draft a response.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Legal Research & Writing",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ingest the opponent's brief.",
-      "expected_outcome": "Agent has the full text of the document.",
-      "required_tools": [
-        "document_parsing_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ingest the opponent's brief.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the full text of the document."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the main headings and subheadings to understand the structure of their argument.",
-      "expected_outcome": "Agent creates an outline of the opponent's brief.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the main headings and subheadings to understand the structure of their argument.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates an outline of the opponent's brief."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each section, summarize the core legal argument being made and the key cases they rely on.",
-      "expected_outcome": "Agent produces a summary that will serve as the basis for drafting a reply brief.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each section, summarize the core legal argument being made and the key cases they rely on.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a summary that will serve as the basis for drafting a reply brief."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

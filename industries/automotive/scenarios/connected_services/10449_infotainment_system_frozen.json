@@ -1,54 +1,59 @@
 {
-  "scenario_id": "auto-cs-10449",
-  "title": "Infotainment System is Frozen",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Infotainment System is Frozen",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports their vehicle's central touchscreen is completely unresponsive.",
-  "use_case": "Connected Services & In-Car Experience",
-  "core_function": "Infotainment & App Support",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the vehicle model to determine the correct reset procedure.",
-      "expected_outcome": "Agent identifies the vehicle and the specific infotainment system.",
-      "required_tools": [
-        "get_vehicle_details_by_vin"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the vehicle model to determine the correct reset procedure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the vehicle and the specific infotainment system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the customer through the soft reset procedure for their system (e.g., 'Hold the power button and the forward-seek button for 10 seconds').",
-      "expected_outcome": "Agent provides clear, step-by-step instructions for the reset.",
-      "required_tools": [
-        "search_knowledge_base"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the customer through the soft reset procedure for their system (e.g., 'Hold the power button and the forward-seek button for 10 seconds').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear, step-by-step instructions for the reset."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the soft reset fails, advise the customer to schedule a service appointment as it may be a hardware issue.",
-      "expected_outcome": "The reset works, and the system reboots successfully.",
-      "required_tools": [
-        "schedule_service_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the soft reset fails, advise the customer to schedule a service appointment as it may be a hardware issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The reset works, and the system reboots successfully."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

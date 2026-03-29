@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-op-10344",
-  "title": "Review Call Center Efficiency",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Call Center Efficiency",
+    "compliance_level": "Standard"
+  },
   "description": "An operational auditor analyzes call center data to identify opportunities for improvement.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Process Efficiency Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain call center performance data for the last year, including average handle time (AHT), first call resolution (FCR), and call volume.",
-      "expected_outcome": "Auditor has the complete performance dataset.",
-      "required_tools": [
-        "get_call_center_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain call center performance data for the last year, including average handle time (AHT), first call resolution (FCR), and call volume.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has the complete performance dataset."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data and find that FCR has been steadily declining while AHT has been increasing.",
-      "expected_outcome": "The analysis identifies a negative performance trend.",
-      "required_tools": [
-        "analyze_performance_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data and find that FCR has been steadily declining while AHT has been increasing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis identifies a negative performance trend."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Listen to a sample of call recordings to identify the root cause, finding that new agents are struggling with a new software system.",
-      "expected_outcome": "The auditor identifies a lack of training as the root cause.",
-      "required_tools": [
-        "review_call_recordings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Listen to a sample of call recordings to identify the root cause, finding that new agents are struggling with a new software system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor identifies a lack of training as the root cause."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

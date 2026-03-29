@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-vo-13628",
-  "title": "Prepare Field After a Concert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Field After a Concert",
+    "compliance_level": "Standard"
+  },
   "description": "A stadium hosted a concert, and the grounds crew needs to prepare the grass field for a soccer game in two days.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Facility & Turf Management",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Assess the condition of the field after the concert flooring has been removed.",
-      "expected_outcome": "Agent logs the condition of the turf, noting areas of compaction.",
-      "required_tools": [
-        "log_turf_condition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Assess the condition of the field after the concert flooring has been removed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the condition of the turf, noting areas of compaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a turf recovery plan, including aeration, watering, and mowing schedules.",
-      "expected_outcome": "Agent creates a detailed, hour-by-hour plan for the grounds crew.",
-      "required_tools": [
-        "generate_turf_recovery_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a turf recovery plan, including aeration, watering, and mowing schedules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed, hour-by-hour plan for the grounds crew."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the necessary grounds crew staff and equipment for the recovery work.",
-      "expected_outcome": "Agent successfully schedules all required resources.",
-      "required_tools": [
-        "schedule_grounds_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the necessary grounds crew staff and equipment for the recovery work.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules all required resources."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

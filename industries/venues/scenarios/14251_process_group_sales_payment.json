@@ -1,53 +1,59 @@
 {
-  "scenario_id": "venues-sh-14251",
-  "title": "Process Group Sales Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Group Sales Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A corporate group that had tickets on hold is now ready to pay for their block of 100 tickets.",
-  "use_case": "Sales & Hospitality",
-  "core_function": "Group Sales",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the group's reservation and invoice.",
-      "expected_outcome": "Agent finds the held reservation and the corresponding invoice.",
-      "required_tools": [
-        "get_group_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the group's reservation and invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the held reservation and the corresponding invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Process the payment using the corporate credit card provided.",
-      "expected_outcome": "Agent successfully processes the payment for the full invoice amount.",
-      "required_tools": [
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Process the payment using the corporate credit card provided.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the payment for the full invoice amount."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Release the hold on the tickets and deliver them to the group's organizer.",
-      "expected_outcome": "Agent confirms the seats and sends a link for the organizer to manage and distribute the digital tickets.",
-      "required_tools": [
-        "release_held_tickets",
-        "deliver_digital_tickets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Release the hold on the tickets and deliver them to the group's organizer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the seats and sends a link for the organizer to manage and distribute the digital tickets."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

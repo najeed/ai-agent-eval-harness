@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12139",
-  "title": "Cite-Check a Legal Brief",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cite-Check a Legal Brief",
+    "compliance_level": "Standard"
+  },
   "description": "A junior paralegal must cite-check a brief before it is filed, ensuring all case citations are in the correct format (e.g., Bluebook) and accurately state the cited proposition.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Legal Research & Writing",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Extract all legal citations from the draft brief.",
-      "expected_outcome": "Agent generates a list of all case and statute citations.",
-      "required_tools": [
-        "document_parsing_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Extract all legal citations from the draft brief.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of all case and statute citations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each citation, check that it is formatted correctly according to the specified style guide (e.g., Bluebook).",
-      "expected_outcome": "Agent identifies and corrects any formatting errors.",
-      "required_tools": [
-        "style_guide_checker"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each citation, check that it is formatted correctly according to the specified style guide (e.g., Bluebook).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies and corrects any formatting errors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each citation, pull up the cited source and verify that it stands for the legal proposition it is being cited for in the brief.",
-      "expected_outcome": "Agent confirms the accuracy of all legal arguments.",
-      "required_tools": [
-        "legal_research_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each citation, pull up the cited source and verify that it stands for the legal proposition it is being cited for in the brief.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the accuracy of all legal arguments."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

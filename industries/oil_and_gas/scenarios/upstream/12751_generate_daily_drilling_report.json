@@ -1,54 +1,59 @@
 {
-  "scenario_id": "og-up-12751",
-  "title": "Generate Daily Drilling Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Daily Drilling Report",
+    "compliance_level": "Standard"
+  },
   "description": "A rig clerk compiles the daily drilling report for management, summarizing the last 24 hours of operations.",
-  "use_case": "Upstream",
-  "core_function": "Drilling & Completions",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all operational data from the last 24 hours, including depth drilled, activities performed, and materials used.",
-      "expected_outcome": "All necessary data points for the report are collected from various rig systems.",
-      "required_tools": [
-        "get_drilling_activity_log",
-        "get_materials_usage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all operational data from the last 24 hours, including depth drilled, activities performed, and materials used.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All necessary data points for the report are collected from various rig systems."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate the standard daily drilling report template with the collected data.",
-      "expected_outcome": "The report template is correctly filled out.",
-      "required_tools": [
-        "populate_report_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate the standard daily drilling report template with the collected data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report template is correctly filled out."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the completed report for approval by the company man and distribute it to the project team.",
-      "expected_outcome": "The report is approved and emailed to the distribution list.",
-      "required_tools": [
-        "submit_report_for_approval",
-        "distribute_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the completed report for approval by the company man and distribute it to the project team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report is approved and emailed to the distribution list."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

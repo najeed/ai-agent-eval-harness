@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ret-ecom-13420",
-  "title": "Customer Picks Up BOPIS Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Picks Up BOPIS Order",
+    "compliance_level": "Standard"
+  },
   "description": "A customer arrives in-store to pick up their 'Buy Online, Pick up In Store' order.",
-  "use_case": "E-commerce & Order Management",
-  "core_function": "Click & Collect / BOPIS",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The customer provides their name or order number to the store associate.",
-      "expected_outcome": "The associate has the information needed to find the order.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The customer provides their name or order number to the store associate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate has the information needed to find the order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The associate looks up the order in the POS or handheld device to find its staging location.",
-      "expected_outcome": "The system shows the order is in 'Staging Bin C'.",
-      "required_tools": [
-        "lookup_bopis_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The associate looks up the order in the POS or handheld device to find its staging location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows the order is in 'Staging Bin C'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The associate retrieves the order, has the customer sign for it, and marks the order as 'Completed' in the system.",
-      "expected_outcome": "The customer receives their order, and the transaction is finalized.",
-      "required_tools": [
-        "complete_bopis_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The associate retrieves the order, has the customer sign for it, and marks the order as 'Completed' in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer receives their order, and the transaction is finalized."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

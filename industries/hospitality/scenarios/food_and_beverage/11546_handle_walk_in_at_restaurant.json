@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-fb-11546",
-  "title": "Handle a Walk-in Guest at a Busy Restaurant",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Walk-in Guest at a Busy Restaurant",
+    "compliance_level": "Standard"
+  },
   "description": "A party of four arrives at the hotel restaurant without a reservation on a busy night.",
-  "use_case": "Food & Beverage (F&B)",
-  "core_function": "Restaurant Reservations",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the reservation system for the current wait time and any potential no-shows.",
-      "expected_outcome": "The host sees a 30-minute wait but also a large reservation that is 15 minutes late.",
-      "required_tools": [
-        "rms_check_waitlist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the reservation system for the current wait time and any potential no-shows.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The host sees a 30-minute wait but also a large reservation that is 15 minutes late."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the walk-in party of the estimated wait time and offer to add them to the waitlist.",
-      "expected_outcome": "The host clearly communicates the wait time.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the walk-in party of the estimated wait time and offer to add them to the waitlist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The host clearly communicates the wait time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the party to the digital waitlist, which will send them a text message when their table is ready.",
-      "expected_outcome": "The party is successfully added to the waitlist.",
-      "required_tools": [
-        "rms_add_to_waitlist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the party to the digital waitlist, which will send them a text message when their table is ready.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The party is successfully added to the waitlist."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

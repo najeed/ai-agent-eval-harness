@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12797",
-  "title": "Process Adverse Event Report from Patient",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Adverse Event Report from Patient",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must process a telephoned-in adverse event (AE) report from a patient, ensuring all necessary information is captured for regulatory reporting.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Pharmacovigilance & Safety Reporting",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the patient and the drug product involved.",
-      "expected_outcome": "Agent correctly identifies the patient (or reporter) and the specific drug, including lot number if available.",
-      "required_tools": [
-        "search_patient_database",
-        "search_product_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the patient and the drug product involved.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the patient (or reporter) and the specific drug, including lot number if available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Capture the details of the adverse event, including symptoms, date of onset, and severity, using a structured intake form.",
-      "expected_outcome": "Agent accurately captures all required fields in the safety database.",
-      "required_tools": [
-        "create_adverse_event_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Capture the details of the adverse event, including symptoms, date of onset, and severity, using a structured intake form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures all required fields in the safety database."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assess the event for seriousness and expectedness against the product's reference safety information.",
-      "expected_outcome": "Agent correctly flags the event as 'serious' and 'unexpected'.",
-      "required_tools": [
-        "get_reference_safety_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assess the event for seriousness and expectedness against the product's reference safety information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly flags the event as 'serious' and 'unexpected'."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Initiate a follow-up request for more medical information if necessary.",
-      "expected_outcome": "Agent successfully generates a follow-up query to be sent to the patient's HCP.",
-      "required_tools": [
-        "generate_follow_up_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Initiate a follow-up request for more medical information if necessary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates a follow-up query to be sent to the patient's HCP."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

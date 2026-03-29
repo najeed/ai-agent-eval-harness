@@ -1,54 +1,59 @@
 {
-  "scenario_id": "audit-op-10375",
-  "title": "Audit Corporate Credit Card Usage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Corporate Credit Card Usage",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor analyzes corporate credit card data to identify potential policy violations or fraudulent use.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Process Efficiency Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the transaction data for all corporate credit cards for the last 6 months.",
-      "expected_outcome": "The auditor has the complete dataset.",
-      "required_tools": [
-        "get_credit_card_transaction_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the transaction data for all corporate credit cards for the last 6 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor has the complete dataset."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to identify high-risk transactions, such as cash advances, weekend purchases, or payments to suspicious merchants.",
-      "expected_outcome": "The analysis flags several cash advances, which are explicitly forbidden by policy.",
-      "required_tools": [
-        "analyze_transaction_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to identify high-risk transactions, such as cash advances, weekend purchases, or payments to suspicious merchants.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis flags several cash advances, which are explicitly forbidden by policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Investigate the flagged transactions by reviewing the submitted expense reports and contacting the cardholders.",
-      "expected_outcome": "The auditor confirms the policy violations and recommends disciplinary action and improved monitoring controls.",
-      "required_tools": [
-        "review_expense_reports",
-        "contact_employee"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Investigate the flagged transactions by reviewing the submitted expense reports and contacting the cardholders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor confirms the policy violations and recommends disciplinary action and improved monitoring controls."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

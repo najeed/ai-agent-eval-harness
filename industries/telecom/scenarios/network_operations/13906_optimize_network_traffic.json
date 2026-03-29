@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-no-13906",
-  "title": "Optimize Network Traffic - High Congestion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Optimize Network Traffic - High Congestion",
+    "compliance_level": "Standard"
+  },
   "description": "An alert indicates high congestion in a specific cell sector. The agent must offload traffic to a neighboring sector.",
-  "use_case": "Network Operations",
-  "core_function": "Performance Management",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the congested sector ID and retrieve its current load percentage.",
-      "expected_outcome": "Agent correctly identifies the sector and confirms its load is above the 85% threshold.",
-      "required_tools": [
-        "get_sector_load"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the congested sector ID and retrieve its current load percentage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the sector and confirms its load is above the 85% threshold."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify all adjacent sectors and query their current load to find a candidate for offloading.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of neighboring sectors and their load percentages."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify all adjacent sectors and query their current load to find a candidate for offloading.",
-      "expected_outcome": "Agent retrieves a list of neighboring sectors and their load percentages.",
-      "required_tools": [
-        "get_adjacent_sectors",
-        "get_sector_load"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select the neighboring sector with the lowest load and execute a command to offload 20% of traffic to it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the best candidate sector and executes the traffic management command."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select the neighboring sector with the lowest load and execute a command to offload 20% of traffic to it.",
-      "expected_outcome": "Agent correctly identifies the best candidate sector and executes the traffic management command.",
-      "required_tools": [
-        "reroute_traffic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

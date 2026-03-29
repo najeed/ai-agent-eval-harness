@@ -1,52 +1,59 @@
 {
-  "scenario_id": "construction-pm-10680",
-  "title": "Create a Project Cash Flow Projection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Project Cash Flow Projection",
+    "compliance_level": "Standard"
+  },
   "description": "A PM needs to create a cash flow projection to show the expected timing of expenses and client payments throughout the project.",
-  "use_case": "Project Management",
-  "core_function": "Budgeting & Cost Control",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the cost-loaded project schedule, which shows the expected spending over time.",
-      "expected_outcome": "The cost-loaded schedule is retrieved.",
-      "required_tools": [
-        "get_project_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the cost-loaded project schedule, which shows the expected spending over time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The cost-loaded schedule is retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the client payment schedule from the prime contract.",
-      "expected_outcome": "The schedule of client payments is retrieved.",
-      "required_tools": [
-        "get_contract_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the client payment schedule from the prime contract.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The schedule of client payments is retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a cash flow curve by plotting the cumulative expenses against the cumulative income over the project timeline.",
-      "expected_outcome": "A cash flow projection graph is created, highlighting periods of negative cash flow.",
-      "required_tools": [
-        "generate_cash_flow_projection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a cash flow curve by plotting the cumulative expenses against the cumulative income over the project timeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A cash flow projection graph is created, highlighting periods of negative cash flow."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

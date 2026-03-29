@@ -1,109 +1,74 @@
 {
-  "scenario_id": "hc-cc-11326",
-  "title": "Update Patient Allergy List",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Patient Allergy List",
+    "compliance_level": "Standard"
+  },
   "description": "During an intake, a patient reports a new allergy to penicillin. A nurse needs to update the patient's allergy list.",
-  "use_case": "Clinical Care",
-  "core_function": "Clinical Documentation & Charting",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's chart and navigate to the allergies section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Nurse accesses the correct module for managing allergies."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's chart and navigate to the allergies section.",
-      "expected_outcome": "Nurse accesses the correct module for managing allergies.",
-      "required_tools": [
-        "get_patient_record",
-        "open_allergies_module"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add 'Penicillin' to the allergy list.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Nurse searches for and selects the correct substance."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the nature of the reaction (e.g., 'Hives') and save the changes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Nurse adds the specific reaction details, and the new allergy is now prominently displayed in the patient's chart banner."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add 'Penicillin' to the allergy list.",
-      "expected_outcome": "Nurse searches for and selects the correct substance.",
-      "required_tools": [
-        "add_allergy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the nature of the reaction (e.g., 'Hives') and save the changes.",
-      "expected_outcome": "Nurse adds the specific reaction details, and the new allergy is now prominently displayed in the patient's chart banner.",
-      "required_tools": [
-        "update_allergy_reaction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

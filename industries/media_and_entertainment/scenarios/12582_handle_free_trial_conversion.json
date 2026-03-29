@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-ae-12582",
-  "title": "Handle Free Trial to Paid Subscription Conversion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Free Trial to Paid Subscription Conversion",
+    "compliance_level": "Standard"
+  },
   "description": "A user's free trial is about to end, and the system needs to automatically convert them to a paid subscription.",
-  "use_case": "Audience Engagement & Subscriber Management",
-  "core_function": "Subscriber Lifecycle Management",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all users whose free trials are ending today.",
-      "expected_outcome": "Agent generates a list of users to be converted.",
-      "required_tools": [
-        "get_users_with_expiring_trials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all users whose free trials are ending today.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of users to be converted."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each user, charge their registered payment method for the first month of service.",
-      "expected_outcome": "Agent processes the payments. Some succeed, some fail.",
-      "required_tools": [
-        "process_subscription_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each user, charge their registered payment method for the first month of service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the payments. Some succeed, some fail."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the account status to 'Active Subscriber' for successful payments, and 'On Hold' for failed payments.",
-      "expected_outcome": "Agent correctly updates the status for all users in the list.",
-      "required_tools": [
-        "update_subscription_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the account status to 'Active Subscriber' for successful payments, and 'On Hold' for failed payments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly updates the status for all users in the list."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

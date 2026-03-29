@@ -1,67 +1,72 @@
 {
-  "scenario_id": "wholesale-sp-14316",
-  "title": "Track a Late Supplier Shipment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track a Late Supplier Shipment",
+    "compliance_level": "Standard"
+  },
   "description": "A purchase order from a key supplier is overdue. A manager needs to track the shipment and get an updated ETA.",
-  "use_case": "Supplier & Procurement Management",
-  "core_function": "Supplier Relationship Management",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the overdue purchase order.",
-      "expected_outcome": "Agent finds the PO in the system and confirms it is past its expected delivery date.",
-      "required_tools": [
-        "get_overdue_purchase_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the overdue purchase order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the PO in the system and confirms it is past its expected delivery date."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the supplier to get the tracking number for the shipment.",
-      "expected_outcome": "Agent sends an email to the supplier requesting the tracking information.",
-      "required_tools": [
-        "send_email_to_supplier"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the supplier to get the tracking number for the shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends an email to the supplier requesting the tracking information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use the tracking number to check the status with the freight carrier.",
-      "expected_outcome": "Agent finds the shipment is delayed at a port due to customs.",
-      "required_tools": [
-        "track_freight_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use the tracking number to check the status with the freight carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the shipment is delayed at a port due to customs."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the expected delivery date in the system and notify the sales team of the delay.",
-      "expected_outcome": "Agent updates the PO's ETA and informs the sales team.",
-      "required_tools": [
-        "update_po_eta",
-        "send_internal_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the expected delivery date in the system and notify the sales team of the delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the PO's ETA and informs the sales team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

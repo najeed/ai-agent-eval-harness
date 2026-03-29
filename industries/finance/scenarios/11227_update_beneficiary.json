@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-wm-11227",
-  "title": "Update Beneficiary on Investment Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Beneficiary on Investment Account",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to add their newborn child as a beneficiary on their investment account.",
-  "use_case": "Wealth Management",
-  "core_function": "Financial Planning",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the client and retrieve their account details.",
-      "expected_outcome": "Agent securely identifies the client.",
-      "required_tools": [
-        "verify_client_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the client and retrieve their account details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely identifies the client."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the new beneficiary's information (name, date of birth, relationship).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures the details for the new beneficiary."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the new beneficiary's information (name, date of birth, relationship).",
-      "expected_outcome": "Agent accurately captures the details for the new beneficiary.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the beneficiary designations on the client's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the new beneficiary to the account records."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the beneficiary designations on the client's account.",
-      "expected_outcome": "Agent successfully adds the new beneficiary to the account records.",
-      "required_tools": [
-        "update_beneficiaries"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

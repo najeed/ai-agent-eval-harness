@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-isr-10852",
-  "title": "Maritime 'Dark Vessel' Anomaly Detection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Maritime 'Dark Vessel' Anomaly Detection",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must identify 'dark vessels' (ships that have turned off their AIS transponders) in a high-traffic shipping lane.",
-  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
-  "core_function": "Pattern & Anomaly Detection",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ingest live AIS transponder data for the specified region.",
-      "expected_outcome": "Analyst has a real-time feed of all broadcasting vessels.",
-      "required_tools": [
-        "get_live_ais_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ingest live AIS transponder data for the specified region.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst has a real-time feed of all broadcasting vessels."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ingest live satellite radar imagery of the same region.",
-      "expected_outcome": "Analyst has a real-time feed of all physical vessels detected by radar.",
-      "required_tools": [
-        "get_live_satellite_radar_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ingest live satellite radar imagery of the same region.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst has a real-time feed of all physical vessels detected by radar."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Correlate the two data feeds and flag any radar contact that does not have a corresponding AIS signal as a 'dark vessel' anomaly.",
-      "expected_outcome": "Analyst successfully identifies all vessels attempting to hide their position.",
-      "required_tools": [
-        "correlate_radar_ais"
-      ],
-      "success_criteria": [
-        {
-          "metric": "anomaly_detection_rate",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Correlate the two data feeds and flag any radar contact that does not have a corresponding AIS signal as a 'dark vessel' anomaly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully identifies all vessels attempting to hide their position."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

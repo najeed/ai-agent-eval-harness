@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10535",
-  "title": "Generate Annual Hazardous Waste Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Annual Hazardous Waste Report",
+    "compliance_level": "Standard"
+  },
   "description": "An EHS manager needs to generate the EPA's biennial hazardous waste report, summarizing all hazardous waste shipped from the site.",
-  "use_case": "EHS & Compliance",
-  "core_function": "Waste Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query the system for all hazardous waste manifests from the reporting period.",
-      "expected_outcome": "Agent retrieves a list of all waste shipments from the last two years.",
-      "required_tools": [
-        "get_waste_manifests_by_date"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query the system for all hazardous waste manifests from the reporting period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of all waste shipments from the last two years."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Aggregate the data by waste code and quantity.",
-      "expected_outcome": "Agent correctly sums the total weight for each distinct EPA waste code.",
-      "required_tools": [
-        "aggregate_waste_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Aggregate the data by waste code and quantity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sums the total weight for each distinct EPA waste code."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the report in the official EPA format.",
-      "expected_outcome": "Agent successfully creates the formatted report ready for submission.",
-      "required_tools": [
-        "generate_epa_biennial_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the report in the official EPA format.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the formatted report ready for submission."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

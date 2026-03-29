@@ -1,62 +1,72 @@
 {
-  "scenario_id": "tr-ro-14049",
-  "title": "Report on Terminal Dwell Time",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report on Terminal Dwell Time",
+    "compliance_level": "Standard"
+  },
   "description": "A manager wants to analyze the average time railcars spend in a specific yard (dwell time) to identify inefficiencies.",
-  "use_case": "Rail Operations",
-  "core_function": "Yard & Terminal Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a report of all railcar arrivals and departures for a specific yard over the last month.",
-      "expected_outcome": "Agent successfully retrieves the raw data.",
-      "required_tools": [
-        "get_yard_activity_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a report of all railcar arrivals and departures for a specific yard over the last month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the raw data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each railcar, calculate the dwell time (departure time - arrival time).",
-      "expected_outcome": "The dwell time is calculated for each car.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each railcar, calculate the dwell time (departure time - arrival time).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The dwell time is calculated for each car."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the average dwell time for the entire yard.",
-      "expected_outcome": "The average dwell time is found to be 28 hours.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the average dwell time for the entire yard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The average dwell time is found to be 28 hours."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Compare the average dwell time to the system target of 24 hours and highlight the negative variance in a performance dashboard.",
-      "expected_outcome": "The manager can easily see that the yard is underperforming against its target.",
-      "required_tools": [
-        "update_performance_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Compare the average dwell time to the system target of 24 hours and highlight the negative variance in a performance dashboard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager can easily see that the yard is underperforming against its target."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

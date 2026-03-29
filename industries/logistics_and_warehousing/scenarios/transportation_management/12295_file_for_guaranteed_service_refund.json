@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-tm-12295",
-  "title": "File for Guaranteed Service Refund",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File for Guaranteed Service Refund",
+    "compliance_level": "Standard"
+  },
   "description": "A shipment booked with a 'Guaranteed by 10 AM' service was delivered late. The company is entitled to a full refund.",
-  "use_case": "Transportation Management",
-  "core_function": "Freight & Carrier Management",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system receives the delivery confirmation from the carrier, noting the delivery time was 11:30 AM.",
-      "expected_outcome": "The system captures the actual delivery time.",
-      "required_tools": [
-        "get_pod_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system receives the delivery confirmation from the carrier, noting the delivery time was 11:30 AM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system captures the actual delivery time."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system compares the actual delivery time to the guaranteed time and flags a 'Service Failure'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An alert is created for the service failure."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system compares the actual delivery time to the guaranteed time and flags a 'Service Failure'.",
-      "expected_outcome": "An alert is created for the service failure.",
-      "required_tools": [
-        "verify_guaranteed_service_performance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "An agent submits a 'Guaranteed Service Failure' claim to the carrier to have the freight charges refunded.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A claim is filed to recover the shipping costs."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "An agent submits a 'Guaranteed Service Failure' claim to the carrier to have the freight charges refunded.",
-      "expected_outcome": "A claim is filed to recover the shipping costs.",
-      "required_tools": [
-        "submit_carrier_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

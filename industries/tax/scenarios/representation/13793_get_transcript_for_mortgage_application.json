@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tax-rep-13793",
-  "title": "Get Tax Return Transcript for Mortgage Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Get Tax Return Transcript for Mortgage Application",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer is applying for a mortgage and the lender requires official IRS transcripts of their last two tax returns.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Account & Transcript Analysis",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the taxpayer's information and the specific tax years needed.",
-      "expected_outcome": "Agent collects the required data.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the taxpayer's information and the specific tax years needed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the required data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the IRS 'Get Transcript' online tool on behalf of the taxpayer.",
-      "expected_outcome": "Agent successfully logs in to the IRS portal.",
-      "required_tools": [
-        "access_get_transcript_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the IRS 'Get Transcript' online tool on behalf of the taxpayer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully logs in to the IRS portal."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Download the tax return transcripts for the required years and provide them to the taxpayer to give to their lender.",
-      "expected_outcome": "Agent successfully obtains and delivers the official IRS documents.",
-      "required_tools": [
-        "download_irs_transcript"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Download the tax return transcripts for the required years and provide them to the taxpayer to give to their lender.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully obtains and delivers the official IRS documents."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

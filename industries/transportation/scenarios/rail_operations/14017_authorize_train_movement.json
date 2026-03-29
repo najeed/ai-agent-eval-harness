@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-ro-14017",
-  "title": "Authorize Train Movement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Authorize Train Movement",
+    "compliance_level": "Standard"
+  },
   "description": "A train is ready to depart a siding and enter the main line. A network dispatcher must authorize the movement.",
-  "use_case": "Rail Operations",
-  "core_function": "Network Control & Dispatch",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a request from a train crew to occupy the main line from milepost 56 to 78.",
-      "expected_outcome": "Agent receives and understands the crew's request.",
-      "required_tools": [
-        "get_crew_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a request from a train crew to occupy the main line from milepost 56 to 78.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives and understands the crew's request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the track diagram to ensure the requested section of track is clear of other trains.",
-      "expected_outcome": "The system shows the track block is clear.",
-      "required_tools": [
-        "view_track_occupancy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the track diagram to ensure the requested section of track is clear of other trains.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows the track block is clear."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue a track warrant (authority) to the train for the specified track limits.",
-      "expected_outcome": "A formal authority is issued and logged.",
-      "required_tools": [
-        "issue_track_warrant"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue a track warrant (authority) to the train for the specified track limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal authority is issued and logged."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Remotely align the switch to allow the train to move from the siding to the main line.",
-      "expected_outcome": "The switch is correctly aligned, and the signal displays 'Proceed'.",
-      "required_tools": [
-        "control_track_switch"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Remotely align the switch to allow the train to move from the siding to the main line.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The switch is correctly aligned, and the signal displays 'Proceed'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

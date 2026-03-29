@@ -1,52 +1,59 @@
 {
-  "scenario_id": "auto-ms-10454",
-  "title": "Plan Production Line Retooling",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Production Line Retooling",
+    "compliance_level": "Standard"
+  },
   "description": "A production manager needs to plan for a scheduled shutdown of the assembly line to retool for the next model year.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Production Planning",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the official project plan for the model year changeover, noting the required downtime.",
-      "expected_outcome": "Agent finds the project requires a 72-hour shutdown.",
-      "required_tools": [
-        "get_project_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the official project plan for the model year changeover, noting the required downtime.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the project requires a 72-hour shutdown."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a detailed shutdown schedule, coordinating with maintenance, robotics, and logistics teams.",
-      "expected_outcome": "Agent creates and distributes a minute-by-minute schedule for the retooling process.",
-      "required_tools": [
-        "create_maintenance_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a detailed shutdown schedule, coordinating with maintenance, robotics, and logistics teams.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates and distributes a minute-by-minute schedule for the retooling process."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Adjust the master production schedule to account for the planned downtime, ensuring production targets are met before the shutdown.",
-      "expected_outcome": "Agent increases the production rate in the weeks leading up to the shutdown to build up a buffer.",
-      "required_tools": [
-        "update_production_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Adjust the master production schedule to account for the planned downtime, ensuring production targets are met before the shutdown.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent increases the production rate in the weeks leading up to the shutdown to build up a buffer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

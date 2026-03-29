@@ -1,65 +1,72 @@
 {
-  "scenario_id": "tr-to-14094",
-  "title": "Handle a Parts Warranty Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Parts Warranty Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A part that was recently replaced on a truck has failed prematurely. The fleet manager needs to file a warranty claim with the part supplier.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Fleet Maintenance",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the failed part and find the original repair order where it was installed.",
-      "expected_outcome": "The manager finds the record of the initial repair.",
-      "required_tools": [
-        "get_vehicle_repair_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the failed part and find the original repair order where it was installed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager finds the record of the initial repair."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the warranty terms for that part to confirm it is still covered.",
-      "expected_outcome": "The manager confirms the part is under warranty.",
-      "required_tools": [
-        "get_part_warranty_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the warranty terms for that part to confirm it is still covered.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager confirms the part is under warranty."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Initiate a warranty claim with the supplier, providing the original purchase and installation details.",
-      "expected_outcome": "A claim is filed with the supplier.",
-      "required_tools": [
-        "file_warranty_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Initiate a warranty claim with the supplier, providing the original purchase and installation details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A claim is filed with the supplier."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The supplier approves the claim and ships a replacement part at no charge.",
-      "expected_outcome": "The company receives a free replacement part.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "The supplier approves the claim and ships a replacement part at no charge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The company receives a free replacement part."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

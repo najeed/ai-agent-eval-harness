@@ -1,50 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11978",
-  "title": "Handle a Medical Payments Claim (Auto)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Medical Payments Claim (Auto)",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger in your insured's vehicle was slightly injured in an accident and needs to file a claim for their medical bills under the auto policy's MedPay coverage.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Claims Processing",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the insured's policy and verify it has Medical Payments coverage.",
-      "expected_outcome": "The adjuster confirms the policy has the required coverage.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the insured's policy and verify it has Medical Payments coverage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster confirms the policy has the required coverage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the medical bills and records from the injured passenger.",
-      "expected_outcome": "The adjuster receives the bills from the claimant.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the medical bills and records from the injured passenger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster receives the bills from the claimant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the bills for reasonableness and relation to the accident, then issue payment up to the coverage limit.",
-      "expected_outcome": "The adjuster reviews and pays the medical bills according to the policy's coverage.",
-      "required_tools": [
-        "process_medical_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the bills for reasonableness and relation to the accident, then issue payment up to the coverage limit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The adjuster reviews and pays the medical bills according to the policy's coverage."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

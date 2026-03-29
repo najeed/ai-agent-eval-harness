@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ag-pa-10153",
-  "title": "Analyze Soil Electrical Conductivity (EC) Map",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Soil Electrical Conductivity (EC) Map",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer has an EC map of their field and wants to use it to understand variations in soil texture.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Analytics & Insights",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the soil EC map for the specified field.",
-      "expected_outcome": "Agent gets the EC map data.",
-      "required_tools": [
-        "get_soil_ec_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the soil EC map for the specified field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the EC map data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Interpret the EC map, explaining that high EC values typically correlate with heavier, clay soils, and low EC values with lighter, sandy soils.",
-      "expected_outcome": "Agent provides a correct interpretation of the EC data.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Interpret the EC map, explaining that high EC values typically correlate with heavier, clay soils, and low EC values with lighter, sandy soils.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a correct interpretation of the EC data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create management zones based on the EC data that correspond to different soil textures.",
-      "expected_outcome": "Agent generates a map showing zones of clay, loam, and sand.",
-      "required_tools": [
-        "create_management_zones"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create management zones based on the EC data that correspond to different soil textures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a map showing zones of clay, loam, and sand."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

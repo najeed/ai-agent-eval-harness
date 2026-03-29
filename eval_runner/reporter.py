@@ -28,22 +28,29 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
     report_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    scenario_id = scenario.get("scenario_id", "unknown")
+    
+    # v1.2 meta vs legacy
+    metadata_block = scenario.get("metadata", {})
+    scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
+    title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
+    industry = scenario.get("industry") or metadata_block.get("industry")
+    
     filename = f"{scenario_id}_{timestamp}.json"
 
     output = {
         "metadata": {
             "scenario_id": scenario_id,
-            "title": scenario.get("title"),
-            "industry": scenario.get("industry"),
+            "title": title,
+            "industry": industry,
             "timestamp": timestamp,
         },
         "results": results,
     }
 
     filepath = report_dir / filename
+    from .trace_utils import AESJsonEncoder
     with open(filepath, "w") as f:
-        json.dump(output, f, indent=2)
+        json.dump(output, f, indent=2, cls=AESJsonEncoder)
 
     print(f"\n[Reporter] Trajectory exported to: {filepath}")
 
@@ -123,7 +130,9 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
     report_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    scenario_id = scenario.get("scenario_id", "unknown")
+    metadata_block = scenario.get("metadata", {})
+    scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
+    title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
     
     prefix = "standalone_" if standalone else "report_"
     filename = f"{prefix}{scenario_id}_{timestamp}.html"
@@ -304,8 +313,12 @@ def generate_report(
     print("\n" + "=" * 50)
     print("EVALUATION REPORT")
     print("=" * 50)
-    scenario_id = scenario.get("scenario_id")
-    print(f"Scenario: {scenario.get('title')} ({scenario_id})")
+    
+    metadata_block = scenario.get("metadata", {})
+    scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
+    title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
+    
+    print(f"Scenario: {title} ({scenario_id})")
 
     protocol = (metadata or {}).get("protocol", "http")
     agent_target = (metadata or {}).get("agent", "Unknown")

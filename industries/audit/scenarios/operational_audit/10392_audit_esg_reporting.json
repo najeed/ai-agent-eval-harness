@@ -1,50 +1,59 @@
 {
-  "scenario_id": "audit-op-10392",
-  "title": "Audit Environmental, Social, and Governance (ESG) Reporting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Environmental, Social, and Governance (ESG) Reporting",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor reviews the data and processes used to create the company's annual ESG report.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Project & Program Audit",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select a key metric from the ESG report, such as 'Total Greenhouse Gas Emissions'.",
-      "expected_outcome": "A metric is chosen for testing.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select a key metric from the ESG report, such as 'Total Greenhouse Gas Emissions'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A metric is chosen for testing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Obtain the underlying data from the source systems (e.g., utility bills, fuel usage data) used to calculate the metric.",
-      "expected_outcome": "The auditor has the source data.",
-      "required_tools": [
-        "get_source_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Obtain the underlying data from the source systems (e.g., utility bills, fuel usage data) used to calculate the metric.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor has the source data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recalculate the metric and compare it to the amount published in the ESG report to ensure its accuracy.",
-      "expected_outcome": "The auditor confirms the reported metric is accurate and supported by the underlying data.",
-      "required_tools": [
-        "recalculate_metric"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recalculate the metric and compare it to the amount published in the ESG report to ensure its accuracy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor confirms the reported metric is accurate and supported by the underlying data."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

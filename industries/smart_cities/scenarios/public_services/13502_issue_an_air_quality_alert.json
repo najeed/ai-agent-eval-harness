@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13502",
-  "title": "Issue an Air Quality Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue an Air Quality Alert",
+    "compliance_level": "Standard"
+  },
   "description": "Environmental sensors report a spike in airborne pollutants. An operator must issue a public health alert.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Public Information & Alerting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an alert that PM2.5 levels have exceeded the 'Unhealthy' threshold in the downtown area.",
-      "expected_outcome": "Agent acknowledges the environmental alert.",
-      "required_tools": [
-        "get_environmental_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an alert that PM2.5 levels have exceeded the 'Unhealthy' threshold in the downtown area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the environmental alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a public health advisory message based on pre-approved templates.",
-      "expected_outcome": "Agent prepares a clear message advising sensitive groups to remain indoors.",
-      "required_tools": [
-        "get_alert_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a public health advisory message based on pre-approved templates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares a clear message advising sensitive groups to remain indoors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Broadcast the alert via the city's mobile app, social media channels, and digital billboards.",
-      "expected_outcome": "Agent successfully disseminates the alert through multiple channels.",
-      "required_tools": [
-        "publish_public_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Broadcast the alert via the city's mobile app, social media channels, and digital billboards.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully disseminates the alert through multiple channels."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

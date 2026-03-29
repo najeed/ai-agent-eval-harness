@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12841",
-  "title": "Design a Preclinical Animal Study",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Design a Preclinical Animal Study",
+    "compliance_level": "Standard"
+  },
   "description": "A research scientist needs to design a protocol for a new preclinical toxicology study in rats.",
-  "use_case": "Research & Development",
-  "core_function": "Preclinical Research",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the study objectives, such as determining the maximum tolerated dose (MTD).",
-      "expected_outcome": "Agent clearly states the primary objective of the study.",
-      "required_tools": [
-        "define_study_objectives"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_relevance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the study objectives, such as determining the maximum tolerated dose (MTD).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly states the primary objective of the study."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the animal model, dose levels, and duration of the study.",
-      "expected_outcome": "Agent designs a study with 4 dose groups (including control) to be run for 28 days.",
-      "required_tools": [
-        "design_study_parameters"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the animal model, dose levels, and duration of the study.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent designs a study with 4 dose groups (including control) to be run for 28 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Define the study endpoints, including clinical observations, body weights, and terminal histopathology.",
-      "expected_outcome": "Agent creates a comprehensive list of all data points to be collected.",
-      "required_tools": [
-        "define_study_endpoints"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_relevance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Define the study endpoints, including clinical observations, body weights, and terminal histopathology.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a comprehensive list of all data points to be collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Draft the study protocol document and submit it for review by the Institutional Animal Care and Use Committee (IACUC).",
-      "expected_outcome": "Agent writes the full protocol and submits it for ethical review.",
-      "required_tools": [
-        "draft_protocol",
-        "submit_for_iacuc_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Draft the study protocol document and submit it for review by the Institutional Animal Care and Use Committee (IACUC).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes the full protocol and submits it for ethical review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-log-10828",
-  "title": "Tank Engine Predictive Maintenance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Tank Engine Predictive Maintenance",
+    "compliance_level": "Standard"
+  },
   "description": "An onboard sensor in a main battle tank predicts imminent engine failure based on oil analysis and temperature data.",
-  "use_case": "Logistics & Sustainment",
-  "core_function": "Predictive Maintenance",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the predictive failure alert from the tank.",
-      "expected_outcome": "Maintenance officer acknowledges the alert.",
-      "required_tools": [
-        "get_vehicle_sensor_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_acknowledgement_time",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the predictive failure alert from the tank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Maintenance officer acknowledges the alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the specific sensor readings to confirm the high probability of failure.",
-      "expected_outcome": "Officer verifies the data indicates a critical problem.",
-      "required_tools": [
-        "analyze_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_interpretation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the specific sensor readings to confirm the high probability of failure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer verifies the data indicates a critical problem."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Order the tank crew to return to base for maintenance and schedule a 'power pack' (engine and transmission) replacement.",
-      "expected_outcome": "Officer issues the correct orders to prevent failure in the field and schedules the major repair.",
-      "required_tools": [
-        "issue_maintenance_order",
-        "schedule_major_component_replacement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Order the tank crew to return to base for maintenance and schedule a 'power pack' (engine and transmission) replacement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer issues the correct orders to prevent failure in the field and schedules the major repair."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tax-rep-13781",
-  "title": "File a Claim for Refund",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File a Claim for Refund",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer discovers they were eligible for a large deduction on a return filed two years ago and wants to file a claim for a refund.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Examination & Audit Support",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the statute of limitations for claiming a refund has not expired.",
-      "expected_outcome": "Agent confirms the claim is timely (within 3 years of filing).",
-      "required_tools": [
-        "check_statute_of_limitations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the statute of limitations for claiming a refund has not expired.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the claim is timely (within 3 years of filing)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Prepare an amended tax return (Form 1040-X) for the year in question, showing the new deduction.",
-      "expected_outcome": "Agent accurately prepares the amended return.",
-      "required_tools": [
-        "prepare_form_1040x"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Prepare an amended tax return (Form 1040-X) for the year in question, showing the new deduction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately prepares the amended return."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "File the Form 1040-X with the IRS to formally claim the refund.",
-      "expected_outcome": "Agent submits the claim.",
-      "required_tools": [
-        "file_document_with_irs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "File the Form 1040-X with the IRS to formally claim the refund.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the claim."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-155",
-  "title": "Create an FAQ Document",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create an FAQ Document",
+    "compliance_level": "Standard"
+  },
   "description": "After a project, an agent must create an FAQ document for the client's employees about the new system that was implemented.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review project documents and training materials to identify common questions and potential areas of confusion.",
-      "expected_outcome": "Agent generates a list of likely questions.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review project documents and training materials to identify common questions and potential areas of confusion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of likely questions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each question, draft a clear and concise answer.",
-      "expected_outcome": "Agent writes helpful and accurate answers.",
-      "required_tools": [
-        "draft_text_section"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each question, draft a clear and concise answer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes helpful and accurate answers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Format the content into a structured Q&A document.",
-      "expected_outcome": "Agent produces a well-organized FAQ document.",
-      "required_tools": [
-        "create_document_from_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Format the content into a structured Q&A document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a well-organized FAQ document."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

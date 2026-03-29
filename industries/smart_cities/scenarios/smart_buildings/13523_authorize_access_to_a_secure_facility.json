@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13523",
-  "title": "Authorize Access to a Secure Facility",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Authorize Access to a Secure Facility",
+    "compliance_level": "Standard"
+  },
   "description": "A contractor needs temporary access to a secure room in a city building. An operator must grant them access for a specific time window.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Building Automation & Control",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a request for temporary access for a specific person to the 'IT Server Room'.",
-      "expected_outcome": "Agent acknowledges the access request.",
-      "required_tools": [
-        "get_access_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a request for temporary access for a specific person to the 'IT Server Room'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the access request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the contractor's identity against the approved vendor list.",
-      "expected_outcome": "Agent confirms the contractor is authorized to perform work.",
-      "required_tools": [
-        "verify_vendor_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the contractor's identity against the approved vendor list.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the contractor is authorized to perform work."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Grant access to the 'IT Server Room' door for the specified contractor's ID card, valid for the next 4 hours.",
-      "expected_outcome": "Agent successfully updates the access control system with the temporary permission.",
-      "required_tools": [
-        "grant_temporary_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Grant access to the 'IT Server Room' door for the specified contractor's ID card, valid for the next 4 hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the access control system with the temporary permission."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

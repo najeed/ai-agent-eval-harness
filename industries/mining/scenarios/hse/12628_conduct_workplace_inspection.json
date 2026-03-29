@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-hse-12628",
-  "title": "Conduct Workplace Safety Inspection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Workplace Safety Inspection",
+    "compliance_level": "Standard"
+  },
   "description": "A safety officer conducts a planned inspection of a maintenance workshop using a digital checklist on a tablet.",
-  "use_case": "Health, Safety & Environment (HSE)",
-  "core_function": "Safety Management",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the 'Workshop Inspection Checklist' on the tablet.",
-      "expected_outcome": "The correct digital inspection form is loaded.",
-      "required_tools": [
-        "load_audit_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the 'Workshop Inspection Checklist' on the tablet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct digital inspection form is loaded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Walk through the workshop and complete the checklist, inspecting items like fire extinguishers, machine guarding, and housekeeping.",
-      "expected_outcome": "The inspection is completed, and a few minor issues are identified, such as a blocked fire exit.",
-      "required_tools": [
-        "complete_digital_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Walk through the workshop and complete the checklist, inspecting items like fire extinguishers, machine guarding, and housekeeping.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The inspection is completed, and a few minor issues are identified, such as a blocked fire exit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log a corrective action for the blocked fire exit and assign it to the workshop supervisor for immediate resolution.",
-      "expected_outcome": "A corrective action is created and tracked in the safety management system.",
-      "required_tools": [
-        "log_corrective_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log a corrective action for the blocked fire exit and assign it to the workshop supervisor for immediate resolution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A corrective action is created and tracked in the safety management system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

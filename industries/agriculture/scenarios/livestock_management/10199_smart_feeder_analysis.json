@@ -1,64 +1,72 @@
 {
-  "scenario_id": "ag-lm-10199",
-  "title": "Analyze Smart Feeder Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Smart Feeder Data",
+    "compliance_level": "Standard"
+  },
   "description": "A hog farmer uses smart feeders that record how much each individual pig eats. They want to identify pigs that are not eating enough.",
-  "use_case": "Livestock Management",
-  "core_function": "Feeding & Nutrition",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the daily feed intake data for all pigs in a specific pen.",
-      "expected_outcome": "Agent gets the feed consumption data for each pig.",
-      "required_tools": [
-        "get_smart_feeder_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the daily feed intake data for all pigs in a specific pen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the feed consumption data for each pig."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the average feed intake for the pen.",
-      "expected_outcome": "Agent calculates the average.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the average feed intake for the pen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the average."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify any pigs whose feed intake is significantly below the pen average for the last 3 days.",
-      "expected_outcome": "Agent generates a list of 5 pigs that are potential health concerns.",
-      "required_tools": [
-        "identify_off_feed_animals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify any pigs whose feed intake is significantly below the pen average for the last 3 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of 5 pigs that are potential health concerns."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a task for the manager to check on the flagged pigs.",
-      "expected_outcome": "Agent creates a task in the management system.",
-      "required_tools": [
-        "create_farm_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a task for the manager to check on the flagged pigs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a task in the management system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

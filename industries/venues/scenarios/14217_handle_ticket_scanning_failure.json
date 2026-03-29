@@ -1,63 +1,72 @@
 {
-  "scenario_id": "venues-tb-14217",
-  "title": "Handle Ticket Scanning Failure at Gate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Ticket Scanning Failure at Gate",
+    "compliance_level": "Standard"
+  },
   "description": "A guest's mobile ticket will not scan at the entry gate, showing an 'Invalid Code' error.",
-  "use_case": "Ticketing & Box Office",
-  "core_function": "Access Control & Entry Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ask the guest for their name or email address to look up their order.",
-      "expected_outcome": "Agent receives the guest's information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ask the guest for their name or email address to look up their order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the guest's information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the ticketing system for the customer's order.",
-      "expected_outcome": "Agent finds the order and confirms it is valid for today's event.",
-      "required_tools": [
-        "search_ticket_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the ticketing system for the customer's order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the order and confirms it is valid for today's event."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Re-issue a new QR code to the guest's email.",
-      "expected_outcome": "Agent successfully sends a new digital ticket to the guest.",
-      "required_tools": [
-        "reissue_digital_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Re-issue a new QR code to the guest's email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends a new digital ticket to the guest."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Instruct the guest to refresh their email and try scanning the new ticket.",
-      "expected_outcome": "The new ticket scans successfully, and the guest is admitted.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Instruct the guest to refresh their email and try scanning the new ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new ticket scans successfully, and the guest is admitted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

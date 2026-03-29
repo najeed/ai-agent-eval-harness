@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13908",
-  "title": "DDoS Attack Mitigation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "DDoS Attack Mitigation",
+    "compliance_level": "Standard"
+  },
   "description": "A security alert indicates a potential DDoS attack against a specific IP range. The agent must mitigate it.",
-  "use_case": "Network Operations",
-  "core_function": "Security Operations",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the DDoS alert and analyze the traffic patterns to confirm the attack.",
-      "expected_outcome": "Agent confirms anomalous traffic from a wide range of source IPs targeting a single destination.",
-      "required_tools": [
-        "analyze_traffic_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the DDoS alert and analyze the traffic patterns to confirm the attack.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms anomalous traffic from a wide range of source IPs targeting a single destination."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Activate the 'blackhole' routing protocol for the target IP to absorb the attack traffic.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies the blackhole route."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Activate the 'blackhole' routing protocol for the target IP to absorb the attack traffic.",
-      "expected_outcome": "Agent successfully applies the blackhole route.",
-      "required_tools": [
-        "apply_blackhole_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the network to ensure the attack is mitigated and legitimate services are unaffected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that overall network performance returns to normal."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the network to ensure the attack is mitigated and legitimate services are unaffected.",
-      "expected_outcome": "Agent confirms that overall network performance returns to normal.",
-      "required_tools": [
-        "get_network_performance_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,65 +1,72 @@
 {
-  "scenario_id": "venues-gs-14301",
-  "title": "Handle Complaint About Staff Member",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Complaint About Staff Member",
+    "compliance_level": "Standard"
+  },
   "description": "A guest reports that an usher was rude to them.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Issue Resolution & Complaints",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Apologize to the guest and get the details of the incident, including the location and a description of the usher.",
-      "expected_outcome": "Agent gathers all relevant information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Apologize to the guest and get the details of the incident, including the location and a description of the usher.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all relevant information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the complaint in the incident management system.",
-      "expected_outcome": "Agent creates a new incident report.",
-      "required_tools": [
-        "log_incident_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the complaint in the incident management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new incident report."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Forward the report to the supervisor in charge of the ushers for investigation and follow-up.",
-      "expected_outcome": "Agent assigns the incident to the appropriate manager.",
-      "required_tools": [
-        "assign_incident"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Forward the report to the supervisor in charge of the ushers for investigation and follow-up.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the incident to the appropriate manager."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Offer the guest a gesture of goodwill, such as a voucher for a free soda.",
-      "expected_outcome": "Agent offers a service recovery gesture.",
-      "required_tools": [
-        "issue_voucher"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Offer the guest a gesture of goodwill, such as a voucher for a free soda.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent offers a service recovery gesture."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-co-11013",
-  "title": "Dorm Room Maintenance Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dorm Room Maintenance Request",
+    "compliance_level": "Standard"
+  },
   "description": "A student reports that the light in their dorm room is not working.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Housing & Residential Life",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and their dorm room number.",
-      "expected_outcome": "Agent confirms the student's identity and location.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and their dorm room number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's identity and location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a maintenance work order in the facilities management system.",
-      "expected_outcome": "Agent successfully creates a work order detailing the issue ('light out').",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a maintenance work order in the facilities management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a work order detailing the issue ('light out')."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the student with the work order number and the standard response time for non-emergency requests.",
-      "expected_outcome": "Agent clearly communicates the next steps and timeline.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the student with the work order number and the standard response time for non-emergency requests.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the next steps and timeline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

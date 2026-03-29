@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12410",
-  "title": "Design Ad Creative",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Design Ad Creative",
+    "compliance_level": "Standard"
+  },
   "description": "A designer needs to create a set of display ads for a new campaign based on a creative brief.",
-  "use_case": "Content & Creative Development",
-  "core_function": "Creative Asset Development",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the creative brief for key messaging, branding guidelines, and required ad sizes.",
-      "expected_outcome": "Agent understands the core requirements for the ad visuals.",
-      "required_tools": [
-        "get_creative_brief"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the creative brief for key messaging, branding guidelines, and required ad sizes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the core requirements for the ad visuals."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a visual design for the ads that incorporates the brand's logo, colors, and the main call-to-action.",
-      "expected_outcome": "Agent produces a design that is on-brand and visually appealing.",
-      "required_tools": [
-        "design_software_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "design_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a visual design for the ads that incorporates the brand's logo, colors, and the main call-to-action.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a design that is on-brand and visually appealing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Export the design in all required sizes (e.g., 300x250, 728x90, 160x600).",
-      "expected_outcome": "Agent generates a complete set of ad files in the correct dimensions.",
-      "required_tools": [
-        "design_software_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Export the design in all required sizes (e.g., 300x250, 728x90, 160x600).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a complete set of ad files in the correct dimensions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

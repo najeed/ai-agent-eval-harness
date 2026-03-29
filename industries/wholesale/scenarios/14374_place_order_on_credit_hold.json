@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-om-14374",
-  "title": "Place a Customer's Order on Credit Hold",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Place a Customer's Order on Credit Hold",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with overdue invoices places a new order. The system must automatically place the new order on credit hold.",
-  "use_case": "Order Management & Sales",
-  "core_function": "Invoicing & Payments",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "A new order is placed by a customer who is over their credit limit or has overdue invoices.",
-      "expected_outcome": "The system identifies the customer's poor credit status.",
-      "required_tools": [
-        "check_customer_credit_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "A new order is placed by a customer who is over their credit limit or has overdue invoices.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system identifies the customer's poor credit status."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system automatically places the new order on 'Credit Hold' status, preventing it from being fulfilled.",
-      "expected_outcome": "The order is successfully put on hold.",
-      "required_tools": [
-        "place_order_on_credit_hold"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system automatically places the new order on 'Credit Hold' status, preventing it from being fulfilled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is successfully put on hold."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "An alert is sent to the credit department to review the account and contact the customer.",
-      "expected_outcome": "The credit department is notified to resolve the issue with the customer.",
-      "required_tools": [
-        "send_internal_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "An alert is sent to the credit department to review the account and contact the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The credit department is notified to resolve the issue with the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

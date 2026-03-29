@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-sl-12324",
-  "title": "Generate a Packing Slip",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a Packing Slip",
+    "compliance_level": "Standard"
+  },
   "description": "A shipping clerk has picked all items for a customer order and needs to generate the packing slip.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Outbound & Shipping",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the sales order that has been picked.",
-      "expected_outcome": "Agent selects the correct sales order from the list of picked orders.",
-      "required_tools": [
-        "find_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the sales order that has been picked.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the correct sales order from the list of picked orders."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that all items and quantities on the order have been picked.",
-      "expected_outcome": "Agent confirms that the picked quantities match the order quantities.",
-      "required_tools": [
-        "verify_picked_items"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that all items and quantities on the order have been picked.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the picked quantities match the order quantities."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate and print the official packing slip for the shipment.",
-      "expected_outcome": "Agent successfully generates and prints the document.",
-      "required_tools": [
-        "generate_packing_slip"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate and print the official packing slip for the shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates and prints the document."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

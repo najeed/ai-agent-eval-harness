@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12820",
-  "title": "Respond to HCP about Potential Drug Interaction",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to HCP about Potential Drug Interaction",
+    "compliance_level": "Standard"
+  },
   "description": "A medical information specialist receives a call from a pharmacist asking about a potential drug-drug interaction for a specific product.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Medical Information & Inquiries",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the inquiry, capturing the two drugs in question.",
-      "expected_outcome": "Agent creates a new medical inquiry case with the relevant product names.",
-      "required_tools": [
-        "log_medical_inquiry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the inquiry, capturing the two drugs in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new medical inquiry case with the relevant product names."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the product's prescribing information (package insert) and the internal knowledge base for known interaction data.",
-      "expected_outcome": "Agent finds information in the knowledge base detailing a moderate pharmacokinetic interaction.",
-      "required_tools": [
-        "search_product_label",
-        "search_medical_knowledge_base"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the product's prescribing information (package insert) and the internal knowledge base for known interaction data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds information in the knowledge base detailing a moderate pharmacokinetic interaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verbally communicate the findings to the pharmacist in a balanced, non-promotional manner.",
-      "expected_outcome": "Agent clearly explains the nature of the interaction and the recommendations listed in the product labeling.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verbally communicate the findings to the pharmacist in a balanced, non-promotional manner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the nature of the interaction and the recommendations listed in the product labeling."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Document the details of the conversation and the information provided in the case system.",
-      "expected_outcome": "Agent writes a concise and accurate summary of the interaction and closes the case.",
-      "required_tools": [
-        "update_case_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Document the details of the conversation and the information provided in the case system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a concise and accurate summary of the interaction and closes the case."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

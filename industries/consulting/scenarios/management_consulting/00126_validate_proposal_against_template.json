@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-126",
-  "title": "Validate Proposal Against Template",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Validate Proposal Against Template",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must check a draft proposal to ensure all mandatory sections from the company's standard template are included.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load the list of mandatory sections from the standard template (e.g., 'Scope', 'Deliverables', 'Fees', 'Assumptions').",
-      "expected_outcome": "Agent correctly retrieves the list of required sections.",
-      "required_tools": [
-        "get_template_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load the list of mandatory sections from the standard template (e.g., 'Scope', 'Deliverables', 'Fees', 'Assumptions').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly retrieves the list of required sections."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the draft proposal to see which of the mandatory sections are present.",
-      "expected_outcome": "Agent checks the proposal's structure.",
-      "required_tools": [
-        "analyze_document_structure"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the draft proposal to see which of the mandatory sections are present.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the proposal's structure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report listing any missing sections.",
-      "expected_outcome": "Agent produces a report stating that the 'Assumptions' section is missing from the draft.",
-      "required_tools": [
-        "generate_compliance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report listing any missing sections.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a report stating that the 'Assumptions' section is missing from the draft."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

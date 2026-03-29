@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-sc-10640",
-  "title": "Update Safety Data Sheet (SDS) Binder",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Safety Data Sheet (SDS) Binder",
+    "compliance_level": "Standard"
+  },
   "description": "A new type of sealant is being used on site. The safety manager must add its Safety Data Sheet (SDS) to the project's chemical safety binder.",
-  "use_case": "Safety & Compliance",
-  "core_function": "Documentation & Reporting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the SDS for the new sealant from the manufacturer's website.",
-      "expected_outcome": "The correct SDS PDF is downloaded.",
-      "required_tools": [
-        "search_for_document_online"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the SDS for the new sealant from the manufacturer's website.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct SDS PDF is downloaded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Upload the SDS to the project's digital SDS binder.",
-      "expected_outcome": "The new SDS is successfully added to the central repository.",
-      "required_tools": [
-        "upload_compliance_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Upload the SDS to the project's digital SDS binder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new SDS is successfully added to the central repository."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

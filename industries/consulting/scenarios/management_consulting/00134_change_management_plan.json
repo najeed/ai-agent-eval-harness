@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-134",
-  "title": "Develop a Change Management Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop a Change Management Plan",
+    "compliance_level": "Standard"
+  },
   "description": "For a major technology implementation project, an agent must draft a change management plan.",
-  "use_case": "Management Consulting",
-  "core_function": "Strategy & Recommendation",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify key stakeholder groups that will be affected by the change (e.g., 'Sales Team', 'IT Department', 'Executives').",
-      "expected_outcome": "Agent lists the relevant stakeholder groups.",
-      "required_tools": [
-        "identify_stakeholders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify key stakeholder groups that will be affected by the change (e.g., 'Sales Team', 'IT Department', 'Executives').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists the relevant stakeholder groups."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a communication plan outlining what messages need to be sent to which groups and when.",
-      "expected_outcome": "Agent creates a structured communication plan.",
-      "required_tools": [
-        "create_communication_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a communication plan outlining what messages need to be sent to which groups and when.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a structured communication plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Outline a training plan, including different training modules for different user groups.",
-      "expected_outcome": "Agent creates a high-level training plan.",
-      "required_tools": [
-        "create_training_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Outline a training plan, including different training modules for different user groups.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a high-level training plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

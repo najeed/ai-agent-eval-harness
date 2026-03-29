@@ -1,36 +1,46 @@
 {
-  "scenario_id": "information_technology_service-sd-11875",
-  "title": "Incident - Conference Room AV Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Incident - Conference Room AV Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports they are unable to get the presentation to show on the main screen in a conference room.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "Incident & Request Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ask the user to verify all cables are securely plugged in and the projector/TV is on the correct input source.",
-      "expected_outcome": "The user confirms all basic connections are correct.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ask the user to verify all cables are securely plugged in and the projector/TV is on the correct input source.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user confirms all basic connections are correct."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the user to check their laptop's display settings (e.g., press Windows Key + P) and select 'Duplicate' or 'Extend'.",
-      "expected_outcome": "This action resolves the issue, and the presentation appears on the screen.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the user to check their laptop's display settings (e.g., press Windows Key + P) and select 'Duplicate' or 'Extend'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "This action resolves the issue, and the presentation appears on the screen."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

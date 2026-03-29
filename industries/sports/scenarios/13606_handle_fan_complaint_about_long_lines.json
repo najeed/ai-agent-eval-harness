@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-fe-13606",
-  "title": "Handle Fan Complaint About Long Lines",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Fan Complaint About Long Lines",
+    "compliance_level": "Standard"
+  },
   "description": "A fan emails customer support to complain about long lines at the concession stands during a recent game.",
-  "use_case": "Fan Engagement & Ticketing",
-  "core_function": "Fan Communications & Support",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the fan and the game they attended.",
-      "expected_outcome": "Agent retrieves the fan's account and ticket history.",
-      "required_tools": [
-        "get_fan_account_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the fan and the game they attended.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the fan's account and ticket history."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Acknowledge the fan's complaint and apologize for their negative experience.",
-      "expected_outcome": "Agent sends a polite and empathetic response.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Acknowledge the fan's complaint and apologize for their negative experience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a polite and empathetic response."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "As a goodwill gesture, credit their account with a voucher for a free hot dog and soda for the next game.",
-      "expected_outcome": "Agent successfully adds the voucher to the fan's account.",
-      "required_tools": [
-        "issue_fan_voucher"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "As a goodwill gesture, credit their account with a voucher for a free hot dog and soda for the next game.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the voucher to the fan's account."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

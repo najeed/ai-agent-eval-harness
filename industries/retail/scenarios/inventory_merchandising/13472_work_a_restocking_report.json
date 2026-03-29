@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-im-13472",
-  "title": "Work a Restocking Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Work a Restocking Report",
+    "compliance_level": "Standard"
+  },
   "description": "A system-generated report shows items on the sales floor that have fallen below their presentation minimum. An associate needs to restock them.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Receiving & Restocking",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate or view the daily 'shelf replenishment' report.",
-      "expected_outcome": "The associate gets a prioritized list of items that need restocking.",
-      "required_tools": [
-        "get_replenishment_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate or view the daily 'shelf replenishment' report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate gets a prioritized list of items that need restocking."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Go to the backroom and pick the items and quantities specified on the report.",
-      "expected_outcome": "The associate gathers all the needed stock.",
-      "required_tools": [
-        "check_inventory_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Go to the backroom and pick the items and quantities specified on the report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate gathers all the needed stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Restock the items on the sales floor and mark the tasks as complete on the report.",
-      "expected_outcome": "All low-stock items from the report are replenished on the shelves.",
-      "required_tools": [
-        "complete_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Restock the items on the sales floor and mark the tasks as complete on the report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All low-stock items from the report are replenished on the shelves."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

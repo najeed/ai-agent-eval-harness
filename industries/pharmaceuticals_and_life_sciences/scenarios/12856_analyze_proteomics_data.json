@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12856",
-  "title": "Analyze Proteomics Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Proteomics Data",
+    "compliance_level": "Standard"
+  },
   "description": "A scientist needs to analyze mass spectrometry data to identify proteins that are differentially expressed between healthy and diseased tissue samples.",
-  "use_case": "Research & Development",
-  "core_function": "Research Data Analysis",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process the raw mass spectrometry data to identify and quantify peptides.",
-      "expected_outcome": "Agent successfully runs the data through a processing pipeline like MaxQuant.",
-      "required_tools": [
-        "process_mass_spec_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process the raw mass spectrometry data to identify and quantify peptides.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs the data through a processing pipeline like MaxQuant."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform statistical analysis on the quantified protein data to find significant changes between sample groups.",
-      "expected_outcome": "Agent performs a t-test and identifies a list of proteins with statistically significant expression changes.",
-      "required_tools": [
-        "perform_statistical_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform statistical analysis on the quantified protein data to find significant changes between sample groups.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent performs a t-test and identifies a list of proteins with statistically significant expression changes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a pathway analysis on the list of significant proteins.",
-      "expected_outcome": "Agent uses a tool like GSEA or DAVID to find that the changed proteins are predominantly involved in the 'inflammatory response' pathway.",
-      "required_tools": [
-        "perform_pathway_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a pathway analysis on the list of significant proteins.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses a tool like GSEA or DAVID to find that the changed proteins are predominantly involved in the 'inflammatory response' pathway."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a volcano plot to visualize the results.",
-      "expected_outcome": "Agent creates a plot showing the statistical significance versus the magnitude of change for all proteins.",
-      "required_tools": [
-        "generate_visualization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "visualization_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a volcano plot to visualize the results.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a plot showing the statistical significance versus the magnitude of change for all proteins."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

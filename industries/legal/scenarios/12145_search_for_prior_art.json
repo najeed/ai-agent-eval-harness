@@ -1,65 +1,72 @@
 {
-  "scenario_id": "legal-ct-12145",
-  "title": "Search for Patent Prior Art",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Search for Patent Prior Art",
+    "compliance_level": "Standard"
+  },
   "description": "Before filing a patent application, a patent agent needs to search for 'prior art' to assess the novelty of an invention.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Intellectual Property (IP) Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the invention disclosure to understand the key features of the new invention.",
-      "expected_outcome": "Agent identifies the core concepts of the invention.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the invention disclosure to understand the key features of the new invention.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the core concepts of the invention."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Develop a search strategy with relevant keywords and class codes.",
-      "expected_outcome": "Agent creates a comprehensive search plan.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Develop a search strategy with relevant keywords and class codes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a comprehensive search plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Search patent databases (like USPTO, Espacenet) and other technical literature for existing inventions that are similar.",
-      "expected_outcome": "Agent retrieves a list of potentially relevant prior art references.",
-      "required_tools": [
-        "patent_database_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Search patent databases (like USPTO, Espacenet) and other technical literature for existing inventions that are similar.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of potentially relevant prior art references."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Analyze the found prior art and write a report on the patentability of the new invention.",
-      "expected_outcome": "Agent provides an opinion on whether the invention is likely to be patentable.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Analyze the found prior art and write a report on the patentability of the new invention.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an opinion on whether the invention is likely to be patentable."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

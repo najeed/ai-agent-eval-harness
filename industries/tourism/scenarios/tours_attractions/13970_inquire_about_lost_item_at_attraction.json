@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13970",
-  "title": "Inquire About Lost Item at Attraction",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About Lost Item at Attraction",
+    "compliance_level": "Standard"
+  },
   "description": "A visitor calls a theme park's guest services to report a lost camera.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Visitor Information & Support",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather details from the visitor: description of the camera, where and when it was likely lost.",
-      "expected_outcome": "Agent collects all necessary information to search for the item.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather details from the visitor: description of the camera, where and when it was likely lost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary information to search for the item."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the park's lost and found database for a matching item.",
-      "expected_outcome": "Agent searches the database but finds no matching camera at this time.",
-      "required_tools": [
-        "search_lost_and_found_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the park's lost and found database for a matching item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent searches the database but finds no matching camera at this time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a lost item report with the visitor's contact information and advise them that they will be contacted if it is found.",
-      "expected_outcome": "Agent successfully files a report and provides the visitor with a reference number.",
-      "required_tools": [
-        "create_lost_item_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a lost item report with the visitor's contact information and advise them that they will be contacted if it is found.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully files a report and provides the visitor with a reference number."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

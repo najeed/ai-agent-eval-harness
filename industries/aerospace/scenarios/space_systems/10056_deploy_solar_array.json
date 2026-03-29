@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10056",
-  "title": "Deploy Satellite Solar Arrays",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Deploy Satellite Solar Arrays",
+    "compliance_level": "Standard"
+  },
   "description": "After a satellite reaches its final orbit, a ground controller must send the command to deploy its stowed solar arrays.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Satellite Operations & Control",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the satellite is in a stable attitude and ready for deployment.",
-      "expected_outcome": "Agent confirms the satellite's orientation is correct and stable.",
-      "required_tools": [
-        "check_satellite_attitude"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the satellite is in a stable attitude and ready for deployment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the satellite's orientation is correct and stable."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the command to fire the pyrotechnic bolts that release the solar arrays.",
-      "expected_outcome": "Agent sends the correct command to initiate deployment.",
-      "required_tools": [
-        "send_spacecraft_command"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the command to fire the pyrotechnic bolts that release the solar arrays.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the correct command to initiate deployment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the telemetry from the deployment sensors to confirm that both arrays have fully deployed and latched into place.",
-      "expected_outcome": "Agent observes telemetry showing both arrays are successfully deployed and locked.",
-      "required_tools": [
-        "monitor_telemetry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the telemetry from the deployment sensors to confirm that both arrays have fully deployed and latched into place.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent observes telemetry showing both arrays are successfully deployed and locked."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

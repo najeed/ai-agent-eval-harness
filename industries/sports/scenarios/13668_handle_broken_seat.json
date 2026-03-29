@@ -1,68 +1,72 @@
 {
-  "scenario_id": "sports-vo-13668",
-  "title": "Handle a Broken Seat Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Broken Seat Report",
+    "compliance_level": "Standard"
+  },
   "description": "A fan arrives at their seat to find that it is broken. An agent must relocate them.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Facility & Turf Management",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a report from an usher about a broken seat, including the seat location.",
-      "expected_outcome": "Agent gets the details of the issue.",
-      "required_tools": [
-        "get_staff_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a report from an usher about a broken seat, including the seat location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the details of the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Find the best available comparable seats to relocate the fan to.",
-      "expected_outcome": "Agent finds two empty seats in a nearby section.",
-      "required_tools": [
-        "find_available_seats"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Find the best available comparable seats to relocate the fan to.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds two empty seats in a nearby section."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reissue the fan's ticket for the new seat location and dispatch an usher to guide them.",
-      "expected_outcome": "Agent successfully relocates the fan.",
-      "required_tools": [
-        "reissue_ticket",
-        "dispatch_event_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reissue the fan's ticket for the new seat location and dispatch an usher to guide them.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully relocates the fan."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a work order for the maintenance team to repair the broken seat after the game.",
-      "expected_outcome": "Agent logs the issue for the facility team.",
-      "required_tools": [
-        "create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a work order for the maintenance team to repair the broken seat after the game.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the issue for the facility team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

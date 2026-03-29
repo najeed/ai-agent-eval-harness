@@ -1,105 +1,71 @@
 {
-  "scenario_id": "lw-tm-12263",
-  "title": "Manage Demurrage Charges",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Demurrage Charges",
+    "compliance_level": "Standard"
+  },
   "description": "A container has been left at a port terminal beyond its allotted free time, incurring demurrage fees. An agent must resolve this.",
-  "use_case": "Transportation Management",
-  "core_function": "Freight & Carrier Management",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an alert from the ocean carrier that a container is accruing demurrage.",
-      "expected_outcome": "Agent is notified of the charge.",
-      "required_tools": [
-        "get_carrier_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an alert from the ocean carrier that a container is accruing demurrage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is notified of the charge."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the reason for the delay in picking up the container (e.g., customs hold, no truck capacity).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the delay was due to a customs inspection."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the reason for the delay in picking up the container (e.g., customs hold, no truck capacity).",
-      "expected_outcome": "Agent finds the delay was due to a customs inspection.",
-      "required_tools": [
-        "get_container_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Arrange for a trucking company to pick up the container immediately to stop further charges.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully dispatches a truck to retrieve the container."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Approve the demurrage invoice for payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The invoice for the accrued fees is approved."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Arrange for a trucking company to pick up the container immediately to stop further charges.",
-      "expected_outcome": "Agent successfully dispatches a truck to retrieve the container.",
-      "required_tools": [
-        "dispatch_truck_for_pickup"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Approve the demurrage invoice for payment.",
-      "expected_outcome": "The invoice for the accrued fees is approved.",
-      "required_tools": [
-        "approve_invoice_for_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

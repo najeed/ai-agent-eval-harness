@@ -1,49 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12424",
-  "title": "Develop Brand Voice Guidelines",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop Brand Voice Guidelines",
+    "compliance_level": "Standard"
+  },
   "description": "A brand manager needs to create a document that defines the brand's voice and tone for all marketing communications.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Brand Management",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze existing company content to identify current voice characteristics.",
-      "expected_outcome": "Agent reviews past ads, blog posts, and social media content.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze existing company content to identify current voice characteristics.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews past ads, blog posts, and social media content."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Define key brand voice attributes (e.g., 'Playful, but not childish', 'Helpful, but not condescending').",
-      "expected_outcome": "Agent creates a list of 3-5 core voice attributes.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Define key brand voice attributes (e.g., 'Playful, but not childish', 'Helpful, but not condescending').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a list of 3-5 core voice attributes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a document with 'do's and don'ts' and examples of on-brand and off-brand copy.",
-      "expected_outcome": "Agent produces a clear, practical guide for writers and marketers to follow.",
-      "required_tools": [
-        "document_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "copywriting_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a document with 'do's and don'ts' and examples of on-brand and off-brand copy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clear, practical guide for writers and marketers to follow."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

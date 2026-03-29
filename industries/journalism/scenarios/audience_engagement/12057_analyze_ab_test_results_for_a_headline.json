@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12057",
-  "title": "Analyze A/B Test Results for a Headline",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze A/B Test Results for a Headline",
+    "compliance_level": "Standard"
+  },
   "description": "An A/B test was run on two different headlines for an article. An editor must analyze the results to see which performed better.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Performance Analysis",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the A/B testing report in the CMS for the specified article.",
-      "expected_outcome": "Agent accesses the correct report.",
-      "required_tools": [
-        "cms_ab_testing_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_navigation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the A/B testing report in the CMS for the specified article.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses the correct report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the click-through rate (CTR) for Headline A and Headline B.",
-      "expected_outcome": "Agent identifies which headline had a higher CTR.",
-      "required_tools": [
-        "analyze_analytics_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the click-through rate (CTR) for Headline A and Headline B.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies which headline had a higher CTR."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Declare the headline with the higher CTR as the winner and set it as the permanent headline for the article.",
-      "expected_outcome": "The article is updated with the better-performing headline.",
-      "required_tools": [
-        "cms_interface"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Declare the headline with the higher CTR as the winner and set it as the permanent headline for the article.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The article is updated with the better-performing headline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

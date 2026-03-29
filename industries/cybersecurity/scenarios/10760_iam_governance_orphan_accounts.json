@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-iam-10760",
-  "title": "Orphaned Account Cleanup",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Orphaned Account Cleanup",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must run a report to find 'orphaned' accounts (accounts that are not associated with a current employee) and disable them.",
-  "use_case": "Identity & Access Management (IAM)",
-  "core_function": "Identity Governance & Attestation",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all active user accounts from Active Directory.",
-      "expected_outcome": "Analyst has a complete list of all active accounts.",
-      "required_tools": [
-        "get_all_active_directory_users"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all active user accounts from Active Directory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst has a complete list of all active accounts."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a list of all current employees from the HR system.",
-      "expected_outcome": "Analyst has a complete list of all active employees.",
-      "required_tools": [
-        "get_all_hr_employees"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a list of all current employees from the HR system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst has a complete list of all active employees."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the two lists to find accounts that do not have a corresponding active employee, then disable these orphaned accounts.",
-      "expected_outcome": "Analyst successfully identifies and disables several orphaned accounts, reducing the organization's attack surface.",
-      "required_tools": [
-        "compare_lists",
-        "disable_ad_user_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "remediation_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the two lists to find accounts that do not have a corresponding active employee, then disable these orphaned accounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully identifies and disables several orphaned accounts, reducing the organization's attack surface."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

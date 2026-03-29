@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-down-12742",
-  "title": "Manage Shipping Demurrage Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Shipping Demurrage Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A vessel chartered to deliver crude oil was delayed from unloading at the terminal. The shipowner submits a demurrage claim for the extra time.",
-  "use_case": "Downstream",
-  "core_function": "Supply & Trading",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the demurrage claim and the vessel's statement of facts, which details the timeline of its arrival and delay.",
-      "expected_outcome": "The claim documents are received and logged.",
-      "required_tools": [
-        "log_demurrage_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the demurrage claim and the vessel's statement of facts, which details the timeline of its arrival and delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The claim documents are received and logged."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the vessel's statement of facts with the terminal's own activity logs to verify the delay times.",
-      "expected_outcome": "The times are cross-referenced, and the duration of the delay is confirmed.",
-      "required_tools": [
-        "get_terminal_activity_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the vessel's statement of facts with the terminal's own activity logs to verify the delay times.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The times are cross-referenced, and the duration of the delay is confirmed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the demurrage payment owed based on the verified delay time and the charter party's agreed-upon daily rate.",
-      "expected_outcome": "The correct payment amount is calculated and approved for settlement.",
-      "required_tools": [
-        "calculate_demurrage_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the demurrage payment owed based on the verified delay time and the charter party's agreed-upon daily rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct payment amount is calculated and approved for settlement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

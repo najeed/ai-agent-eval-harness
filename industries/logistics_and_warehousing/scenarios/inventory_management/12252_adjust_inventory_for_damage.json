@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-im-12252",
-  "title": "Adjust Inventory for Warehouse Damage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Adjust Inventory for Warehouse Damage",
+    "compliance_level": "Standard"
+  },
   "description": "A forklift operator accidentally damages a pallet of goods in the warehouse. The damaged items must be adjusted out of inventory.",
-  "use_case": "Inventory Management",
-  "core_function": "Inventory Control",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The operator reports the damage incident, specifying the item, location, and quantity damaged.",
-      "expected_outcome": "A damage report is created in the system.",
-      "required_tools": [
-        "create_damage_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The operator reports the damage incident, specifying the item, location, and quantity damaged.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A damage report is created in the system."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "A supervisor reviews the report and approves the inventory adjustment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The supervisor authorizes the write-off."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "A supervisor reviews the report and approves the inventory adjustment.",
-      "expected_outcome": "The supervisor authorizes the write-off.",
-      "required_tools": [
-        "approve_damage_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process an inventory adjustment to remove the damaged quantity from stock, using 'Warehouse Damage' as the reason.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system inventory is updated to reflect the loss."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process an inventory adjustment to remove the damaged quantity from stock, using 'Warehouse Damage' as the reason.",
-      "expected_outcome": "The system inventory is updated to reflect the loss.",
-      "required_tools": [
-        "create_inventory_adjustment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

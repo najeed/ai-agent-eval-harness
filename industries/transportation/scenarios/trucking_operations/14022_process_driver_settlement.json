@@ -1,65 +1,72 @@
 {
-  "scenario_id": "tr-to-14022",
-  "title": "Process Driver Settlement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Driver Settlement",
+    "compliance_level": "Standard"
+  },
   "description": "An owner-operator has completed several loads. A settlement specialist needs to process their pay.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Billing & Settlements",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all completed and invoiced loads for a specific driver for the settlement period.",
-      "expected_outcome": "Agent gets a list of all loads ready for payment.",
-      "required_tools": [
-        "get_driver_payable_loads"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all completed and invoiced loads for a specific driver for the settlement period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a list of all loads ready for payment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total revenue for the loads.",
-      "expected_outcome": "The total linehaul revenue is correctly calculated.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total revenue for the loads.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The total linehaul revenue is correctly calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Deduct standard items like fuel advances, insurance, and equipment rental fees.",
-      "expected_outcome": "All deductions are correctly applied.",
-      "required_tools": [
-        "get_driver_deductions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Deduct standard items like fuel advances, insurance, and equipment rental fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All deductions are correctly applied."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Finalize the settlement and generate a statement for the driver, then schedule the payment.",
-      "expected_outcome": "The final net pay is calculated, and the payment is queued.",
-      "required_tools": [
-        "finalize_driver_settlement",
-        "schedule_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Finalize the settlement and generate a statement for the driver, then schedule the payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The final net pay is calculated, and the payment is queued."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

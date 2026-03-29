@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-po-12314",
-  "title": "Record Operator Labor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Record Operator Labor",
+    "compliance_level": "Standard"
+  },
   "description": "An operator needs to record the time they spent working on a specific operation of a work order.",
-  "use_case": "Production & Operations",
-  "core_function": "Work Order Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the work order and the specific operation number.",
-      "expected_outcome": "Agent correctly selects the work order and operation they just completed.",
-      "required_tools": [
-        "find_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the work order and the specific operation number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly selects the work order and operation they just completed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the start and end times or the total duration of the work.",
-      "expected_outcome": "Agent enters the time spent on the task.",
-      "required_tools": [
-        "record_labor_time"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the start and end times or the total duration of the work.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent enters the time spent on the task."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the labor ticket and verify it has been posted to the work order's cost ledger.",
-      "expected_outcome": "Agent confirms the labor cost has been added to the work order.",
-      "required_tools": [
-        "review_work_order_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the labor ticket and verify it has been posted to the work order's cost ledger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the labor cost has been added to the work order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

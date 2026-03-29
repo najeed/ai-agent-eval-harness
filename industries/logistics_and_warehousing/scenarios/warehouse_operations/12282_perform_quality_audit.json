@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-wo-12282",
-  "title": "Perform an Outbound Quality Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform an Outbound Quality Audit",
+    "compliance_level": "Standard"
+  },
   "description": "Before an order is sealed, a quality auditor randomly selects it for an audit to verify picking and packing accuracy.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Value-Added Services",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan a package's shipping label at the audit station.",
-      "expected_outcome": "The system displays the order details for the auditor.",
-      "required_tools": [
-        "get_order_by_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan a package's shipping label at the audit station.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system displays the order details for the auditor."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The auditor opens the package and scans each item inside to verify it against the order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor finds that all items and quantities are correct."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The auditor opens the package and scans each item inside to verify it against the order.",
-      "expected_outcome": "The auditor finds that all items and quantities are correct.",
-      "required_tools": [
-        "verify_package_contents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The auditor marks the quality audit as 'Passed' in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is logged as having passed the audit."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The package is resealed and sent to the shipping dock.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The audited package proceeds to shipping."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "The auditor marks the quality audit as 'Passed' in the system.",
-      "expected_outcome": "The order is logged as having passed the audit.",
-      "required_tools": [
-        "log_quality_audit_result"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "The package is resealed and sent to the shipping dock.",
-      "expected_outcome": "The audited package proceeds to shipping.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

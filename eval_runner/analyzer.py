@@ -66,16 +66,24 @@ async def analyze_repo(repo_url: str) -> list:
     for i, pattern in enumerate(found_patterns):
         scenario_id = f"auto_{pattern['type']}_{i}"
         scenario = {
-            "scenario_id": scenario_id,
-            "title": f"Auto-generated for {pattern['match']}",
+            "aes_version": 1.2,
+            "metadata": {
+                "id": scenario_id,
+                "name": f"Auto-generated for {pattern['match']}",
+                "source_file": pattern["file"],
+                "pattern": pattern["match"],
+            },
             "description": f"Verification of {pattern['type']} discovered in {pattern['file']}",
-            "tasks": [
-                {
-                    "task_id": "t1",
-                    "description": f"Interact with {pattern['match']} and verify its output.",
-                }
-            ],
-            "metadata": {"source_file": pattern["file"], "pattern": pattern["match"]},
+            "industry": "auto",
+            "workflow": {
+                "nodes": [
+                    {
+                        "id": "t1",
+                        "task_description": f"Interact with {pattern['match']} and verify its output.",
+                    }
+                ],
+                "edges": [],
+            },
         }
 
         with open(output_dir / f"{scenario_id}.json", "w") as f:

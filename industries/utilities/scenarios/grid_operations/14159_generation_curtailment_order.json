@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-go-14159",
-  "title": "Issue Generation Curtailment Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue Generation Curtailment Order",
+    "compliance_level": "Standard"
+  },
   "description": "Due to low demand and high solar generation, a system operator needs to curtail a large solar farm to prevent over-generation.",
-  "use_case": "Grid Operations",
-  "core_function": "System Control & Monitoring",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system forecasts an over-generation condition in the next hour.",
-      "expected_outcome": "System generates an alert for impending over-supply.",
-      "required_tools": [
-        "generate_load_forecast",
-        "generate_solar_generation_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "forecast_accuracy_mae",
-          "threshold": 5.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system forecasts an over-generation condition in the next hour.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates an alert for impending over-supply."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the most economical resource to curtail based on market bids and contracts.",
-      "expected_outcome": "System determines a specific solar farm is the least-cost resource to curtail.",
-      "required_tools": [
-        "analyze_economic_dispatch"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_correctness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the most economical resource to curtail based on market bids and contracts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System determines a specific solar farm is the least-cost resource to curtail."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a dispatch signal to the solar farm, instructing it to reduce its output to a specific MW setpoint.",
-      "expected_outcome": "System successfully sends the curtailment order.",
-      "required_tools": [
-        "send_dispatch_instruction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a dispatch signal to the solar farm, instructing it to reduce its output to a specific MW setpoint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully sends the curtailment order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

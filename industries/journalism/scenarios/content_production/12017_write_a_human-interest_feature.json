@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-cp-12017",
-  "title": "Write a Human-Interest Feature",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write a Human-Interest Feature",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter needs to write a long-form feature story about a local hero, focusing on narrative and character development.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Writing & Drafting",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review all interview transcripts and notes to find compelling anecdotes and quotes.",
-      "expected_outcome": "Agent identifies the most powerful storytelling elements from the research.",
-      "required_tools": [
-        "document_viewer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "relevance_of_selected_material",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review all interview transcripts and notes to find compelling anecdotes and quotes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the most powerful storytelling elements from the research."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Outline a narrative structure for the story, with a clear beginning, middle, and end.",
-      "expected_outcome": "Agent creates a logical and engaging story arc.",
-      "required_tools": [
-        "outlining_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "narrative_coherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Outline a narrative structure for the story, with a clear beginning, middle, and end.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a logical and engaging story arc."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft the feature story, using descriptive language to paint a picture of the person and their experiences.",
-      "expected_outcome": "Agent writes an engaging, well-crafted feature article.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft the feature story, using descriptive language to paint a picture of the person and their experiences.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes an engaging, well-crafted feature article."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

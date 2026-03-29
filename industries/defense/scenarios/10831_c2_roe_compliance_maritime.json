@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-c2-10831",
-  "title": "Maritime Interdiction ROE Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Maritime Interdiction ROE Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "A warship commander needs to determine if they are authorized to board a vessel suspected of violating sanctions based on the current ROE.",
-  "use_case": "Command & Control (C2)",
-  "core_function": "Rules of Engagement (ROE) Compliance",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Input the suspect vessel's location, flag state, and the intelligence indicating a sanctions violation.",
-      "expected_outcome": "Commander accurately enters the situation parameters.",
-      "required_tools": [
-        "input_situation_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Input the suspect vessel's location, flag state, and the intelligence indicating a sanctions violation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Commander accurately enters the situation parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the ROE database for rules governing maritime interdiction operations in the current operational area.",
-      "expected_outcome": "Agent retrieves the correct set of rules for the situation.",
-      "required_tools": [
-        "query_roe_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the ROE database for rules governing maritime interdiction operations in the current operational area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct set of rules for the situation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the rules and confirm that boarding is authorized, provided the vessel does not respond to hails.",
-      "expected_outcome": "Agent correctly interprets the legal and operational constraints and provides clear guidance.",
-      "required_tools": [
-        "analyze_roe"
-      ],
-      "success_criteria": [
-        {
-          "metric": "interpretation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the rules and confirm that boarding is authorized, provided the vessel does not respond to hails.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly interprets the legal and operational constraints and provides clear guidance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,90 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13794",
-  "title": "Customer Billing Dispute - Data Overage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Billing Dispute - Data Overage",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must resolve a customer's claim of being overcharged due to unexpected data usage fees.",
-  "use_case": "Customer Service",
-  "core_function": "Billing and Payments",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve customer account and current billing cycle details.",
-      "expected_outcome": "Agent correctly identifies the customer and the relevant bill.",
-      "required_tools": [
-        "get_customer_details",
-        "get_billing_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve customer account and current billing cycle details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and the relevant bill."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze data usage logs for the billing period to identify the source of the overage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pinpoints specific dates and times of high data consumption."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze data usage logs for the billing period to identify the source of the overage.",
-      "expected_outcome": "Agent pinpoints specific dates and times of high data consumption.",
-      "required_tools": [
-        "get_usage_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the data overage charges and offer a one-time courtesy credit as a goodwill gesture.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the charges and successfully applies a credit."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the data overage charges and offer a one-time courtesy credit as a goodwill gesture.",
-      "expected_outcome": "Agent clearly explains the charges and successfully applies a credit.",
-      "required_tools": [
-        "apply_courtesy_credit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

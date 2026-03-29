@@ -1,82 +1,58 @@
 {
-  "scenario_id": "lw-om-12265",
-  "title": "Generate Customer Performance Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Customer Performance Report",
+    "compliance_level": "Standard"
+  },
   "description": "An account manager needs to generate a quarterly business review (QBR) report for a key client, showing metrics like on-time shipping and order accuracy.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Reporting & Documentation",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the customer and the date range for the report (the previous quarter).",
-      "expected_outcome": "Agent correctly specifies the report parameters.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the customer and the date range for the report (the previous quarter).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly specifies the report parameters."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the performance report from the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A report is generated with KPIs like 'On-Time Shipping: 98.5%' and 'Order Accuracy: 99.7%'."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the performance report from the system.",
-      "expected_outcome": "A report is generated with KPIs like 'On-Time Shipping: 98.5%' and 'Order Accuracy: 99.7%'.",
-      "required_tools": [
-        "generate_customer_performance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Export the report to a PDF and email it to the account manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report is successfully generated and sent."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Export the report to a PDF and email it to the account manager.",
-      "expected_outcome": "The report is successfully generated and sent.",
-      "required_tools": [
-        "export_report_to_pdf",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

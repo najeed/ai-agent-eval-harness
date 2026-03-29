@@ -1,67 +1,72 @@
 {
-  "scenario_id": "auto-csra-10474",
-  "title": "Check Parts Availability for a Recall",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Parts Availability for a Recall",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who needs a recall service performed wants to ensure the dealership has the necessary parts before they bring their car in.",
-  "use_case": "Customer Support & Roadside Assistance",
-  "core_function": "Recall Management",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific recall the customer is referring to.",
-      "expected_outcome": "Agent identifies the recall for the airbag inflator.",
-      "required_tools": [
-        "check_vin_for_recalls"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific recall the customer is referring to.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the recall for the airbag inflator."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the part number for the recall kit.",
-      "expected_outcome": "Agent retrieves the part number for the recall remedy kit.",
-      "required_tools": [
-        "get_recall_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the part number for the recall kit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the part number for the recall remedy kit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the dealership's parts inventory for the recall kit.",
-      "expected_outcome": "Agent confirms the part is in stock at the dealership.",
-      "required_tools": [
-        "check_parts_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the dealership's parts inventory for the recall kit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the part is in stock at the dealership."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Inform the customer that the part is in stock and proceed with scheduling their appointment.",
-      "expected_outcome": "Agent reassures the customer and books the appointment.",
-      "required_tools": [
-        "schedule_service_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Inform the customer that the part is in stock and proceed with scheduling their appointment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reassures the customer and books the appointment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

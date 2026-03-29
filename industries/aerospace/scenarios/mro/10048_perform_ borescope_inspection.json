@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10048",
-  "title": "Perform a Borescope Inspection of an Engine",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Borescope Inspection of an Engine",
+    "compliance_level": "Standard"
+  },
   "description": "A technician must use a borescope to inspect the internal components of a jet engine for damage without disassembling it.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Maintenance Planning",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Insert the borescope probe into the engine's inspection ports.",
-      "expected_outcome": "Agent correctly navigates the probe into the engine.",
-      "required_tools": [
-        "operate_borescope"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Insert the borescope probe into the engine's inspection ports.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly navigates the probe into the engine."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Visually inspect the compressor and turbine blades for any signs of foreign object damage (FOD), cracks, or distress.",
-      "expected_outcome": "Agent carefully inspects all visible surfaces.",
-      "required_tools": [
-        "inspect_engine_internals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Visually inspect the compressor and turbine blades for any signs of foreign object damage (FOD), cracks, or distress.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent carefully inspects all visible surfaces."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Record images or video of any findings and create a report for the engineering team to review.",
-      "expected_outcome": "Agent finds minor erosion on one blade, captures an image, and generates a report.",
-      "required_tools": [
-        "capture_inspection_image",
-        "generate_inspection_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Record images or video of any findings and create a report for the engineering team to review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds minor erosion on one blade, captures an image, and generates a report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

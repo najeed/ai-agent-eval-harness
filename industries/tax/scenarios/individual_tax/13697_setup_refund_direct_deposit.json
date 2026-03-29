@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tax-ind-13697",
-  "title": "Set up Refund Direct Deposit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set up Refund Direct Deposit",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer is due a refund and wants it deposited directly into their checking account.",
-  "use_case": "Individual Tax Preparation & Filing",
-  "core_function": "Payment & Refund Management",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Finalize the tax return to confirm the refund amount.",
-      "expected_outcome": "Agent confirms the final refund value.",
-      "required_tools": [
-        "finalize_return"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Finalize the tax return to confirm the refund amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the final refund value."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the taxpayer's bank account information (routing and account number).",
-      "expected_outcome": "Agent securely collects the bank details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the taxpayer's bank account information (routing and account number).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely collects the bank details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the direct deposit information into the tax return before filing.",
-      "expected_outcome": "Agent correctly inputs the banking information into the designated fields on the return.",
-      "required_tools": [
-        "enter_direct_deposit_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the direct deposit information into the tax return before filing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly inputs the banking information into the designated fields on the return."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

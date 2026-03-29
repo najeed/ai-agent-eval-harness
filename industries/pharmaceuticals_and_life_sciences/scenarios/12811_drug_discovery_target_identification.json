@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12811",
-  "title": "Identify Potential Drug Target from Genomic Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Potential Drug Target from Genomic Data",
+    "compliance_level": "Standard"
+  },
   "description": "A computational biologist needs to analyze genomic data from cancer patients to identify a potential new target for drug development.",
-  "use_case": "Research & Development",
-  "core_function": "Drug Discovery & Target Identification",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access a cancer genomics database (e.g., TCGA).",
-      "expected_outcome": "Agent successfully connects to the database and selects the relevant patient cohort.",
-      "required_tools": [
-        "connect_to_genomics_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access a cancer genomics database (e.g., TCGA).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully connects to the database and selects the relevant patient cohort."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a differential gene expression analysis between tumor and normal tissues.",
-      "expected_outcome": "Agent runs an analysis and identifies a list of genes that are significantly overexpressed in tumor samples.",
-      "required_tools": [
-        "perform_differential_expression_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a differential gene expression analysis between tumor and normal tissues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs an analysis and identifies a list of genes that are significantly overexpressed in tumor samples."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cross-reference the overexpressed genes with a database of 'druggable' proteins.",
-      "expected_outcome": "Agent finds that one of the genes, 'GENE-X', codes for a kinase, which is a druggable target.",
-      "required_tools": [
-        "query_druggable_genome_db"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cross-reference the overexpressed genes with a database of 'druggable' proteins.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that one of the genes, 'GENE-X', codes for a kinase, which is a druggable target."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a target profile report for 'GENE-X' for further investigation.",
-      "expected_outcome": "Agent compiles a report with the analysis results and literature evidence supporting 'GENE-X' as a target.",
-      "required_tools": [
-        "generate_target_profile_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a target profile report for 'GENE-X' for further investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a report with the analysis results and literature evidence supporting 'GENE-X' as a target."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

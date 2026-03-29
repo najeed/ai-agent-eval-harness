@@ -1,54 +1,59 @@
 {
-  "scenario_id": "airline-ago-10259",
-  "title": "Handle Denied Boarding (Involuntary)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Denied Boarding (Involuntary)",
+    "compliance_level": "Standard"
+  },
   "description": "A flight is oversold, and not enough passengers have volunteered to give up their seats. A gate agent must involuntarily deny boarding to a passenger.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Gate & Boarding",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Follow the airline's priority list to select a passenger for involuntary denied boarding (IDB).",
-      "expected_outcome": "Agent selects the lowest fare, last to check-in passenger.",
-      "required_tools": [
-        "get_idb_priority_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Follow the airline's priority list to select a passenger for involuntary denied boarding (IDB).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the lowest fare, last to check-in passenger."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the passenger of the situation and explain their rights and the compensation they are entitled to under the law.",
-      "expected_outcome": "Agent clearly and politely explains the situation and the passenger's rights.",
-      "required_tools": [
-        "explain_idb_compensation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the passenger of the situation and explain their rights and the compensation they are entitled to under the law.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly and politely explains the situation and the passenger's rights."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Rebook the passenger on the next available flight and provide them with the required compensation (e.g., cash, check, travel voucher).",
-      "expected_outcome": "Agent rebooks the passenger and issues their compensation.",
-      "required_tools": [
-        "rebook_passenger",
-        "issue_compensation_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Rebook the passenger on the next available flight and provide them with the required compensation (e.g., cash, check, travel voucher).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent rebooks the passenger and issues their compensation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

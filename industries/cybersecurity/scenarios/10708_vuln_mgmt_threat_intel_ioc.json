@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10708",
-  "title": "Operationalizing Threat Intelligence",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Operationalizing Threat Intelligence",
+    "compliance_level": "Standard"
+  },
   "description": "A threat intelligence analyst receives a feed with new Indicators of Compromise (IOCs) for an active malware campaign.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Threat Intelligence Integration",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ingest the threat intelligence feed and parse the new IOCs (e.g., malicious file hashes, C2 domains).",
-      "expected_outcome": "Analyst successfully extracts all new IOCs from the feed.",
-      "required_tools": [
-        "ingest_threat_intel_feed"
-      ],
-      "success_criteria": [
-        {
-          "metric": "ioc_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ingest the threat intelligence feed and parse the new IOCs (e.g., malicious file hashes, C2 domains).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully extracts all new IOCs from the feed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add the new malicious domains and IPs to a blocklist on the network firewall and web proxy.",
-      "expected_outcome": "Analyst proactively blocks the known-bad infrastructure.",
-      "required_tools": [
-        "add_to_firewall_blocklist",
-        "add_to_proxy_blocklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add the new malicious domains and IPs to a blocklist on the network firewall and web proxy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst proactively blocks the known-bad infrastructure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new detection rule in the EDR system to alert if any of the malicious file hashes are seen on any endpoint.",
-      "expected_outcome": "Analyst creates a new detection capability based on the threat intelligence.",
-      "required_tools": [
-        "create_edr_detection_rule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "rule_creation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new detection rule in the EDR system to alert if any of the malicious file hashes are seen on any endpoint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst creates a new detection capability based on the threat intelligence."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

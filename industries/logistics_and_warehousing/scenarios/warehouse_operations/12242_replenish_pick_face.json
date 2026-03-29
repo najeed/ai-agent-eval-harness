@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-wo-12242",
-  "title": "Replenish a Pick Face",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Replenish a Pick Face",
+    "compliance_level": "Standard"
+  },
   "description": "A forward picking location for a popular item is running low. The system must generate a task to replenish it from bulk storage.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Storage & Slotting",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system detects that the quantity in a primary pick location has dropped below its minimum level.",
-      "expected_outcome": "A replenishment alert is automatically triggered.",
-      "required_tools": [
-        "monitor_pick_face_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system detects that the quantity in a primary pick location has dropped below its minimum level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A replenishment alert is automatically triggered."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system generates a replenishment task, directing an operator to a bulk storage location with the same item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A task is created with 'from' and 'to' locations."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system generates a replenishment task, directing an operator to a bulk storage location with the same item.",
-      "expected_outcome": "A task is created with 'from' and 'to' locations.",
-      "required_tools": [
-        "create_replenishment_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "An operator accepts the task, moves a pallet from bulk to the pick face, and confirms completion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator completes the task, and the system shows the pick face inventory has been increased."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "An operator accepts the task, moves a pallet from bulk to the pick face, and confirms completion.",
-      "expected_outcome": "The operator completes the task, and the system shows the pick face inventory has been increased.",
-      "required_tools": [
-        "confirm_task_completion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

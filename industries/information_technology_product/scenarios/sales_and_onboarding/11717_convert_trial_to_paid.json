@@ -1,54 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11717",
-  "title": "Convert Trial to Paid Subscription",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Convert Trial to Paid Subscription",
+    "compliance_level": "Standard"
+  },
   "description": "A customer at the end of their trial period wants to convert to a paid subscription.",
-  "use_case": "Sales & Account Management",
-  "core_function": "Trial & Proof of Concept (PoC) Management",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's trial account.",
-      "expected_outcome": "Agent finds the correct trial account.",
-      "required_tools": [
-        "get_trial_account_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's trial account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct trial account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Present the available paid plans and help the customer choose the right one.",
-      "expected_outcome": "Agent helps the customer select the 'Business' plan.",
-      "required_tools": [
-        "get_available_plans"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Present the available paid plans and help the customer choose the right one.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent helps the customer select the 'Business' plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Convert the trial account to a paid account, preserving all the user's data and settings, and process the first payment.",
-      "expected_outcome": "Agent successfully upgrades the account without data loss.",
-      "required_tools": [
-        "convert_trial_to_paid_subscription",
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Convert the trial account to a paid account, preserving all the user's data and settings, and process the first payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully upgrades the account without data loss."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

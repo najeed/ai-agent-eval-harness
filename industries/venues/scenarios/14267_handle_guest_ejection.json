@@ -1,66 +1,72 @@
 {
-  "scenario_id": "venues-gs-14267",
-  "title": "Handle a Guest Ejection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Guest Ejection",
+    "compliance_level": "Standard"
+  },
   "description": "Security has ejected a guest for violating the venue's code of conduct. Guest services must document the incident.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Issue Resolution & Complaints",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a notification from security that a guest has been ejected.",
-      "expected_outcome": "Agent receives the guest's name and the reason for ejection.",
-      "required_tools": [
-        "get_security_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a notification from security that a guest has been ejected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the guest's name and the reason for ejection."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new incident report in the guest services database.",
-      "expected_outcome": "Agent creates a new record for the incident.",
-      "required_tools": [
-        "log_incident_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new incident report in the guest services database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new record for the incident."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document all available details, including the guest's ticket information, the specific violation, and the names of the security staff involved.",
-      "expected_outcome": "Agent creates a comprehensive report of the event.",
-      "required_tools": [
-        "update_incident_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document all available details, including the guest's ticket information, the specific violation, and the names of the security staff involved.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a comprehensive report of the event."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Flag the guest's account in the ticketing system for potential future banning.",
-      "expected_outcome": "Agent adds a note to the guest's customer profile.",
-      "required_tools": [
-        "update_customer_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Flag the guest's account in the ticketing system for potential future banning.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds a note to the guest's customer profile."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-cf-11245",
-  "title": "Process Monthly Asset Depreciation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Monthly Asset Depreciation",
+    "compliance_level": "Standard"
+  },
   "description": "An accountant needs to run the monthly process to calculate and post depreciation for all fixed assets.",
-  "use_case": "Corporate Finance",
-  "core_function": "Audit & Reporting",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the list of all active fixed assets from the asset register.",
-      "expected_outcome": "Agent gets a list of all assets eligible for depreciation.",
-      "required_tools": [
-        "get_fixed_asset_register"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the list of all active fixed assets from the asset register.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a list of all assets eligible for depreciation."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run the depreciation calculation process for the current month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs the batch process to calculate depreciation for all assets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run the depreciation calculation process for the current month.",
-      "expected_outcome": "Agent successfully runs the batch process to calculate depreciation for all assets.",
-      "required_tools": [
-        "calculate_depreciation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Post the calculated depreciation expense to the general ledger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent posts the journal entry for the total monthly depreciation."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Post the calculated depreciation expense to the general ledger.",
-      "expected_outcome": "Agent posts the journal entry for the total monthly depreciation.",
-      "required_tools": [
-        "post_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

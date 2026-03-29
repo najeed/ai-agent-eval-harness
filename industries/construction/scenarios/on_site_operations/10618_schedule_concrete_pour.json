@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-os-10618",
-  "title": "Schedule Concrete Pour and Testing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Concrete Pour and Testing",
+    "compliance_level": "Standard"
+  },
   "description": "A site manager needs to schedule a concrete pour for the building's foundation and coordinate the required third-party slump test.",
-  "use_case": "On-Site Operations",
-  "core_function": "Task Execution & Coordination",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Contact the concrete supplier to schedule a delivery of 50 cubic yards for a specific date and time.",
-      "expected_outcome": "A concrete delivery is successfully scheduled.",
-      "required_tools": [
-        "schedule_material_delivery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Contact the concrete supplier to schedule a delivery of 50 cubic yards for a specific date and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A concrete delivery is successfully scheduled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the third-party testing agency to schedule a technician to be on-site to perform slump tests during the pour.",
-      "expected_outcome": "A testing technician is successfully booked for the same date and time.",
-      "required_tools": [
-        "schedule_third_party_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the third-party testing agency to schedule a technician to be on-site to perform slump tests during the pour.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A testing technician is successfully booked for the same date and time."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

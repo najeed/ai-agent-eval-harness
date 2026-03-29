@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-fc-66",
-  "title": "Translate Foreign Subsidiary Financials",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Translate Foreign Subsidiary Financials",
+    "compliance_level": "Standard"
+  },
   "description": "For consolidation, the financial statements of a European subsidiary (in EUR) need to be translated into the parent company's reporting currency (USD).",
-  "use_case": "Financial Closing & Reporting",
-  "core_function": "Period-End Close Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the subsidiary's trial balance in the local currency (EUR).",
-      "expected_outcome": "Agent gets the EUR trial balance.",
-      "required_tools": [
-        "get_trial_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the subsidiary's trial balance in the local currency (EUR).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the EUR trial balance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the correct foreign exchange rates: average rate for P&L accounts, and closing rate for balance sheet accounts.",
-      "expected_outcome": "Agent gets the required historical exchange rates.",
-      "required_tools": [
-        "get_exchange_rates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the correct foreign exchange rates: average rate for P&L accounts, and closing rate for balance sheet accounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the required historical exchange rates."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Translate the subsidiary's trial balance from EUR to USD using the appropriate rates.",
-      "expected_outcome": "Agent successfully translates all account balances.",
-      "required_tools": [
-        "translate_financials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Translate the subsidiary's trial balance from EUR to USD using the appropriate rates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully translates all account balances."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Calculate and post the resulting Cumulative Translation Adjustment (CTA) to the equity section.",
-      "expected_outcome": "Agent calculates the translation gain/loss and includes it in Other Comprehensive Income (OCI).",
-      "required_tools": [
-        "calculate_cta"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Calculate and post the resulting Cumulative Translation Adjustment (CTA) to the equity section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the translation gain/loss and includes it in Other Comprehensive Income (OCI)."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-com-13254",
-  "title": "Market a Commercial Property for Lease",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Market a Commercial Property for Lease",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to market a vacant industrial warehouse space.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Leasing & Tenant Representation",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a listing on commercial real estate platforms like LoopNet and CREXi.",
-      "expected_outcome": "Agent successfully creates a detailed and accurate listing.",
-      "required_tools": [
-        "create_commercial_listing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a listing on commercial real estate platforms like LoopNet and CREXi.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a detailed and accurate listing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Design an email marketing blast to send to a list of local commercial brokers.",
-      "expected_outcome": "Agent creates a professional email flyer for the property.",
-      "required_tools": [
-        "generate_email_flyer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Design an email marketing blast to send to a list of local commercial brokers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a professional email flyer for the property."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the email blast and track the open and click-through rates.",
-      "expected_outcome": "Agent sends the marketing email and monitors its performance.",
-      "required_tools": [
-        "send_bulk_email",
-        "track_email_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the email blast and track the open and click-through rates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the marketing email and monitors its performance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

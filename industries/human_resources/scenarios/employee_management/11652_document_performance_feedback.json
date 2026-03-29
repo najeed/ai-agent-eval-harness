@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-em-11652",
-  "title": "Document Performance Feedback",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document Performance Feedback",
+    "compliance_level": "Standard"
+  },
   "description": "A manager wants to document a piece of positive feedback for an employee in the performance management system outside of the formal review cycle.",
-  "use_case": "Employee Management",
-  "core_function": "Performance Management",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Navigate to the performance management module in the HRIS.",
-      "expected_outcome": "Manager logs into the system.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Navigate to the performance management module in the HRIS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager logs into the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the employee and choose the option to add 'anytime feedback'.",
-      "expected_outcome": "Manager finds the correct feature in the system.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the employee and choose the option to add 'anytime feedback'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager finds the correct feature in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the positive feedback and save it to the employee's record.",
-      "expected_outcome": "Manager successfully logs the feedback, which will be visible during the next formal review.",
-      "required_tools": [
-        "log_performance_feedback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the positive feedback and save it to the employee's record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager successfully logs the feedback, which will be visible during the next formal review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

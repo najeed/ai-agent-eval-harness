@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-no-12028",
-  "title": "Request Camera Equipment from Gear Closet",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Camera Equipment from Gear Closet",
+    "compliance_level": "Standard"
+  },
   "description": "A video journalist needs to check out a specific camera, lens, and microphone for an upcoming shoot.",
-  "use_case": "Newsroom Operations",
-  "core_function": "Resource Management",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the newsroom's equipment booking system.",
-      "expected_outcome": "Agent is logged into the booking system.",
-      "required_tools": [
-        "equipment_booking_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_navigation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the newsroom's equipment booking system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is logged into the booking system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the availability of the required camera, lens, and microphone for the dates of the shoot.",
-      "expected_outcome": "Agent confirms the gear is available.",
-      "required_tools": [
-        "equipment_booking_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the availability of the required camera, lens, and microphone for the dates of the shoot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the gear is available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reserve the equipment under their name for the specified dates.",
-      "expected_outcome": "The equipment is successfully booked.",
-      "required_tools": [
-        "equipment_booking_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reserve the equipment under their name for the specified dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The equipment is successfully booked."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

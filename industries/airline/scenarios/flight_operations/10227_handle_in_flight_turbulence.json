@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-fo-10227",
-  "title": "Handle In-Flight Turbulence",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle In-Flight Turbulence",
+    "compliance_level": "Standard"
+  },
   "description": "A flight encounters unexpected severe turbulence. The flight and cabin crew must respond to ensure safety.",
-  "use_case": "Flight Operations",
-  "core_function": "In-Flight Services & Safety",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The flight crew turns on the 'Fasten Seatbelt' sign and makes an announcement to passengers and crew.",
-      "expected_outcome": "Pilots take immediate action to secure the cabin.",
-      "required_tools": [
-        "make_pa_announcement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The flight crew turns on the 'Fasten Seatbelt' sign and makes an announcement to passengers and crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pilots take immediate action to secure the cabin."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cabin crew immediately suspends service, secures carts and galleys, and takes their seats.",
-      "expected_outcome": "Cabin crew follows safety procedures to secure the cabin.",
-      "required_tools": [
-        "secure_cabin"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cabin crew immediately suspends service, secures carts and galleys, and takes their seats.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Cabin crew follows safety procedures to secure the cabin."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The flight crew requests a different altitude from ATC to escape the turbulence and files a PIREP (Pilot Report) to warn other aircraft.",
-      "expected_outcome": "Pilots take action to improve ride comfort and safety and warn other flights.",
-      "required_tools": [
-        "contact_atc",
-        "file_pirep"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The flight crew requests a different altitude from ATC to escape the turbulence and files a PIREP (Pilot Report) to warn other aircraft.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pilots take action to improve ride comfort and safety and warn other flights."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

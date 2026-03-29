@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-cs-14122",
-  "title": "Enroll in Budget Billing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Enroll in Budget Billing",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to enroll in the budget billing program to have predictable monthly payments.",
-  "use_case": "Customer Service",
-  "core_function": "Billing & Account Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's usage history for the past 12 months.",
-      "expected_outcome": "Agent successfully fetches the required historical data.",
-      "required_tools": [
-        "get_usage_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's usage history for the past 12 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully fetches the required historical data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the estimated monthly budget billing amount by averaging the past year's bills.",
-      "expected_outcome": "Agent provides the customer with their calculated monthly payment amount.",
-      "required_tools": [
-        "calculate_budget_billing_amount"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the estimated monthly budget billing amount by averaging the past year's bills.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the customer with their calculated monthly payment amount."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain how the program works, including the periodic settlement process, and enroll the customer.",
-      "expected_outcome": "Agent clearly explains the terms and successfully enrolls the customer in the program.",
-      "required_tools": [
-        "enroll_in_billing_program"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain how the program works, including the periodic settlement process, and enroll the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the terms and successfully enrolls the customer in the program."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

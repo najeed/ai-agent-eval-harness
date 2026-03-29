@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hr-er-11687",
-  "title": "Conduct a Workplace Safety Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct a Workplace Safety Audit",
+    "compliance_level": "Standard"
+  },
   "description": "The EHS (Environment, Health, and Safety) manager is conducting a safety audit of a manufacturing plant.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Policy & Compliance",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the plant's safety records and past incidents.",
-      "expected_outcome": "EHS manager reviews the safety logs for the past year.",
-      "required_tools": [
-        "get_safety_incident_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the plant's safety records and past incidents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "EHS manager reviews the safety logs for the past year."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Conduct a physical walkthrough of the plant using a safety checklist.",
-      "expected_outcome": "Manager inspects the facility and documents any potential hazards (e.g., blocked fire exits, unlabeled chemicals).",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Conduct a physical walkthrough of the plant using a safety checklist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager inspects the facility and documents any potential hazards (e.g., blocked fire exits, unlabeled chemicals)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a corrective action plan based on the audit findings and assign owners for each item.",
-      "expected_outcome": "Manager creates a report with required actions and assigns them to the plant manager.",
-      "required_tools": [
-        "create_corrective_action_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a corrective action plan based on the audit findings and assign owners for each item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager creates a report with required actions and assigns them to the plant manager."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

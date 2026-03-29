@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-im-12204",
-  "title": "Process a Return to Stock",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Return to Stock",
+    "compliance_level": "Standard"
+  },
   "description": "A returned item has been inspected and deemed resalable. An operator must return it to inventory.",
-  "use_case": "Inventory Management",
-  "core_function": "Returns & Reverse Logistics",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the RMA number on the returned product to retrieve its details.",
-      "expected_outcome": "Agent correctly identifies the item and its inspection status ('OK for Restock').",
-      "required_tools": [
-        "get_rma_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the RMA number on the returned product to retrieve its details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the item and its inspection status ('OK for Restock')."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a put-away task for the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The WMS suggests an optimal storage location for the item."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a put-away task for the item.",
-      "expected_outcome": "The WMS suggests an optimal storage location for the item.",
-      "required_tools": [
-        "create_putaway_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Move the item to the suggested location, scan the location and item to confirm, and finalize the task.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully restocks the item, and the system inventory is updated."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Move the item to the suggested location, scan the location and item to confirm, and finalize the task.",
-      "expected_outcome": "Agent successfully restocks the item, and the system inventory is updated.",
-      "required_tools": [
-        "confirm_putaway"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

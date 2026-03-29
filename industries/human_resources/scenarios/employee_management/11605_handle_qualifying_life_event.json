@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hr-em-11605",
-  "title": "Handle a Qualifying Life Event for Benefits",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Qualifying Life Event for Benefits",
+    "compliance_level": "Standard"
+  },
   "description": "An employee just had a baby and needs to add the newborn to their health insurance.",
-  "use_case": "Employee Management",
-  "core_function": "Benefits Administration",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the employee and explain the process for a qualifying life event (QLE).",
-      "expected_outcome": "Agent congratulates the employee and explains the 30-day window to make changes.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the employee and explain the process for a qualifying life event (QLE).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent congratulates the employee and explains the 30-day window to make changes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the employee with a link to the benefits portal and a list of required documents (e.g., birth certificate).",
-      "expected_outcome": "Agent sends the necessary resources to the employee.",
-      "required_tools": [
-        "send_qle_information"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the employee with a link to the benefits portal and a list of required documents (e.g., birth certificate).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the necessary resources to the employee."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the employee makes the change, review and approve the updated benefits enrollment in the system.",
-      "expected_outcome": "Agent verifies the submitted documents and approves the addition of the dependent.",
-      "required_tools": [
-        "approve_benefit_change"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the employee makes the change, review and approve the updated benefits enrollment in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the submitted documents and approves the addition of the dependent."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

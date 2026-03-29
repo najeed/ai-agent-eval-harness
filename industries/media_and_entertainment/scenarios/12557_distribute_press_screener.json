@@ -1,53 +1,59 @@
 {
-  "scenario_id": "media-cp-12557",
-  "title": "Securely Distribute Press Screener",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Securely Distribute Press Screener",
+    "compliance_level": "Standard"
+  },
   "description": "A film studio needs to send a secure, watermarked screener of a new movie to a list of approved journalists before its release.",
-  "use_case": "Content Production & Management",
-  "core_function": "Rights & Royalties",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the final version of the movie and the list of approved journalists.",
-      "expected_outcome": "Agent accesses the movie file and the distribution list.",
-      "required_tools": [
-        "get_video_asset",
-        "get_distribution_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the final version of the movie and the list of approved journalists.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses the movie file and the distribution list."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a unique, forensically watermarked copy of the movie for each journalist.",
-      "expected_outcome": "Agent successfully creates individually watermarked files for each recipient.",
-      "required_tools": [
-        "generate_watermarked_video"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a unique, forensically watermarked copy of the movie for each journalist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates individually watermarked files for each recipient."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a secure, time-limited viewing link for the watermarked copy to each journalist.",
-      "expected_outcome": "Agent successfully distributes the secure links.",
-      "required_tools": [
-        "send_secure_link"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a secure, time-limited viewing link for the watermarked copy to each journalist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully distributes the secure links."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

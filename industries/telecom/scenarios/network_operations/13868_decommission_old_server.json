@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-no-13868",
-  "title": "Decommission Old Network Server",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Decommission Old Network Server",
+    "compliance_level": "Standard"
+  },
   "description": "An old server is being retired. An agent must ensure it is safely removed from the network.",
-  "use_case": "Network Operations",
-  "core_function": "Network Provisioning",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that no active services are still pointing to the old server's IP address.",
-      "expected_outcome": "Agent confirms there are no active DNS records or configurations for the server.",
-      "required_tools": [
-        "check_dns_records",
-        "search_network_configurations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that no active services are still pointing to the old server's IP address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there are no active DNS records or configurations for the server."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Disable the switch ports connected to the server.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully disables the correct switch ports."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Disable the switch ports connected to the server.",
-      "expected_outcome": "Agent successfully disables the correct switch ports.",
-      "required_tools": [
-        "disable_switch_port"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remove the server's IP address from any firewall rules or access control lists.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent cleans up all related firewall rules."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remove the server's IP address from any firewall rules or access control lists.",
-      "expected_outcome": "Agent cleans up all related firewall rules.",
-      "required_tools": [
-        "remove_firewall_rule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

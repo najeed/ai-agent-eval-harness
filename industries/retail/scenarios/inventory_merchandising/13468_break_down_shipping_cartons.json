@@ -1,46 +1,59 @@
 {
-  "scenario_id": "ret-im-13468",
-  "title": "Break Down Shipping Cartons",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Break Down Shipping Cartons",
+    "compliance_level": "Standard"
+  },
   "description": "After restocking shelves, an associate needs to break down the empty cardboard cartons for recycling.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Receiving & Restocking",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all empty cartons from the sales floor.",
-      "expected_outcome": "The associate collects the cardboard waste.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all empty cartons from the sales floor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate collects the cardboard waste."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a box cutter to safely break down the cartons so they are flat.",
-      "expected_outcome": "The cartons are flattened for easier handling.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "safety_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a box cutter to safely break down the cartons so they are flat.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The cartons are flattened for easier handling."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place the flattened cardboard into the designated cardboard recycling baler.",
-      "expected_outcome": "The waste is properly disposed of, keeping the backroom clean and safe.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place the flattened cardboard into the designated cardboard recycling baler.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The waste is properly disposed of, keeping the backroom clean and safe."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

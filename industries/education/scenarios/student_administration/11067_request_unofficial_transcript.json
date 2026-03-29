@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-sa-11067",
-  "title": "Request Unofficial Transcript",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Unofficial Transcript",
+    "compliance_level": "Standard"
+  },
   "description": "A student needs a copy of their unofficial transcript to review their grades.",
-  "use_case": "Student Administration",
-  "core_function": "Student Records & Transcripts",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student.",
-      "expected_outcome": "Agent confirms the student's identity.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the student to the location in the student portal where they can view and print their own unofficial transcript.",
-      "expected_outcome": "Agent provides clear instructions for self-service.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the student to the location in the student portal where they can view and print their own unofficial transcript.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions for self-service."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the student is able to access the document.",
-      "expected_outcome": "Student confirms they have successfully downloaded their transcript.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the student is able to access the document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Student confirms they have successfully downloaded their transcript."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

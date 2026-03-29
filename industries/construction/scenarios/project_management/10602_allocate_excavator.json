@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-pm-10602",
-  "title": "Allocate Excavator to Foundation Work",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Allocate Excavator to Foundation Work",
+    "compliance_level": "Standard"
+  },
   "description": "A site manager needs to allocate an available excavator to the foundation excavation task for the next five days.",
-  "use_case": "Project Management",
-  "core_function": "Resource Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the equipment schedule for the availability of an excavator.",
-      "expected_outcome": "Agent confirms that 'Excavator #2' is available for the required period.",
-      "required_tools": [
-        "get_equipment_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the equipment schedule for the availability of an excavator.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that 'Excavator #2' is available for the required period."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign 'Excavator #2' to the 'Foundation Excavation' task in the project plan.",
-      "expected_outcome": "The resource allocation in the project plan is updated successfully.",
-      "required_tools": [
-        "assign_resource_to_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign 'Excavator #2' to the 'Foundation Excavation' task in the project plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The resource allocation in the project plan is updated successfully."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

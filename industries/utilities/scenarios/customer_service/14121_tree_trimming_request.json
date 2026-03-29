@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-cs-14121",
-  "title": "Request Tree Trimming Near Power Line",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Tree Trimming Near Power Line",
+    "compliance_level": "Standard"
+  },
   "description": "A homeowner is concerned about a large tree branch growing very close to the power line that runs to their house.",
-  "use_case": "Customer Service",
-  "core_function": "Service Orders",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's account and service location.",
-      "expected_outcome": "Agent correctly identifies the customer's address.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's account and service location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer's address."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the utility's vegetation management policy and the division of responsibility (utility vs. homeowner).",
-      "expected_outcome": "Agent clearly communicates that the utility is responsible for the line from the pole to the house.",
-      "required_tools": [
-        "get_vegetation_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the utility's vegetation management policy and the division of responsibility (utility vs. homeowner).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates that the utility is responsible for the line from the pole to the house."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a service order for the vegetation management department to inspect the tree and schedule a trimming crew.",
-      "expected_outcome": "Agent successfully creates a work order for inspection.",
-      "required_tools": [
-        "schedule_service_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a service order for the vegetation management department to inspect the tree and schedule a trimming crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a work order for inspection."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

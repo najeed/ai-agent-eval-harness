@@ -1,49 +1,59 @@
 {
-  "scenario_id": "education-fs-11059",
-  "title": "Check Course Prerequisites",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Course Prerequisites",
+    "compliance_level": "Standard"
+  },
   "description": "A curriculum committee member needs to verify the official prerequisites for an existing course before approving a new, dependent course.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "Curriculum Development & Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the course in question (e.g., 'CHEM301').",
-      "expected_outcome": "Agent correctly identifies the target course.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the course in question (e.g., 'CHEM301').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the target course."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the official prerequisite information from the curriculum management system.",
-      "expected_outcome": "Agent finds that the prerequisite for 'CHEM301' is 'CHEM201 with a grade of C or better'.",
-      "required_tools": [
-        "get_course_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the official prerequisite information from the curriculum management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that the prerequisite for 'CHEM301' is 'CHEM201 with a grade of C or better'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the verified prerequisite information to the committee member.",
-      "expected_outcome": "Agent accurately communicates the findings.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the verified prerequisite information to the committee member.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately communicates the findings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

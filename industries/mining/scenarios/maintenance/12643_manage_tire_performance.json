@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-maint-12643",
-  "title": "Manage Haul Truck Tire Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Haul Truck Tire Performance",
+    "compliance_level": "Standard"
+  },
   "description": "A tire specialist monitors the condition of haul truck tires to maximize their lifespan and avoid premature failures.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Asset Strategy & Planning",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve real-time data from the tire pressure monitoring system (TPMS) for the entire truck fleet.",
-      "expected_outcome": "A dashboard shows the current pressure and temperature of every tire.",
-      "required_tools": [
-        "get_tpms_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve real-time data from the tire pressure monitoring system (TPMS) for the entire truck fleet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A dashboard shows the current pressure and temperature of every tire."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Receive an alert for a tire on truck HT-25 that is running hot and losing pressure.",
-      "expected_outcome": "The specialist acknowledges the alert, which indicates a potential problem.",
-      "required_tools": [
-        "get_fms_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "response_time_minutes",
-          "threshold": 5
+      },
+      {
+        "id": "task-2",
+        "task_description": "Receive an alert for a tire on truck HT-25 that is running hot and losing pressure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The specialist acknowledges the alert, which indicates a potential problem."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the mine dispatcher to route the truck to the workshop immediately for a tire change to prevent a blowout.",
-      "expected_outcome": "The truck is safely routed to the workshop, and a potentially dangerous tire failure is averted.",
-      "required_tools": [
-        "send_instruction_to_dispatcher"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_management_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the mine dispatcher to route the truck to the workshop immediately for a tire change to prevent a blowout.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The truck is safely routed to the workshop, and a potentially dangerous tire failure is averted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

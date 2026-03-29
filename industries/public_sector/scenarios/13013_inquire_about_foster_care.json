@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-cs-13013",
-  "title": "Inquire About Becoming a Foster Parent",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About Becoming a Foster Parent",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen is interested in becoming a foster parent and is calling for information.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Information & Inquiry Resolution",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Provide information on the basic requirements to become a foster parent.",
-      "expected_outcome": "Agent clearly explains the eligibility criteria (e.g., age, background check).",
-      "required_tools": [
-        "get_program_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Provide information on the basic requirements to become a foster parent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the eligibility criteria (e.g., age, background check)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the application and training process.",
-      "expected_outcome": "Agent outlines the steps involved, from application to certification.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the application and training process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent outlines the steps involved, from application to certification."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Sign the caller up for an upcoming information session.",
-      "expected_outcome": "Agent successfully registers the caller for an info session.",
-      "required_tools": [
-        "register_for_event"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Sign the caller up for an upcoming information session.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully registers the caller for an info session."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

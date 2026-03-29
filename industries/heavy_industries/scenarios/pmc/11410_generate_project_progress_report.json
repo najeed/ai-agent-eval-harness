@@ -1,55 +1,59 @@
 {
-  "scenario_id": "heavy-industries-pmc-11410",
-  "title": "Generate Monthly Project Progress Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Monthly Project Progress Report",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager needs to generate the official monthly progress report for project stakeholders.",
-  "use_case": "Project Management & Controls",
-  "core_function": "Project Reporting & Communication",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the latest schedule update, cost report, and safety statistics for the month.",
-      "expected_outcome": "Agent retrieves the required data from various systems.",
-      "required_tools": [
-        "get_project_schedule",
-        "get_cost_report",
-        "get_safety_statistics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the latest schedule update, cost report, and safety statistics for the month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the required data from various systems."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a reporting template to populate the data into a standard format.",
-      "expected_outcome": "Agent successfully populates the monthly report template.",
-      "required_tools": [
-        "populate_report_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a reporting template to populate the data into a standard format.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully populates the monthly report template."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the final report as a PDF and distribute it to the project stakeholder mailing list.",
-      "expected_outcome": "Agent creates the final PDF and emails it to the correct recipients.",
-      "required_tools": [
-        "generate_pdf_report",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the final report as a PDF and distribute it to the project stakeholder mailing list.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the final PDF and emails it to the correct recipients."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

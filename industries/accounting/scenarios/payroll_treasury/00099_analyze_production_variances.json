@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-pt-99",
-  "title": "Analyze Production Cost Variances",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Production Cost Variances",
+    "compliance_level": "Standard"
+  },
   "description": "A manufacturing company's results show a significant unfavorable material variance. A cost accountant needs to investigate.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Compliance & Cost Accounting",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the production variance report for the month.",
-      "expected_outcome": "Agent gets the report showing the total material variance.",
-      "required_tools": [
-        "get_production_variance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the production variance report for the month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the report showing the total material variance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Break down the total material variance into its price and quantity components.",
-      "expected_outcome": "Agent calculates that the variance is primarily due to a price variance, not a usage variance.",
-      "required_tools": [
-        "calculate_cost_variances"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Break down the total material variance into its price and quantity components.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates that the variance is primarily due to a price variance, not a usage variance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Drill down to find which specific raw materials had the largest price variances by comparing actual purchase prices to standard costs.",
-      "expected_outcome": "Agent discovers that the price of a key raw material increased by 15% during the month, causing most of the variance.",
-      "required_tools": [
-        "analyze_purchase_price_variance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Drill down to find which specific raw materials had the largest price variances by comparing actual purchase prices to standard costs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent discovers that the price of a key raw material increased by 15% during the month, causing most of the variance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,48 +1,59 @@
 {
-  "scenario_id": "utils-cs-14185",
-  "title": "Report Open Fire Hydrant",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Open Fire Hydrant",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen calls to report that a fire hydrant is open and gushing water.",
-  "use_case": "Customer Service",
-  "core_function": "Service Orders",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the precise location of the open hydrant.",
-      "expected_outcome": "Agent accurately records the location.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the precise location of the open hydrant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records the location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask if there is any fire department activity nearby to determine if the use is authorized.",
-      "expected_outcome": "Caller reports no fire department activity.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask if there is any fire department activity nearby to determine if the use is authorized.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Caller reports no fire department activity."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-priority service order for a water crew to go and shut off the hydrant.",
-      "expected_outcome": "Agent dispatches a crew to address the water waste.",
-      "required_tools": [
-        "schedule_service_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-priority service order for a water crew to go and shut off the hydrant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches a crew to address the water waste."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

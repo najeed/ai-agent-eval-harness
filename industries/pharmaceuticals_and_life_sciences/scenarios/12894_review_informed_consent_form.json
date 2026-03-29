@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ct-12894",
-  "title": "Review an Informed Consent Form (ICF)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review an Informed Consent Form (ICF)",
+    "compliance_level": "Standard"
+  },
   "description": "A clinical scientist must review a draft ICF to ensure it accurately describes the study procedures and risks in language a patient can understand.",
-  "use_case": "Clinical Trials",
-  "core_function": "Trial Design & Feasibility",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Compare the procedures listed in the ICF against the study protocol.",
-      "expected_outcome": "Agent verifies that all study procedures from the protocol are included in the ICF.",
-      "required_tools": [
-        "compare_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Compare the procedures listed in the ICF against the study protocol.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that all study procedures from the protocol are included in the ICF."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assess the readability of the ICF.",
-      "expected_outcome": "Agent uses a readability tool and finds the text is written at a 12th-grade level, which is too high.",
-      "required_tools": [
-        "check_readability_score"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assess the readability of the ICF.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses a readability tool and finds the text is written at a 12th-grade level, which is too high."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Revise the ICF to simplify complex medical terms and improve readability.",
-      "expected_outcome": "Agent edits the document to achieve an 8th-grade reading level.",
-      "required_tools": [
-        "edit_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Revise the ICF to simplify complex medical terms and improve readability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent edits the document to achieve an 8th-grade reading level."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Route the revised ICF for final approval.",
-      "expected_outcome": "Agent sends the updated document for review.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Route the revised ICF for final approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the updated document for review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

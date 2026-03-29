@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10800",
-  "title": "Merger & Acquisition Risk Assessment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Merger & Acquisition Risk Assessment",
+    "compliance_level": "Standard"
+  },
   "description": "A GRC analyst must perform a high-level cybersecurity risk assessment of a company that is being acquired.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Risk Assessment & Management",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Conduct external reconnaissance of the target company's internet footprint to look for obvious security issues.",
-      "expected_outcome": "Analyst discovers the company is exposing several unpatched, legacy systems to the internet.",
-      "required_tools": [
-        "conduct_external_recon"
-      ],
-      "success_criteria": [
-        {
-          "metric": "finding_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Conduct external reconnaissance of the target company's internet footprint to look for obvious security issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst discovers the company is exposing several unpatched, legacy systems to the internet."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review public reports of past data breaches or security incidents involving the target company.",
-      "expected_outcome": "Analyst finds the company suffered a major ransomware attack two years ago.",
-      "required_tools": [
-        "search_public_breach_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "research_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review public reports of past data breaches or security incidents involving the target company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst finds the company suffered a major ransomware attack two years ago."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-level risk report for the M&A team, highlighting the potential costs of remediating the target's poor security posture post-acquisition.",
-      "expected_outcome": "Analyst provides a valuable input to the M&A due diligence process, potentially impacting the acquisition price.",
-      "required_tools": [
-        "generate_risk_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_utility",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-level risk report for the M&A team, highlighting the potential costs of remediating the target's poor security posture post-acquisition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst provides a valuable input to the M&A due diligence process, potentially impacting the acquisition price."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

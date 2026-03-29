@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-am-10079",
-  "title": "Perform a Fuel System Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Fuel System Test",
+    "compliance_level": "Standard"
+  },
   "description": "On a newly built aircraft, engineers must test the entire fuel system, including pumps, valves, and gauges.",
-  "use_case": "Aircraft Manufacturing",
-  "core_function": "Testing & Certification",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Fill the aircraft's fuel tanks to various levels.",
-      "expected_outcome": "Agent oversees the fueling of the aircraft.",
-      "required_tools": [
-        "operate_fueling_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Fill the aircraft's fuel tanks to various levels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent oversees the fueling of the aircraft."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Operate the fuel pumps and valves to simulate transferring fuel between different tanks.",
-      "expected_outcome": "Agent runs a test script and confirms fuel transfers correctly.",
-      "required_tools": [
-        "run_system_test_script"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Operate the fuel pumps and valves to simulate transferring fuel between different tanks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs a test script and confirms fuel transfers correctly."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that the fuel quantity gauges in the cockpit provide accurate readings for each tank.",
-      "expected_outcome": "Agent compares the gauge readings to the known fuel quantity and confirms they are accurate within tolerance.",
-      "required_tools": [
-        "check_gauge_accuracy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that the fuel quantity gauges in the cockpit provide accurate readings for each tank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compares the gauge readings to the known fuel quantity and confirms they are accurate within tolerance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-proc-12637",
-  "title": "Manage High-Pressure Autoclave",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage High-Pressure Autoclave",
+    "compliance_level": "Standard"
+  },
   "description": "An operator at a gold processing plant manages a high-pressure, high-temperature autoclave used for pressure oxidation (POX) of refractory ores.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Mineral Separation",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the key operating parameters of the autoclave: temperature, pressure, and oxygen level.",
-      "expected_outcome": "Operator confirms that the autoclave is running stably within its safe operating envelope.",
-      "required_tools": [
-        "get_autoclave_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the key operating parameters of the autoclave: temperature, pressure, and oxygen level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator confirms that the autoclave is running stably within its safe operating envelope."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the lab results for the autoclave discharge to check the sulfide oxidation rate.",
-      "expected_outcome": "Lab results show that the oxidation rate is 98%, meeting the target for good gold recovery downstream.",
-      "required_tools": [
-        "get_lab_assay_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the lab results for the autoclave discharge to check the sulfide oxidation rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Lab results show that the oxidation rate is 98%, meeting the target for good gold recovery downstream."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Make a small adjustment to the oxygen injection rate to optimize performance and reduce operating costs.",
-      "expected_outcome": "The oxygen flow is slightly trimmed without affecting oxidation performance.",
-      "required_tools": [
-        "set_oxygen_flow_rate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "resource_allocation_efficiency",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Make a small adjustment to the oxygen injection rate to optimize performance and reduce operating costs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The oxygen flow is slightly trimmed without affecting oxidation performance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

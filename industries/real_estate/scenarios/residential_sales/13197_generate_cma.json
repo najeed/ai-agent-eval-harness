@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-res-13197",
-  "title": "Generate Comparative Market Analysis (CMA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Comparative Market Analysis (CMA)",
+    "compliance_level": "Standard"
+  },
   "description": "A seller client requests a CMA to determine a listing price for their home. The agent must find comparable properties and generate a report.",
-  "use_case": "Residential Sales",
-  "core_function": "Buyer & Seller Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the subject property's details (address, beds, baths, sqft).",
-      "expected_outcome": "Agent correctly identifies the key features of the seller's property.",
-      "required_tools": [
-        "get_property_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the subject property's details (address, beds, baths, sqft).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the key features of the seller's property."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the MLS for recently sold, active, and pending comparable properties within a 1-mile radius.",
-      "expected_outcome": "Agent finds at least 3 sold, 3 active, and 2 pending comps.",
-      "required_tools": [
-        "search_mls_comps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the MLS for recently sold, active, and pending comparable properties within a 1-mile radius.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds at least 3 sold, 3 active, and 2 pending comps."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a CMA report summarizing the comps and suggesting a price range.",
-      "expected_outcome": "Agent produces a formatted CMA report with a logical price recommendation.",
-      "required_tools": [
-        "generate_cma_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a CMA report summarizing the comps and suggesting a price range.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a formatted CMA report with a logical price recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

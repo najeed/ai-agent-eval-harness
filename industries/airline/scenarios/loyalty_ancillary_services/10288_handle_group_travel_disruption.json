@@ -1,54 +1,59 @@
 {
-  "scenario_id": "airline-las-10288",
-  "title": "Handle a Group Travel Disruption",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Group Travel Disruption",
+    "compliance_level": "Standard"
+  },
   "description": "A flight carrying a school group has been cancelled. An agent must rebook the entire group together on a new flight.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Corporate & Group Sales",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the cancelled flight and retrieve the group booking associated with it.",
-      "expected_outcome": "Agent finds the group booking.",
-      "required_tools": [
-        "get_group_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the cancelled flight and retrieve the group booking associated with it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the group booking."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for alternative flights that have enough available seats to accommodate the entire group.",
-      "expected_outcome": "Agent finds a later flight with enough seats.",
-      "required_tools": [
-        "search_flights_with_group_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for alternative flights that have enough available seats to accommodate the entire group.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a later flight with enough seats."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Rebook the entire group onto the new flight and ensure they are still seated together.",
-      "expected_outcome": "Agent successfully rebooks the group and assigns them seats together on the new flight.",
-      "required_tools": [
-        "rebook_group",
-        "assign_group_seats"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Rebook the entire group onto the new flight and ensure they are still seated together.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully rebooks the group and assigns them seats together on the new flight."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

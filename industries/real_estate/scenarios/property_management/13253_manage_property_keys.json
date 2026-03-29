@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13253",
-  "title": "Manage Property Key Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Property Key Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A vendor needs a key to a property for a repair. The agent must check out a key and log it.",
-  "use_case": "Property Management",
-  "core_function": "Maintenance & Operations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the property and the corresponding key set in the key management system.",
-      "expected_outcome": "Agent finds the correct key in the inventory.",
-      "required_tools": [
-        "search_key_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the property and the corresponding key set in the key management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct key in the inventory."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the key as being checked out to the specific vendor for the specific work order.",
-      "expected_outcome": "Agent accurately updates the key's status in the log.",
-      "required_tools": [
-        "checkout_key"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the key as being checked out to the specific vendor for the specific work order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately updates the key's status in the log."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set a reminder to follow up with the vendor to ensure the key is returned after the job is complete.",
-      "expected_outcome": "Agent sets a follow-up task to track the key's return.",
-      "required_tools": [
-        "create_task_reminder"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set a reminder to follow up with the vendor to ensure the key is returned after the job is complete.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets a follow-up task to track the key's return."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

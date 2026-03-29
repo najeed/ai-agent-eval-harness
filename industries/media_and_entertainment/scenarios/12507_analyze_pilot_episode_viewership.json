@@ -1,68 +1,72 @@
 {
-  "scenario_id": "media-ae-12507",
-  "title": "Analyze Viewership Data for a Pilot Episode",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Viewership Data for a Pilot Episode",
+    "compliance_level": "Standard"
+  },
   "description": "A TV network needs a report on the viewership performance of a new show's pilot episode to decide whether to order a full season.",
-  "use_case": "Audience Engagement & Subscriber Management",
-  "core_function": "Audience Analytics",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all viewership data for the pilot episode across linear broadcast and on-demand streaming.",
-      "expected_outcome": "Agent compiles a complete dataset of viewership numbers.",
-      "required_tools": [
-        "get_broadcast_ratings",
-        "get_streaming_viewership_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_aggregation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all viewership data for the pilot episode across linear broadcast and on-demand streaming.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a complete dataset of viewership numbers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze viewer retention throughout the episode (minute-by-minute drop-off rate).",
-      "expected_outcome": "Agent identifies a significant viewer drop-off after the first 10 minutes.",
-      "required_tools": [
-        "analyze_viewer_retention"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze viewer retention throughout the episode (minute-by-minute drop-off rate).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a significant viewer drop-off after the first 10 minutes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the pilot's performance against historical data for successful shows in the same genre.",
-      "expected_outcome": "Agent determines the pilot underperformed by 30% compared to the average successful drama.",
-      "required_tools": [
-        "benchmark_content_performance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the pilot's performance against historical data for successful shows in the same genre.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the pilot underperformed by 30% compared to the average successful drama."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a summary report with key metrics and a recommendation against ordering a full season.",
-      "expected_outcome": "Agent produces a concise report with a clear, data-driven recommendation.",
-      "required_tools": [
-        "generate_performance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a summary report with key metrics and a recommendation against ordering a full season.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a concise report with a clear, data-driven recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

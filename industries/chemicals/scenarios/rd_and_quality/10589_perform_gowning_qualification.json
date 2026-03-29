@@ -1,50 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10589",
-  "title": "Perform Gowning Qualification",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Gowning Qualification",
+    "compliance_level": "Standard"
+  },
   "description": "A new employee must demonstrate proper aseptic gowning technique to be qualified to enter a cleanroom.",
-  "use_case": "R&D and Quality",
-  "core_function": "Quality Assurance",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Observe the employee perform the gowning procedure.",
-      "expected_outcome": "A qualified trainer observes the employee.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Observe the employee perform the gowning procedure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A qualified trainer observes the employee."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the employee's technique against the official SOP for gowning.",
-      "expected_outcome": "The trainer confirms the employee followed all steps correctly.",
-      "required_tools": [
-        "get_sop_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the employee's technique against the official SOP for gowning.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The trainer confirms the employee followed all steps correctly."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the successful completion of the gowning qualification in the employee's training file.",
-      "expected_outcome": "The trainer signs off on the qualification record in the training management system.",
-      "required_tools": [
-        "update_employee_training_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the successful completion of the gowning qualification in the employee's training file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The trainer signs off on the qualification record in the training management system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

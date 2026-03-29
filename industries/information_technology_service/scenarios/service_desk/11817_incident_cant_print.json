@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11817",
-  "title": "Incident - Can't Print",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Incident - Can't Print",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports they are unable to print to the main office printer, getting an 'access denied' error.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "Incident & Request Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the printer is online and accessible on the network.",
-      "expected_outcome": "The technician pings the printer successfully and can access its web interface.",
-      "required_tools": [
-        "ping_device"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the printer is online and accessible on the network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician pings the printer successfully and can access its web interface."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Restart the print spooler service on the user's computer.",
-      "expected_outcome": "Restarting the spooler does not resolve the issue.",
-      "required_tools": [
-        "run_script_on_endpoint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Restart the print spooler service on the user's computer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Restarting the spooler does not resolve the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remove and re-add the printer on the user's computer, forcing it to re-download the driver and settings.",
-      "expected_outcome": "Re-installing the printer resolves the access issue and the user can now print.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remove and re-add the printer on the user's computer, forcing it to re-download the driver and settings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Re-installing the printer resolves the access issue and the user can now print."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

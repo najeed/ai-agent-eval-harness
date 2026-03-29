@@ -1,68 +1,72 @@
 {
-  "scenario_id": "sports-lm-13650",
-  "title": "Review Referee Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Referee Performance",
+    "compliance_level": "Standard"
+  },
   "description": "After a controversial game, a team submits a formal complaint about the referee's performance. The league must review it.",
-  "use_case": "League & Competition Management",
-  "core_function": "Officiating & Rules Enforcement",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the team's formal complaint and the list of specific calls they are disputing.",
-      "expected_outcome": "Agent has the details of the complaint.",
-      "required_tools": [
-        "get_formal_complaint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the team's formal complaint and the list of specific calls they are disputing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the details of the complaint."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the video of each disputed call.",
-      "expected_outcome": "Agent analyzes each play in question.",
-      "required_tools": [
-        "review_game_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the video of each disputed call.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent analyzes each play in question."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a performance report for the referee, noting any incorrect calls.",
-      "expected_outcome": "Agent creates a report that finds two of the five disputed calls were incorrect.",
-      "required_tools": [
-        "generate_referee_performance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a performance report for the referee, noting any incorrect calls.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a report that finds two of the five disputed calls were incorrect."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Send a response to the team acknowledging their complaint and the findings of the review.",
-      "expected_outcome": "Agent sends a formal response to the team.",
-      "required_tools": [
-        "send_formal_response"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Send a response to the team acknowledging their complaint and the findings of the review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a formal response to the team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

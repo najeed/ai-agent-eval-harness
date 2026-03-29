@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-no-12059",
-  "title": "Track a Reporter's Progress on a Story",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track a Reporter's Progress on a Story",
+    "compliance_level": "Standard"
+  },
   "description": "An editor needs to check in on a reporter's progress for a long-term story to ensure it is on track to meet its deadline.",
-  "use_case": "Newsroom Operations",
-  "core_function": "Assignment & Workflow",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the story's entry in the newsroom management system.",
-      "expected_outcome": "Agent accesses the story's project file.",
-      "required_tools": [
-        "newsroom_management_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_navigation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the story's entry in the newsroom management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses the story's project file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the reporter's logged activities, notes, and the current status of the story.",
-      "expected_outcome": "Agent gets an overview of the work done so far.",
-      "required_tools": [
-        "newsroom_management_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the reporter's logged activities, notes, and the current status of the story.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets an overview of the work done so far."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a message to the reporter asking for a brief status update and if they are facing any roadblocks.",
-      "expected_outcome": "The editor proactively checks in with the reporter.",
-      "required_tools": [
-        "communication_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a message to the reporter asking for a brief status update and if they are facing any roadblocks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The editor proactively checks in with the reporter."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

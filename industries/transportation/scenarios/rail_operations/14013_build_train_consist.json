@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-ro-14013",
-  "title": "Build a Train Consist",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Build a Train Consist",
+    "compliance_level": "Standard"
+  },
   "description": "A yard planner needs to create a consist (a list of locomotives and railcars) for a new outbound train.",
-  "use_case": "Rail Operations",
-  "core_function": "Train & Crew Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new train ID for the scheduled departure.",
-      "expected_outcome": "A new train record is created.",
-      "required_tools": [
-        "create_train_id"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new train ID for the scheduled departure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new train record is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign two locomotives from the available power pool to the train.",
-      "expected_outcome": "Two locomotives are correctly assigned.",
-      "required_tools": [
-        "assign_locomotive_to_train"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign two locomotives from the available power pool to the train.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Two locomotives are correctly assigned."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add a list of 85 railcars to the train consist in the correct sequence.",
-      "expected_outcome": "All railcars are added to the train record.",
-      "required_tools": [
-        "add_railcar_to_train"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add a list of 85 railcars to the train consist in the correct sequence.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All railcars are added to the train record."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Validate the train consist for length and weight against track restrictions for the planned route.",
-      "expected_outcome": "The system confirms the train is within the limits for its route.",
-      "required_tools": [
-        "validate_train_consist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Validate the train consist for length and weight against track restrictions for the planned route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms the train is within the limits for its route."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

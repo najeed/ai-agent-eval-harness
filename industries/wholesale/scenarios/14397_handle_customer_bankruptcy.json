@@ -1,50 +1,59 @@
 {
-  "scenario_id": "wholesale-cr-14397",
-  "title": "Handle a Customer Bankruptcy Filing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Customer Bankruptcy Filing",
+    "compliance_level": "Standard"
+  },
   "description": "A customer files for bankruptcy. The finance department must file a claim for any outstanding debt.",
-  "use_case": "Customer & Retailer Support",
-  "core_function": "Claims & Dispute Resolution",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive notification of the customer's bankruptcy filing.",
-      "expected_outcome": "The legal department is alerted.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive notification of the customer's bankruptcy filing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The legal department is alerted."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compile a list of all outstanding invoices for the customer.",
-      "expected_outcome": "Agent generates a report of all money owed.",
-      "required_tools": [
-        "get_open_invoices_by_customer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compile a list of all outstanding invoices for the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a report of all money owed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "File a proof of claim with the bankruptcy court for the outstanding amount.",
-      "expected_outcome": "Agent successfully files the legal claim.",
-      "required_tools": [
-        "file_proof_of_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "File a proof of claim with the bankruptcy court for the outstanding amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully files the legal claim."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

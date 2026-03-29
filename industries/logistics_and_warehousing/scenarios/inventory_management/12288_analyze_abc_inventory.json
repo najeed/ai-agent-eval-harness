@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-im-12288",
-  "title": "Perform ABC Inventory Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform ABC Inventory Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst wants to classify all products into A, B, or C categories based on their value and sales volume to prioritize inventory management efforts.",
-  "use_case": "Inventory Management",
-  "core_function": "Inventory Analysis",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a report of all products with their annual sales volume and unit cost.",
-      "expected_outcome": "Agent gets the raw data needed for the analysis.",
-      "required_tools": [
-        "get_product_sales_and_cost_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a report of all products with their annual sales volume and unit cost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the raw data needed for the analysis."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total annual consumption value for each product (Annual Sales x Unit Cost).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The consumption value is calculated for every item."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total annual consumption value for each product (Annual Sales x Unit Cost).",
-      "expected_outcome": "The consumption value is calculated for every item.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Sort the products by consumption value and apply the ABC classification logic (e.g., 'A' items are the top 80% of value, 'B' the next 15%, 'C' the final 5%).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system assigns an A, B, or C category to each product."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the product master records with their new ABC classification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The ABC code is now a permanent attribute of each product."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Sort the products by consumption value and apply the ABC classification logic (e.g., 'A' items are the top 80% of value, 'B' the next 15%, 'C' the final 5%).",
-      "expected_outcome": "The system assigns an A, B, or C category to each product.",
-      "required_tools": [
-        "run_abc_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the product master records with their new ABC classification.",
-      "expected_outcome": "The ABC code is now a permanent attribute of each product.",
-      "required_tools": [
-        "update_product_abc_code"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

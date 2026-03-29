@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-com-13279",
-  "title": "Track Upcoming Lease Expirations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Upcoming Lease Expirations",
+    "compliance_level": "Standard"
+  },
   "description": "A commercial property manager needs to identify all leases expiring in the next 12 months to begin renewal discussions.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Property & Asset Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a report to find all leases with an expiration date within the next 365 days.",
-      "expected_outcome": "Agent generates a list of all upcoming lease expirations.",
-      "required_tools": [
-        "get_lease_expiration_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a report to find all leases with an expiration date within the next 365 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of all upcoming lease expirations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each expiring lease, review the renewal option clause.",
-      "expected_outcome": "Agent notes the terms and notification deadline for each renewal option.",
-      "required_tools": [
-        "get_lease_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each expiring lease, review the renewal option clause.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent notes the terms and notification deadline for each renewal option."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a task for the responsible agent to initiate renewal discussions with each tenant 9 months prior to expiration.",
-      "expected_outcome": "Agent creates and assigns follow-up tasks for each expiring lease.",
-      "required_tools": [
-        "create_task_reminder"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a task for the responsible agent to initiate renewal discussions with each tenant 9 months prior to expiration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates and assigns follow-up tasks for each expiring lease."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

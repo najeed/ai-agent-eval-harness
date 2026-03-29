@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-qc-12350",
-  "title": "Acknowledge new version of a compliance document",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Acknowledge new version of a compliance document",
+    "compliance_level": "Standard"
+  },
   "description": "A new version of a safety procedure has been released. An operator needs to acknowledge that they have read and understood it.",
-  "use_case": "Quality Assurance & Control",
-  "core_function": "Compliance & Auditing",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the list of pending training or document acknowledgements.",
-      "expected_outcome": "Agent sees the new safety procedure in their to-do list.",
-      "required_tools": [
-        "get_pending_acknowledgements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the list of pending training or document acknowledgements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees the new safety procedure in their to-do list."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Open and review the new document.",
-      "expected_outcome": "Agent reads the updated safety procedure.",
-      "required_tools": [
-        "get_document_by_id"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Open and review the new document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reads the updated safety procedure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Electronically sign to acknowledge understanding of the new procedure.",
-      "expected_outcome": "Agent signs off on the document, and it is removed from their pending list.",
-      "required_tools": [
-        "acknowledge_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Electronically sign to acknowledge understanding of the new procedure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent signs off on the document, and it is removed from their pending list."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

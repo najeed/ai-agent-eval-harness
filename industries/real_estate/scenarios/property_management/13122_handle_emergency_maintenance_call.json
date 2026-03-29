@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13122",
-  "title": "Handle After-Hours Emergency Maintenance Call",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle After-Hours Emergency Maintenance Call",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant calls the after-hours line to report a burst pipe. The on-call manager must take immediate action.",
-  "use_case": "Property Management",
-  "core_function": "Maintenance & Vendor Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Quickly identify the tenant, property, and confirm the nature of the emergency ('Burst Pipe').",
-      "expected_outcome": "Agent gathers critical details in under 2 minutes.",
-      "required_tools": [
-        "get_tenant_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Quickly identify the tenant, property, and confirm the nature of the emergency ('Burst Pipe').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers critical details in under 2 minutes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the 24/7 emergency plumbing vendor and dispatch them to the property.",
-      "expected_outcome": "Agent successfully contacts the emergency vendor and provides them with the address and issue.",
-      "required_tools": [
-        "contact_emergency_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the 24/7 emergency plumbing vendor and dispatch them to the property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully contacts the emergency vendor and provides them with the address and issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the tenant on any immediate steps to take, such as locating the main water shut-off valve.",
-      "expected_outcome": "Agent provides clear, calming instructions to the tenant to mitigate damage.",
-      "required_tools": [
-        "provide_emergency_instructions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the tenant on any immediate steps to take, such as locating the main water shut-off valve.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear, calming instructions to the tenant to mitigate damage."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

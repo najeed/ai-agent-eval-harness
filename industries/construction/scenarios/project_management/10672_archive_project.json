@@ -1,52 +1,59 @@
 {
-  "scenario_id": "construction-pm-10672",
-  "title": "Archive a Completed Project",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Archive a Completed Project",
+    "compliance_level": "Standard"
+  },
   "description": "A project has been completed and all payments settled. The PM must formally archive the project.",
-  "use_case": "Project Management",
-  "core_function": "Budgeting & Cost Control",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a final project closeout report, summarizing schedule performance, cost performance, and major issues.",
-      "expected_outcome": "A comprehensive closeout report is generated.",
-      "required_tools": [
-        "generate_project_closeout_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a final project closeout report, summarizing schedule performance, cost performance, and major issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive closeout report is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather all project documents, including contracts, drawings, RFIs, and submittals, into a single archive file.",
-      "expected_outcome": "All project documents are compiled.",
-      "required_tools": [
-        "compile_project_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather all project documents, including contracts, drawings, RFIs, and submittals, into a single archive file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All project documents are compiled."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set the project status to 'Archived' in the project management system, making it read-only.",
-      "expected_outcome": "The project is successfully archived.",
-      "required_tools": [
-        "update_project_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set the project status to 'Archived' in the project management system, making it read-only.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project is successfully archived."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

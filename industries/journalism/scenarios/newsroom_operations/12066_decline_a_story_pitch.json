@@ -1,51 +1,59 @@
 {
-  "scenario_id": "journalism-no-12066",
-  "title": "Decline a Story Pitch",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Decline a Story Pitch",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter pitches a story, but the editor decides it is not a good fit for the publication and must decline it constructively.",
-  "use_case": "Newsroom Operations",
-  "core_function": "Assignment & Workflow",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the reporter's pitch document.",
-      "expected_outcome": "The editor fully understands the proposed story.",
-      "required_tools": [
-        "document_viewer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehension_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the reporter's pitch document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The editor fully understands the proposed story."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Formulate a clear reason for declining the pitch (e.g., 'it's too similar to a story we ran last month,' or 'we don't have the resources for this kind of investigation right now').",
-      "expected_outcome": "A clear, valid reason for the decision is established.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Formulate a clear reason for declining the pitch (e.g., 'it's too similar to a story we ran last month,' or 'we don't have the resources for this kind of investigation right now').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear, valid reason for the decision is established."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Communicate the decision to the reporter in a respectful and constructive way, perhaps suggesting an alternative angle.",
-      "expected_outcome": "The reporter understands the decision and receives constructive feedback.",
-      "required_tools": [
-        "communication_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Communicate the decision to the reporter in a respectful and constructive way, perhaps suggesting an alternative angle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The reporter understands the decision and receives constructive feedback."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

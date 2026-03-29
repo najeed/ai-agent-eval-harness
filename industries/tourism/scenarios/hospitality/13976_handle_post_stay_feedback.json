@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13976",
-  "title": "Handle Post-Stay Feedback",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Post-Stay Feedback",
+    "compliance_level": "Standard"
+  },
   "description": "A loyalty member sends an email complaining about slow service at the hotel restaurant during their recent stay.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Loyalty & Guest Relations",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the guest's loyalty profile and recent stay information.",
-      "expected_outcome": "Agent identifies the guest and the stay they are referring to.",
-      "required_tools": [
-        "get_loyalty_account",
-        "get_past_reservation_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the guest's loyalty profile and recent stay information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the guest and the stay they are referring to."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a response apologizing for the experience and acknowledging their feedback.",
-      "expected_outcome": "Agent writes an empathetic and professional response.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a response apologizing for the experience and acknowledging their feedback.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes an empathetic and professional response."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "As a service recovery gesture, credit bonus points to the guest's loyalty account.",
-      "expected_outcome": "Agent successfully adds goodwill points to the guest's account.",
-      "required_tools": [
-        "credit_loyalty_points"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "As a service recovery gesture, credit bonus points to the guest's loyalty account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds goodwill points to the guest's account."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

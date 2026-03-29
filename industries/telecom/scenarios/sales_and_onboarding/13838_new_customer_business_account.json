@@ -1,86 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13838",
-  "title": "New Customer Acquisition - Business Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Customer Acquisition - Business Account",
+    "compliance_level": "Standard"
+  },
   "description": "A small business owner wants to set up 5 lines with a shared data pool.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "New Customer Acquisition",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather business details and credit check requirements.",
-      "expected_outcome": "Agent collects all necessary information for a business account setup.",
-      "required_tools": [
-        "run_business_credit_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather business details and credit check requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary information for a business account setup."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Recommend a suitable business plan with a shared data pool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recommends the 'Business Flex 100GB' plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Recommend a suitable business plan with a shared data pool.",
-      "expected_outcome": "Agent recommends the 'Business Flex 100GB' plan.",
-      "required_tools": [
-        "get_business_plans"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create the master business account and process the order for the 5 lines.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the account and order."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create the master business account and process the order for the 5 lines.",
-      "expected_outcome": "Agent successfully creates the account and order.",
-      "required_tools": [
-        "create_business_account",
-        "process_new_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tax-ind-13754",
-  "title": "Claim Earned Income Tax Credit (EITC)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Claim Earned Income Tax Credit (EITC)",
+    "compliance_level": "Standard"
+  },
   "description": "A low-income taxpayer with two children needs to determine their eligibility for the EITC.",
-  "use_case": "Individual Tax Preparation & Filing",
-  "core_function": "Deductions & Credits Optimization",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather information on the taxpayer's filing status, income, and qualifying children.",
-      "expected_outcome": "Agent collects all necessary data.",
-      "required_tools": [
-        "enter_dependent_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather information on the taxpayer's filing status, income, and qualifying children.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Complete the EITC due diligence checklist to ensure all eligibility rules are met.",
-      "expected_outcome": "Agent confirms the taxpayer is eligible for the credit.",
-      "required_tools": [
-        "complete_eitc_due_diligence"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Complete the EITC due diligence checklist to ensure all eligibility rules are met.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the taxpayer is eligible for the credit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the correct amount of the EITC.",
-      "expected_outcome": "Agent accurately calculates the credit, which provides a significant refund.",
-      "required_tools": [
-        "calculate_eitc"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the correct amount of the EITC.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the credit, which provides a significant refund."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

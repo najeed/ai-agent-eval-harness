@@ -1,54 +1,59 @@
 {
-  "scenario_id": "chemicals-scl-10537",
-  "title": "Update Supply Plan for Production Outage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Supply Plan for Production Outage",
+    "compliance_level": "Standard"
+  },
   "description": "A major equipment failure will take a production unit offline for 2 weeks. The supply planner must adjust the supply plan to mitigate customer impact.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Demand & Supply Planning",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the unplanned outage notification and its expected duration.",
-      "expected_outcome": "Agent identifies the affected production unit and the 2-week downtime.",
-      "required_tools": [
-        "get_production_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the unplanned outage notification and its expected duration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the affected production unit and the 2-week downtime."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the impact of the lost production on finished product inventory and open sales orders.",
-      "expected_outcome": "Agent identifies 5 customer orders that will be delayed if no action is taken.",
-      "required_tools": [
-        "run_supply_chain_simulation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the impact of the lost production on finished product inventory and open sales orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies 5 customer orders that will be delayed if no action is taken."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check for alternative production lines or inventory at other sites and update the supply plan to use these sources to cover the shortfall.",
-      "expected_outcome": "Agent reallocates inventory from another warehouse to cover the most critical orders.",
-      "required_tools": [
-        "check_alternate_sourcing_options",
-        "update_supply_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check for alternative production lines or inventory at other sites and update the supply plan to use these sources to cover the shortfall.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reallocates inventory from another warehouse to cover the most critical orders."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

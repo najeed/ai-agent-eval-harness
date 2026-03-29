@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-co-11077",
-  "title": "Report Dorm Noise Complaint",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Dorm Noise Complaint",
+    "compliance_level": "Standard"
+  },
   "description": "A student calls to make a noise complaint about a loud party in another room on their floor during quiet hours.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Housing & Residential Life",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student making the complaint and the location of the noise.",
-      "expected_outcome": "Agent gathers the necessary details while maintaining the caller's anonymity.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student making the complaint and the location of the noise.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the necessary details while maintaining the caller's anonymity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the RA on duty for the building to investigate the complaint.",
-      "expected_outcome": "Agent successfully reaches the RA and relays the information.",
-      "required_tools": [
-        "contact_on_duty_ra"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the RA on duty for the building to investigate the complaint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reaches the RA and relays the information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the complaint in the residential life incident tracking system.",
-      "expected_outcome": "Agent creates a formal record of the complaint.",
-      "required_tools": [
-        "log_housing_incident"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the complaint in the residential life incident tracking system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a formal record of the complaint."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

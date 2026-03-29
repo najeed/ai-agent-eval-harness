@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10060",
-  "title": "Assemble Multi-Layer Insulation (MLI)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assemble Multi-Layer Insulation (MLI)",
+    "compliance_level": "Standard"
+  },
   "description": "A technician is assembling MLI blankets to provide thermal protection for a satellite.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Satellite Manufacturing & Integration",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Cut the multiple layers of reflective material (e.g., Mylar) and separator netting to the correct size based on a template.",
-      "expected_outcome": "Agent accurately cuts all layers.",
-      "required_tools": [
-        "get_mli_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Cut the multiple layers of reflective material (e.g., Mylar) and separator netting to the correct size based on a template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately cuts all layers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Stack the layers in the correct sequence.",
-      "expected_outcome": "Agent assembles the layers in the specified order.",
-      "required_tools": [
-        "assemble_mli_layers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Stack the layers in the correct sequence.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assembles the layers in the specified order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Sew the edges of the blanket together and add grounding straps as required by the design.",
-      "expected_outcome": "Agent completes the fabrication of the MLI blanket.",
-      "required_tools": [
-        "sew_mli_blanket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Sew the edges of the blanket together and add grounding straps as required by the design.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes the fabrication of the MLI blanket."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

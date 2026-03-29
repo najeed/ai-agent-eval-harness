@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ports-af-12974",
-  "title": "Resolve an IT Helpdesk Ticket",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve an IT Helpdesk Ticket",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports they cannot log in to the TOS. A helpdesk agent must resolve the issue.",
-  "use_case": "Port Administration & Finance",
-  "core_function": "Customer Service & Claims",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the helpdesk ticket from the user.",
-      "expected_outcome": "The agent gets a ticket stating 'Cannot log in to TOS'.",
-      "required_tools": [
-        "get_it_ticket_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the helpdesk ticket from the user.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent gets a ticket stating 'Cannot log in to TOS'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the user's account status in the user management system.",
-      "expected_outcome": "The agent finds the user's password has expired.",
-      "required_tools": [
-        "check_user_account_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the user's account status in the user management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent finds the user's password has expired."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reset the user's password and provide them with a temporary one, instructing them to change it upon first login.",
-      "expected_outcome": "The agent resets the password and communicates the solution to the user, then closes the ticket.",
-      "required_tools": [
-        "reset_user_password",
-        "update_it_ticket_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reset the user's password and provide them with a temporary one, instructing them to change it upon first login.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent resets the password and communicates the solution to the user, then closes the ticket."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

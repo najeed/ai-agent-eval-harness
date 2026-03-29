@@ -1,52 +1,59 @@
 {
-  "scenario_id": "auto-sf-10493",
-  "title": "Process Title and Registration Paperwork",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Title and Registration Paperwork",
+    "compliance_level": "Standard"
+  },
   "description": "A dealership's back-office staff needs to process the title application and registration for a recently sold vehicle.",
-  "use_case": "Vehicle Sales & Financing",
-  "core_function": "Delivery & Handover",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the signed bill of sale and power of attorney documents for the vehicle.",
-      "expected_outcome": "Agent has all necessary legal documents.",
-      "required_tools": [
-        "get_sales_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the signed bill of sale and power of attorney documents for the vehicle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has all necessary legal documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Complete the official state DMV forms for title application and registration.",
-      "expected_outcome": "Agent accurately fills out all required government forms.",
-      "required_tools": [
-        "fill_dmv_forms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Complete the official state DMV forms for title application and registration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately fills out all required government forms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the paperwork and associated fees to the local DMV.",
-      "expected_outcome": "The paperwork is successfully submitted for processing.",
-      "required_tools": [
-        "submit_dmv_paperwork"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the paperwork and associated fees to the local DMV.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The paperwork is successfully submitted for processing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10504",
-  "title": "Out-of-Specification (OOS) Lab Result",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Out-of-Specification (OOS) Lab Result",
+    "compliance_level": "Standard"
+  },
   "description": "A Quality Control lab analyst gets an OOS result for a key purity test on a finished product batch. An investigation must be initiated.",
-  "use_case": "R&D and Quality",
-  "core_function": "Lab Information Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Record the OOS result in the LIMS, which should automatically place a hold on the batch.",
-      "expected_outcome": "Agent correctly enters the result, and the LIMS status for the batch changes to 'On Hold'.",
-      "required_tools": [
-        "enter_lab_result"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Record the OOS result in the LIMS, which should automatically place a hold on the batch.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly enters the result, and the LIMS status for the batch changes to 'On Hold'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the calibration records for the instrument used for the test to rule out equipment error.",
-      "expected_outcome": "Agent confirms the instrument was within its calibration period.",
-      "required_tools": [
-        "get_instrument_calibration_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the calibration records for the instrument used for the test to rule out equipment error.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the instrument was within its calibration period."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Initiate a formal lab investigation, which includes scheduling a re-test on a new sample.",
-      "expected_outcome": "Agent successfully creates a new OOS investigation record and requests a new sample from the warehouse.",
-      "required_tools": [
-        "create_lab_investigation",
-        "request_retains_sample"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Initiate a formal lab investigation, which includes scheduling a re-test on a new sample.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new OOS investigation record and requests a new sample from the warehouse."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

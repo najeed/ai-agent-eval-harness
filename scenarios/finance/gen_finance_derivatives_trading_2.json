@@ -1,21 +1,32 @@
 {
-  "scenario_id": "gen_finance_derivatives_trading_2",
-  "title": "Generated Derivatives Trading Scenario 2",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generated Derivatives Trading Scenario 2",
+    "compliance_level": "Standard"
+  },
   "description": "Edge-case validation for derivatives trading workflows within the finance sector.",
-  "use_case": "derivatives trading",
-  "core_function": "finance_operations",
   "industry": "finance",
-  "tasks": [
-    {
-      "task_id": "task_2",
-      "description": "Simulate a complex derivatives trading interaction. Ensure the agent follows standard finance protocols.",
-      "expected_outcome": "Derivatives Trading processed with full audit trails.",
-      "success_criteria": [
-        {
-          "metric": "success_rate",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task_2",
+        "task_description": "Simulate a complex derivatives trading interaction. Ensure the agent follows standard finance protocols.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Derivatives Trading processed with full audit trails."
         }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

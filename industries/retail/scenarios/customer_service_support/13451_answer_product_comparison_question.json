@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ret-cs-13451",
-  "title": "Answer Product Comparison Question",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Answer Product Comparison Question",
+    "compliance_level": "Standard"
+  },
   "description": "A customer in the store is trying to decide between two different models of a coffee maker and asks an associate for help.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Product Inquiries",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the two products the customer is considering.",
-      "expected_outcome": "The associate knows which two items to compare.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the two products the customer is considering.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate knows which two items to compare."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a handheld device to bring up a side-by-side comparison of the two models' features.",
-      "expected_outcome": "The system displays a comparison chart of the products.",
-      "required_tools": [
-        "compare_products"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a handheld device to bring up a side-by-side comparison of the two models' features.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system displays a comparison chart of the products."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the key differences to the customer (e.g., 'This one has a built-in grinder, while the other one does not').",
-      "expected_outcome": "The associate helps the customer make an informed decision.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the key differences to the customer (e.g., 'This one has a built-in grinder, while the other one does not').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate helps the customer make an informed decision."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

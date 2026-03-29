@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-pm-12105",
-  "title": "Send Case Status Update to Client",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Send Case Status Update to Client",
+    "compliance_level": "Standard"
+  },
   "description": "A partner asks a paralegal to send a status update to a client on a litigation matter.",
-  "use_case": "Law Practice Management",
-  "core_function": "Client Communication & Reporting",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the case file for recent activity, including recent filings and upcoming deadlines.",
-      "expected_outcome": "Agent identifies that a key deposition was recently completed and a response to a motion is due next week.",
-      "required_tools": [
-        "case_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the case file for recent activity, including recent filings and upcoming deadlines.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that a key deposition was recently completed and a response to a motion is due next week."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a concise email to the client summarizing the recent progress and outlining the next immediate steps.",
-      "expected_outcome": "Agent writes a clear, professional email that is easy for a non-lawyer to understand.",
-      "required_tools": [
-        "email_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a concise email to the client summarizing the recent progress and outlining the next immediate steps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a clear, professional email that is easy for a non-lawyer to understand."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the draft email to the partner for review and approval before sending to the client.",
-      "expected_outcome": "Agent follows the correct internal protocol for client communications.",
-      "required_tools": [
-        "email_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the draft email to the partner for review and approval before sending to the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent follows the correct internal protocol for client communications."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

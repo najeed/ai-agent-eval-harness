@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11428",
-  "title": "Report Environmental Exceedance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Environmental Exceedance",
+    "compliance_level": "Standard"
+  },
   "description": "A water quality sensor at a site's discharge point shows a pH level outside the permitted range. The site environmental officer must report it.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Safety & Permitting",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the sensor alarm for the pH exceedance.",
-      "expected_outcome": "Agent identifies the specific sensor and the measured value.",
-      "required_tools": [
-        "get_sensor_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the sensor alarm for the pH exceedance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the specific sensor and the measured value."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the site's environmental permit to confirm the allowable pH range.",
-      "expected_outcome": "Agent confirms the measured pH is outside the permitted limits.",
-      "required_tools": [
-        "get_environmental_permit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the site's environmental permit to confirm the allowable pH range.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the measured pH is outside the permitted limits."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the exceedance in the environmental management system and notify the state regulatory agency as required by the permit.",
-      "expected_outcome": "Agent creates a formal incident report and sends the required notification to the agency.",
-      "required_tools": [
-        "log_environmental_incident",
-        "notify_regulatory_agency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the exceedance in the environmental management system and notify the state regulatory agency as required by the permit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a formal incident report and sends the required notification to the agency."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

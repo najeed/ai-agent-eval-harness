@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-wo-12238",
-  "title": "Conduct a Warehouse Safety Inspection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct a Warehouse Safety Inspection",
+    "compliance_level": "Standard"
+  },
   "description": "A safety manager uses a checklist on a mobile device to conduct a weekly safety inspection of the warehouse.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Value-Added Services",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the digital safety inspection checklist for the week.",
-      "expected_outcome": "Agent accesses the correct safety checklist form.",
-      "required_tools": [
-        "get_safety_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the digital safety inspection checklist for the week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses the correct safety checklist form."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Walk through the warehouse and mark each checklist item as 'Pass' or 'Fail'. For a 'Fail', take a photo of the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a blocked fire exit, marks it as 'Fail', and captures a photo."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Walk through the warehouse and mark each checklist item as 'Pass' or 'Fail'. For a 'Fail', take a photo of the issue.",
-      "expected_outcome": "Agent identifies a blocked fire exit, marks it as 'Fail', and captures a photo.",
-      "required_tools": [
-        "update_checklist_item",
-        "capture_image"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the completed checklist. The system automatically creates a corrective action task for the failed item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system logs the inspection and creates a task for the maintenance manager to clear the fire exit."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the completed checklist. The system automatically creates a corrective action task for the failed item.",
-      "expected_outcome": "The system logs the inspection and creates a task for the maintenance manager to clear the fire exit.",
-      "required_tools": [
-        "submit_safety_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ct-12848",
-  "title": "Track Clinical Site Monitoring Visit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Clinical Site Monitoring Visit",
+    "compliance_level": "Standard"
+  },
   "description": "A Clinical Research Associate (CRA) must plan, conduct, and report on a monitoring visit to a clinical trial site.",
-  "use_case": "Clinical Trials",
-  "core_function": "Trial Operations & Monitoring",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Schedule a routine monitoring visit with the site coordinator in the CTMS.",
-      "expected_outcome": "Agent schedules the visit and generates a confirmation letter.",
-      "required_tools": [
-        "schedule_monitoring_visit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Schedule a routine monitoring visit with the site coordinator in the CTMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent schedules the visit and generates a confirmation letter."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "During the visit, perform source data verification (SDV) by comparing the EDC data against the hospital's source records.",
-      "expected_outcome": "CRA verifies 100% of critical data points and finds no discrepancies.",
-      "required_tools": [
-        "perform_sdv_in_edc"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "During the visit, perform source data verification (SDV) by comparing the EDC data against the hospital's source records.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "CRA verifies 100% of critical data points and finds no discrepancies."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft the monitoring visit report within 5 business days of the visit.",
-      "expected_outcome": "Agent writes a comprehensive report detailing the visit's findings and any action items.",
-      "required_tools": [
-        "draft_monitoring_visit_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft the monitoring visit report within 5 business days of the visit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a comprehensive report detailing the visit's findings and any action items."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the report for review and track any follow-up items to closure.",
-      "expected_outcome": "Agent submits the report and ensures all action items are resolved before the next visit.",
-      "required_tools": [
-        "submit_report_for_review",
-        "track_action_items"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the report for review and track any follow-up items to closure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the report and ensures all action items are resolved before the next visit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

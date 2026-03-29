@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-ae-12574",
-  "title": "Identify Top Performing Content of the Month",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Top Performing Content of the Month",
+    "compliance_level": "Standard"
+  },
   "description": "A content manager wants a report on the top 10 most-watched movies and TV shows on the streaming platform for the previous month.",
-  "use_case": "Audience Engagement & Subscriber Management",
-  "core_function": "Audience Analytics",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query the viewership database for all content watched last month.",
-      "expected_outcome": "Agent retrieves the raw viewership data.",
-      "required_tools": [
-        "get_monthly_viewership_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query the viewership database for all content watched last month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the raw viewership data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Aggregate the data by title and sort by total hours watched.",
-      "expected_outcome": "Agent processes the data and ranks all content by viewership.",
-      "required_tools": [
-        "aggregate_viewership_by_title"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Aggregate the data by title and sort by total hours watched.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the data and ranks all content by viewership."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report listing the top 10 titles.",
-      "expected_outcome": "Agent produces a clear, ranked list of the top 10 movies and shows.",
-      "required_tools": [
-        "generate_top_content_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report listing the top 10 titles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clear, ranked list of the top 10 movies and shows."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

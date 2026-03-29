@@ -1,65 +1,72 @@
 {
-  "scenario_id": "information_technology_service-ps-11874",
-  "title": "Deployment - New Backup Solution",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Deployment - New Backup Solution",
+    "compliance_level": "Standard"
+  },
   "description": "A project involves replacing a client's old, unreliable backup system with a new, modern BCDR (Business Continuity and Disaster Recovery) solution.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Technology Deployment & Migration",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Deploy the new BCDR appliance on the client's network.",
-      "expected_outcome": "The new appliance is installed and configured.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Deploy the new BCDR appliance on the client's network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new appliance is installed and configured."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Install the new backup agent on all servers and configure the backup jobs.",
-      "expected_outcome": "All servers are configured to be backed up by the new system.",
-      "required_tools": [
-        "deploy_agent",
-        "create_backup_job"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Install the new backup agent on all servers and configure the backup jobs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All servers are configured to be backed up by the new system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run initial full backups for all servers.",
-      "expected_outcome": "The first backups complete successfully.",
-      "required_tools": [
-        "rerun_backup_job"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run initial full backups for all servers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The first backups complete successfully."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "After a week of successful backups, decommission the old backup system.",
-      "expected_outcome": "The client is fully transitioned to the new, more reliable backup solution.",
-      "required_tools": [
-        "decommission_server"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "After a week of successful backups, decommission the old backup system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client is fully transitioned to the new, more reliable backup solution."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-er-11624",
-  "title": "Resolve Workplace Conflict",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Workplace Conflict",
+    "compliance_level": "Standard"
+  },
   "description": "Two team members are having a dispute that is affecting team morale. Their manager asks HR to mediate.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Employee Inquiries & Grievances",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Schedule a mediation session with both employees and the HR business partner.",
-      "expected_outcome": "HRBP successfully schedules the meeting.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Schedule a mediation session with both employees and the HR business partner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP successfully schedules the meeting."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Facilitate a conversation where both employees can voice their perspectives in a structured manner.",
-      "expected_outcome": "HRBP guides the conversation to ensure it remains productive.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Facilitate a conversation where both employees can voice their perspectives in a structured manner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP guides the conversation to ensure it remains productive."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Help the employees agree on a set of actions to improve their working relationship and document this agreement.",
-      "expected_outcome": "HRBP helps draft a written agreement which both employees sign.",
-      "required_tools": [
-        "create_resolution_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Help the employees agree on a set of actions to improve their working relationship and document this agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP helps draft a written agreement which both employees sign."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

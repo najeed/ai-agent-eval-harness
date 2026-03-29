@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-op-11126",
-  "title": "Vegetation Management Alert near Transmission Line",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Vegetation Management Alert near Transmission Line",
+    "compliance_level": "Standard"
+  },
   "description": "An agent analyzes satellite imagery and identifies fast-growing vegetation that could endanger a key transmission line corridor owned by the energy company.",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Maintenance & Outage Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the latest satellite imagery of the transmission corridor for vegetation encroachment.",
-      "expected_outcome": "Agent identifies several points where vegetation is within the minimum clearance distance.",
-      "required_tools": [
-        "analyze_satellite_imagery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "image_analysis_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the latest satellite imagery of the transmission corridor for vegetation encroachment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies several points where vegetation is within the minimum clearance distance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cross-reference the locations with the maintenance schedule to see when the area was last cleared.",
-      "expected_outcome": "Agent finds the area is overdue for its biannual clearing.",
-      "required_tools": [
-        "get_maintenance_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cross-reference the locations with the maintenance schedule to see when the area was last cleared.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the area is overdue for its biannual clearing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-priority work order for a vegetation management crew, including GPS coordinates and images of the encroachment.",
-      "expected_outcome": "Agent dispatches a work order with all necessary details.",
-      "required_tools": [
-        "create_vegetation_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-priority work order for a vegetation management crew, including GPS coordinates and images of the encroachment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches a work order with all necessary details."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

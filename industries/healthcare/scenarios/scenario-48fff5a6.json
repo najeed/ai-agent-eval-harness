@@ -1,25 +1,32 @@
 {
-  "scenario_id": "scenario-48fff5a6",
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "task_id": "reschedule_task_1",
-      "description": "Reschedule appointment for Patient-ID-4822 to 2026-04-15 at 10:00 AM.",
-      "expected_outcome": "Agent confirms rescheduling success in the hospital database.",
-      "required_tools": [
-        "hospital_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "generic_accuracy",
-          "threshold": 1.0
-        }
-      ]
-    }
-  ],
-  "title": "Scenario Specification: Healthcare Portal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Scenario Specification: Healthcare Portal",
+    "compliance_level": "Standard"
+  },
   "description": "This scenario tests an agent's ability to handle a medical appointment rescheduling request.",
   "industry": "healthcare",
-  "use_case": "General Support",
-  "core_function": "Inquiry Handling"
+  "workflow": {
+    "nodes": [
+      {
+        "id": "reschedule_task_1",
+        "task_description": "Reschedule appointment for Patient-ID-4822 to 2026-04-15 at 10:00 AM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms rescheduling success in the hospital database."
+        }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
+  }
 }

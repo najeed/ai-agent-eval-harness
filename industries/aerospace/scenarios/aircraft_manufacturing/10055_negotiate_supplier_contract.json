@@ -1,55 +1,59 @@
 {
-  "scenario_id": "aerospace-am-10055",
-  "title": "Negotiate a Supplier Contract",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Negotiate a Supplier Contract",
+    "compliance_level": "Standard"
+  },
   "description": "A procurement manager is negotiating a long-term agreement with a supplier for landing gear assemblies.",
-  "use_case": "Aircraft Manufacturing",
-  "core_function": "Supply Chain & Procurement",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the supplier's proposal, including pricing, delivery schedule, and quality terms.",
-      "expected_outcome": "Agent identifies all key terms in the proposal.",
-      "required_tools": [
-        "analyze_supplier_proposal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the supplier's proposal, including pricing, delivery schedule, and quality terms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies all key terms in the proposal."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Develop a negotiation strategy, identifying target prices and key concessions to ask for.",
-      "expected_outcome": "Agent creates a clear negotiation plan.",
-      "required_tools": [
-        "develop_negotiation_strategy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Develop a negotiation strategy, identifying target prices and key concessions to ask for.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a clear negotiation plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Negotiate the final terms with the supplier and draft a formal contract for legal review.",
-      "expected_outcome": "Agent reaches a favorable agreement and drafts the contract.",
-      "required_tools": [
-        "negotiate_with_supplier",
-        "draft_contract"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Negotiate the final terms with the supplier and draft a formal contract for legal review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reaches a favorable agreement and drafts the contract."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

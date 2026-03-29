@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-fs-11095",
-  "title": "Report Phishing Email",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Phishing Email",
+    "compliance_level": "Standard"
+  },
   "description": "A staff member receives a suspicious email asking for their password and reports it to IT.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "IT & Classroom Tech Support",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Instruct the user not to click any links and to forward the email as an attachment to the security office.",
-      "expected_outcome": "Agent provides immediate, clear security instructions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Instruct the user not to click any links and to forward the email as an attachment to the security office.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides immediate, clear security instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The security team analyzes the email and confirms it is a phishing attempt.",
-      "expected_outcome": "Security team identifies the malicious nature of the email.",
-      "required_tools": [
-        "analyze_email_headers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The security team analyzes the email and confirms it is a phishing attempt.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Security team identifies the malicious nature of the email."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The security team implements a block for the sender's domain and sends a campus-wide warning if the campaign is widespread.",
-      "expected_outcome": "Security team takes preventative measures to protect the campus.",
-      "required_tools": [
-        "block_email_domain",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The security team implements a block for the sender's domain and sends a campus-wide warning if the campaign is widespread.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Security team takes preventative measures to protect the campus."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

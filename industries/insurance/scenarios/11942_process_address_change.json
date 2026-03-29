@@ -1,50 +1,59 @@
 {
-  "scenario_id": "insurance-la-11942",
-  "title": "Process Address Change for Policyholder",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Address Change for Policyholder",
+    "compliance_level": "Standard"
+  },
   "description": "A life insurance policyholder needs to update their mailing address.",
-  "use_case": "Life & Annuities",
-  "core_function": "Policy Servicing",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the policyholder.",
-      "expected_outcome": "Agent securely verifies the caller's identity.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the policyholder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely verifies the caller's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the new mailing address.",
-      "expected_outcome": "Agent accurately captures the new address.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the new mailing address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures the new address."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the address in the policy administration system.",
-      "expected_outcome": "Agent successfully updates the address and confirms the change.",
-      "required_tools": [
-        "update_contact_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the address in the policy administration system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the address and confirms the change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

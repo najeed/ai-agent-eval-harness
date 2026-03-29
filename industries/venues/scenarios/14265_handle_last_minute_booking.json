@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-em-14265",
-  "title": "Handle a Last-Minute Booking Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Last-Minute Booking Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A company wants to book a small meeting room for 10 people for tomorrow.",
-  "use_case": "Event Management & Booking",
-  "core_function": "Event Booking & Contracting",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the booking calendar for meeting room availability for the next day.",
-      "expected_outcome": "Agent finds that Meeting Room C is available.",
-      "required_tools": [
-        "get_booking_calendar"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the booking calendar for meeting room availability for the next day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that Meeting Room C is available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the client with the last-minute rental rate.",
-      "expected_outcome": "Agent quotes the price.",
-      "required_tools": [
-        "get_room_rates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the client with the last-minute rental rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent quotes the price."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the booking and process the full payment immediately via credit card.",
-      "expected_outcome": "Agent books the room and takes payment.",
-      "required_tools": [
-        "create_booking",
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the booking and process the full payment immediately via credit card.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent books the room and takes payment."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Notify the operations team of the last-minute booking so the room can be prepared.",
-      "expected_outcome": "Agent sends an urgent notification to the operations staff.",
-      "required_tools": [
-        "send_internal_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Notify the operations team of the last-minute booking so the room can be prepared.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends an urgent notification to the operations staff."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

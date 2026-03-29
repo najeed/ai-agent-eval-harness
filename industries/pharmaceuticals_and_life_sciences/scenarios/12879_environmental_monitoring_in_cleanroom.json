@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12879",
-  "title": "Review Environmental Monitoring Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Environmental Monitoring Data",
+    "compliance_level": "Standard"
+  },
   "description": "A microbiologist must review environmental monitoring data from a sterile manufacturing area to ensure it remains in a state of control.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Quality Control & Assurance",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the latest environmental monitoring results (air and surface samples) for the Grade A cleanroom.",
-      "expected_outcome": "Agent pulls the data from the LIMS.",
-      "required_tools": [
-        "get_environmental_monitoring_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the latest environmental monitoring results (air and surface samples) for the Grade A cleanroom.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls the data from the LIMS."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the results against the established alert and action limits.",
-      "expected_outcome": "Agent finds that one surface sample result is above the action limit.",
-      "required_tools": [
-        "compare_data_to_limits"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the results against the established alert and action limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that one surface sample result is above the action limit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Initiate a quality investigation for the out-of-limit result.",
-      "expected_outcome": "Agent creates a new investigation record in the quality system.",
-      "required_tools": [
-        "create_quality_investigation_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Initiate a quality investigation for the out-of-limit result.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new investigation record in the quality system."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Recommend corrective actions, such as enhanced cleaning of the area.",
-      "expected_outcome": "Agent adds a recommendation to the investigation for a triple-clean of the affected area.",
-      "required_tools": [
-        "recommend_corrective_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Recommend corrective actions, such as enhanced cleaning of the area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds a recommendation to the investigation for a triple-clean of the affected area."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

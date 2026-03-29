@@ -1,85 +1,61 @@
 {
-  "scenario_id": "finance-cf-11256",
-  "title": "Review Employee Expense Report for Policy Violations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Employee Expense Report for Policy Violations",
+    "compliance_level": "Standard"
+  },
   "description": "A compliance officer is reviewing an employee's expense report for any violations of company policy.",
-  "use_case": "Corporate Finance",
-  "core_function": "Risk & Compliance",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the employee's submitted expense report.",
-      "expected_outcome": "Agent pulls up the specified expense report.",
-      "required_tools": [
-        "get_expense_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the employee's submitted expense report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the specified expense report."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Automatically scan the report for common policy violations (e.g., expenses over limit, missing receipts).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system flags one expense for a meal that is over the per-diem limit."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Automatically scan the report for common policy violations (e.g., expenses over limit, missing receipts).",
-      "expected_outcome": "The system flags one expense for a meal that is over the per-diem limit.",
-      "required_tools": [
-        "scan_expense_report_for_violations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reject the non-compliant line item and notify the employee to correct it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent rejects the specific expense and sends an automated notification to the employee with the reason."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reject the non-compliant line item and notify the employee to correct it.",
-      "expected_outcome": "Agent rejects the specific expense and sends an automated notification to the employee with the reason.",
-      "required_tools": [
-        "reject_expense_item",
-        "notify_employee"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

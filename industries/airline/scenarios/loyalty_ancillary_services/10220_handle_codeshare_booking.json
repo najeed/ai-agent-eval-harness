@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-las-10220",
-  "title": "Handle a Codeshare Booking Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Codeshare Booking Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A customer booked a flight on Airline A's website, but one leg is operated by a partner, Airline B. The customer cannot select a seat for the partner flight.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Partnerships & Interlining",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the booking and identify the flight segment operated by the partner airline.",
-      "expected_outcome": "Agent correctly identifies the codeshare flight.",
-      "required_tools": [
-        "get_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the booking and identify the flight segment operated by the partner airline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the codeshare flight."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the customer with Airline B's confirmation number (PNR).",
-      "expected_outcome": "Agent finds the partner airline's PNR associated with the booking.",
-      "required_tools": [
-        "get_partner_pnr"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the customer with Airline B's confirmation number (PNR).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the partner airline's PNR associated with the booking."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the customer to visit Airline B's website and use the partner PNR to manage their seat selection for that flight.",
-      "expected_outcome": "Agent provides clear and correct instructions to resolve the customer's issue.",
-      "required_tools": [
-        "provide_instructions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the customer to visit Airline B's website and use the partner PNR to manage their seat selection for that flight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear and correct instructions to resolve the customer's issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

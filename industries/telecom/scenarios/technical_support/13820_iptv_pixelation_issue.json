@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13820",
-  "title": "Troubleshooting - IPTV Pixelation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Troubleshooting - IPTV Pixelation",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports that their TV service is frequently pixelated, especially on HD channels.",
-  "use_case": "Technical Support",
-  "core_function": "Value-Added Service Support",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their TV package.",
-      "expected_outcome": "Agent confirms the customer has the 'Premium HD' TV package.",
-      "required_tools": [
-        "get_customer_details",
-        "get_service_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their TV package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer has the 'Premium HD' TV package."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a remote diagnostic on the customer's set-top box and home internet line.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Diagnostic shows high bandwidth utilization on the internet line."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a remote diagnostic on the customer's set-top box and home internet line.",
-      "expected_outcome": "Diagnostic shows high bandwidth utilization on the internet line.",
-      "required_tools": [
-        "run_set_top_box_diagnostic",
-        "run_line_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the customer to reduce other internet activity (e.g., large downloads) while watching TV or consider a speed upgrade.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the root cause and provides actionable advice."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the customer to reduce other internet activity (e.g., large downloads) while watching TV or consider a speed upgrade.",
-      "expected_outcome": "Agent correctly identifies the root cause and provides actionable advice.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

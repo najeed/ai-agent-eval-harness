@@ -1,52 +1,59 @@
 {
-  "scenario_id": "insurance-la-11990",
-  "title": "Handle a Claim with Disputing Beneficiaries (Interpleader)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Claim with Disputing Beneficiaries (Interpleader)",
+    "compliance_level": "Standard"
+  },
   "description": "Two beneficiaries of a life insurance policy are disputing who should receive the proceeds.",
-  "use_case": "Life & Annuities",
-  "core_function": "Claims & Payouts",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive notice that the beneficiaries are disputing the claim.",
-      "expected_outcome": "The claims examiner is notified of the dispute.",
-      "required_tools": [
-        "log_claim_dispute"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive notice that the beneficiaries are disputing the claim.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The claims examiner is notified of the dispute."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Notify the legal department of the dispute.",
-      "expected_outcome": "The examiner escalates the case to the company's legal team.",
-      "required_tools": [
-        "escalate_to_legal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Notify the legal department of the dispute.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The examiner escalates the case to the company's legal team."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Following legal advice, file an interpleader action, depositing the policy proceeds with the court and allowing the court to decide the rightful recipient.",
-      "expected_outcome": "The company pays the funds to the court, removing itself from the dispute between the beneficiaries.",
-      "required_tools": [
-        "file_interpleader"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Following legal advice, file an interpleader action, depositing the policy proceeds with the court and allowing the court to decide the rightful recipient.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The company pays the funds to the court, removing itself from the dispute between the beneficiaries."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

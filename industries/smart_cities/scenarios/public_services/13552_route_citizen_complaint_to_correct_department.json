@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13552",
-  "title": "Route Citizen Complaint to Correct Department",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Route Citizen Complaint to Correct Department",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen submits a vague complaint about a 'mess' in a park. The agent must interpret the request and route it to the right department.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Citizen Reporting & Service Requests",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a citizen service request with the description 'big mess near the pond in Central Park' and an attached photo.",
-      "expected_outcome": "Agent retrieves the request.",
-      "required_tools": [
-        "get_citizen_service_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a citizen service request with the description 'big mess near the pond in Central Park' and an attached photo.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the photo, which shows an overflowing trash can and litter on the ground.",
-      "expected_outcome": "Agent correctly interprets the citizen's complaint.",
-      "required_tools": [
-        "analyze_image"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the photo, which shows an overflowing trash can and litter on the ground.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly interprets the citizen's complaint."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Route the service request to the 'Parks and Recreation' department for cleanup.",
-      "expected_outcome": "Agent assigns the ticket to the correct city department.",
-      "required_tools": [
-        "route_service_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Route the service request to the 'Parks and Recreation' department for cleanup.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the ticket to the correct city department."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

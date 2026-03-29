@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-plan-12687",
-  "title": "Design Blast Exclusion Zone",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Design Blast Exclusion Zone",
+    "compliance_level": "Standard"
+  },
   "description": "A drill and blast engineer determines the required exclusion zone for an upcoming blast to ensure the safety of all personnel and equipment.",
-  "use_case": "Mine Planning & Engineering",
-  "core_function": "Drill & Blast Design",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the design for the upcoming blast, including the location and total amount of explosives.",
-      "expected_outcome": "The blast design parameters are retrieved.",
-      "required_tools": [
-        "get_blast_design"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the design for the upcoming blast, including the location and total amount of explosives.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The blast design parameters are retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a predictive model to estimate the potential flyrock distance and ground vibration levels.",
-      "expected_outcome": "The model predicts a maximum flyrock distance of 400 meters.",
-      "required_tools": [
-        "run_flyrock_prediction_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "prediction_accuracy",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a predictive model to estimate the potential flyrock distance and ground vibration levels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The model predicts a maximum flyrock distance of 400 meters."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Define a 500-meter exclusion zone around the blast pattern on the mine map and communicate it to all personnel.",
-      "expected_outcome": "A safe exclusion zone is established and communicated to ensure no one is inside the zone during the blast.",
-      "required_tools": [
-        "define_exclusion_zone",
-        "communicate_blast_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "safety_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Define a 500-meter exclusion zone around the blast pattern on the mine map and communicate it to all personnel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A safe exclusion zone is established and communicated to ensure no one is inside the zone during the blast."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

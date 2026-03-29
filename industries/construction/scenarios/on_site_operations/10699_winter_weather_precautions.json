@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-os-10699",
-  "title": "Implement Winter Weather Precautions",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Implement Winter Weather Precautions",
+    "compliance_level": "Standard"
+  },
   "description": "With freezing temperatures forecast, a superintendent must implement winter weather precautions to protect the site and materials.",
-  "use_case": "On-Site Operations",
-  "core_function": "Daily Operations & Reporting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Order and place concrete curing blankets on all recently poured concrete to prevent freezing.",
-      "expected_outcome": "Blankets are placed on all exposed concrete.",
-      "required_tools": [
-        "order_materials",
-        "dispatch_crew_for_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Order and place concrete curing blankets on all recently poured concrete to prevent freezing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Blankets are placed on all exposed concrete."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ensure any temporary water lines are drained to prevent them from bursting.",
-      "expected_outcome": "Water lines are drained.",
-      "required_tools": [
-        "dispatch_crew_for_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ensure any temporary water lines are drained to prevent them from bursting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Water lines are drained."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log all winter precaution activities in the daily log.",
-      "expected_outcome": "All actions taken are documented.",
-      "required_tools": [
-        "create_daily_log_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log all winter precaution activities in the daily log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All actions taken are documented."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

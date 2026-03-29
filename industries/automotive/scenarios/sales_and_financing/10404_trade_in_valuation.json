@@ -1,51 +1,59 @@
 {
-  "scenario_id": "auto-sf-10404",
-  "title": "Vehicle Trade-in Valuation Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Vehicle Trade-in Valuation Request",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to get an estimated value for their current vehicle as a trade-in.",
-  "use_case": "Vehicle Sales & Financing",
-  "core_function": "Trade-in & Appraisal",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather details of the customer's current vehicle: VIN, make, model, year, mileage, and general condition.",
-      "expected_outcome": "Agent collects all required vehicle information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather details of the customer's current vehicle: VIN, make, model, year, mileage, and general condition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all required vehicle information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the VIN to look up the vehicle's history report for accidents or damage.",
-      "expected_outcome": "Agent retrieves the history report and notes a minor accident from two years ago.",
-      "required_tools": [
-        "get_vehicle_history_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the VIN to look up the vehicle's history report for accidents or damage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the history report and notes a minor accident from two years ago."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide an estimated trade-in value range based on market data, explaining that the final value requires a physical inspection.",
-      "expected_outcome": "Agent provides a realistic value range and clearly sets expectations for the final appraisal.",
-      "required_tools": [
-        "get_market_valuation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide an estimated trade-in value range based on market data, explaining that the final value requires a physical inspection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a realistic value range and clearly sets expectations for the final appraisal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13200",
-  "title": "Screen a Rental Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Screen a Rental Application",
+    "compliance_level": "Standard"
+  },
   "description": "A prospective tenant has submitted an application for a rental unit. The agent must perform a background and credit check.",
-  "use_case": "Property Management",
-  "core_function": "Leasing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the new rental application from the system.",
-      "expected_outcome": "Agent correctly identifies the applicant and the property they applied for.",
-      "required_tools": [
-        "get_rental_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the new rental application from the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the applicant and the property they applied for."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a credit check and criminal background check using the applicant's provided information.",
-      "expected_outcome": "Agent successfully runs the checks through an integrated service.",
-      "required_tools": [
-        "run_tenant_screening"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a credit check and criminal background check using the applicant's provided information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs the checks through an integrated service."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the screening report against the property's qualifying criteria (e.g., credit score > 650, no evictions) and approve or deny the application.",
-      "expected_outcome": "Agent makes an accurate decision based on the report and criteria.",
-      "required_tools": [
-        "update_application_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the screening report against the property's qualifying criteria (e.g., credit score > 650, no evictions) and approve or deny the application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes an accurate decision based on the report and criteria."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

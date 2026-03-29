@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ret-so-13405",
-  "title": "View Upcoming Shift Schedule",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "View Upcoming Shift Schedule",
+    "compliance_level": "Standard"
+  },
   "description": "An associate wants to check their work schedule for the next week.",
-  "use_case": "Store Operations",
-  "core_function": "Task & Shift Management",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into the employee mobile app or store portal.",
-      "expected_outcome": "The associate successfully logs in.",
-      "required_tools": [
-        "enter_employee_credentials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into the employee mobile app or store portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate successfully logs in."
         }
+      },
+      {
+        "id": "task-2",
+        "task_description": "Navigate to the 'My Schedule' section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate opens their personal schedule view."
+        }
+      },
+      {
+        "id": "task-3",
+        "task_description": "View the schedule for the upcoming week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system displays the associate's assigned shifts, including dates, times, and roles."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Navigate to the 'My Schedule' section.",
-      "expected_outcome": "The associate opens their personal schedule view.",
-      "required_tools": [
-        "open_my_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "View the schedule for the upcoming week.",
-      "expected_outcome": "The system displays the associate's assigned shifts, including dates, times, and roles.",
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "required_tools": []
     }
-  ]
+  }
 }

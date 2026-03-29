@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ag-lm-10121",
-  "title": "Analyze Milking Parlor Efficiency",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Milking Parlor Efficiency",
+    "compliance_level": "Standard"
+  },
   "description": "A dairy farmer wants to analyze data from their milking parlor to identify bottlenecks and improve efficiency.",
-  "use_case": "Livestock Management",
-  "core_function": "Milking & Production",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the last month of milking data, including milking duration per cow, milk flow rates, and equipment cleaning times.",
-      "expected_outcome": "Agent retrieves the complete dataset.",
-      "required_tools": [
-        "get_milking_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the last month of milking data, including milking duration per cow, milk flow rates, and equipment cleaning times.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the complete dataset."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to identify cows that are consistently slow to milk and any delays in the process.",
-      "expected_outcome": "Agent identifies 5 specific cows as 'slow milkers' and notes that the cleaning cycle between groups is longer than the target.",
-      "required_tools": [
-        "analyze_milking_performance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to identify cows that are consistently slow to milk and any delays in the process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies 5 specific cows as 'slow milkers' and notes that the cleaning cycle between groups is longer than the target."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report with recommendations, such as grouping slow-milking cows together and reviewing the cleaning protocol.",
-      "expected_outcome": "Agent provides a report with actionable insights.",
-      "required_tools": [
-        "generate_performance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report with recommendations, such as grouping slow-milking cows together and reviewing the cleaning protocol.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a report with actionable insights."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-bo-12547",
-  "title": "Configure New CDN for Regional Expansion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Configure New CDN for Regional Expansion",
+    "compliance_level": "Standard"
+  },
   "description": "A streaming service is expanding to a new region (e.g., Southeast Asia) and needs to configure a new CDN provider for that region.",
-  "use_case": "Broadcasting & Streaming Operations",
-  "core_function": "Content Delivery & CDN",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Set up a new profile with the chosen CDN provider.",
-      "expected_outcome": "Agent creates a new account and configuration profile with the CDN.",
-      "required_tools": [
-        "create_cdn_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Set up a new profile with the chosen CDN provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new account and configuration profile with the CDN."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Configure the CDN to pull content from the primary storage location.",
-      "expected_outcome": "Agent correctly sets the origin server address.",
-      "required_tools": [
-        "set_cdn_origin"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Configure the CDN to pull content from the primary storage location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sets the origin server address."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the main traffic management rules to direct users from Southeast Asia to the new CDN.",
-      "expected_outcome": "Agent successfully adds the new routing rule.",
-      "required_tools": [
-        "update_traffic_management_rules"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the main traffic management rules to direct users from Southeast Asia to the new CDN.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the new routing rule."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

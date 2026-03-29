@@ -1,50 +1,59 @@
 {
-  "scenario_id": "auto-cs-10413",
-  "title": "Over-the-Air (OTA) Update Failed",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Over-the-Air (OTA) Update Failed",
+    "compliance_level": "Standard"
+  },
   "description": "A customer received a notification that a software update failed to install on their vehicle.",
-  "use_case": "Connected Services & In-Car Experience",
-  "core_function": "Over-the-Air (OTA) Updates",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the vehicle's OTA history and identify the failed update version and error code.",
-      "expected_outcome": "Agent finds 'Update 2.8.1' failed with error 'ERR_CONN_LOST'.",
-      "required_tools": [
-        "get_ota_update_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the vehicle's OTA history and identify the failed update version and error code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds 'Update 2.8.1' failed with error 'ERR_CONN_LOST'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Advise the customer to move the vehicle to an area with better cellular reception, as the error indicates a connection loss during download.",
-      "expected_outcome": "Agent correctly interprets the error code and provides actionable advice.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Advise the customer to move the vehicle to an area with better cellular reception, as the error indicates a connection loss during download.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly interprets the error code and provides actionable advice."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Re-trigger the update to be pushed to the vehicle again.",
-      "expected_outcome": "Agent successfully re-initiates the update download.",
-      "required_tools": [
-        "retrigger_ota_update"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Re-trigger the update to be pushed to the vehicle again.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully re-initiates the update download."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,109 +1,74 @@
 {
-  "scenario_id": "hc-ph-11387",
-  "title": "Manage a Patient's Care Team",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Patient's Care Team",
+    "compliance_level": "Standard"
+  },
   "description": "A care manager needs to add a new home health nurse to a patient's official care team.",
-  "use_case": "Population Health & Care Management",
-  "core_function": "Care Coordination & Planning",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's record and navigate to the care team section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Care manager finds the list of current care team members."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's record and navigate to the care team section.",
-      "expected_outcome": "Care manager finds the list of current care team members.",
-      "required_tools": [
-        "get_patient_record",
-        "open_care_team_module"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for the home health nurse in the provider directory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The nurse's provider record is found."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the nurse to the care team with the role of 'Home Health Nurse'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The care team is updated, ensuring all members have access to the shared care plan and can communicate securely."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for the home health nurse in the provider directory.",
-      "expected_outcome": "The nurse's provider record is found.",
-      "required_tools": [
-        "search_provider_directory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the nurse to the care team with the role of 'Home Health Nurse'.",
-      "expected_outcome": "The care team is updated, ensuring all members have access to the shared care plan and can communicate securely.",
-      "required_tools": [
-        "add_member_to_care_team"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10529",
-  "title": "Create Lab Stability Study",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Lab Stability Study",
+    "compliance_level": "Standard"
+  },
   "description": "A new product requires a 12-month stability study to determine its shelf life. A QA specialist needs to set up the study protocol in the LIMS.",
-  "use_case": "R&D and Quality",
-  "core_function": "Formulation & Product Development",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new stability study protocol for the new product.",
-      "expected_outcome": "Agent successfully creates the new study record.",
-      "required_tools": [
-        "create_stability_study"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new stability study protocol for the new product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the new study record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Define the storage conditions (e.g., 25\u00b0C/60% RH, 40\u00b0C/75% RH) and the testing timepoints (e.g., 0, 3, 6, 9, 12 months).",
-      "expected_outcome": "Agent correctly configures the study parameters.",
-      "required_tools": [
-        "define_stability_protocol_conditions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Define the storage conditions (e.g., 25\u00b0C/60% RH, 40\u00b0C/75% RH) and the testing timepoints (e.g., 0, 3, 6, 9, 12 months).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly configures the study parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Specify the tests to be performed at each timepoint and activate the protocol.",
-      "expected_outcome": "Agent links the required tests to the protocol, which will now automatically generate test requests at the scheduled intervals.",
-      "required_tools": [
-        "define_stability_protocol_tests",
-        "activate_stability_study"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Specify the tests to be performed at each timepoint and activate the protocol.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent links the required tests to the protocol, which will now automatically generate test requests at the scheduled intervals."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

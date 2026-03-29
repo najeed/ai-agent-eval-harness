@@ -1,54 +1,59 @@
 {
-  "scenario_id": "heavy-industries-eng-11431",
-  "title": "Create a Piping and Instrumentation Diagram (P&ID)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Piping and Instrumentation Diagram (P&ID)",
+    "compliance_level": "Standard"
+  },
   "description": "A process engineer needs to create a new P&ID for a simple chemical dosing system.",
-  "use_case": "Engineering & Design",
-  "core_function": "Design & Simulation",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the CAD software and start a new P&ID drawing using the company's standard template.",
-      "expected_outcome": "Agent successfully opens the correct template.",
-      "required_tools": [
-        "open_cad_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the CAD software and start a new P&ID drawing using the company's standard template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully opens the correct template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add the required equipment symbols to the diagram (e.g., tank, pump, valves).",
-      "expected_outcome": "Agent places the correct symbols from the standard library onto the drawing.",
-      "required_tools": [
-        "add_pid_symbols"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add the required equipment symbols to the diagram (e.g., tank, pump, valves).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent places the correct symbols from the standard library onto the drawing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draw the pipelines connecting the equipment and add instrument bubbles (e.g., for pressure and level transmitters), then submit for review.",
-      "expected_outcome": "Agent completes the diagram according to standard P&ID conventions and submits it.",
-      "required_tools": [
-        "draw_pipelines",
-        "add_instrumentation",
-        "submit_drawing_for_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draw the pipelines connecting the equipment and add instrument bubbles (e.g., for pressure and level transmitters), then submit for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes the diagram according to standard P&ID conventions and submits it."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

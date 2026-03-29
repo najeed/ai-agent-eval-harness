@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-no-12062",
-  "title": "Arrange for a Press Pass",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Arrange for a Press Pass",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter needs a press pass to gain access to a secure event, like a political convention.",
-  "use_case": "Newsroom Operations",
-  "core_function": "Resource Management",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the official media credential application form on the event organizer's website.",
-      "expected_outcome": "Agent locates the correct application form.",
-      "required_tools": [
-        "search_web"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the official media credential application form on the event organizer's website.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct application form."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Fill out the application with the reporter's details and the publication's information.",
-      "expected_outcome": "The application is filled out accurately.",
-      "required_tools": [
-        "fill_web_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Fill out the application with the reporter's details and the publication's information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The application is filled out accurately."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the application and any required supporting documents (e.g., a letter from the editor).",
-      "expected_outcome": "The credential application is successfully submitted.",
-      "required_tools": [
-        "submit_web_form",
-        "upload_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the application and any required supporting documents (e.g., a letter from the editor).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The credential application is successfully submitted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

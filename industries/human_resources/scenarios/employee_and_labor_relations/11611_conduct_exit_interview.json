@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-er-11611",
-  "title": "Conduct an Exit Interview",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct an Exit Interview",
+    "compliance_level": "Standard"
+  },
   "description": "An employee has resigned, and HR needs to conduct an exit interview to gather feedback.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Offboarding",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Schedule a voluntary exit interview with the departing employee.",
-      "expected_outcome": "HR successfully schedules the meeting.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Schedule a voluntary exit interview with the departing employee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR successfully schedules the meeting."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Conduct the interview using a standardized set of questions regarding their experience and reason for leaving.",
-      "expected_outcome": "HR representative asks all standard questions and documents the employee's feedback.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Conduct the interview using a standardized set of questions regarding their experience and reason for leaving.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR representative asks all standard questions and documents the employee's feedback."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the feedback into the HR system to be used for aggregate turnover analysis.",
-      "expected_outcome": "The feedback is logged in the system under the appropriate categories.",
-      "required_tools": [
-        "log_exit_interview_feedback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the feedback into the HR system to be used for aggregate turnover analysis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The feedback is logged in the system under the appropriate categories."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

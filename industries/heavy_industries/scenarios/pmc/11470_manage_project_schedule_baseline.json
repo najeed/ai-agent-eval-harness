@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-pmc-11470",
-  "title": "Manage Project Schedule Baseline",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Project Schedule Baseline",
+    "compliance_level": "Standard"
+  },
   "description": "A project has been approved and the project manager needs to set the initial schedule as the official baseline for performance measurement.",
-  "use_case": "Project Management & Controls",
-  "core_function": "Project Planning & Scheduling",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the final, agreed-upon project schedule.",
-      "expected_outcome": "Agent retrieves the correct schedule file.",
-      "required_tools": [
-        "get_project_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the final, agreed-upon project schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct schedule file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the system command to set the current schedule as 'Baseline 1'.",
-      "expected_outcome": "Agent successfully creates the baseline.",
-      "required_tools": [
-        "set_schedule_baseline"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the system command to set the current schedule as 'Baseline 1'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the baseline."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that the baseline has been created and is now read-only.",
-      "expected_outcome": "Agent confirms the baseline is saved and cannot be edited, and future progress will be measured against it.",
-      "required_tools": [
-        "verify_baseline_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that the baseline has been created and is now read-only.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the baseline is saved and cannot be edited, and future progress will be measured against it."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

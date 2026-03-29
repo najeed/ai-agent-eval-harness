@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12475",
-  "title": "Create a Brand Guidelines Document",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Brand Guidelines Document",
+    "compliance_level": "Standard"
+  },
   "description": "A brand manager needs to create a comprehensive document outlining the brand's visual identity.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Brand Management",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all core brand assets: logo files, color palette (hex codes), and font families.",
-      "expected_outcome": "Agent collects all the necessary brand assets.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all core brand assets: logo files, color palette (hex codes), and font families.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all the necessary brand assets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a document that specifies rules for logo usage (e.g., clear space, minimum size).",
-      "expected_outcome": "Agent clearly defines how the logo should and should not be used.",
-      "required_tools": [
-        "document_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a document that specifies rules for logo usage (e.g., clear space, minimum size).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly defines how the logo should and should not be used."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add sections for the primary and secondary color palettes and typography rules (e.g., font sizes for headlines vs. body text).",
-      "expected_outcome": "Agent creates a complete visual style guide.",
-      "required_tools": [
-        "document_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add sections for the primary and secondary color palettes and typography rules (e.g., font sizes for headlines vs. body text).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a complete visual style guide."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

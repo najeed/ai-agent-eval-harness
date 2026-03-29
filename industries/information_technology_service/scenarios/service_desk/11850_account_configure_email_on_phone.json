@@ -1,49 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11850",
-  "title": "User Account - Configure Email on Mobile Phone",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "User Account - Configure Email on Mobile Phone",
+    "compliance_level": "Standard"
+  },
   "description": "A user needs help setting up their company email account on their personal mobile phone.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "User Account & Device Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the client's policy to ensure personal devices are allowed to connect to company email.",
-      "expected_outcome": "The technician confirms the client's policy allows for BYOD (Bring Your Own Device).",
-      "required_tools": [
-        "get_client_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the client's policy to ensure personal devices are allowed to connect to company email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician confirms the client's policy allows for BYOD (Bring Your Own Device)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the user to install the recommended email app (e.g., Outlook Mobile) and enter their credentials.",
-      "expected_outcome": "The user successfully adds their account.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the user to install the recommended email app (e.g., Outlook Mobile) and enter their credentials.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user successfully adds their account."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the user to accept the mobile device management (MDM) policy prompt, which enforces security settings like a PIN code.",
-      "expected_outcome": "The user's device is enrolled in MDM, and email begins to sync.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the user to accept the mobile device management (MDM) policy prompt, which enforces security settings like a PIN code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user's device is enrolled in MDM, and email begins to sync."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

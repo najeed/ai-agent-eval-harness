@@ -1,85 +1,61 @@
 {
-  "scenario_id": "hc-as-11367",
-  "title": "Amend a Radiology Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Amend a Radiology Report",
+    "compliance_level": "Standard"
+  },
   "description": "A radiologist needs to add an addendum to a report they signed earlier in the day to include an additional finding.",
-  "use_case": "Ancillary Services",
-  "core_function": "Radiology & Imaging Services",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the original, signed report in the RIS.",
-      "expected_outcome": "Radiologist finds the correct report.",
-      "required_tools": [
-        "find_radiology_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the original, signed report in the RIS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Radiologist finds the correct report."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create an addendum to the report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Radiologist opens a new section of the report specifically for addendums."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create an addendum to the report.",
-      "expected_outcome": "Radiologist opens a new section of the report specifically for addendums.",
-      "required_tools": [
-        "create_report_addendum"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dictate the additional finding and sign the addendum.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The addendum is added to the original report, and an alert is sent to the ordering provider about the updated result."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dictate the additional finding and sign the addendum.",
-      "expected_outcome": "The addendum is added to the original report, and an alert is sent to the ordering provider about the updated result.",
-      "required_tools": [
-        "use_voice_recognition",
-        "sign_report_addendum"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

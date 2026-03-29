@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-cs-14150",
-  "title": "Medical Baseline Allowance Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Medical Baseline Allowance Application",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with a medical condition that requires powered equipment at home is applying for the Medical Baseline program to receive a larger electricity allowance at the lowest rate.",
-  "use_case": "Customer Service",
-  "core_function": "Billing & Account Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the program's eligibility requirements and the need for a doctor's certification.",
-      "expected_outcome": "Agent clearly communicates the program rules and required documentation.",
-      "required_tools": [
-        "get_program_rules"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the program's eligibility requirements and the need for a doctor's certification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the program rules and required documentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the customer with the official application form for their doctor to complete.",
-      "expected_outcome": "Agent sends the correct form to the customer's email address.",
-      "required_tools": [
-        "send_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the customer with the official application form for their doctor to complete.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the correct form to the customer's email address."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the completed form is received, update the customer's account to add the medical baseline allocation.",
-      "expected_outcome": "Agent successfully processes the application and applies the new rate structure to the account.",
-      "required_tools": [
-        "update_customer_rate_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the completed form is received, update the customer's account to add the medical baseline allocation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the application and applies the new rate structure to the account."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

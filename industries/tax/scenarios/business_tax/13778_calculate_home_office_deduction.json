@@ -1,48 +1,59 @@
 {
-  "scenario_id": "tax-bus-13778",
-  "title": "Calculate Home Office Deduction",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Home Office Deduction",
+    "compliance_level": "Standard"
+  },
   "description": "A self-employed individual who uses a room in their home exclusively for business wants to claim the home office deduction.",
-  "use_case": "Business Tax Services",
-  "core_function": "Corporate & Partnership Tax",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Measure the square footage of the home office and the total square footage of the home.",
-      "expected_outcome": "Agent obtains the necessary measurements.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Measure the square footage of the home office and the total square footage of the home.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains the necessary measurements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Choose between the simplified method and the regular method for the deduction.",
-      "expected_outcome": "Agent will calculate the deduction both ways to see which is more beneficial.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Choose between the simplified method and the regular method for the deduction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent will calculate the deduction both ways to see which is more beneficial."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If using the regular method, gather all indirect (e.g., utilities, insurance) and direct (e.g., repairs) home office expenses and calculate the deduction on Form 8829.",
-      "expected_outcome": "Agent accurately calculates the deduction based on the business use percentage of the home.",
-      "required_tools": [
-        "prepare_form_8829"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If using the regular method, gather all indirect (e.g., utilities, insurance) and direct (e.g., repairs) home office expenses and calculate the deduction on Form 8829.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the deduction based on the business use percentage of the home."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

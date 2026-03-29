@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-lm-10138",
-  "title": "Estrus (Heat) Detection Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Estrus (Heat) Detection Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A sensor on a dairy cow detects a significant increase in activity, indicating she is in heat and ready for insemination.",
-  "use_case": "Livestock Management",
-  "core_function": "Breeding & Genetics",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the high activity alert and confirm it matches the pattern for estrus.",
-      "expected_outcome": "Agent confirms the activity spike is characteristic of a heat event.",
-      "required_tools": [
-        "get_animal_health_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the high activity alert and confirm it matches the pattern for estrus.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the activity spike is characteristic of a heat event."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the cow's breeding history to ensure she is eligible for insemination.",
-      "expected_outcome": "Agent confirms the cow is past her voluntary waiting period.",
-      "required_tools": [
-        "get_animal_breeding_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the cow's breeding history to ensure she is eligible for insemination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the cow is past her voluntary waiting period."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the cow to the list for artificial insemination (AI) for the day.",
-      "expected_outcome": "Agent successfully adds the cow to the AI task list.",
-      "required_tools": [
-        "add_to_task_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the cow to the list for artificial insemination (AI) for the day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the cow to the AI task list."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-im-13457",
-  "title": "Activate Weekly Promotions",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Activate Weekly Promotions",
+    "compliance_level": "Standard"
+  },
   "description": "A store manager needs to activate the new set of weekly promotions in the POS system.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Pricing & Promotions",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into the store management portal and navigate to the promotions module.",
-      "expected_outcome": "The manager accesses the tool for managing promotions.",
-      "required_tools": [
-        "open_promotions_module"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into the store management portal and navigate to the promotions module.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager accesses the tool for managing promotions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the list of promotions scheduled to start today.",
-      "expected_outcome": "The manager sees the list of upcoming sales (e.g., 'BOGO on soda', '20% off all chips').",
-      "required_tools": [
-        "view_scheduled_promotions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the list of promotions scheduled to start today.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager sees the list of upcoming sales (e.g., 'BOGO on soda', '20% off all chips')."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Activate the promotions, which pushes the new pricing rules to all POS terminals.",
-      "expected_outcome": "The new sales are now live and will be applied automatically when eligible items are scanned.",
-      "required_tools": [
-        "activate_promotion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Activate the promotions, which pushes the new pricing rules to all POS terminals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new sales are now live and will be applied automatically when eligible items are scanned."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

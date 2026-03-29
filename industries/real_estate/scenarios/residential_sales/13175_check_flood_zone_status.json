@@ -1,50 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13175",
-  "title": "Check Property's Flood Zone Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Property's Flood Zone Status",
+    "compliance_level": "Standard"
+  },
   "description": "A buyer is interested in a property near a river and wants to know if it's in a flood zone, which would require flood insurance.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Compliance & Legal",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the full property address.",
-      "expected_outcome": "Agent has the correct address.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the full property address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the correct address."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the address into the FEMA Flood Map Service Center website.",
-      "expected_outcome": "Agent successfully uses the FEMA portal to search for the property.",
-      "required_tools": [
-        "search_fema_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the address into the FEMA Flood Map Service Center website.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uses the FEMA portal to search for the property."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Interpret the map to determine the property's flood zone designation and inform the client.",
-      "expected_outcome": "Agent identifies the property is in 'Zone AE', a special flood hazard area, and informs the client that flood insurance will likely be required by their lender.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Interpret the map to determine the property's flood zone designation and inform the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the property is in 'Zone AE', a special flood hazard area, and informs the client that flood insurance will likely be required by their lender."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

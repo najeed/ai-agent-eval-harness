@@ -1,6 +1,25 @@
 import json
 from pathlib import Path
 from typing import List, Dict, Any, Union
+import datetime
+
+
+class AESJsonEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder to handle non-standard types like Path, datetime, and Mock objects.
+    """
+    def default(self, obj: Any) -> Any:
+        if isinstance(obj, Path):
+            return str(obj)
+        if isinstance(obj, (datetime.datetime, datetime.date)):
+            return obj.isoformat()
+        # Handle Mock objects (specifically for testing environments)
+        if hasattr(obj, "__class__") and "Mock" in obj.__class__.__name__:
+            return f"<Mock name={getattr(obj, '_mock_name', 'None')}>"
+        try:
+            return super().default(obj)
+        except TypeError:
+            return str(obj)
 
 
 def load_events(path: Union[Path, str]) -> List[Dict[Any, Any]]:

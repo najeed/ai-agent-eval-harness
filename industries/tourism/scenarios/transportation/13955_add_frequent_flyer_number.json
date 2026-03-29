@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13955",
-  "title": "Add Frequent Flyer Number to Booking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add Frequent Flyer Number to Booking",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger forgot to add their frequent flyer number when booking and wants to add it to earn miles.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Ticketing & Documentation",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the passenger's booking.",
-      "expected_outcome": "Agent locates the correct reservation.",
-      "required_tools": [
-        "get_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the passenger's booking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct reservation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the passenger's frequent flyer program and number.",
-      "expected_outcome": "Agent correctly records the loyalty information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the passenger's frequent flyer program and number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly records the loyalty information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the booking with the frequent flyer number.",
-      "expected_outcome": "Agent successfully adds the loyalty number to the reservation.",
-      "required_tools": [
-        "update_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the booking with the frequent flyer number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the loyalty number to the reservation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

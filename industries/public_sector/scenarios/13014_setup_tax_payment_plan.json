@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-pa-13014",
-  "title": "Set Up a Tax Payment Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set Up a Tax Payment Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen owes back taxes and wants to set up a monthly payment plan.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Taxation & Revenue",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the citizen and the total amount of taxes owed.",
-      "expected_outcome": "Agent retrieves the citizen's tax record and the outstanding balance.",
-      "required_tools": [
-        "get_tax_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the citizen and the total amount of taxes owed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the citizen's tax record and the outstanding balance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Determine eligibility for a payment plan based on agency criteria.",
-      "expected_outcome": "Agent confirms the citizen is eligible to set up a payment plan.",
-      "required_tools": [
-        "check_payment_plan_eligibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Determine eligibility for a payment plan based on agency criteria.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the citizen is eligible to set up a payment plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Establish the monthly payment amount and schedule, and get the citizen's agreement.",
-      "expected_outcome": "Agent successfully sets up the installment agreement in the system.",
-      "required_tools": [
-        "setup_installment_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Establish the monthly payment amount and schedule, and get the citizen's agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sets up the installment agreement in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

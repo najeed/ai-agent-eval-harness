@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13220",
-  "title": "Onboard a New Seller Client",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Onboard a New Seller Client",
+    "compliance_level": "Standard"
+  },
   "description": "An agent has secured a new listing. They need to onboard the client, including signing the listing agreement.",
-  "use_case": "Residential Sales",
-  "core_function": "Buyer & Seller Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new client profile in the CRM with the seller's contact information and property details.",
-      "expected_outcome": "Agent accurately enters the new client's data into the CRM.",
-      "required_tools": [
-        "create_client_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new client profile in the CRM with the seller's contact information and property details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately enters the new client's data into the CRM."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a listing agreement with the agreed-upon commission rate and listing term.",
-      "expected_outcome": "Agent creates a correct and complete listing agreement.",
-      "required_tools": [
-        "generate_listing_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a listing agreement with the agreed-upon commission rate and listing term.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a correct and complete listing agreement."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the listing agreement to the seller for electronic signature and provide a welcome packet.",
-      "expected_outcome": "Agent successfully sends the agreement and a welcome packet email.",
-      "required_tools": [
-        "send_for_e_signature",
-        "send_welcome_packet"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the listing agreement to the seller for electronic signature and provide a welcome packet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends the agreement and a welcome packet email."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

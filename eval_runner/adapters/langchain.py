@@ -31,7 +31,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
         if not url.endswith("/invoke"):
             url = url.rstrip("/") + "/invoke"
 
-        langserve_input = {"input": payload.get("input") or payload.get("task") or {}}
+        langserve_input = {"input": payload.get("input") or payload.get("task_description") or {}}
 
         try:
             async with aiohttp.ClientSession() as session:

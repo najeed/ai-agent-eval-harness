@@ -1,52 +1,59 @@
 {
-  "scenario_id": "construction-pm-10645",
-  "title": "Update Budget for Material Price Increase",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Budget for Material Price Increase",
+    "compliance_level": "Standard"
+  },
   "description": "A supplier has announced a 10% price increase for lumber. The PM must update the project budget to reflect this.",
-  "use_case": "Project Management",
-  "core_function": "Budgeting & Cost Control",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the remaining amount of lumber to be purchased from the project takeoff.",
-      "expected_outcome": "Agent determines that $100,000 worth of lumber still needs to be ordered.",
-      "required_tools": [
-        "get_material_takeoff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the remaining amount of lumber to be purchased from the project takeoff.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines that $100,000 worth of lumber still needs to be ordered."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the new forecasted cost for the lumber line item, including the 10% increase.",
-      "expected_outcome": "The new forecasted cost is calculated as $110,000.",
-      "required_tools": [
-        "calculate_cost_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the new forecasted cost for the lumber line item, including the 10% increase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new forecasted cost is calculated as $110,000."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the 'Lumber' line item in the project budget with the new forecast.",
-      "expected_outcome": "The project budget is successfully updated.",
-      "required_tools": [
-        "update_project_budget"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the 'Lumber' line item in the project budget with the new forecast.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project budget is successfully updated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-cm-11881",
-  "title": "Account Management - Update Client Contacts",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Account Management - Update Client Contacts",
+    "compliance_level": "Standard"
+  },
   "description": "A client informs their account manager that their primary point of contact has left the company.",
-  "use_case": "Client & Contract Management",
-  "core_function": "Account & Relationship Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the information and ask for the name and details of the new primary contact.",
-      "expected_outcome": "The account manager gathers the new contact's information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the information and ask for the name and details of the new primary contact.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account manager gathers the new contact's information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the primary contact information in the PSA tool.",
-      "expected_outcome": "The client record in the PSA is updated.",
-      "required_tools": [
-        "update_psa_contact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the primary contact information in the PSA tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client record in the PSA is updated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a welcome email to the new primary contact, introducing themself and the service.",
-      "expected_outcome": "A positive relationship is initiated with the new contact.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a welcome email to the new primary contact, introducing themself and the service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A positive relationship is initiated with the new contact."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

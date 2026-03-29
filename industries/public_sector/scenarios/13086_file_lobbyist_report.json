@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-rc-13086",
-  "title": "File a Lobbyist Activity Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File a Lobbyist Activity Report",
+    "compliance_level": "Standard"
+  },
   "description": "A registered lobbyist is filing their required monthly report of their activities and expenditures.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Compliance Reporting",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the lobbyist and the correct reporting period.",
-      "expected_outcome": "The lobbyist logs in and selects the correct month for their report.",
-      "required_tools": [
-        "get_lobbyist_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the lobbyist and the correct reporting period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The lobbyist logs in and selects the correct month for their report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter details of all lobbying contacts and any related expenditures.",
-      "expected_outcome": "The lobbyist accurately fills out the disclosure form.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter details of all lobbying contacts and any related expenditures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The lobbyist accurately fills out the disclosure form."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Certify and submit the report.",
-      "expected_outcome": "The lobbyist successfully files their monthly disclosure.",
-      "required_tools": [
-        "submit_compliance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Certify and submit the report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The lobbyist successfully files their monthly disclosure."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

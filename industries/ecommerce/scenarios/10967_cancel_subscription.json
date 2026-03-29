@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10967",
-  "title": "Cancel a Product Subscription",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cancel a Product Subscription",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to cancel their recurring monthly subscription for a product.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Loyalty Programs",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the customer's active subscription.",
-      "expected_outcome": "Agent locates the recurring subscription for 'Vitamin D'.",
-      "required_tools": [
-        "get_customer_subscriptions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the customer's active subscription.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the recurring subscription for 'Vitamin D'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Process the cancellation of the subscription.",
-      "expected_outcome": "Agent successfully updates the subscription status to 'Cancelled'.",
-      "required_tools": [
-        "cancel_subscription"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Process the cancellation of the subscription.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the subscription status to 'Cancelled'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm with the customer that the subscription is cancelled and no future charges will be made.",
-      "expected_outcome": "Agent provides clear confirmation to the customer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm with the customer that the subscription is cancelled and no future charges will be made.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear confirmation to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

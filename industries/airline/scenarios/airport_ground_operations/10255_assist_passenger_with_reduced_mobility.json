@@ -1,52 +1,59 @@
 {
-  "scenario_id": "airline-ago-10255",
-  "title": "Assist a Passenger with Reduced Mobility (PRM)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assist a Passenger with Reduced Mobility (PRM)",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger who requested wheelchair assistance has arrived at the check-in desk. The agent must ensure they are assisted to the gate.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Gate & Boarding",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the passenger's booking and confirm their wheelchair assistance request (SSR code).",
-      "expected_outcome": "Agent verifies the pre-booked request.",
-      "required_tools": [
-        "get_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the passenger's booking and confirm their wheelchair assistance request (SSR code).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the pre-booked request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the airport's special assistance provider to dispatch a wheelchair and an agent.",
-      "expected_outcome": "Agent successfully requests assistance.",
-      "required_tools": [
-        "request_special_assistance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the airport's special assistance provider to dispatch a wheelchair and an agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully requests assistance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Hand the passenger over to the special assistance agent, who will help them through security and to the departure gate.",
-      "expected_outcome": "The passenger is safely handed off for assistance.",
-      "required_tools": [
-        "handoff_passenger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Hand the passenger over to the special assistance agent, who will help them through security and to the departure gate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The passenger is safely handed off for assistance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

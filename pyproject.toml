@@ -1,10 +1,10 @@
 [project]
 name = "multiagent-eval"
-version = "1.1.0"
+version = "1.2.1"
 description = "Enterprise-grade reliability framework for AI agents."
 readme = "README.md"
 authors = [
-    { name = "Najeed Ahmed Khan", email = "ai.eval.harness.contact@gmail.com" }
+    { name = "Najeed Khan", email = "ai.eval.harness.contact@gmail.com" }
 ]
 license = "Apache-2.0"
 classifiers = [
@@ -31,7 +31,10 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["eval_runner"]
+packages = ["eval_runner", "dataproc_engine", "industries"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.jsonl", "*.csv", "*.md", "*.yaml", "*.yml"]
 
 [project.scripts]
 multiagent-eval = "eval_runner.cli:main"

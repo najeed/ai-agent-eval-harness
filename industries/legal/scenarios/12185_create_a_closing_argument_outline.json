@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12185",
-  "title": "Create a Closing Argument Outline",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Closing Argument Outline",
+    "compliance_level": "Standard"
+  },
   "description": "An attorney is preparing for trial and needs to create an outline for their closing argument.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Legal Research & Writing",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the key evidence and testimony presented during the trial.",
-      "expected_outcome": "Agent identifies the most powerful facts supporting their case.",
-      "required_tools": [
-        "case_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the key evidence and testimony presented during the trial.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the most powerful facts supporting their case."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Structure the closing argument with a compelling theme, an introduction, a summary of the evidence, an attack on the opponent's case, and a conclusion asking the jury for a specific verdict.",
-      "expected_outcome": "Agent creates a persuasive narrative structure.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Structure the closing argument with a compelling theme, an introduction, a summary of the evidence, an attack on the opponent's case, and a conclusion asking the jury for a specific verdict.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a persuasive narrative structure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft the detailed outline with key talking points and references to specific trial exhibits.",
-      "expected_outcome": "Agent produces a comprehensive outline to be used during the closing argument.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft the detailed outline with key talking points and references to specific trial exhibits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a comprehensive outline to be used during the closing argument."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-las-10231",
-  "title": "Enroll a New Member in the Frequent Flyer Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Enroll a New Member in the Frequent Flyer Program",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to sign up for the airline's loyalty program.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Frequent Flyer Program",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Collect the customer's personal details (name, address, email) to create the account.",
-      "expected_outcome": "Agent gathers all required information.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Collect the customer's personal details (name, address, email) to create the account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all required information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new frequent flyer account in the system.",
-      "expected_outcome": "Agent successfully creates the account.",
-      "required_tools": [
-        "create_frequent_flyer_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new frequent flyer account in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the account."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the customer with their new frequent flyer number and explain the program's basic benefits.",
-      "expected_outcome": "Agent provides the new number and welcomes the member to the program.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the customer with their new frequent flyer number and explain the program's basic benefits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the new number and welcomes the member to the program."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

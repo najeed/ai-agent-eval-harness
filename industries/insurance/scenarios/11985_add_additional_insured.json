@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11985",
-  "title": "Add an Additional Insured",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add an Additional Insured",
+    "compliance_level": "Standard"
+  },
   "description": "A small business needs to add a client as an additional insured on their general liability policy for a specific project.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Policy Administration",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the business policyholder.",
-      "expected_outcome": "Agent locates the correct policy.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the business policyholder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the name and address of the entity to be added as an additional insured.",
-      "expected_outcome": "Agent accurately captures the information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the name and address of the entity to be added as an additional insured.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures the information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the additional insured endorsement to the policy.",
-      "expected_outcome": "Agent successfully adds the endorsement and generates an updated Certificate of Insurance.",
-      "required_tools": [
-        "add_additional_insured",
-        "generate_coi"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the additional insured endorsement to the policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the endorsement and generates an updated Certificate of Insurance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

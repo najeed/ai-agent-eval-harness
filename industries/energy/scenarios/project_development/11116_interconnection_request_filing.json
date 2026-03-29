@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-pd-11116",
-  "title": "Grid Interconnection Request Filing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Grid Interconnection Request Filing",
+    "compliance_level": "Standard"
+  },
   "description": "A project developer needs to file a formal grid interconnection request with the ISO/RTO for a new solar project.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Permitting & Compliance",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the correct interconnection request form and required technical studies for the project's size and location.",
-      "expected_outcome": "Agent provides links to the correct forms and a list of required studies (e.g., Feasibility, System Impact).",
-      "required_tools": [
-        "get_iso_interconnection_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the correct interconnection request form and required technical studies for the project's size and location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides links to the correct forms and a list of required studies (e.g., Feasibility, System Impact)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compile all necessary project data, including single-line diagrams, inverter specifications, and site layout.",
-      "expected_outcome": "Agent gathers all required technical documentation.",
-      "required_tools": [
-        "get_project_technical_specifications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compile all necessary project data, including single-line diagrams, inverter specifications, and site layout.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all required technical documentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete the interconnection request application and attach all required documents for submission.",
-      "expected_outcome": "Agent generates a completed application package ready for filing.",
-      "required_tools": [
-        "draft_interconnection_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete the interconnection request application and attach all required documents for submission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a completed application package ready for filing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

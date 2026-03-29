@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-pd-11148",
-  "title": "Workforce Planning for Solar Farm Construction",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Workforce Planning for Solar Farm Construction",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager needs to create a workforce plan for the construction phase of a 150 MW solar farm.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Supply Chain & Procurement",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Break down the construction project into major phases (e.g., site prep, racking installation, panel mounting, electrical work).",
-      "expected_outcome": "Agent creates a detailed project phase list.",
-      "required_tools": [
-        "get_project_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "plan_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Break down the construction project into major phases (e.g., site prep, racking installation, panel mounting, electrical work).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed project phase list."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Estimate the number and type of workers (e.g., laborers, electricians, operators) required for each phase.",
-      "expected_outcome": "Agent produces a detailed staffing requirement table.",
-      "required_tools": [
-        "estimate_workforce_needs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Estimate the number and type of workers (e.g., laborers, electricians, operators) required for each phase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a detailed staffing requirement table."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Develop a hiring schedule to ensure the right workers are available at the right time, aligned with the project timeline.",
-      "expected_outcome": "Agent creates a Gantt chart for workforce ramp-up and ramp-down.",
-      "required_tools": [
-        "create_hiring_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Develop a hiring schedule to ensure the right workers are available at the right time, aligned with the project timeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a Gantt chart for workforce ramp-up and ramp-down."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

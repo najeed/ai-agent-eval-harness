@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-ar-12470",
-  "title": "Compare Performance Year-over-Year",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Compare Performance Year-over-Year",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst needs to compare website traffic for the last quarter to the same quarter in the previous year.",
-  "use_case": "Analytics & Reporting",
-  "core_function": "Data Analysis & Insights",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "In the analytics tool, select the date range for the last quarter.",
-      "expected_outcome": "Agent sets the correct date range.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "In the analytics tool, select the date range for the last quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets the correct date range."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the 'compare to' feature to select the same date range from the previous year.",
-      "expected_outcome": "The tool is now configured to show a year-over-year comparison.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the 'compare to' feature to select the same date range from the previous year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool is now configured to show a year-over-year comparison."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the results to determine the percentage change in key metrics like users, sessions, and conversion rate.",
-      "expected_outcome": "Agent produces a summary of the year-over-year growth or decline.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the results to determine the percentage change in key metrics like users, sessions, and conversion rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a summary of the year-over-year growth or decline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

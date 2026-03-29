@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13372",
-  "title": "Verify HOA Documents",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify HOA Documents",
+    "compliance_level": "Standard"
+  },
   "description": "A buyer is purchasing a condo and their agent must review the Homeowners Association (HOA) documents.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Escrow",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Request the complete HOA package from the listing agent or HOA management company.",
-      "expected_outcome": "Agent receives the HOA bylaws, budget, and meeting minutes.",
-      "required_tools": [
-        "request_hoa_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Request the complete HOA package from the listing agent or HOA management company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the HOA bylaws, budget, and meeting minutes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the HOA's financial health by analyzing the budget and reserve study.",
-      "expected_outcome": "Agent determines if the HOA is financially stable or if a special assessment is likely.",
-      "required_tools": [
-        "analyze_hoa_financials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the HOA's financial health by analyzing the budget and reserve study.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines if the HOA is financially stable or if a special assessment is likely."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Summarize key rules and financial findings for the buyer and advise them on whether to approve the documents.",
-      "expected_outcome": "The buyer makes an informed decision to move forward or terminate based on the HOA review.",
-      "required_tools": [
-        "create_summary_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Summarize key rules and financial findings for the buyer and advise them on whether to approve the documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The buyer makes an informed decision to move forward or terminate based on the HOA review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -16,21 +16,24 @@ class TestScenarioEvaluation:
     def simple_scenario(self):
         """A simple scenario for basic testing."""
         return {
-            "scenario_id": "simple_test",
-            "title": "Simple Test Scenario",
-            "tasks": [
-                {
-                    "task_id": "task_1",
-                    "description": "Perform a simple search",
-                    "required_tools": ["search"],
-                    "success_criteria": [
-                        {
-                            "metric": "tool_call_correctness",
-                            "threshold": 1.0
-                        }
-                    ]
-                }
-            ]
+            "aes_version": 1.2,
+            "metadata": {"name": "Simple Test Scenario"},
+            "workflow": {
+                "nodes": [
+                    {
+                        "id": "task_1",
+                        "task_description": "Perform a simple search",
+                        "required_tools": ["search"],
+                        "success_criteria": [
+                            {
+                                "metric": "tool_call_correctness",
+                                "threshold": 1.0
+                            }
+                        ]
+                    }
+                ],
+                "edges": []
+            }
         }
     
     def test_scenario_evaluation_happy_path(self, simple_scenario):
@@ -51,11 +54,14 @@ class TestScenarioEvaluation:
         """Test scenario with multiple tasks."""
         # Arrange
         scenario = {
-            "scenario_id": "multi_task_test",
-            "tasks": [
-                {"task_id": "task_1", "description": "Task 1", "required_tools": ["search"]},
-                {"task_id": "task_2", "description": "Task 2", "required_tools": ["lookup"]}
-            ]
+            "aes_version": 1.2,
+            "workflow": {
+                "nodes": [
+                    {"id": "task_1", "task_description": "Task 1", "required_tools": ["search"]},
+                    {"id": "task_2", "task_description": "Task 2", "required_tools": ["lookup"]}
+                ],
+                "edges": [{"from": "task_1", "to": "task_2"}]
+            }
         }
         
         # Act
@@ -153,8 +159,8 @@ class TestNetworkErrorHandling:
             mock_post.side_effect = exception_class("Test error")
             
             scenario = {
-                "scenario_id": "error_test",
-                "tasks": [{"task_id": "task_1", "description": "Test task"}]
+                "aes_version": 1.2,
+                "workflow": {"nodes": [{"id": "task_1", "task_description": "Test task"}], "edges": []}
             }
             
             # Act

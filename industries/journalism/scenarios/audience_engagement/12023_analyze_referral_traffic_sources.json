@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12023",
-  "title": "Analyze Referral Traffic Sources",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Referral Traffic Sources",
+    "compliance_level": "Standard"
+  },
   "description": "A social media editor wants to know which platform (Twitter, Facebook, Reddit, etc.) is driving the most traffic to the website.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Performance Analysis",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the web analytics platform and navigate to the 'Acquisition' or 'Referral Traffic' report.",
-      "expected_outcome": "Agent accesses the correct report.",
-      "required_tools": [
-        "get_analytics_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_navigation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the web analytics platform and navigate to the 'Acquisition' or 'Referral Traffic' report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses the correct report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Set the date range for the last 30 days.",
-      "expected_outcome": "The report is filtered for the correct time period.",
-      "required_tools": [
-        "get_analytics_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Set the date range for the last 30 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report is filtered for the correct time period."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the report to identify the top 5 social media referral sources by number of sessions.",
-      "expected_outcome": "Agent creates a ranked list of the most effective social platforms for driving traffic.",
-      "required_tools": [
-        "analyze_analytics_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the report to identify the top 5 social media referral sources by number of sessions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a ranked list of the most effective social platforms for driving traffic."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

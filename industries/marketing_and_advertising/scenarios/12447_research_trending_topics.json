@@ -1,51 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12447",
-  "title": "Research Trending Topics for Content",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Research Trending Topics for Content",
+    "compliance_level": "Standard"
+  },
   "description": "A content strategist needs to find trending topics related to their industry to generate ideas for new blog posts.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Market & Audience Research",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use a tool like Google Trends to analyze search interest over time for core industry terms.",
-      "expected_outcome": "Agent identifies seasonality and long-term trends.",
-      "required_tools": [
-        "google_trends_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use a tool like Google Trends to analyze search interest over time for core industry terms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies seasonality and long-term trends."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a topic research tool to find popular questions and related concepts people are searching for.",
-      "expected_outcome": "Agent generates a list of 'what', 'why', and 'how' questions related to the industry.",
-      "required_tools": [
-        "topic_research_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a topic research tool to find popular questions and related concepts people are searching for.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of 'what', 'why', and 'how' questions related to the industry."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Brainstorm a list of 5-10 potential blog post titles based on the research.",
-      "expected_outcome": "Agent creates a list of relevant and timely content ideas.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Brainstorm a list of 5-10 potential blog post titles based on the research.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a list of relevant and timely content ideas."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

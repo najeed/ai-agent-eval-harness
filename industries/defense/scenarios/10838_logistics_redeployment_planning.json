@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-log-10838",
-  "title": "Equipment Redeployment and Reset",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Equipment Redeployment and Reset",
+    "compliance_level": "Standard"
+  },
   "description": "A logistics planner must plan the redeployment of a unit's equipment from a theater of operations back to its home base for maintenance and reset.",
-  "use_case": "Logistics & Sustainment",
-  "core_function": "Deployment & Redeployment Planning",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Inventory all equipment to be redeployed, noting its current condition.",
-      "expected_outcome": "Planner creates a complete inventory with maintenance status for each item.",
-      "required_tools": [
-        "get_unit_inventory",
-        "get_equipment_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Inventory all equipment to be redeployed, noting its current condition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner creates a complete inventory with maintenance status for each item."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Schedule strategic transport (e.g., cargo ships) for the return journey.",
-      "expected_outcome": "Planner books the necessary transport to move all equipment.",
-      "required_tools": [
-        "schedule_strategic_lift"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Schedule strategic transport (e.g., cargo ships) for the return journey.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner books the necessary transport to move all equipment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Coordinate with the home base depot to schedule the maintenance and repair for the returning equipment.",
-      "expected_outcome": "Planner successfully schedules the 'reset' phase for the unit's equipment.",
-      "required_tools": [
-        "coordinate_depot_maintenance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "coordination_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Coordinate with the home base depot to schedule the maintenance and repair for the returning equipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner successfully schedules the 'reset' phase for the unit's equipment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

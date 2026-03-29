@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10519",
-  "title": "Manage QC Sample Workflow",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage QC Sample Workflow",
+    "compliance_level": "Standard"
+  },
   "description": "A sample from a production batch arrives in the QC lab for testing. A lab technician must log it in and add it to the testing queue.",
-  "use_case": "R&D and Quality",
-  "core_function": "Sample Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the barcode on the sample container to identify the product and batch number.",
-      "expected_outcome": "Agent successfully scans the sample and the system retrieves the corresponding production order info.",
-      "required_tools": [
-        "scan_sample_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the barcode on the sample container to identify the product and batch number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully scans the sample and the system retrieves the corresponding production order info."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log the sample as 'Received' in the LIMS, which automatically generates the required list of tests.",
-      "expected_outcome": "Agent logs the sample, and a list of 4 required tests (e.g., assay, purity, color) is created.",
-      "required_tools": [
-        "log_sample_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log the sample as 'Received' in the LIMS, which automatically generates the required list of tests.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the sample, and a list of 4 required tests (e.g., assay, purity, color) is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the tests to the appropriate analytical instrument queues.",
-      "expected_outcome": "Agent assigns the assay and purity tests to the HPLC queue and the color test to the spectrophotometer queue.",
-      "required_tools": [
-        "assign_tests_to_instrument_queue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the tests to the appropriate analytical instrument queues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the assay and purity tests to the HPLC queue and the color test to the spectrophotometer queue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

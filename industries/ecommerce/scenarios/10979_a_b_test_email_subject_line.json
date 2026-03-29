@@ -1,64 +1,72 @@
 {
-  "scenario_id": "ecommerce-mce-10979",
-  "title": "A/B Test an Email Subject Line",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "A/B Test an Email Subject Line",
+    "compliance_level": "Standard"
+  },
   "description": "A marketer wants to test two different subject lines for a promotional email to see which one has a better open rate.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Campaign Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the two subject lines (A and B) to be tested.",
-      "expected_outcome": "Agent correctly inputs the two subject lines.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the two subject lines (A and B) to be tested.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly inputs the two subject lines."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the target audience and configure the A/B test to send each version to 50% of the audience.",
-      "expected_outcome": "Agent correctly sets up the split test parameters.",
-      "required_tools": [
-        "setup_ab_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the target audience and configure the A/B test to send each version to 50% of the audience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sets up the split test parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Launch the email campaign.",
-      "expected_outcome": "System sends the emails with the two different subject lines.",
-      "required_tools": [
-        "schedule_email_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Launch the email campaign.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System sends the emails with the two different subject lines."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "After 24 hours, compare the open rates for version A and version B to determine the winner.",
-      "expected_outcome": "Agent retrieves the results and identifies the subject line with the higher open rate.",
-      "required_tools": [
-        "get_campaign_analytics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "After 24 hours, compare the open rates for version A and version B to determine the winner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the results and identifies the subject line with the higher open rate."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

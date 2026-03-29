@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-cs-14199",
-  "title": "Notify Customers of Critical Peak Pricing Event",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Notify Customers of Critical Peak Pricing Event",
+    "compliance_level": "Standard"
+  },
   "description": "Due to extreme heat and high demand, the utility is calling a Critical Peak Pricing (CPP) event for the next day, where electricity prices will be much higher for a few hours.",
-  "use_case": "Customer Service",
-  "core_function": "Conservation & Efficiency",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all customers enrolled in the CPP rate plan.",
-      "expected_outcome": "System generates a list of all CPP customers.",
-      "required_tools": [
-        "get_customers_by_rate_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all customers enrolled in the CPP rate plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a list of all CPP customers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a day-ahead notification to these customers via their preferred method (email, text, phone call) about the event timing and prices.",
-      "expected_outcome": "System successfully sends the CPP event notifications.",
-      "required_tools": [
-        "send_customer_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a day-ahead notification to these customers via their preferred method (email, text, phone call) about the event timing and prices.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully sends the CPP event notifications."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Include tips on how to reduce energy use during the event to save money.",
-      "expected_outcome": "The notification includes actionable conservation advice.",
-      "required_tools": [
-        "get_conservation_tips"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Include tips on how to reduce energy use during the event to save money.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The notification includes actionable conservation advice."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

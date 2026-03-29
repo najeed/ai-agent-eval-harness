@@ -1,83 +1,58 @@
 {
-  "scenario_id": "lw-wo-12210",
-  "title": "Optimize Storage Bins via Consolidation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Optimize Storage Bins via Consolidation",
+    "compliance_level": "Standard"
+  },
   "description": "To create space, a warehouse manager wants to consolidate partially filled storage bins of the same item into fewer bins.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Storage & Slotting",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a report to identify all items that exist in multiple, partially-filled bins.",
-      "expected_outcome": "Agent generates a list of candidate items for consolidation.",
-      "required_tools": [
-        "find_consolidation_candidates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a report to identify all items that exist in multiple, partially-filled bins.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of candidate items for consolidation."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select an item from the list and create a consolidation task.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a series of moves to consolidate the items into a single bin."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select an item from the list and create a consolidation task.",
-      "expected_outcome": "The system generates a series of moves to consolidate the items into a single bin.",
-      "required_tools": [
-        "create_consolidation_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the task to an operator to physically move the items and confirm the moves in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An operator completes the moves, and the system shows the inventory consolidated and bins freed up."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the task to an operator to physically move the items and confirm the moves in the system.",
-      "expected_outcome": "An operator completes the moves, and the system shows the inventory consolidated and bins freed up.",
-      "required_tools": [
-        "assign_warehouse_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-pw-13045",
-  "title": "Track Asset Maintenance History",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Asset Maintenance History",
+    "compliance_level": "Standard"
+  },
   "description": "A public works manager wants to see the maintenance history for a specific city vehicle.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Asset Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the vehicle in the asset management system using its asset ID number.",
-      "expected_outcome": "The manager successfully locates the vehicle's record.",
-      "required_tools": [
-        "get_asset_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the vehicle in the asset management system using its asset ID number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager successfully locates the vehicle's record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve all maintenance work orders associated with the vehicle.",
-      "expected_outcome": "The manager gets a complete list of all past repairs and preventive maintenance.",
-      "required_tools": [
-        "get_asset_maintenance_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve all maintenance work orders associated with the vehicle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager gets a complete list of all past repairs and preventive maintenance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the history to identify any recurring issues.",
-      "expected_outcome": "The manager reviews the data and notes the vehicle has had recurring transmission problems.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the history to identify any recurring issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager reviews the data and notes the vehicle has had recurring transmission problems."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13562",
-  "title": "Check Status of a Pothole Repair",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Status of a Pothole Repair",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen who previously reported a pothole calls to check on the status of the repair.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Citizen Reporting & Service Requests",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the original service request using the citizen's name or the request ID.",
-      "expected_outcome": "Agent finds the original pothole report.",
-      "required_tools": [
-        "get_citizen_service_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the original service request using the citizen's name or the request ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the original pothole report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status of the associated work order in the public works system.",
-      "expected_outcome": "Agent finds the work order is marked as 'Completed' yesterday.",
-      "required_tools": [
-        "get_work_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status of the associated work order in the public works system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the work order is marked as 'Completed' yesterday."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the citizen that records show the repair was completed and close the service request.",
-      "expected_outcome": "Agent provides the final status update to the citizen.",
-      "required_tools": [
-        "close_service_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the citizen that records show the repair was completed and close the service request.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the final status update to the citizen."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

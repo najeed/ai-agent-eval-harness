@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-po-12303",
-  "title": "Adjust Machine Operating Parameters",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Adjust Machine Operating Parameters",
+    "compliance_level": "Standard"
+  },
   "description": "A process engineer needs to adjust the operating speed of a packaging machine to improve efficiency.",
-  "use_case": "Production & Operations",
-  "core_function": "Real-time Monitoring & Control",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the control interface for the specific packaging machine.",
-      "expected_outcome": "Agent successfully connects to the machine's control panel.",
-      "required_tools": [
-        "access_machine_control_panel"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the control interface for the specific packaging machine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully connects to the machine's control panel."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the current operating parameters and the recommended limits.",
-      "expected_outcome": "Agent views the current speed and the safe operating range.",
-      "required_tools": [
-        "get_machine_parameters"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the current operating parameters and the recommended limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent views the current speed and the safe operating range."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Increase the machine speed by 5% and monitor the output for any quality issues.",
-      "expected_outcome": "Agent adjusts the parameter and confirms the machine is operating stably at the new speed.",
-      "required_tools": [
-        "set_machine_parameter",
-        "monitor_production_output"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Increase the machine speed by 5% and monitor the output for any quality issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adjusts the parameter and confirms the machine is operating stably at the new speed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

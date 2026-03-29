@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hosp-gs-11579",
-  "title": "Guest Uses Express Check-out",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Guest Uses Express Check-out",
+    "compliance_level": "Standard"
+  },
   "description": "A guest who is in a hurry drops their key at the desk and asks to be checked out, requesting the receipt be emailed.",
-  "use_case": "Guest Services & Front Office",
-  "core_function": "Check-in & Check-out",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the guest's folio.",
-      "expected_outcome": "The agent finds the correct guest account.",
-      "required_tools": [
-        "pms_get_guest_folio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the guest's folio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent finds the correct guest account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Process the final payment using the credit card on file.",
-      "expected_outcome": "The payment is successfully processed.",
-      "required_tools": [
-        "pms_process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Process the final payment using the credit card on file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The payment is successfully processed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the guest out in the system and email the final folio to the address on file.",
-      "expected_outcome": "The guest is checked out, and the receipt is emailed.",
-      "required_tools": [
-        "pms_update_booking_status",
-        "pms_email_folio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the guest out in the system and email the final folio to the address on file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The guest is checked out, and the receipt is emailed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

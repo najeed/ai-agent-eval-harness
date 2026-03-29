@@ -1,54 +1,59 @@
 {
-  "scenario_id": "mfg-sl-12320",
-  "title": "Resolve a Supplier Delivery Delay",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve a Supplier Delivery Delay",
+    "compliance_level": "Standard"
+  },
   "description": "A buyer is notified by a supplier that a critical shipment will be delayed. They need to assess the impact.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Supplier Relationship Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all upcoming production orders that depend on the delayed material.",
-      "expected_outcome": "Agent generates a list of work orders that will be affected by the delay.",
-      "required_tools": [
-        "find_orders_by_material"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all upcoming production orders that depend on the delayed material.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of work orders that will be affected by the delay."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the supplier to get a firm revised delivery date and explore options for expediting.",
-      "expected_outcome": "Agent communicates with the supplier and gets a new ETA.",
-      "required_tools": [
-        "send_supplier_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the supplier to get a firm revised delivery date and explore options for expediting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent communicates with the supplier and gets a new ETA."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the expected delivery date on the purchase order and notify the production planning team.",
-      "expected_outcome": "Agent updates the PO and sends a notification to the planning department.",
-      "required_tools": [
-        "update_po_delivery_date",
-        "send_internal_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the expected delivery date on the purchase order and notify the production planning team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the PO and sends a notification to the planning department."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13332",
-  "title": "Follow Up on an Online Lead",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Follow Up on an Online Lead",
+    "compliance_level": "Standard"
+  },
   "description": "An agent receives a new lead from Zillow who is interested in one of their listings.",
-  "use_case": "Residential Sales",
-  "core_function": "Client Onboarding & Qualification",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Immediately respond to the lead via text message to introduce yourself and ask about their availability for a call.",
-      "expected_outcome": "A response is sent within 5 minutes of receiving the lead.",
-      "required_tools": [
-        "send_sms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "response_time",
-          "threshold": 300
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Immediately respond to the lead via text message to introduce yourself and ask about their availability for a call.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A response is sent within 5 minutes of receiving the lead."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Set up the lead on an automated email drip campaign with information about the property and similar listings.",
-      "expected_outcome": "The lead is added to the correct CRM workflow.",
-      "required_tools": [
-        "add_contact_to_crm_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Set up the lead on an automated email drip campaign with information about the property and similar listings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The lead is added to the correct CRM workflow."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Call the lead at the agreed-upon time to discuss their needs and schedule a showing.",
-      "expected_outcome": "A showing is scheduled or the lead's search criteria are clarified.",
-      "required_tools": [
-        "log_call_outcome"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Call the lead at the agreed-upon time to discuss their needs and schedule a showing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A showing is scheduled or the lead's search criteria are clarified."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

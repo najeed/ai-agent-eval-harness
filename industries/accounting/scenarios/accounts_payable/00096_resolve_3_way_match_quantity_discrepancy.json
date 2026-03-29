@@ -1,68 +1,72 @@
 {
-  "scenario_id": "ac-ap-96",
-  "title": "Resolve a 3-Way Match Quantity Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve a 3-Way Match Quantity Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "An invoice fails the 3-way match because the quantity invoiced is greater than the quantity received on the goods receipt note.",
-  "use_case": "Accounts Payable",
-  "core_function": "Invoice Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system automatically places the invoice on hold due to a quantity mismatch.",
-      "expected_outcome": "Agent is notified of the hold and the reason.",
-      "required_tools": [
-        "get_system_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system automatically places the invoice on hold due to a quantity mismatch.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is notified of the hold and the reason."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the PO, invoice, and goods receipt note to confirm the discrepancy.",
-      "expected_outcome": "Agent confirms the PO was for 100 units, 90 were received, but 100 were invoiced.",
-      "required_tools": [
-        "perform_3_way_match"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the PO, invoice, and goods receipt note to confirm the discrepancy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the PO was for 100 units, 90 were received, but 100 were invoiced."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the warehouse to confirm if the remaining 10 units have since been received.",
-      "expected_outcome": "The warehouse confirms the remaining items have not arrived.",
-      "required_tools": [
-        "contact_warehouse"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the warehouse to confirm if the remaining 10 units have since been received.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The warehouse confirms the remaining items have not arrived."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Inform the vendor of the quantity discrepancy and request a new invoice for the quantity actually received.",
-      "expected_outcome": "Agent contacts the vendor and asks them to submit a corrected invoice for 90 units.",
-      "required_tools": [
-        "contact_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Inform the vendor of the quantity discrepancy and request a new invoice for the quantity actually received.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent contacts the vendor and asks them to submit a corrected invoice for 90 units."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

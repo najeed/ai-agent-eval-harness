@@ -2,7 +2,10 @@
 Evaluation Runner Core Package.
 """
 
-from . import (  # noqa: F401
+__version__ = "1.1.0"
+
+from . import (
+    calibrator,  # noqa: F401
     cli,
     engine,
     loader,
@@ -15,6 +18,14 @@ from . import (  # noqa: F401
     drift_importer,
     triage,
     catalog,
+    config as configuration,
+    doctor,
+    registry_sync,
+    analyzer,
+    auto_translate,
+    scaffold,
+    cleaner,
+    exporter,
+    failure_corpus,
+    mutator,
 )
-
-__version__ = "1.1.0"

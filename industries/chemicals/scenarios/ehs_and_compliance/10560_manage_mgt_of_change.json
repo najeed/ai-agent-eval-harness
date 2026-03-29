@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10560",
-  "title": "Manage a Management of Change (MOC) Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Management of Change (MOC) Request",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer proposes changing a pipe's material of construction. An MOC must be created to assess the safety and environmental impact.",
-  "use_case": "EHS & Compliance",
-  "core_function": "Incident Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new MOC request, detailing the proposed change.",
-      "expected_outcome": "Agent successfully initiates the MOC record.",
-      "required_tools": [
-        "create_moc_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new MOC request, detailing the proposed change.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully initiates the MOC record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Route the MOC to the EHS department for a formal hazard review.",
-      "expected_outcome": "Agent assigns the MOC to the EHS manager for review and approval.",
-      "required_tools": [
-        "route_moc_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Route the MOC to the EHS department for a formal hazard review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the MOC to the EHS manager for review and approval."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After EHS review, document any required safety actions (e.g., 'Update P&ID diagram') before the MOC can be fully approved.",
-      "expected_outcome": "Agent adds the required actions to the MOC record based on the EHS review.",
-      "required_tools": [
-        "update_moc_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After EHS review, document any required safety actions (e.g., 'Update P&ID diagram') before the MOC can be fully approved.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds the required actions to the MOC record based on the EHS review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

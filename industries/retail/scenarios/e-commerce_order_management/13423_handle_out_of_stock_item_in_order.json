@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ret-ecom-13423",
-  "title": "Handle Out-of-Stock Item in an Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Out-of-Stock Item in an Order",
+    "compliance_level": "Standard"
+  },
   "description": "During picking, a warehouse associate discovers that the last unit of an item in an order is damaged and cannot be shipped.",
-  "use_case": "E-commerce & Order Management",
-  "core_function": "Order Fulfillment & Status",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "In the fulfillment application, mark the item as 'Out of Stock' or 'Damaged'.",
-      "expected_outcome": "The associate indicates that the item cannot be fulfilled.",
-      "required_tools": [
-        "update_item_fulfillment_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "In the fulfillment application, mark the item as 'Out of Stock' or 'Damaged'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate indicates that the item cannot be fulfilled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system automatically notifies customer service of the issue.",
-      "expected_outcome": "A task is created for a customer service agent to contact the customer.",
-      "required_tools": [
-        "create_customer_service_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system automatically notifies customer service of the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A task is created for a customer service agent to contact the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Pack and ship the rest of the order. The system adjusts the customer's invoice to remove the charge for the unfulfilled item.",
-      "expected_outcome": "The remainder of the order is shipped, and the customer is not charged for the missing item.",
-      "required_tools": [
-        "pack_order",
-        "adjust_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Pack and ship the rest of the order. The system adjusts the customer's invoice to remove the charge for the unfulfilled item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The remainder of the order is shipped, and the customer is not charged for the missing item."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

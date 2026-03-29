@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-em-11604",
-  "title": "Process an Off-Cycle Bonus Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an Off-Cycle Bonus Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A manager has approved a spot bonus for an employee that needs to be paid outside of the regular payroll cycle.",
-  "use_case": "Employee Management",
-  "core_function": "Payroll & Compensation",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the approved bonus details (employee, amount, reason).",
-      "expected_outcome": "Payroll specialist confirms the approved bonus information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the approved bonus details (employee, amount, reason).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Payroll specialist confirms the approved bonus information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the bonus payment into the payroll system as an off-cycle payment.",
-      "expected_outcome": "Specialist correctly enters the bonus details for processing.",
-      "required_tools": [
-        "enter_off_cycle_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the bonus payment into the payroll system as an off-cycle payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist correctly enters the bonus details for processing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the off-cycle payroll and verify the net pay and tax calculations.",
-      "expected_outcome": "Specialist processes the payment and confirms the calculations are correct before finalizing.",
-      "required_tools": [
-        "run_off_cycle_payroll"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the off-cycle payroll and verify the net pay and tax calculations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist processes the payment and confirms the calculations are correct before finalizing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

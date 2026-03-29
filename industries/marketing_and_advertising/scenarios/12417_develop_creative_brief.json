@@ -1,53 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12417",
-  "title": "Develop a Creative Brief",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop a Creative Brief",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager needs to write a creative brief for the design team for an upcoming social media campaign.",
-  "use_case": "Content & Creative Development",
-  "core_function": "Creative Asset Development",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all campaign details: objective, target audience, key message, and deliverables.",
-      "expected_outcome": "Agent collects all necessary information from the main campaign plan.",
-      "required_tools": [
-        "get_campaign_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all campaign details: objective, target audience, key message, and deliverables.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary information from the main campaign plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Fill out a standardized creative brief template with the gathered information.",
-      "expected_outcome": "Agent populates all sections of the brief, including background, goals, and specs.",
-      "required_tools": [
-        "creative_brief_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Fill out a standardized creative brief template with the gathered information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent populates all sections of the brief, including background, goals, and specs."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Share the completed brief with the creative team and schedule a kickoff meeting.",
-      "expected_outcome": "Agent distributes the brief and sets up the required meeting.",
-      "required_tools": [
-        "send_notification",
-        "calendar_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Share the completed brief with the creative team and schedule a kickoff meeting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent distributes the brief and sets up the required meeting."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

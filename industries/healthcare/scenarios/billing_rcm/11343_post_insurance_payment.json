@@ -1,85 +1,61 @@
 {
-  "scenario_id": "hc-brc-11343",
-  "title": "Post an Insurance Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Post an Insurance Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A payment poster receives an Electronic Remittance Advice (ERA) from an insurance company and needs to post the payments and adjustments.",
-  "use_case": "Billing & Revenue Cycle Management",
-  "core_function": "Claims Management & Submission",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Import the ERA file into the billing system.",
-      "expected_outcome": "The system successfully parses the ERA file.",
-      "required_tools": [
-        "import_era"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Import the ERA file into the billing system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system successfully parses the ERA file."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system automatically matches payments to claims and posts the allowed amounts, contractual adjustments, and patient responsibility amounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system auto-posts the majority of the payments."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system automatically matches payments to claims and posts the allowed amounts, contractual adjustments, and patient responsibility amounts.",
-      "expected_outcome": "The system auto-posts the majority of the payments.",
-      "required_tools": [
-        "auto_post_remittance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Manually review and resolve any exceptions where the system could not automatically post the payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Payment poster investigates and resolves the few payments that require manual intervention."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Manually review and resolve any exceptions where the system could not automatically post the payment.",
-      "expected_outcome": "Payment poster investigates and resolves the few payments that require manual intervention.",
-      "required_tools": [
-        "resolve_posting_exceptions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

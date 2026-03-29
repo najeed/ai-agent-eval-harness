@@ -1,52 +1,59 @@
 {
-  "scenario_id": "insurance-la-11935",
-  "title": "Request Annuity Tax Form (1099-R)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Annuity Tax Form (1099-R)",
+    "compliance_level": "Standard"
+  },
   "description": "An annuity holder needs a copy of their 1099-R tax form for a distribution they took last year.",
-  "use_case": "Life & Annuities",
-  "core_function": "Annuity Management",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the contract holder.",
-      "expected_outcome": "Agent correctly identifies the customer.",
-      "required_tools": [
-        "get_annuity_contract_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the contract holder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a copy of the requested 1099-R from the previous tax year.",
-      "expected_outcome": "Agent successfully retrieves the tax document from the archive.",
-      "required_tools": [
-        "generate_tax_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a copy of the requested 1099-R from the previous tax year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the tax document from the archive."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the tax form to the customer.",
-      "expected_outcome": "Agent sends the 1099-R to the customer's registered email address.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the tax form to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the 1099-R to the customer's registered email address."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

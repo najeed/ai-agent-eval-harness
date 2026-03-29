@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12481",
-  "title": "Set Up a Search Remarketing List (RLSA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set Up a Search Remarketing List (RLSA)",
+    "compliance_level": "Standard"
+  },
   "description": "An SEM manager wants to create a remarketing list to bid more aggressively for users who have previously visited the website when they search on Google.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Paid Search (SEM)",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "In Google Ads, create a new audience based on 'Website Visitors'.",
-      "expected_outcome": "Agent starts the audience creation process.",
-      "required_tools": [
-        "google_ads_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "In Google Ads, create a new audience based on 'Website Visitors'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent starts the audience creation process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Define the list to include all users who have visited in the last 90 days.",
-      "expected_outcome": "Agent sets the correct membership duration.",
-      "required_tools": [
-        "google_ads_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Define the list to include all users who have visited in the last 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets the correct membership duration."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply this audience to an existing search campaign with a '+25%' bid adjustment.",
-      "expected_outcome": "Agent successfully sets up the RLSA, which will increase bids for past visitors.",
-      "required_tools": [
-        "google_ads_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply this audience to an existing search campaign with a '+25%' bid adjustment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sets up the RLSA, which will increase bids for past visitors."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

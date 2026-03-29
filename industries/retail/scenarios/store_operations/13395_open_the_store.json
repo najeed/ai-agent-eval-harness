@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ret-so-13395",
-  "title": "Open the Store for the Day",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Open the Store for the Day",
+    "compliance_level": "Standard"
+  },
   "description": "A store manager needs to perform the morning opening procedures.",
-  "use_case": "Store Operations",
-  "core_function": "Store Opening & Closing",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into the store management system and start the 'Opening Checklist' task.",
-      "expected_outcome": "The manager accesses the daily opening procedure checklist.",
-      "required_tools": [
-        "open_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into the store management system and start the 'Opening Checklist' task.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager accesses the daily opening procedure checklist."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Count the cash in the safe and prepare the cash floats for each POS terminal.",
-      "expected_outcome": "The manager confirms the safe balance and correctly prepares the cash drawers.",
-      "required_tools": [
-        "count_cash_safe",
-        "prepare_pos_float"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Count the cash in the safe and prepare the cash floats for each POS terminal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager confirms the safe balance and correctly prepares the cash drawers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete all checklist items (e.g., 'Check lighting', 'Turn on music') and formally open the store for business in the system.",
-      "expected_outcome": "All opening tasks are completed, and the POS systems are ready to accept transactions.",
-      "required_tools": [
-        "complete_checklist_item",
-        "open_store_in_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete all checklist items (e.g., 'Check lighting', 'Turn on music') and formally open the store for business in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All opening tasks are completed, and the POS systems are ready to accept transactions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

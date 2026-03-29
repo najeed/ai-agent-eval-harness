@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10755",
-  "title": "Database Server Patching",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Database Server Patching",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must apply a critical security patch to a production database server, which requires downtime.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Patch Management & Remediation",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Coordinate with the application owners to schedule a maintenance window for the database server.",
-      "expected_outcome": "Analyst successfully negotiates and schedules a maintenance window.",
-      "required_tools": [
-        "schedule_maintenance_window"
-      ],
-      "success_criteria": [
-        {
-          "metric": "coordination_effectiveness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Coordinate with the application owners to schedule a maintenance window for the database server.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully negotiates and schedules a maintenance window."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Before the window, take a snapshot of the database server so it can be rolled back in case of issues.",
-      "expected_outcome": "Analyst successfully creates a backup snapshot.",
-      "required_tools": [
-        "take_vm_snapshot"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Before the window, take a snapshot of the database server so it can be rolled back in case of issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully creates a backup snapshot."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "During the maintenance window, apply the security patch and reboot the server, then verify with the application owners that the application is functioning correctly.",
-      "expected_outcome": "The patch is applied successfully, and the application is confirmed to be working, completing the maintenance.",
-      "required_tools": [
-        "deploy_patch",
-        "verify_application_functionality"
-      ],
-      "success_criteria": [
-        {
-          "metric": "remediation_success_rate",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "During the maintenance window, apply the security patch and reboot the server, then verify with the application owners that the application is functioning correctly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The patch is applied successfully, and the application is confirmed to be working, completing the maintenance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13382",
-  "title": "Advise a Client on Renting vs. Buying",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Advise a Client on Renting vs. Buying",
+    "compliance_level": "Standard"
+  },
   "description": "A potential client is unsure if they should continue renting or buy their first home. The agent must provide a balanced analysis.",
-  "use_case": "Residential Sales",
-  "core_function": "Client Onboarding & Qualification",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the client's financial information, including their current rent, savings, and income.",
-      "expected_outcome": "Agent has the data needed for the analysis.",
-      "required_tools": [
-        "intake_form_capture"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the client's financial information, including their current rent, savings, and income.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the data needed for the analysis."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a rent vs. buy calculator to estimate the total housing costs for both scenarios over a 5-year period, including mortgage payments, taxes, insurance, and potential appreciation.",
-      "expected_outcome": "A detailed financial comparison is generated.",
-      "required_tools": [
-        "rent_vs_buy_calculator"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a rent vs. buy calculator to estimate the total housing costs for both scenarios over a 5-year period, including mortgage payments, taxes, insurance, and potential appreciation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A detailed financial comparison is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present the analysis to the client, explaining both the financial and non-financial pros and cons of each option, without being overly salesy.",
-      "expected_outcome": "The client receives objective advice to help them make an informed decision.",
-      "required_tools": [
-        "prepare_presentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present the analysis to the client, explaining both the financial and non-financial pros and cons of each option, without being overly salesy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client receives objective advice to help them make an informed decision."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

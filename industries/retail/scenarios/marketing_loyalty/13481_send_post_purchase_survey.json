@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ret-ml-13481",
-  "title": "Send a Post-Purchase Survey",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Send a Post-Purchase Survey",
+    "compliance_level": "Standard"
+  },
   "description": "A day after a customer's online order is delivered, the system automatically sends them a request to review the products they purchased.",
-  "use_case": "Marketing & Loyalty",
-  "core_function": "Customer Feedback & Reviews",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system identifies orders that were marked as 'Delivered' yesterday.",
-      "expected_outcome": "A list of eligible customers is generated.",
-      "required_tools": [
-        "find_delivered_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system identifies orders that were marked as 'Delivered' yesterday.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of eligible customers is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system sends an email to each customer asking them to review their recent purchases.",
-      "expected_outcome": "The feedback request is delivered.",
-      "required_tools": [
-        "send_automated_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system sends an email to each customer asking them to review their recent purchases.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The feedback request is delivered."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The email contains direct links for the customer to leave a star rating and a comment for each product.",
-      "expected_outcome": "The process for leaving a review is made easy for the customer, increasing the likelihood of getting feedback.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "The email contains direct links for the customer to leave a star rating and a comment for each product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The process for leaving a review is made easy for the customer, increasing the likelihood of getting feedback."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

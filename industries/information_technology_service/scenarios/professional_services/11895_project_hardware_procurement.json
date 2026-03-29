@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11895",
-  "title": "Project Management - Hardware Procurement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Management - Hardware Procurement",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager needs to order the new server and firewall required for an upcoming project.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Project Execution & Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the project quote to get the exact make and model of the hardware to be ordered.",
-      "expected_outcome": "The PM has the correct hardware specifications.",
-      "required_tools": [
-        "get_quote_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the project quote to get the exact make and model of the hardware to be ordered.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PM has the correct hardware specifications."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Place the order with the preferred hardware distributor.",
-      "expected_outcome": "The order is successfully placed.",
-      "required_tools": [
-        "create_purchase_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Place the order with the preferred hardware distributor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is successfully placed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Track the order and update the project plan with the estimated delivery date.",
-      "expected_outcome": "The project plan is updated with the hardware delivery timeline.",
-      "required_tools": [
-        "track_shipment",
-        "update_project_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Track the order and update the project plan with the estimated delivery date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project plan is updated with the hardware delivery timeline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

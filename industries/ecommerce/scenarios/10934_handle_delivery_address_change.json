@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10934",
-  "title": "Handle Post-Shipment Delivery Address Change",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Post-Shipment Delivery Address Change",
+    "compliance_level": "Standard"
+  },
   "description": "A customer needs to change the delivery address for an order that has already been shipped.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Shipping & Logistics",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the order and its tracking number.",
-      "expected_outcome": "Agent retrieves the necessary order and tracking details.",
-      "required_tools": [
-        "get_order_details",
-        "get_shipment_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the order and its tracking number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the necessary order and tracking details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the carrier's portal to see if a 'package intercept' or 'address correction' is possible.",
-      "expected_outcome": "Agent finds that the carrier offers a package intercept service for a fee.",
-      "required_tools": [
-        "check_carrier_services"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the carrier's portal to see if a 'package intercept' or 'address correction' is possible.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that the carrier offers a package intercept service for a fee."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer of the possibility and the associated fee, and if they agree, submit the intercept request to the carrier.",
-      "expected_outcome": "Agent clearly communicates the options and successfully submits the request.",
-      "required_tools": [
-        "request_package_intercept"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer of the possibility and the associated fee, and if they agree, submit the intercept request to the carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the options and successfully submits the request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

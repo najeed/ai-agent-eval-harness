@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11785",
-  "title": "Update Outdated Knowledge Base Article",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Outdated Knowledge Base Article",
+    "compliance_level": "Standard"
+  },
   "description": "A customer points out that a knowledge base article is outdated and its screenshots no longer match the current user interface.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Knowledge & Self-Service",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the outdated article based on the customer's feedback.",
-      "expected_outcome": "Agent finds the correct article.",
-      "required_tools": [
-        "search_knowledge_base"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the outdated article based on the customer's feedback.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct article."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take new screenshots of the current UI and update the step-by-step instructions in the article.",
-      "expected_outcome": "Agent updates the article to be accurate and current.",
-      "required_tools": [
-        "kb_editor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take new screenshots of the current UI and update the step-by-step instructions in the article.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the article to be accurate and current."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Publish the updated article and thank the customer for their feedback.",
-      "expected_outcome": "The documentation is corrected, and the customer feels valued.",
-      "required_tools": [
-        "publish_kb_article",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Publish the updated article and thank the customer for their feedback.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The documentation is corrected, and the customer feels valued."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

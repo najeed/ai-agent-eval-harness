@@ -149,13 +149,15 @@ def test_with_fixture(sample_data):
     assert sample_data["test"] == "data"
 ```
 
-### Mocking External Dependencies
+### High-Fidelity Infrastructure (Zero-Mock Pattern)
+The project has migrated away from fragile `unittest.mock.patch` for core infrastructure. Use the centralized `adapter_stub` fixture or direct filesystem interaction.
+
 ```python
-@patch('eval_runner.cli.requests.post')
-def test_api_integration(mock_post):
-    """Test API integration with mock."""
-    mock_post.return_value = Mock(json=lambda: {"result": "success"})
-    # Test implementation
+def test_agent_interaction(adapter_stub, tmp_path):
+    """Test using high-fidelity stubs instead of MagicMock."""
+    # Use real aiohttp server provided by adapter_stub
+    # Use real files in tmp_path
+    pass
 ```
 
 ## Troubleshooting

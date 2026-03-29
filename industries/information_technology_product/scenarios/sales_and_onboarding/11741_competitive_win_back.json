@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11741",
-  "title": "Competitive Win-Back",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Competitive Win-Back",
+    "compliance_level": "Standard"
+  },
   "description": "A lead reveals they are currently using a competitor's product but are unhappy with it.",
-  "use_case": "Sales & Account Management",
-  "core_function": "New Customer Acquisition",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the customer's frustration and ask about the specific pain points with the competitor's product.",
-      "expected_outcome": "Agent gathers competitive intelligence.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the customer's frustration and ask about the specific pain points with the competitor's product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers competitive intelligence."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a competitive battlecard to highlight the product's advantages that directly address the customer's pain points.",
-      "expected_outcome": "Agent makes a compelling, targeted pitch against the competitor.",
-      "required_tools": [
-        "get_competitive_battlecard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a competitive battlecard to highlight the product's advantages that directly address the customer's pain points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a compelling, targeted pitch against the competitor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Offer a free trial and assistance with data migration to make switching easy.",
-      "expected_outcome": "Agent lowers the barrier to entry for the customer to switch providers.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Offer a free trial and assistance with data migration to make switching easy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lowers the barrier to entry for the customer to switch providers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

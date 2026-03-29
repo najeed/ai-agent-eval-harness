@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-cf-11267",
-  "title": "Analyze Profitability by Product",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Profitability by Product",
+    "compliance_level": "Standard"
+  },
   "description": "An FP&A analyst needs to determine which of the company's products are the most and least profitable.",
-  "use_case": "Corporate Finance",
-  "core_function": "Financial Planning & Analysis (FP&A)",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather sales revenue and cost of goods sold (COGS) data for each product line.",
-      "expected_outcome": "Agent successfully retrieves all necessary financial data.",
-      "required_tools": [
-        "get_product_financial_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather sales revenue and cost of goods sold (COGS) data for each product line.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves all necessary financial data."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the gross profit and gross margin for each product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the profitability metrics for all products."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the gross profit and gross margin for each product.",
-      "expected_outcome": "Agent accurately calculates the profitability metrics for all products.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a report ranking the products from most to least profitable based on gross margin.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a clear report identifying Product A as most profitable and Product D as least profitable."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a report ranking the products from most to least profitable based on gross margin.",
-      "expected_outcome": "Agent generates a clear report identifying Product A as most profitable and Product D as least profitable.",
-      "required_tools": [
-        "create_summary_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11707",
-  "title": "Add User Licenses to Subscription",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add User Licenses to Subscription",
+    "compliance_level": "Standard"
+  },
   "description": "A customer needs to add 5 more user licenses to their annual subscription.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Account & Billing Support",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their current subscription plan.",
-      "expected_outcome": "Agent locates the customer's account and sees they are on the 'Pro' plan.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their current subscription plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the customer's account and sees they are on the 'Pro' plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the prorated cost for the 5 new licenses for the remainder of the subscription term.",
-      "expected_outcome": "Agent correctly calculates the prorated charge.",
-      "required_tools": [
-        "calculate_prorated_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the prorated cost for the 5 new licenses for the remainder of the subscription term.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the prorated charge."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the subscription quantity and process the prorated charge.",
-      "expected_outcome": "Agent successfully adds the licenses and charges the card on file.",
-      "required_tools": [
-        "update_subscription",
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the subscription quantity and process the prorated charge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the licenses and charges the card on file."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

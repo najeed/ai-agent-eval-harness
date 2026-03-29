@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13901",
-  "title": "Upsell - Hardware Upgrade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Upsell - Hardware Upgrade",
+    "compliance_level": "Standard"
+  },
   "description": "An existing customer is eligible for a phone upgrade. The agent's goal is to sell them a new device.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Upselling and Cross-selling",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and confirm their upgrade eligibility.",
-      "expected_outcome": "Agent confirms the customer can upgrade their device.",
-      "required_tools": [
-        "get_customer_details",
-        "check_upgrade_eligibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and confirm their upgrade eligibility.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer can upgrade their device."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Present the latest flagship phone models with their financing options.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly presents the features and costs of new phones."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Present the latest flagship phone models with their financing options.",
-      "expected_outcome": "Agent clearly presents the features and costs of new phones.",
-      "required_tools": [
-        "get_device_catalog"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the order for the new phone selected by the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the sale and arranges for shipping."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the order for the new phone selected by the customer.",
-      "expected_outcome": "Agent successfully completes the sale and arranges for shipping.",
-      "required_tools": [
-        "process_new_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

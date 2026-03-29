@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10599",
-  "title": "Manage Lab Reagent Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Lab Reagent Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A lab technician has opened a new bottle of a chemical reagent and needs to log it in the lab's inventory system.",
-  "use_case": "R&D and Quality",
-  "core_function": "Lab Information Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the barcode on the reagent bottle to identify it.",
-      "expected_outcome": "Agent successfully identifies the reagent.",
-      "required_tools": [
-        "scan_reagent_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the barcode on the reagent bottle to identify it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully identifies the reagent."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the date the bottle was opened.",
-      "expected_outcome": "Agent records the 'date opened' in the system.",
-      "required_tools": [
-        "update_reagent_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the date the bottle was opened.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent records the 'date opened' in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system automatically calculates the new expiration date based on the 'in-use' stability period (e.g., 6 months after opening) and prints a new label.",
-      "expected_outcome": "Agent gets a new label with the correct in-use expiration date to place on the bottle.",
-      "required_tools": [
-        "print_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system automatically calculates the new expiration date based on the 'in-use' stability period (e.g., 6 months after opening) and prints a new label.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a new label with the correct in-use expiration date to place on the bottle."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

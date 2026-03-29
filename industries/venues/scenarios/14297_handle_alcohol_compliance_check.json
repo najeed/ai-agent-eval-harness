@@ -1,60 +1,72 @@
 {
-  "scenario_id": "venues-fb-14297",
-  "title": "Handle Alcohol Compliance Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Alcohol Compliance Check",
+    "compliance_level": "Standard"
+  },
   "description": "A 'secret shopper' from the state liquor authority is testing a bartender's compliance with ID checking.",
-  "use_case": "Food & Beverage (Concessions)",
-  "core_function": "Staff & Stand Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The secret shopper, who appears underage, orders a beer.",
-      "expected_outcome": "The shopper places the order.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The secret shopper, who appears underage, orders a beer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The shopper places the order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The bartender follows protocol and asks to see a valid photo ID.",
-      "expected_outcome": "The bartender correctly requests ID.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The bartender follows protocol and asks to see a valid photo ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The bartender correctly requests ID."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The shopper presents an ID showing they are underage. The bartender refuses the sale.",
-      "expected_outcome": "The bartender correctly refuses to sell alcohol to the minor.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The shopper presents an ID showing they are underage. The bartender refuses the sale.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The bartender correctly refuses to sell alcohol to the minor."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The shopper reveals their identity and notes the successful compliance check. The manager logs the successful test.",
-      "expected_outcome": "The manager logs the positive result in the staff compliance log.",
-      "required_tools": [
-        "log_compliance_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The shopper reveals their identity and notes the successful compliance check. The manager logs the successful test.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager logs the positive result in the staff compliance log."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

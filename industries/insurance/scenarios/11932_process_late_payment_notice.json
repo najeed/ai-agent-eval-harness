@@ -1,52 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11932",
-  "title": "Process a Late Payment Notice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Late Payment Notice",
+    "compliance_level": "Standard"
+  },
   "description": "A customer's premium payment is overdue, and the system needs to send a late payment/cancellation notice.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Billing & Collections",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all policies with payments that are past the grace period.",
-      "expected_outcome": "The system generates a list of policies pending cancellation for non-payment.",
-      "required_tools": [
-        "get_overdue_policies"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all policies with payments that are past the grace period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a list of policies pending cancellation for non-payment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each policy, generate the legally required notice of pending cancellation.",
-      "expected_outcome": "The system generates the correct legal notice for each customer.",
-      "required_tools": [
-        "generate_cancellation_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each policy, generate the legally required notice of pending cancellation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates the correct legal notice for each customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the notices to the customers.",
-      "expected_outcome": "The system mails the notices.",
-      "required_tools": [
-        "send_mail"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the notices to the customers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system mails the notices."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

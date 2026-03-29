@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10991",
-  "title": "Calculate Customer Lifetime Value (CLV)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Customer Lifetime Value (CLV)",
+    "compliance_level": "Standard"
+  },
   "description": "A marketing analyst wants to calculate the lifetime value of a specific customer.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Customer Analytics",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all past orders for a given customer.",
-      "expected_outcome": "Agent gets a complete list of the customer's orders.",
-      "required_tools": [
-        "get_order_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all past orders for a given customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a complete list of the customer's orders."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Sum the total value of all their orders.",
-      "expected_outcome": "Agent correctly calculates the total revenue from the customer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Sum the total value of all their orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the total revenue from the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Optionally, apply a formula to estimate future value based on purchase frequency and average order value.",
-      "expected_outcome": "Agent provides an estimated Customer Lifetime Value.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Optionally, apply a formula to estimate future value based on purchase frequency and average order value.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an estimated Customer Lifetime Value."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

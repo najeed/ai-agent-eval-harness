@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-pw-13071",
-  "title": "Update a Project Milestone",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update a Project Milestone",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager for a new library construction needs to update the project plan to show that the foundation has been completed.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Project Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the project plan for the library construction.",
-      "expected_outcome": "The manager opens the correct project file.",
-      "required_tools": [
-        "get_project_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the project plan for the library construction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager opens the correct project file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Locate the 'Foundation Pour' milestone in the project plan.",
-      "expected_outcome": "The manager finds the relevant task.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Locate the 'Foundation Pour' milestone in the project plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager finds the relevant task."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Mark the milestone as 'Complete' and enter the completion date.",
-      "expected_outcome": "The manager successfully updates the project plan, which may automatically trigger notifications to other stakeholders.",
-      "required_tools": [
-        "update_project_milestone"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Mark the milestone as 'Complete' and enter the completion date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager successfully updates the project plan, which may automatically trigger notifications to other stakeholders."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

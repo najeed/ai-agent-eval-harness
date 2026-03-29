@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-mid-12783",
-  "title": "Investigate Suspected Pipeline Theft",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Suspected Pipeline Theft",
+    "compliance_level": "Standard"
+  },
   "description": "A volume balance analysis shows a consistent loss of product in a specific pipeline segment, suggesting a possible illegal tap.",
-  "use_case": "Midstream",
-  "core_function": "Compliance & Safety",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a detailed volume balance on the suspect pipeline segment over the last 30 days.",
-      "expected_outcome": "The analysis confirms a small but consistent daily loss that cannot be explained by measurement error.",
-      "required_tools": [
-        "run_volume_balance_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a detailed volume balance on the suspect pipeline segment over the last 30 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis confirms a small but consistent daily loss that cannot be explained by measurement error."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch a helicopter or drone to fly the pipeline right-of-way, looking for suspicious activity or ground disturbances.",
-      "expected_outcome": "The aerial surveillance identifies an unauthorized track leading to the pipeline in a remote area.",
-      "required_tools": [
-        "schedule_aerial_surveillance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch a helicopter or drone to fly the pipeline right-of-way, looking for suspicious activity or ground disturbances.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The aerial surveillance identifies an unauthorized track leading to the pipeline in a remote area."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify corporate security and local law enforcement of the suspected illegal tap location for further investigation.",
-      "expected_outcome": "The relevant authorities are engaged to handle the criminal investigation.",
-      "required_tools": [
-        "report_to_security",
-        "report_to_law_enforcement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify corporate security and local law enforcement of the suspected illegal tap location for further investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The relevant authorities are engaged to handle the criminal investigation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

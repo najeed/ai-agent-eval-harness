@@ -1,51 +1,59 @@
 {
-  "scenario_id": "auto-csra-10479",
-  "title": "Child Safety Seat Installation Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Child Safety Seat Installation Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A new parent wants to know the correct way to install a child safety seat in their new SUV.",
-  "use_case": "Customer Support & Roadside Assistance",
-  "core_function": "General Inquiries",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's vehicle model.",
-      "expected_outcome": "Agent identifies the vehicle.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's vehicle model.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the vehicle."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the vehicle's owner's manual to locate the LATCH anchor points.",
-      "expected_outcome": "Agent finds the diagram showing the anchor point locations in the second-row seats.",
-      "required_tools": [
-        "search_knowledge_base"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the vehicle's owner's manual to locate the LATCH anchor points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the diagram showing the anchor point locations in the second-row seats."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the location of the LATCH anchors and strongly recommend that the customer also consult the child seat manufacturer's instructions and have the installation checked by a certified technician.",
-      "expected_outcome": "Agent provides helpful information but also includes a critical safety disclaimer and recommendation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the location of the LATCH anchors and strongly recommend that the customer also consult the child seat manufacturer's instructions and have the installation checked by a certified technician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides helpful information but also includes a critical safety disclaimer and recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

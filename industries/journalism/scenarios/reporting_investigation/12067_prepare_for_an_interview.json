@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-ri-12067",
-  "title": "Prepare for an Interview",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare for an Interview",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter is about to conduct a major interview and needs to prepare a thorough list of questions and background materials.",
-  "use_case": "Reporting & Investigation",
-  "core_function": "Source & Interview Management",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Conduct in-depth research on the interviewee and the topic of discussion.",
-      "expected_outcome": "Agent is fully briefed on the subject matter.",
-      "required_tools": [
-        "search_news_archives",
-        "search_web"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehensiveness_of_research",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Conduct in-depth research on the interviewee and the topic of discussion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is fully briefed on the subject matter."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a list of 20-30 potential questions, starting with easy rapport-building questions and moving to more challenging ones.",
-      "expected_outcome": "A structured and comprehensive question list is created.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "quality_of_questions",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a list of 20-30 potential questions, starting with easy rapport-building questions and moving to more challenging ones.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A structured and comprehensive question list is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Organize all background research and the question list into a single briefing document to be used during the interview.",
-      "expected_outcome": "A complete interview prep package is created.",
-      "required_tools": [
-        "document_editor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "organizational_clarity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Organize all background research and the question list into a single briefing document to be used during the interview.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete interview prep package is created."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

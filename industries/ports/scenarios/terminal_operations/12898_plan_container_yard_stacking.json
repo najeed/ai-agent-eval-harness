@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ports-to-12898",
-  "title": "Plan Container Yard Stacking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Container Yard Stacking",
+    "compliance_level": "Standard"
+  },
   "description": "A vessel is due to discharge 500 containers. The yard planner must pre-plan the optimal stacking locations for them.",
-  "use_case": "Terminal Operations",
-  "core_function": "Yard & Stowage Planning",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the discharge list (BAPLIE file) for the incoming vessel.",
-      "expected_outcome": "Planner successfully imports the file and identifies container types (standard, reefer, OOG) and weights.",
-      "required_tools": [
-        "import_baplie_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the discharge list (BAPLIE file) for the incoming vessel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner successfully imports the file and identifies container types (standard, reefer, OOG) and weights."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the yard inventory and identify empty slots in appropriate zones (e.g., reefer racks, export block).",
-      "expected_outcome": "Planner identifies sufficient space in the appropriate yard blocks for all container types.",
-      "required_tools": [
-        "get_yard_inventory_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the yard inventory and identify empty slots in appropriate zones (e.g., reefer racks, export block).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner identifies sufficient space in the appropriate yard blocks for all container types."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign a specific yard location (block, bay, row, tier) to each container on the discharge list.",
-      "expected_outcome": "Every container is assigned a yard position in the Terminal Operating System (TOS) to optimize future movements.",
-      "required_tools": [
-        "assign_yard_positions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign a specific yard location (block, bay, row, tier) to each container on the discharge list.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Every container is assigned a yard position in the Terminal Operating System (TOS) to optimize future movements."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

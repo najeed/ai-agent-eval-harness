@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10923",
-  "title": "Resolve Billing Dispute - Double Charge",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Billing Dispute - Double Charge",
+    "compliance_level": "Standard"
+  },
   "description": "A customer claims they were charged twice for a single order.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Issue Resolution",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's order and payment transaction history.",
-      "expected_outcome": "Agent finds the customer's order.",
-      "required_tools": [
-        "get_order_details",
-        "get_payment_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's order and payment transaction history.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the customer's order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the transaction logs and confirm that two identical payment authorizations were captured.",
-      "expected_outcome": "Agent verifies that a system glitch caused a duplicate charge.",
-      "required_tools": [
-        "analyze_transaction_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the transaction logs and confirm that two identical payment authorizations were captured.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that a system glitch caused a duplicate charge."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue a refund for the duplicate charge.",
-      "expected_outcome": "Agent successfully refunds the extra amount to the customer.",
-      "required_tools": [
-        "process_refund"
-      ],
-      "success_criteria": [
-        {
-          "metric": "transaction_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue a refund for the duplicate charge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully refunds the extra amount to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

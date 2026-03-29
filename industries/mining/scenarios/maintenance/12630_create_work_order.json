@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-maint-12630",
-  "title": "Create Corrective Maintenance Work Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Corrective Maintenance Work Order",
+    "compliance_level": "Standard"
+  },
   "description": "A field operator notices a leak on a pipeline and creates a work order in the system for maintenance to repair it.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Work Management",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the mobile CMMS application and select 'Create New Work Order'.",
-      "expected_outcome": "The work order creation form is displayed.",
-      "required_tools": [
-        "load_mobile_cmms_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the mobile CMMS application and select 'Create New Work Order'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The work order creation form is displayed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Fill in the details, including the equipment ID of the pipeline, the location of the leak, and a description of the problem. Set the priority to 'High'.",
-      "expected_outcome": "The work order is populated with accurate and complete information.",
-      "required_tools": [
-        "complete_digital_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Fill in the details, including the equipment ID of the pipeline, the location of the leak, and a description of the problem. Set the priority to 'High'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The work order is populated with accurate and complete information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the work order, which is then automatically routed to the maintenance planner's queue.",
-      "expected_outcome": "The work order is created in the CMMS and is ready for planning and scheduling.",
-      "required_tools": [
-        "submit_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the work order, which is then automatically routed to the maintenance planner's queue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The work order is created in the CMMS and is ready for planning and scheduling."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

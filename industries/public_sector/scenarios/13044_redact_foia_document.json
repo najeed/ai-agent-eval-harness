@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ps-rc-13044",
-  "title": "Redact a Document for FOIA Release",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Redact a Document for FOIA Release",
+    "compliance_level": "Standard"
+  },
   "description": "A public records officer is preparing a document for release under FOIA and needs to redact exempt information.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Public Records & FOIA",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the document to identify information that is exempt from disclosure (e.g., personal private information, deliberative process).",
-      "expected_outcome": "The officer identifies several pieces of personally identifiable information (PII) in the document.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the document to identify information that is exempt from disclosure (e.g., personal private information, deliberative process).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer identifies several pieces of personally identifiable information (PII) in the document."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a redaction tool to black out the exempt information.",
-      "expected_outcome": "The officer successfully redacts all PII.",
-      "required_tools": [
-        "redact_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a redaction tool to black out the exempt information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer successfully redacts all PII."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Save the redacted version of the document, ready for release to the requestor.",
-      "expected_outcome": "The officer prepares the final, redacted document for delivery.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Save the redacted version of the document, ready for release to the requestor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer prepares the final, redacted document for delivery."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

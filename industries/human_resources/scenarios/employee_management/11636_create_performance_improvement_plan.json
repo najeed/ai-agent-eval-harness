@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hr-em-11636",
-  "title": "Create a Performance Improvement Plan (PIP)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Performance Improvement Plan (PIP)",
+    "compliance_level": "Standard"
+  },
   "description": "A manager needs to place an employee on a PIP for failing to meet performance expectations.",
-  "use_case": "Employee Management",
-  "core_function": "Performance Management",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Consult with the manager to document the specific performance issues and desired improvements.",
-      "expected_outcome": "HRBP works with the manager to define clear, measurable goals for the PIP.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Consult with the manager to document the specific performance issues and desired improvements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP works with the manager to define clear, measurable goals for the PIP."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the PIP document using the company's standard template.",
-      "expected_outcome": "HRBP creates the formal PIP document.",
-      "required_tools": [
-        "generate_document_from_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_creation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the PIP document using the company's standard template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP creates the formal PIP document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule a meeting with the manager and employee to deliver the PIP and have it signed.",
-      "expected_outcome": "HRBP schedules and attends the meeting to ensure it's handled correctly.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule a meeting with the manager and employee to deliver the PIP and have it signed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP schedules and attends the meeting to ensure it's handled correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

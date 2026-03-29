@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-op-10327",
-  "title": "Review Customer Onboarding Process",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Customer Onboarding Process",
+    "compliance_level": "Standard"
+  },
   "description": "An operational auditor maps the customer onboarding process to identify delays and improve customer satisfaction.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Process Efficiency Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Interview sales, operations, and customer support staff to create a detailed process map of the entire onboarding journey.",
-      "expected_outcome": "A visual process map is created.",
-      "required_tools": [
-        "create_process_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Interview sales, operations, and customer support staff to create a detailed process map of the entire onboarding journey.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A visual process map is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the process map to identify bottlenecks, such as the manual handoff between the sales and operations teams.",
-      "expected_outcome": "The auditor identifies a key delay in the process.",
-      "required_tools": [
-        "analyze_process_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the process map to identify bottlenecks, such as the manual handoff between the sales and operations teams.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor identifies a key delay in the process."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend automating the handoff process by integrating the CRM and the operations management system.",
-      "expected_outcome": "A specific, actionable recommendation for process improvement is made.",
-      "required_tools": [
-        "draft_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "strategic_advice_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend automating the handoff process by integrating the CRM and the operations management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A specific, actionable recommendation for process improvement is made."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

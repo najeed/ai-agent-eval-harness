@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10003",
-  "title": "Plan a Satellite's Orbit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan a Satellite's Orbit",
+    "compliance_level": "Standard"
+  },
   "description": "A mission planner needs to design a stable orbit for a new Earth observation satellite that provides coverage of specific regions.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Mission Design & Analysis",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the mission requirements, including target observation areas, revisit time, and desired resolution.",
-      "expected_outcome": "Agent lists all key mission parameters.",
-      "required_tools": [
-        "get_mission_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the mission requirements, including target observation areas, revisit time, and desired resolution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists all key mission parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the optimal orbital parameters (altitude, inclination, eccentricity) to meet the mission requirements.",
-      "expected_outcome": "Agent calculates a set of orbital parameters that satisfy all constraints.",
-      "required_tools": [
-        "calculate_orbit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the optimal orbital parameters (altitude, inclination, eccentricity) to meet the mission requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates a set of orbital parameters that satisfy all constraints."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Simulate the chosen orbit over a 10-year lifespan to ensure long-term stability and predict station-keeping maneuver frequency.",
-      "expected_outcome": "Agent generates a report showing the orbit's stability and fuel budget for station-keeping.",
-      "required_tools": [
-        "simulate_orbit_decay"
-      ],
-      "success_criteria": [
-        {
-          "metric": "simulation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Simulate the chosen orbit over a 10-year lifespan to ensure long-term stability and predict station-keeping maneuver frequency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a report showing the orbit's stability and fuel budget for station-keeping."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

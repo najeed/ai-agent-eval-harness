@@ -1,53 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10534",
-  "title": "Assign Training for Lab Analyst",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assign Training for Lab Analyst",
+    "compliance_level": "Standard"
+  },
   "description": "A new lab analyst needs to be trained on a specific analytical instrument (e.g., GC-MS) before they can test samples on it.",
-  "use_case": "R&D and Quality",
-  "core_function": "Quality Assurance",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the new analyst's current training record in the training management system.",
-      "expected_outcome": "Agent finds the analyst has not yet been trained on the GC-MS.",
-      "required_tools": [
-        "get_employee_training_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the new analyst's current training record in the training management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the analyst has not yet been trained on the GC-MS."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign the 'GC-MS Operation and Maintenance' training module to the analyst.",
-      "expected_outcome": "Agent successfully assigns the required training course.",
-      "required_tools": [
-        "assign_training_module"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign the 'GC-MS Operation and Maintenance' training module to the analyst.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully assigns the required training course."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule a hands-on training session with a senior analyst.",
-      "expected_outcome": "Agent notifies the senior analyst and schedules the practical training session.",
-      "required_tools": [
-        "send_notification",
-        "update_training_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule a hands-on training session with a senior analyst.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent notifies the senior analyst and schedules the practical training session."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

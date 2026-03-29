@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-um-13584",
-  "title": "Adjust Bus Headways Based on Real-Time Demand",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Adjust Bus Headways Based on Real-Time Demand",
+    "compliance_level": "Standard"
+  },
   "description": "Passenger demand on a certain route is higher than usual. An operator increases bus frequency to reduce wait times.",
-  "use_case": "Urban Mobility & Transport",
-  "core_function": "Public Transit Operations",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an alert that passenger wait times on 'Route 12' are exceeding the 15-minute target.",
-      "expected_outcome": "Agent acknowledges the service level alert.",
-      "required_tools": [
-        "get_transit_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an alert that passenger wait times on 'Route 12' are exceeding the 15-minute target.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the service level alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Instruct the drivers on 'Route 12' to decrease their headway (time between buses) from 15 minutes to 10 minutes.",
-      "expected_outcome": "Agent communicates the new operational instruction to the drivers.",
-      "required_tools": [
-        "send_driver_instruction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Instruct the drivers on 'Route 12' to decrease their headway (time between buses) from 15 minutes to 10 minutes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent communicates the new operational instruction to the drivers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the route's wait times to confirm they drop to the new, lower target.",
-      "expected_outcome": "Agent verifies that the operational change had the desired effect.",
-      "required_tools": [
-        "get_transit_wait_times"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the route's wait times to confirm they drop to the new, lower target.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that the operational change had the desired effect."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

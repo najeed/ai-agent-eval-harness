@@ -1,38 +1,46 @@
 {
-  "scenario_id": "ecommerce-css-10935",
-  "title": "Proactively Ask for Customer Feedback",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Proactively Ask for Customer Feedback",
+    "compliance_level": "Standard"
+  },
   "description": "A few days after an order is delivered, an automated system should ask the customer for feedback on their experience.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Feedback & Reviews",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify orders that were marked as 'Delivered' 3-5 days ago.",
-      "expected_outcome": "System generates a list of recent, completed orders.",
-      "required_tools": [
-        "get_recently_delivered_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify orders that were marked as 'Delivered' 3-5 days ago.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a list of recent, completed orders."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each order, send a personalized email asking the customer to rate their experience and review the products they purchased.",
-      "expected_outcome": "System successfully sends out feedback request emails.",
-      "required_tools": [
-        "send_feedback_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each order, send a personalized email asking the customer to rate their experience and review the products they purchased.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully sends out feedback request emails."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

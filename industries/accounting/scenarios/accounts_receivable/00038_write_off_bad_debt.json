@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-ar-38",
-  "title": "Write Off Bad Debt",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write Off Bad Debt",
+    "compliance_level": "Standard"
+  },
   "description": "After exhausting all collection efforts, the company has decided to write off an old, unpaid invoice for a customer who has gone out of business.",
-  "use_case": "Accounts Receivable",
-  "core_function": "Collections & Deductions",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive authorization from the controller to write off the specific invoice.",
-      "expected_outcome": "Agent receives the formal approval.",
-      "required_tools": [
-        "get_write_off_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive authorization from the controller to write off the specific invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the formal approval."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a journal entry to debit the 'Allowance for Doubtful Accounts' and credit 'Accounts Receivable'.",
-      "expected_outcome": "Agent creates the correct write-off journal entry.",
-      "required_tools": [
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a journal entry to debit the 'Allowance for Doubtful Accounts' and credit 'Accounts Receivable'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the correct write-off journal entry."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply the entry to the specific customer invoice to remove it from the AR aging report.",
-      "expected_outcome": "Agent closes the invoice and removes it from the customer's outstanding balance.",
-      "required_tools": [
-        "apply_write_off"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply the entry to the specific customer invoice to remove it from the AR aging report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent closes the invoice and removes it from the customer's outstanding balance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-pm-10641",
-  "title": "Compress Schedule Using Fast-Tracking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Compress Schedule Using Fast-Tracking",
+    "compliance_level": "Standard"
+  },
   "description": "To shorten the project duration, a PM decides to use fast-tracking by starting the electrical rough-in while structural steel work is still ongoing.",
-  "use_case": "Project Management",
-  "core_function": "Project Planning & Scheduling",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify two tasks on the critical path that can be performed in parallel, such as 'Erect Steel - Sector B' and 'Rough-in Electrical - Sector A'.",
-      "expected_outcome": "Agent identifies two tasks that can be fast-tracked.",
-      "required_tools": [
-        "get_critical_path",
-        "analyze_task_dependencies"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify two tasks on the critical path that can be performed in parallel, such as 'Erect Steel - Sector B' and 'Rough-in Electrical - Sector A'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies two tasks that can be fast-tracked."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Change the dependency between the two tasks from 'Finish-to-Start' to 'Start-to-Start' with a 5-day lag.",
-      "expected_outcome": "The schedule is updated to reflect the fast-tracking logic.",
-      "required_tools": [
-        "update_task_dependency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Change the dependency between the two tasks from 'Finish-to-Start' to 'Start-to-Start' with a 5-day lag.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The schedule is updated to reflect the fast-tracking logic."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the increased risk associated with fast-tracking in the risk register.",
-      "expected_outcome": "A new risk entry is created, noting the potential for trade interference.",
-      "required_tools": [
-        "create_risk_register_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the increased risk associated with fast-tracking in the risk register.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new risk entry is created, noting the potential for trade interference."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

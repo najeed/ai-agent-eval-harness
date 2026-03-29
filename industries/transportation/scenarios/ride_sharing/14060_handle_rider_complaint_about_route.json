@@ -1,65 +1,72 @@
 {
-  "scenario_id": "tr-rs-14060",
-  "title": "Handle Rider Complaint About Route",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Rider Complaint About Route",
+    "compliance_level": "Standard"
+  },
   "description": "A rider complains that their driver took a longer route than necessary, increasing the fare. An agent must investigate.",
-  "use_case": "Ride-Sharing & On-Demand Mobility",
-  "core_function": "Customer & Driver Support",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the trip record and the rider's complaint.",
-      "expected_outcome": "Agent retrieves the relevant trip and feedback.",
-      "required_tools": [
-        "get_trip_details_by_rider"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the trip record and the rider's complaint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the relevant trip and feedback."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the actual GPS route taken by the driver with the system's suggested optimal route.",
-      "expected_outcome": "The agent can see both routes overlaid on a map.",
-      "required_tools": [
-        "get_trip_route_comparison"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the actual GPS route taken by the driver with the system's suggested optimal route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent can see both routes overlaid on a map."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The comparison shows the driver's route was significantly longer with no apparent reason (e.g., no traffic jams on the optimal route).",
-      "expected_outcome": "The agent concludes the rider's complaint is valid.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The comparison shows the driver's route was significantly longer with no apparent reason (e.g., no traffic jams on the optimal route).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent concludes the rider's complaint is valid."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Adjust the trip fare to what it would have been on the optimal route and issue a partial refund to the rider.",
-      "expected_outcome": "The fare is corrected, and the rider is refunded the difference.",
-      "required_tools": [
-        "adjust_trip_fare"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Adjust the trip fare to what it would have been on the optimal route and issue a partial refund to the rider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The fare is corrected, and the rider is refunded the difference."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

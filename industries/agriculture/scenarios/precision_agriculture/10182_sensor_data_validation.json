@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ag-pa-10182",
-  "title": "Validate Soil Moisture Sensor Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Validate Soil Moisture Sensor Data",
+    "compliance_level": "Standard"
+  },
   "description": "A soil moisture sensor is giving erratic readings. The agent needs to diagnose if the sensor is faulty.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Data Collection & Sensing",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the last 48 hours of data from the suspect sensor.",
-      "expected_outcome": "Agent gets the data, which shows sudden, unrealistic jumps.",
-      "required_tools": [
-        "get_soil_moisture_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the last 48 hours of data from the suspect sensor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the data, which shows sudden, unrealistic jumps."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve data from a nearby, functioning sensor for comparison.",
-      "expected_outcome": "Agent gets data from a neighboring sensor, which shows normal, gradual changes.",
-      "required_tools": [
-        "get_soil_moisture_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve data from a nearby, functioning sensor for comparison.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets data from a neighboring sensor, which shows normal, gradual changes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the two datasets and flag the suspect sensor as likely faulty due to the erratic readings.",
-      "expected_outcome": "Agent diagnoses a probable sensor failure.",
-      "required_tools": [
-        "compare_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "diagnostic_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the two datasets and flag the suspect sensor as likely faulty due to the erratic readings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent diagnoses a probable sensor failure."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a maintenance task to replace the faulty sensor.",
-      "expected_outcome": "Agent creates a work order to replace the sensor.",
-      "required_tools": [
-        "create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a maintenance task to replace the faulty sensor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a work order to replace the sensor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-gs-11561",
-  "title": "Process an Advance Deposit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an Advance Deposit",
+    "compliance_level": "Standard"
+  },
   "description": "A guest is making a reservation that requires a one-night advance deposit to be charged at the time of booking.",
-  "use_case": "Guest Services & Front Office",
-  "core_function": "Billing & Folio Management",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "While creating the reservation, inform the guest about the advance deposit policy.",
-      "expected_outcome": "The agent clearly explains the deposit requirement.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "While creating the reservation, inform the guest about the advance deposit policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent clearly explains the deposit requirement."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the deposit amount (one night's room and tax).",
-      "expected_outcome": "The correct deposit amount is calculated.",
-      "required_tools": [
-        "pms_get_rate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the deposit amount (one night's room and tax).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct deposit amount is calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the charge on the guest's provided credit card.",
-      "expected_outcome": "The deposit is successfully charged.",
-      "required_tools": [
-        "pms_process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the charge on the guest's provided credit card.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The deposit is successfully charged."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

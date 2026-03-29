@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12468",
-  "title": "Design a Landing Page Wireframe",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Design a Landing Page Wireframe",
+    "compliance_level": "Standard"
+  },
   "description": "A UX designer needs to create a low-fidelity wireframe for a new campaign landing page.",
-  "use_case": "Content & Creative Development",
-  "core_function": "User Experience (UX) & Conversion Rate Optimization (CRO)",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the key components needed for the landing page (e.g., headline, form, CTA, social proof).",
-      "expected_outcome": "Agent lists all the necessary elements.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the key components needed for the landing page (e.g., headline, form, CTA, social proof).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists all the necessary elements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a wireframing tool to create a simple, block-level layout of the page, focusing on structure and hierarchy.",
-      "expected_outcome": "Agent produces a clear, low-fidelity wireframe showing the placement of all elements.",
-      "required_tools": [
-        "wireframing_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "design_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a wireframing tool to create a simple, block-level layout of the page, focusing on structure and hierarchy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clear, low-fidelity wireframe showing the placement of all elements."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Share the wireframe with the copywriter and visual designer for their input.",
-      "expected_outcome": "Agent shares the wireframe for collaborative feedback.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Share the wireframe with the copywriter and visual designer for their input.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent shares the wireframe for collaborative feedback."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "information_technology_product-po-11725",
-  "title": "Investigate Suspicious Login",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Suspicious Login",
+    "compliance_level": "Standard"
+  },
   "description": "A security alert is triggered for multiple failed login attempts on a high-profile customer account, followed by a successful login from an unusual IP address.",
-  "use_case": "Product Operations & Reliability (SRE)",
-  "core_function": "Security Operations (SecOps)",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the security alert and immediately suspend the user's session.",
-      "expected_outcome": "Agent takes immediate action to prevent potential damage.",
-      "required_tools": [
-        "suspend_user_session"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the security alert and immediately suspend the user's session.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent takes immediate action to prevent potential damage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the login history and geolocate the suspicious IP address.",
-      "expected_outcome": "Agent confirms the successful login originated from a different country than usual.",
-      "required_tools": [
-        "get_login_history",
-        "geolocate_ip"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the login history and geolocate the suspicious IP address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the successful login originated from a different country than usual."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Force a password reset for the user and contact the customer to report the potential account compromise.",
-      "expected_outcome": "Agent secures the account and communicates with the customer.",
-      "required_tools": [
-        "force_password_reset",
-        "send_customer_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Force a password reset for the user and contact the customer to report the potential account compromise.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent secures the account and communicates with the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

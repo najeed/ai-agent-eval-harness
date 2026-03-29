@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ag-fo-10108",
-  "title": "File a Crop Insurance Claim for Hail Damage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File a Crop Insurance Claim for Hail Damage",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer needs to file a crop insurance claim after a severe hailstorm damaged their corn crop.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Financial Management & Compliance",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the farmer's active crop insurance policy details.",
-      "expected_outcome": "Agent successfully retrieves the correct policy information.",
-      "required_tools": [
-        "get_insurance_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the farmer's active crop insurance policy details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the correct policy information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather information about the hail event, including date, time, and estimated percentage of crop loss.",
-      "expected_outcome": "Agent correctly documents the details of the loss event.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather information about the hail event, including date, time, and estimated percentage of crop loss.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly documents the details of the loss event."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a First Notice of Loss (FNOL) and submit it to the insurance provider.",
-      "expected_outcome": "Agent successfully generates and submits the FNOL document.",
-      "required_tools": [
-        "submit_insurance_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a First Notice of Loss (FNOL) and submit it to the insurance provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates and submits the FNOL document."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

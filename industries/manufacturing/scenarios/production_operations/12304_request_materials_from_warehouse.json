@@ -1,50 +1,59 @@
 {
-  "scenario_id": "mfg-po-12304",
-  "title": "Request Materials from Warehouse",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Materials from Warehouse",
+    "compliance_level": "Standard"
+  },
   "description": "A line operator is running low on a specific component and needs to request more from the central warehouse.",
-  "use_case": "Production & Operations",
-  "core_function": "Material & Inventory Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the part number and the required quantity for the material request.",
-      "expected_outcome": "Agent correctly identifies the component and the standard replenishment quantity.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the part number and the required quantity for the material request.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the component and the standard replenishment quantity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the availability of the component in the main warehouse.",
-      "expected_outcome": "Agent confirms that the warehouse has sufficient stock.",
-      "required_tools": [
-        "check_inventory_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the availability of the component in the main warehouse.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the warehouse has sufficient stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit a material requisition request to the warehouse.",
-      "expected_outcome": "Agent successfully submits the request, and a pick ticket is generated for the warehouse team.",
-      "required_tools": [
-        "create_material_requisition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit a material requisition request to the warehouse.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the request, and a pick ticket is generated for the warehouse team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13577",
-  "title": "Find Nearest Public Restroom",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find Nearest Public Restroom",
+    "compliance_level": "Standard"
+  },
   "description": "A tourist uses a city information kiosk to find the nearest available public restroom.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Public Information & Alerting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a request from a kiosk for the nearest public restroom.",
-      "expected_outcome": "The system gets the kiosk's location.",
-      "required_tools": [
-        "get_kiosk_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a request from a kiosk for the nearest public restroom.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system gets the kiosk's location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the public asset database for all 'Public Restroom' assets, filtering for those that are currently 'Open' and not 'Out of Service'.",
-      "expected_outcome": "The system retrieves a list of available restrooms.",
-      "required_tools": [
-        "query_assets_by_type_and_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the public asset database for all 'Public Restroom' assets, filtering for those that are currently 'Open' and not 'Out of Service'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system retrieves a list of available restrooms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Display a map on the kiosk screen showing the route to the nearest available restroom.",
-      "expected_outcome": "The system provides the user with clear directions.",
-      "required_tools": [
-        "display_map_on_kiosk"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Display a map on the kiosk screen showing the route to the nearest available restroom.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system provides the user with clear directions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12794",
-  "title": "Manage Trading Position Limits",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Trading Position Limits",
+    "compliance_level": "Standard"
+  },
   "description": "A risk controller checks a trader's proposed trade to ensure it will not cause them to exceed their authorized risk limits.",
-  "use_case": "Downstream",
-  "core_function": "Supply & Trading",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a pre-trade check request for a new crude oil futures purchase.",
-      "expected_outcome": "The details of the proposed trade are logged for checking.",
-      "required_tools": [
-        "log_pre_trade_check_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a pre-trade check request for a new crude oil futures purchase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The details of the proposed trade are logged for checking."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the trader's current open positions and their established risk limits (e.g., volumetric limit, VaR limit).",
-      "expected_outcome": "The trader's current risk profile and limits are retrieved.",
-      "required_tools": [
-        "get_trader_portfolio",
-        "get_trader_risk_limits"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the trader's current open positions and their established risk limits (e.g., volumetric limit, VaR limit).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The trader's current risk profile and limits are retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Simulate the impact of the new trade on the trader's positions and check if any limits would be breached.",
-      "expected_outcome": "The simulation shows the new trade would not breach any limits. The trade is approved.",
-      "required_tools": [
-        "run_risk_limit_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Simulate the impact of the new trade on the trader's positions and check if any limits would be breached.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The simulation shows the new trade would not breach any limits. The trade is approved."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-down-12773",
-  "title": "Calculate Daily Mark-to-Market P&L",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Daily Mark-to-Market P&L",
+    "compliance_level": "Standard"
+  },
   "description": "A risk analyst calculates the daily profit and loss (P&L) for a trader's portfolio of physical and financial oil contracts by marking them to the market.",
-  "use_case": "Downstream",
-  "core_function": "Supply & Trading",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all open positions in the trader's portfolio at the end of the day.",
-      "expected_outcome": "A complete list of all contracts in the portfolio is retrieved.",
-      "required_tools": [
-        "get_trader_portfolio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all open positions in the trader's portfolio at the end of the day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete list of all contracts in the portfolio is retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the official end-of-day settlement prices for all relevant commodities and futures contracts.",
-      "expected_outcome": "The closing market prices are retrieved.",
-      "required_tools": [
-        "get_end_of_day_prices"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the official end-of-day settlement prices for all relevant commodities and futures contracts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The closing market prices are retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Revalue every position in the portfolio using the new market prices and calculate the total daily P&L.",
-      "expected_outcome": "The daily P&L is calculated and reported to management.",
-      "required_tools": [
-        "calculate_mark_to_market_pnl"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Revalue every position in the portfolio using the new market prices and calculate the total daily P&L.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The daily P&L is calculated and reported to management."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

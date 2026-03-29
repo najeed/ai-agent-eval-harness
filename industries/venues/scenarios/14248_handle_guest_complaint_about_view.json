@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-gs-14248",
-  "title": "Handle Guest Complaint About Obstructed View",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Guest Complaint About Obstructed View",
+    "compliance_level": "Standard"
+  },
   "description": "A guest complains that their view of the stage is partially obstructed by a large speaker, which was not disclosed when they bought the ticket.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Issue Resolution & Complaints",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Apologize for the issue and look up the guest's seat location in the ticketing system.",
-      "expected_outcome": "Agent confirms the guest's seat and checks its status.",
-      "required_tools": [
-        "get_seating_chart"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Apologize for the issue and look up the guest's seat location in the ticketing system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the guest's seat and checks its status."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify if the seat is officially marked as 'obstructed view' in the system.",
-      "expected_outcome": "Agent finds the seat is not marked as obstructed view, validating the guest's complaint.",
-      "required_tools": [
-        "verify_seat_attributes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify if the seat is officially marked as 'obstructed view' in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the seat is not marked as obstructed view, validating the guest's complaint."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Find comparable or better seats in an unobstructed section that are available.",
-      "expected_outcome": "Agent finds two available seats in a nearby section with a clear view.",
-      "required_tools": [
-        "find_available_seats"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Find comparable or better seats in an unobstructed section that are available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds two available seats in a nearby section with a clear view."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Re-seat the guest to the new location at no charge and issue new tickets.",
-      "expected_outcome": "Agent successfully moves the guest to the new seats and provides them with new tickets.",
-      "required_tools": [
-        "exchange_tickets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Re-seat the guest to the new location at no charge and issue new tickets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully moves the guest to the new seats and provides them with new tickets."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

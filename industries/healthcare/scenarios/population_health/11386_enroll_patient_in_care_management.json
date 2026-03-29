@@ -1,84 +1,61 @@
 {
-  "scenario_id": "hc-ph-11386",
-  "title": "Enroll Patient in Care Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Enroll Patient in Care Management",
+    "compliance_level": "Standard"
+  },
   "description": "A patient identified as high-risk needs to be enrolled in a care management program.",
-  "use_case": "Population Health & Care Management",
-  "core_function": "Patient Outreach & Engagement",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the patient who has been recommended for care management.",
-      "expected_outcome": "Care manager finds the patient in their work queue.",
-      "required_tools": [
-        "get_care_management_workqueue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the patient who has been recommended for care management.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Care manager finds the patient in their work queue."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the patient to explain the program and obtain their consent to enroll.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The patient agrees to participate in the program."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the patient to explain the program and obtain their consent to enroll.",
-      "expected_outcome": "The patient agrees to participate in the program.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the patient's status in the system to 'Enrolled in Care Management' and assign them a primary care manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The patient is successfully enrolled, and their care can be actively managed."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the patient's status in the system to 'Enrolled in Care Management' and assign them a primary care manager.",
-      "expected_outcome": "The patient is successfully enrolled, and their care can be actively managed.",
-      "required_tools": [
-        "update_patient_program_status",
-        "assign_care_manager"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

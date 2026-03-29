@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10953",
-  "title": "Re-issue an Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Re-issue an Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "A business customer has lost their invoice for a past order and needs a copy for their records.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Payment & Invoicing",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the customer's order using the order number.",
-      "expected_outcome": "Agent locates the correct order.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the customer's order using the order number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a PDF copy of the original invoice for that order.",
-      "expected_outcome": "Agent successfully regenerates the invoice document.",
-      "required_tools": [
-        "generate_invoice_pdf"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a PDF copy of the original invoice for that order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully regenerates the invoice document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Email the PDF invoice to the customer.",
-      "expected_outcome": "Agent sends the email with the invoice attached.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Email the PDF invoice to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the email with the invoice attached."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

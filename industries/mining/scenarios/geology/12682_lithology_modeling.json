@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-geo-12682",
-  "title": "Create Lithology Model",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Lithology Model",
+    "compliance_level": "Standard"
+  },
   "description": "A geologist creates a 3D model of the different rock types (lithologies) in a deposit, which is fundamental for all other mine planning.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Geotechnical Analysis",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Interpret and define the boundaries between different rock types on multiple 2D cross-sections based on drillhole logs.",
-      "expected_outcome": "The rock type boundaries are digitized on all sections.",
-      "required_tools": [
-        "interpret_lithology_on_sections"
-      ],
-      "success_criteria": [
-        {
-          "metric": "geological_interpretation_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Interpret and define the boundaries between different rock types on multiple 2D cross-sections based on drillhole logs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The rock type boundaries are digitized on all sections."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create 3D wireframe surfaces for each rock type by linking the interpretations between sections.",
-      "expected_outcome": "3D solids representing each rock unit are created.",
-      "required_tools": [
-        "create_3d_wireframe"
-      ],
-      "success_criteria": [
-        {
-          "metric": "model_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create 3D wireframe surfaces for each rock type by linking the interpretations between sections.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "3D solids representing each rock unit are created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use the final lithology model to constrain the resource estimate, ensuring grades are only estimated within the correct rock units.",
-      "expected_outcome": "The resource model is updated and improved by using the new lithology model.",
-      "required_tools": [
-        "update_block_model_with_lithology"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use the final lithology model to constrain the resource estimate, ensuring grades are only estimated within the correct rock units.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The resource model is updated and improved by using the new lithology model."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

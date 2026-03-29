@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_product-po-11782",
-  "title": "Investigate Intermittent 502 Bad Gateway Errors",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Intermittent 502 Bad Gateway Errors",
+    "compliance_level": "Standard"
+  },
   "description": "Users are reporting intermittent 502 errors, suggesting a problem with a load balancer or upstream service.",
-  "use_case": "Product Operations & Reliability (SRE)",
-  "core_function": "Incident & Outage Management",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the health and logs of the load balancers.",
-      "expected_outcome": "Agent finds that the load balancer is reporting one of several upstream application servers as 'unhealthy'.",
-      "required_tools": [
-        "get_load_balancer_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the health and logs of the load balancers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that the load balancer is reporting one of several upstream application servers as 'unhealthy'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take the unhealthy application server out of the load balancer's rotation.",
-      "expected_outcome": "Agent removes the problematic server from service to stop the errors.",
-      "required_tools": [
-        "remove_server_from_pool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take the unhealthy application server out of the load balancer's rotation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent removes the problematic server from service to stop the errors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a ticket to investigate the unhealthy server itself.",
-      "expected_outcome": "Agent escalates the issue for root cause analysis of the specific server.",
-      "required_tools": [
-        "create_engineering_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a ticket to investigate the unhealthy server itself.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent escalates the issue for root cause analysis of the specific server."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

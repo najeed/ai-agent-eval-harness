@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-164",
-  "title": "Product Portfolio Analysis (BCG Matrix)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Product Portfolio Analysis (BCG Matrix)",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must categorize a client's products into a BCG Matrix (Stars, Cash Cows, Question Marks, Dogs) based on market share and growth rate data.",
-  "use_case": "Management Consulting",
-  "core_function": "Strategy & Recommendation",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load data for a list of products, including their market share and market growth rate.",
-      "expected_outcome": "Agent successfully loads the product data.",
-      "required_tools": [
-        "load_csv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load data for a list of products, including their market share and market growth rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully loads the product data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Categorize each product into one of the four BCG Matrix quadrants based on standard thresholds (e.g., high/low share, high/low growth).",
-      "expected_outcome": "Agent correctly classifies each product (e.g., Product A is a 'Star').",
-      "required_tools": [
-        "categorize_by_matrix"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Categorize each product into one of the four BCG Matrix quadrants based on standard thresholds (e.g., high/low share, high/low growth).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly classifies each product (e.g., Product A is a 'Star')."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a strategic recommendation for one product from each quadrant (e.g., 'Invest in the Star', 'Harvest the Cash Cow').",
-      "expected_outcome": "Agent provides a standard, appropriate strategic recommendation for each category.",
-      "required_tools": [
-        "make_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a strategic recommendation for one product from each quadrant (e.g., 'Invest in the Star', 'Harvest the Cash Cow').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a standard, appropriate strategic recommendation for each category."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-ia-10322",
-  "title": "Perform Conflict of Interest Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Conflict of Interest Review",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor reviews vendor data to identify potential conflicts of interest, such as employees also being vendors.",
-  "use_case": "Internal Audit",
-  "core_function": "Testing & Analysis",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the master list of all approved vendors and the master list of all current employees.",
-      "expected_outcome": "Auditor has both the vendor and employee datasets.",
-      "required_tools": [
-        "get_vendor_master_file",
-        "get_employee_master_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the master list of all approved vendors and the master list of all current employees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has both the vendor and employee datasets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the addresses and bank account numbers in both files to find potential matches.",
-      "expected_outcome": "The analysis identifies two vendors who share a home address with a current employee.",
-      "required_tools": [
-        "compare_datasets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the addresses and bank account numbers in both files to find potential matches.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis identifies two vendors who share a home address with a current employee."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Investigate the matches to determine if a true conflict of interest exists and if it was properly disclosed.",
-      "expected_outcome": "Auditor confirms one of the matches is an undisclosed conflict and documents it as a finding.",
-      "required_tools": [
-        "investigate_conflict_of_interest"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Investigate the matches to determine if a true conflict of interest exists and if it was properly disclosed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor confirms one of the matches is an undisclosed conflict and documents it as a finding."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

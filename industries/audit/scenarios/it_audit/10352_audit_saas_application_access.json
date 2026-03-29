@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-it-10352",
-  "title": "Audit SaaS Application Access",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit SaaS Application Access",
+    "compliance_level": "Standard"
+  },
   "description": "An IT auditor reviews user access to a critical SaaS application like Salesforce or Workday.",
-  "use_case": "IT Audit",
-  "core_function": "IT General Controls (ITGC) Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain a user listing with their assigned permission levels directly from the SaaS application.",
-      "expected_outcome": "Auditor has a complete list of users and their roles.",
-      "required_tools": [
-        "get_saas_user_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain a user listing with their assigned permission levels directly from the SaaS application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has a complete list of users and their roles."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a periodic access review by sending a list of users to the business data owner to certify that their access is still required.",
-      "expected_outcome": "The business owner reviews the list and identifies 5 users who have changed roles and no longer need access.",
-      "required_tools": [
-        "initiate_access_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a periodic access review by sending a list of users to the business data owner to certify that their access is still required.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The business owner reviews the list and identifies 5 users who have changed roles and no longer need access."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that the access for the 5 identified users was removed promptly after certification.",
-      "expected_outcome": "The auditor confirms that the unnecessary access was revoked.",
-      "required_tools": [
-        "get_user_access_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that the access for the 5 identified users was removed promptly after certification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor confirms that the unnecessary access was revoked."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

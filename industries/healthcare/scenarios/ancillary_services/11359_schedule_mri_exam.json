@@ -1,85 +1,61 @@
 {
-  "scenario_id": "hc-as-11359",
-  "title": "Schedule an MRI Exam",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule an MRI Exam",
+    "compliance_level": "Standard"
+  },
   "description": "A radiology scheduler receives an order for an MRI and needs to schedule the exam for the patient.",
-  "use_case": "Ancillary Services",
-  "core_function": "Radiology & Imaging Services",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the patient and the specific MRI exam being ordered.",
-      "expected_outcome": "Scheduler finds the order in the Radiology Information System (RIS).",
-      "required_tools": [
-        "get_radiology_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the patient and the specific MRI exam being ordered.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Scheduler finds the order in the Radiology Information System (RIS)."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the MRI scanner's schedule to find an open appointment slot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Scheduler finds available times for the exam."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the MRI scanner's schedule to find an open appointment slot.",
-      "expected_outcome": "Scheduler finds available times for the exam.",
-      "required_tools": [
-        "view_resource_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the patient, schedule the exam for an agreed-upon time, and provide preparation instructions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The MRI is successfully scheduled, and the patient is informed of how to prepare."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the patient, schedule the exam for an agreed-upon time, and provide preparation instructions.",
-      "expected_outcome": "The MRI is successfully scheduled, and the patient is informed of how to prepare.",
-      "required_tools": [
-        "schedule_radiology_exam"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

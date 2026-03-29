@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-tc-13193",
-  "title": "Review Preliminary Title Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Preliminary Title Report",
+    "compliance_level": "Standard"
+  },
   "description": "The TC has received the preliminary title report and must review it for any issues or exceptions.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Transaction Coordination",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the report for any liens, encumbrances, or easements that might affect the property.",
-      "expected_outcome": "Agent reviews the report and identifies a mechanic's lien from a previous contractor.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the report for any liens, encumbrances, or easements that might affect the property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the report and identifies a mechanic's lien from a previous contractor."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the report to the buyer's agent for their review.",
-      "expected_outcome": "The full report is forwarded to the agent.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the report to the buyer's agent for their review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The full report is forwarded to the agent."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the listing agent and title company about the identified lien and ask how it will be cleared before closing.",
-      "expected_outcome": "The TC communicates the issue to the relevant parties to ensure it is resolved.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the listing agent and title company about the identified lien and ask how it will be cleared before closing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The TC communicates the issue to the relevant parties to ensure it is resolved."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

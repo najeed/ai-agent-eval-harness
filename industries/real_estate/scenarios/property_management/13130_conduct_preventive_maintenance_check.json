@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13130",
-  "title": "Conduct Semi-Annual Preventive Maintenance Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Semi-Annual Preventive Maintenance Check",
+    "compliance_level": "Standard"
+  },
   "description": "The PM needs to schedule and document a semi-annual preventive maintenance inspection for a property.",
-  "use_case": "Property Management",
-  "core_function": "Maintenance & Vendor Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Notify the tenant of the upcoming inspection, providing at least 24 hours' notice.",
-      "expected_outcome": "A formal 'Notice of Entry' is generated and sent to the tenant.",
-      "required_tools": [
-        "send_legal_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Notify the tenant of the upcoming inspection, providing at least 24 hours' notice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal 'Notice of Entry' is generated and sent to the tenant."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Using a checklist, inspect key items like smoke detectors, HVAC filters, and look for signs of leaks.",
-      "expected_outcome": "Agent completes a preventive maintenance checklist for the unit.",
-      "required_tools": [
-        "complete_inspection_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Using a checklist, inspect key items like smoke detectors, HVAC filters, and look for signs of leaks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes a preventive maintenance checklist for the unit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If any issues are found (e.g., dirty HVAC filter), create a work order to address them.",
-      "expected_outcome": "A new work order is created to replace the HVAC filter.",
-      "required_tools": [
-        "create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If any issues are found (e.g., dirty HVAC filter), create a work order to address them.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new work order is created to replace the HVAC filter."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

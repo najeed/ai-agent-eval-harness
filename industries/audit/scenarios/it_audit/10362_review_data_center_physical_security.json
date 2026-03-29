@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-it-10362",
-  "title": "Review Data Center Physical Security",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Data Center Physical Security",
+    "compliance_level": "Standard"
+  },
   "description": "An IT auditor performs a review of the physical security controls at the company's primary data center.",
-  "use_case": "IT Audit",
-  "core_function": "IT General Controls (ITGC) Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the data center access logs for the past 3 months.",
-      "expected_outcome": "The auditor has the logs of all entries into the data center.",
-      "required_tools": [
-        "get_physical_access_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the data center access logs for the past 3 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor has the logs of all entries into the data center."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the access logs to the list of authorized personnel to identify any unauthorized access.",
-      "expected_outcome": "The auditor confirms all access was by authorized individuals.",
-      "required_tools": [
-        "compare_datasets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the access logs to the list of authorized personnel to identify any unauthorized access.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor confirms all access was by authorized individuals."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a physical inspection to verify that security cameras are operational and fire suppression systems are tested regularly.",
-      "expected_outcome": "The auditor confirms that the fire suppression system's last test was over a year ago, which violates the policy to test it semi-annually.",
-      "required_tools": [
-        "perform_physical_inspection",
-        "review_maintenance_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a physical inspection to verify that security cameras are operational and fire suppression systems are tested regularly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor confirms that the fire suppression system's last test was over a year ago, which violates the policy to test it semi-annually."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10786",
-  "title": "Red Team Operation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Red Team Operation",
+    "compliance_level": "Standard"
+  },
   "description": "A red team is tasked with simulating a real-world adversary by attempting to breach the company and achieve a specific objective (e.g., access the CEO's email) without being detected.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Penetration Testing",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gain initial access through a targeted spear-phishing campaign.",
-      "expected_outcome": "The red team successfully compromises an initial workstation.",
-      "required_tools": [
-        "conduct_phishing_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "initial_access_success",
-          "threshold": 0.8
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gain initial access through a targeted spear-phishing campaign.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The red team successfully compromises an initial workstation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform slow, low-profile lateral movement over several days to escalate privileges and move closer to the target.",
-      "expected_outcome": "The red team successfully moves through the network while evading detection by the SOC.",
-      "required_tools": [
-        "perform_lateral_movement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "stealthiness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform slow, low-profile lateral movement over several days to escalate privileges and move closer to the target.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The red team successfully moves through the network while evading detection by the SOC."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Achieve the objective of accessing the CEO's mailbox and exfiltrating a single, non-sensitive email as proof.",
-      "expected_outcome": "The red team successfully achieves its objective, demonstrating a significant flaw in the company's defense-in-depth.",
-      "required_tools": [
-        "access_target_mailbox",
-        "exfiltrate_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "objective_completion",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Achieve the objective of accessing the CEO's mailbox and exfiltrating a single, non-sensitive email as proof.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The red team successfully achieves its objective, demonstrating a significant flaw in the company's defense-in-depth."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

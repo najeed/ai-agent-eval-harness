@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ct-12140",
-  "title": "Draft a Corporate Resolution",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft a Corporate Resolution",
+    "compliance_level": "Standard"
+  },
   "description": "A company needs to open a new bank account, which requires a formal corporate resolution. A paralegal needs to draft it.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Corporate Governance & Compliance",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the firm's template for a board resolution to open a bank account.",
-      "expected_outcome": "Agent retrieves the correct template.",
-      "required_tools": [
-        "get_document_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the firm's template for a board resolution to open a bank account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate the template with the company's name, the name of the bank, and the names of the authorized signatories.",
-      "expected_outcome": "Agent fills in all the specific details.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate the template with the company's name, the name of the bank, and the names of the authorized signatories.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fills in all the specific details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare the resolution for the board of directors to sign.",
-      "expected_outcome": "A complete draft resolution is generated, ready for execution.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare the resolution for the board of directors to sign.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete draft resolution is generated, ready for execution."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

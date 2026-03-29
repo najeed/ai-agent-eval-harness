@@ -1,110 +1,74 @@
 {
-  "scenario_id": "telecom-cs-13797",
-  "title": "Customer Plan Change Request - Downgrade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Plan Change Request - Downgrade",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to downgrade their plan to save money.",
-  "use_case": "Customer Service",
-  "core_function": "Plan Management",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their current plan.",
-      "expected_outcome": "Agent correctly identifies the customer and their current service plan.",
-      "required_tools": [
-        "get_customer_details",
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their current plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and their current service plan."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the customer's average monthly usage (data, calls, texts) over the last 6 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the customer's typical usage profile."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the customer's average monthly usage (data, calls, texts) over the last 6 months.",
-      "expected_outcome": "Agent determines the customer's typical usage profile.",
-      "required_tools": [
-        "get_usage_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present suitable downgrade options that still meet their average usage, explaining the cost savings and feature differences.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recommends 2-3 appropriate lower-tier plans."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Process the plan change selected by the customer and confirm the date it becomes effective.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the plan and informs the customer of the activation date."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present suitable downgrade options that still meet their average usage, explaining the cost savings and feature differences.",
-      "expected_outcome": "Agent recommends 2-3 appropriate lower-tier plans.",
-      "required_tools": [
-        "get_available_plans"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Process the plan change selected by the customer and confirm the date it becomes effective.",
-      "expected_outcome": "Agent successfully updates the plan and informs the customer of the activation date.",
-      "required_tools": [
-        "update_customer_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

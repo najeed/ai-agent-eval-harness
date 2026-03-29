@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ports-go-12924",
-  "title": "Process a Container for De-stuffing at CFS",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Container for De-stuffing at CFS",
+    "compliance_level": "Standard"
+  },
   "description": "A container with goods for multiple owners (LCL) arrives at the Container Freight Station (CFS) to be unloaded.",
-  "use_case": "Gate & Landside Operations",
-  "core_function": "Warehouse & CFS Operations",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the container at the CFS and verify its seal is intact.",
-      "expected_outcome": "CFS clerk confirms the container number and that the seal matches the documentation.",
-      "required_tools": [
-        "verify_container_seal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the container at the CFS and verify its seal is intact.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "CFS clerk confirms the container number and that the seal matches the documentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Break the seal and create a work order for a forklift gang to de-stuff the container.",
-      "expected_outcome": "A work order is created to unload the contents of the container.",
-      "required_tools": [
-        "create_destuffing_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Break the seal and create a work order for a forklift gang to de-stuff the container.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A work order is created to unload the contents of the container."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "As cargo is unloaded, check it against the manifest and assign it to a storage location in the warehouse.",
-      "expected_outcome": "Each piece of cargo is tallied, inspected for damage, and stored, with its location logged in the warehouse management system.",
-      "required_tools": [
-        "tally_cargo",
-        "assign_warehouse_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "As cargo is unloaded, check it against the manifest and assign it to a storage location in the warehouse.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Each piece of cargo is tallied, inspected for damage, and stored, with its location logged in the warehouse management system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

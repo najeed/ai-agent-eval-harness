@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-go-14207",
-  "title": "Synchrophasor Data Analysis for Oscillation Detection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Synchrophasor Data Analysis for Oscillation Detection",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer analyzes high-speed synchrophasor (PMU) data to detect potentially harmful oscillations on the power grid.",
-  "use_case": "Grid Operations",
-  "core_function": "System Control & Monitoring",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Stream and process real-time PMU data from multiple locations on the grid.",
-      "expected_outcome": "System is ingesting and time-aligning the PMU data.",
-      "required_tools": [
-        "get_phasor_measurement_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Stream and process real-time PMU data from multiple locations on the grid.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System is ingesting and time-aligning the PMU data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply a signal processing algorithm (like the Prony method) to the data to identify any poorly damped electromechanical oscillations.",
-      "expected_outcome": "The algorithm detects a low-frequency oscillation between two groups of power plants.",
-      "required_tools": [
-        "analyze_grid_oscillations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "event_detection_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply a signal processing algorithm (like the Prony method) to the data to identify any poorly damped electromechanical oscillations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The algorithm detects a low-frequency oscillation between two groups of power plants."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Alert the system operator to the oscillation and recommend tuning a power system stabilizer on a specific generator to add damping and resolve the issue.",
-      "expected_outcome": "Engineer provides an actionable recommendation to the operator.",
-      "required_tools": [
-        "generate_operator_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Alert the system operator to the oscillation and recommend tuning a power system stabilizer on a specific generator to add damping and resolve the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Engineer provides an actionable recommendation to the operator."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

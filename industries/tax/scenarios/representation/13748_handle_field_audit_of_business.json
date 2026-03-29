@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tax-rep-13748",
-  "title": "Handle Field Audit of a Business",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Field Audit of a Business",
+    "compliance_level": "Standard"
+  },
   "description": "An IRS agent is conducting a field audit at a client's place of business. The tax professional is representing the client.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Examination & Audit Support",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Act as the primary point of contact for the IRS agent.",
-      "expected_outcome": "Agent manages all communication with the auditor.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Act as the primary point of contact for the IRS agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent manages all communication with the auditor."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Respond to Information Document Requests (IDRs) from the auditor in a timely manner.",
-      "expected_outcome": "Agent provides the requested documentation promptly and accurately.",
-      "required_tools": [
-        "respond_to_idr"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Respond to Information Document Requests (IDRs) from the auditor in a timely manner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the requested documentation promptly and accurately."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Negotiate with the auditor on any proposed adjustments to the tax return.",
-      "expected_outcome": "Agent advocates for the client's position to minimize any additional tax.",
-      "required_tools": [
-        "negotiate_audit_adjustments"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Negotiate with the auditor on any proposed adjustments to the tax return.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent advocates for the client's position to minimize any additional tax."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

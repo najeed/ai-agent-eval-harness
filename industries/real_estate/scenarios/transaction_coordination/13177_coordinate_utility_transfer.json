@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-tc-13177",
-  "title": "Coordinate Utility Transfer for Closing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate Utility Transfer for Closing",
+    "compliance_level": "Standard"
+  },
   "description": "A few days before closing, the TC needs to remind the buyer and seller to arrange for the transfer of utilities.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Transaction Coordination",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the contact information for the local utility companies (electric, water, gas).",
-      "expected_outcome": "Agent compiles a list of names and phone numbers for the relevant utility providers.",
-      "required_tools": [
-        "get_local_utility_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the contact information for the local utility companies (electric, water, gas).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a list of names and phone numbers for the relevant utility providers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a reminder email to the buyer with instructions on how to set up new service in their name.",
-      "expected_outcome": "A helpful reminder email with the utility contact list is sent to the buyer.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a reminder email to the buyer with instructions on how to set up new service in their name.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A helpful reminder email with the utility contact list is sent to the buyer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a separate reminder email to the seller with instructions on how to schedule the termination of their service.",
-      "expected_outcome": "A helpful reminder email is sent to the seller to avoid post-closing billing.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a separate reminder email to the seller with instructions on how to schedule the termination of their service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A helpful reminder email is sent to the seller to avoid post-closing billing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

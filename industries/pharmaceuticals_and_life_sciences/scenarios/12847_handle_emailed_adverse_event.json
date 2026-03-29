@@ -1,52 +1,59 @@
 {
-  "scenario_id": "pharma-rc-12847",
-  "title": "Process Adverse Event Report from HCP Email",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Adverse Event Report from HCP Email",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must process an adverse event (AE) report received in an email from a healthcare professional (HCP).",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Pharmacovigilance & Safety Reporting",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Extract the key information from the unstructured text of the email (patient demographics, drug, event).",
-      "expected_outcome": "Agent correctly identifies and extracts all necessary data points for a valid case.",
-      "required_tools": [
-        "extract_entities_from_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Extract the key information from the unstructured text of the email (patient demographics, drug, event).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies and extracts all necessary data points for a valid case."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new case in the safety database using the extracted information.",
-      "expected_outcome": "Agent successfully creates a new AE case.",
-      "required_tools": [
-        "create_adverse_event_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new case in the safety database using the extracted information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new AE case."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Save the original email as a source document and attach it to the case.",
-      "expected_outcome": "Agent attaches the source email to the newly created case record.",
-      "required_tools": [
-        "attach_source_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Save the original email as a source document and attach it to the case.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent attaches the source email to the newly created case record."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12133",
-  "title": "Prepare a Witness for Deposition",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare a Witness for Deposition",
+    "compliance_level": "Standard"
+  },
   "description": "An attorney needs to prepare a key witness for an upcoming deposition.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review all documents authored or received by the witness that have been produced in the case.",
-      "expected_outcome": "Agent gathers all relevant documents for the witness prep session.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review all documents authored or received by the witness that have been produced in the case.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all relevant documents for the witness prep session."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft an outline of likely topics and questions the opposing counsel will ask.",
-      "expected_outcome": "Agent creates a detailed preparation outline.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft an outline of likely topics and questions the opposing counsel will ask.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed preparation outline."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a binder (physical or electronic) for the witness containing the key documents and the preparation outline.",
-      "expected_outcome": "Agent assembles a complete witness prep binder.",
-      "required_tools": [
-        "pdf_conversion_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a binder (physical or electronic) for the witness containing the key documents and the preparation outline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assembles a complete witness prep binder."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

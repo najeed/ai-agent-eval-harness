@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-ap-48",
-  "title": "Resolve an Invoice GL Coding Error",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve an Invoice GL Coding Error",
+    "compliance_level": "Standard"
+  },
   "description": "A department manager has rejected a non-PO invoice approval request because it was coded to the wrong GL account.",
-  "use_case": "Accounts Payable",
-  "core_function": "Invoice Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the rejected invoice notification, noting the reason 'Incorrect GL Code'.",
-      "expected_outcome": "Agent identifies the rejected invoice and the reason for rejection.",
-      "required_tools": [
-        "get_rejected_invoice_notifications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the rejected invoice notification, noting the reason 'Incorrect GL Code'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the rejected invoice and the reason for rejection."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the invoice and the manager's comment to determine the correct GL account.",
-      "expected_outcome": "Agent determines the invoice for 'Software Subscription' should be coded to 'IT Expenses', not 'Office Supplies'.",
-      "required_tools": [
-        "get_invoice_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the invoice and the manager's comment to determine the correct GL account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the invoice for 'Software Subscription' should be coded to 'IT Expenses', not 'Office Supplies'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the GL code on the invoice.",
-      "expected_outcome": "Agent successfully changes the GL code.",
-      "required_tools": [
-        "code_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the GL code on the invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully changes the GL code."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Resubmit the invoice to the department manager for approval.",
-      "expected_outcome": "Agent re-routes the corrected invoice for approval.",
-      "required_tools": [
-        "route_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Resubmit the invoice to the department manager for approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent re-routes the corrected invoice for approval."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

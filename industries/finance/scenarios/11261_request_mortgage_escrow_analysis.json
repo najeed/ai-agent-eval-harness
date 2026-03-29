@@ -1,83 +1,61 @@
 {
-  "scenario_id": "finance-rb-11261",
-  "title": "Request Mortgage Escrow Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Mortgage Escrow Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A customer's property taxes have increased, and they want to understand how this will affect their monthly mortgage payment.",
-  "use_case": "Retail Banking",
-  "core_function": "Loan & Mortgage Services",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their mortgage account.",
-      "expected_outcome": "Agent correctly identifies the customer's mortgage loan.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their mortgage account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer's mortgage loan."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run an escrow analysis with the new, higher property tax amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the analysis, which shows a shortage in the escrow account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run an escrow analysis with the new, higher property tax amount.",
-      "expected_outcome": "Agent runs the analysis, which shows a shortage in the escrow account.",
-      "required_tools": [
-        "run_escrow_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the escrow shortage and the resulting increase in the customer's monthly payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains why the payment is increasing and what the new payment amount will be."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the escrow shortage and the resulting increase in the customer's monthly payment.",
-      "expected_outcome": "Agent clearly explains why the payment is increasing and what the new payment amount will be.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

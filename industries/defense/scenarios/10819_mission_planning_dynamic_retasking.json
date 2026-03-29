@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-mp-10819",
-  "title": "Dynamic Mission Re-tasking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dynamic Mission Re-tasking",
+    "compliance_level": "Standard"
+  },
   "description": "A fighter jet on a routine patrol is dynamically re-tasked to strike a newly discovered, time-sensitive target.",
-  "use_case": "Mission Planning & Execution",
-  "core_function": "Dynamic Re-tasking",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the new time-sensitive target information and verify its location and priority.",
-      "expected_outcome": "Operator correctly processes the new target information.",
-      "required_tools": [
-        "receive_new_target_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_processing_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the new time-sensitive target information and verify its location and priority.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator correctly processes the new target information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the patrol aircraft's current fuel and weapons status to confirm it can execute the new task.",
-      "expected_outcome": "Operator confirms the aircraft has sufficient resources for the new mission.",
-      "required_tools": [
-        "get_asset_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "resource_check_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the patrol aircraft's current fuel and weapons status to confirm it can execute the new task.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator confirms the aircraft has sufficient resources for the new mission."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate and transmit a new mission plan to the pilot, including the new target, route, and ROE.",
-      "expected_outcome": "Operator successfully re-tasks the pilot with a valid and complete mission update.",
-      "required_tools": [
-        "generate_dynamic_mission_plan",
-        "transmit_mission_update"
-      ],
-      "success_criteria": [
-        {
-          "metric": "retasking_speed_and_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate and transmit a new mission plan to the pilot, including the new target, route, and ROE.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator successfully re-tasks the pilot with a valid and complete mission update."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

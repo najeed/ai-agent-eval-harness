@@ -1,52 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11913",
-  "title": "Replace a Vehicle on an Auto Policy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Replace a Vehicle on an Auto Policy",
+    "compliance_level": "Standard"
+  },
   "description": "A customer sold their old car and bought a new one, and needs to update their auto policy.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Policy Administration",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the policyholder and the vehicle to be removed.",
-      "expected_outcome": "Agent correctly identifies the customer and the old vehicle.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the policyholder and the vehicle to be removed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and the old vehicle."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the new vehicle's information (make, model, year, VIN).",
-      "expected_outcome": "Agent accurately captures the new vehicle's details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the new vehicle's information (make, model, year, VIN).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures the new vehicle's details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the policy by removing the old vehicle and adding the new one, then recalculate the premium.",
-      "expected_outcome": "Agent successfully updates the policy and informs the customer of the new premium.",
-      "required_tools": [
-        "remove_vehicle",
-        "add_vehicle",
-        "recalculate_premium"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the policy by removing the old vehicle and adding the new one, then recalculate the premium.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the policy and informs the customer of the new premium."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

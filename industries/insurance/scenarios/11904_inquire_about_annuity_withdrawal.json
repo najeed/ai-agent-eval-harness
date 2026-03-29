@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-la-11904",
-  "title": "Inquire About Annuity Withdrawal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About Annuity Withdrawal",
+    "compliance_level": "Standard"
+  },
   "description": "An annuity contract holder wants to know how much they can withdraw and what the tax implications would be.",
-  "use_case": "Life & Annuities",
-  "core_function": "Annuity Management",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the contract holder and their annuity details.",
-      "expected_outcome": "Agent correctly identifies the customer and their specific annuity contract.",
-      "required_tools": [
-        "get_annuity_contract_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the contract holder and their annuity details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and their specific annuity contract."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Determine the surrender charge period and calculate the penalty-free withdrawal amount.",
-      "expected_outcome": "Agent determines the customer can withdraw up to 10% of the contract value without a surrender charge.",
-      "required_tools": [
-        "calculate_penalty_free_withdrawal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Determine the surrender charge period and calculate the penalty-free withdrawal amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the customer can withdraw up to 10% of the contract value without a surrender charge."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the tax implications, specifically that earnings are taxed as ordinary income.",
-      "expected_outcome": "Agent clearly explains the tax rules for a non-qualified annuity withdrawal.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the tax implications, specifically that earnings are taxed as ordinary income.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the tax rules for a non-qualified annuity withdrawal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

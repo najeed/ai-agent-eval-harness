@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-pm-10651",
-  "title": "Update Project Schedule from Daily Log",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Project Schedule from Daily Log",
+    "compliance_level": "Standard"
+  },
   "description": "A PM reviews the daily log and updates the main project schedule based on the reported progress.",
-  "use_case": "Project Management",
-  "core_function": "Project Planning & Scheduling",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the latest daily log to identify all tasks reported as 'completed'.",
-      "expected_outcome": "Agent identifies 'Install Windows - 3rd Floor' as completed.",
-      "required_tools": [
-        "get_daily_logs_by_date"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the latest daily log to identify all tasks reported as 'completed'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies 'Install Windows - 3rd Floor' as completed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the status of the identified task in the Gantt chart to '100% Complete'.",
-      "expected_outcome": "The task's status is correctly updated in the project schedule.",
-      "required_tools": [
-        "update_task_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the status of the identified task in the Gantt chart to '100% Complete'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The task's status is correctly updated in the project schedule."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

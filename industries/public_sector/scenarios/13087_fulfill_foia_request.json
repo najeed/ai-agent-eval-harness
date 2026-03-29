@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-rc-13087",
-  "title": "Fulfill a FOIA Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Fulfill a FOIA Request",
+    "compliance_level": "Standard"
+  },
   "description": "A records officer has the final, redacted documents and is ready to deliver them to the FOIA requestor.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Public Records & FOIA",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the FOIA request and the associated responsive documents.",
-      "expected_outcome": "The officer has the correct request and the final set of documents.",
-      "required_tools": [
-        "get_foia_request_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the FOIA request and the associated responsive documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer has the correct request and the final set of documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a response letter to the requestor, explaining what is being provided and citing the legal exemptions used for any redactions.",
-      "expected_outcome": "The officer writes a clear, legally compliant response letter.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "content_generation_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a response letter to the requestor, explaining what is being provided and citing the legal exemptions used for any redactions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer writes a clear, legally compliant response letter."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Deliver the letter and the documents to the requestor and close the request in the system.",
-      "expected_outcome": "The officer sends the materials and updates the request status to 'Fulfilled'.",
-      "required_tools": [
-        "send_secure_documents",
-        "update_foia_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Deliver the letter and the documents to the requestor and close the request in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer sends the materials and updates the request status to 'Fulfilled'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

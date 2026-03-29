@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-as-11007",
-  "title": "Troubleshoot Library Database Access",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Troubleshoot Library Database Access",
+    "compliance_level": "Standard"
+  },
   "description": "A student is off-campus and cannot access a required academic journal database through the library website.",
-  "use_case": "Academic Support",
-  "core_function": "Library & Research Services",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and the specific database they are trying to access (e.g., JSTOR).",
-      "expected_outcome": "Agent confirms the student's identity and the resource they need.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and the specific database they are trying to access (e.g., JSTOR).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's identity and the resource they need."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the student on how to log in through the university's proxy server for off-campus access.",
-      "expected_outcome": "Agent provides clear, step-by-step instructions for using the proxy login portal.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the student on how to log in through the university's proxy server for off-campus access.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear, step-by-step instructions for using the proxy login portal."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the issue persists, verify there are no known outages with the proxy server or the database provider.",
-      "expected_outcome": "Agent checks system status pages and confirms no widespread issues.",
-      "required_tools": [
-        "check_system_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the issue persists, verify there are no known outages with the proxy server or the database provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks system status pages and confirms no widespread issues."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

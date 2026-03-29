@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13233",
-  "title": "Post a Notice to Enter",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Post a Notice to Enter",
+    "compliance_level": "Standard"
+  },
   "description": "A property manager needs to enter a tenant's unit for a non-emergency reason (e.g., preventative maintenance).",
-  "use_case": "Property Management",
-  "core_function": "Maintenance & Operations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the tenant and the reason for entry.",
-      "expected_outcome": "Agent correctly identifies the unit and purpose of the visit.",
-      "required_tools": [
-        "get_tenant_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the tenant and the reason for entry.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the unit and purpose of the visit."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a formal 'Notice to Enter' document, specifying the date, time window, and reason.",
-      "expected_outcome": "Agent creates a legally compliant notice.",
-      "required_tools": [
-        "generate_legal_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a formal 'Notice to Enter' document, specifying the date, time window, and reason.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a legally compliant notice."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Deliver the notice to the tenant according to state law (e.g., post on the door and mail).",
-      "expected_outcome": "Agent logs the delivery of the notice.",
-      "required_tools": [
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Deliver the notice to the tenant according to state law (e.g., post on the door and mail).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the delivery of the notice."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12171",
-  "title": "Bates Stamp Documents for Production",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Bates Stamp Documents for Production",
+    "compliance_level": "Standard"
+  },
   "description": "A paralegal needs to apply unique Bates stamp numbers to a set of documents before producing them in discovery.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the set of documents to be produced.",
-      "expected_outcome": "Agent has the final production set.",
-      "required_tools": [
-        "ediscovery_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the set of documents to be produced.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the final production set."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Configure the Bates stamp format (e.g., prefix 'ABC', starting number '000001').",
-      "expected_outcome": "Agent correctly sets up the numbering scheme.",
-      "required_tools": [
-        "pdf_conversion_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Configure the Bates stamp format (e.g., prefix 'ABC', starting number '000001').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sets up the numbering scheme."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply the Bates stamp to the bottom right corner of every page of every document in the production set.",
-      "expected_outcome": "All pages are uniquely and sequentially numbered.",
-      "required_tools": [
-        "pdf_conversion_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply the Bates stamp to the bottom right corner of every page of every document in the production set.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All pages are uniquely and sequentially numbered."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,63 +1,72 @@
 {
-  "scenario_id": "tr-to-14070",
-  "title": "Manage a DOT Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a DOT Audit",
+    "compliance_level": "Standard"
+  },
   "description": "A safety manager receives a notification of an upcoming DOT compliance audit and must prepare the required documentation.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Safety & Compliance",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the audit notification and the list of requested documents (e.g., driver qualification files, hours-of-service logs, maintenance records).",
-      "expected_outcome": "The manager understands the scope of the audit.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the audit notification and the list of requested documents (e.g., driver qualification files, hours-of-service logs, maintenance records).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager understands the scope of the audit."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate reports from the system for the requested driver files.",
-      "expected_outcome": "All requested DQ files are exported.",
-      "required_tools": [
-        "export_driver_qualification_files"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate reports from the system for the requested driver files.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All requested DQ files are exported."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate reports for the requested HOS and maintenance records for the specified time period.",
-      "expected_outcome": "All requested logs and records are exported.",
-      "required_tools": [
-        "export_hos_logs",
-        "export_maintenance_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate reports for the requested HOS and maintenance records for the specified time period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All requested logs and records are exported."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Compile all documents into a digital folder to be securely provided to the auditor.",
-      "expected_outcome": "All required documentation is gathered and organized for the audit.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Compile all documents into a digital folder to be securely provided to the auditor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All required documentation is gathered and organized for the audit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

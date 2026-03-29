@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-ar-7",
-  "title": "Handle a Customer Short Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Customer Short Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has paid an invoice but has short-paid by $100, claiming the goods were damaged. Remittance advice is provided.",
-  "use_case": "Accounts Receivable",
-  "core_function": "Collections & Deductions",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Apply the cash received to the specified invoice.",
-      "expected_outcome": "Agent applies the payment, leaving a $100 balance on the invoice.",
-      "required_tools": [
-        "apply_customer_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Apply the cash received to the specified invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent applies the payment, leaving a $100 balance on the invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a deduction case in the system, noting the customer's reason for the short payment.",
-      "expected_outcome": "Agent successfully creates a deduction case linked to the customer and invoice.",
-      "required_tools": [
-        "create_deduction_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a deduction case in the system, noting the customer's reason for the short payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a deduction case linked to the customer and invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the deduction case to the customer service department to investigate the damaged goods claim.",
-      "expected_outcome": "Agent correctly routes the case to the appropriate team for resolution.",
-      "required_tools": [
-        "assign_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the deduction case to the customer service department to investigate the damaged goods claim.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly routes the case to the appropriate team for resolution."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14164",
-  "title": "Dynamic Line Rating",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dynamic Line Rating",
+    "compliance_level": "Standard"
+  },
   "description": "The system uses real-time weather data to calculate the actual, dynamic thermal rating of a transmission line, allowing more power to flow than its static rating would suggest.",
-  "use_case": "Grid Operations",
-  "core_function": "System Control & Monitoring",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather real-time weather data along the transmission line corridor (e.g., wind speed, ambient temperature).",
-      "expected_outcome": "System retrieves live weather data from field sensors.",
-      "required_tools": [
-        "get_line_weather_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather real-time weather data along the transmission line corridor (e.g., wind speed, ambient temperature).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System retrieves live weather data from field sensors."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the real-time thermal rating of the line based on the cooling effect of the wind.",
-      "expected_outcome": "System calculates that the line can safely carry 15% more power than its static rating.",
-      "required_tools": [
-        "calculate_dynamic_line_rating"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the real-time thermal rating of the line based on the cooling effect of the wind.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System calculates that the line can safely carry 15% more power than its static rating."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the line's operating limit in the energy management system (EMS), allowing for more efficient grid dispatch.",
-      "expected_outcome": "System updates the operational limit in the EMS.",
-      "required_tools": [
-        "update_ems_line_limit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the line's operating limit in the energy management system (EMS), allowing for more efficient grid dispatch.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System updates the operational limit in the EMS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12118",
-  "title": "Draft Responses to Interrogatories",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft Responses to Interrogatories",
+    "compliance_level": "Standard"
+  },
   "description": "A litigation associate must draft responses to a set of written interrogatories (questions) served by the opposing party.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the interrogatories and identify the information being sought.",
-      "expected_outcome": "Agent understands each question being asked.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the interrogatories and identify the information being sought.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands each question being asked."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Consult with the client and review case documents to gather the information needed to answer the questions.",
-      "expected_outcome": "Agent collects the factual basis for the answers.",
-      "required_tools": [
-        "document_review_tool",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Consult with the client and review case documents to gather the information needed to answer the questions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the factual basis for the answers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft responses to each interrogatory, including any valid objections (e.g., 'vague and ambiguous', 'seeks privileged information').",
-      "expected_outcome": "Agent produces a set of draft responses and objections for attorney review.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft responses to each interrogatory, including any valid objections (e.g., 'vague and ambiguous', 'seeks privileged information').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a set of draft responses and objections for attorney review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

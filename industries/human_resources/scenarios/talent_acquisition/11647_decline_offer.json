@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-ta-11647",
-  "title": "Candidate Declines Offer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Candidate Declines Offer",
+    "compliance_level": "Standard"
+  },
   "description": "A candidate who received an offer has decided to decline it.",
-  "use_case": "Talent Acquisition",
-  "core_function": "Interview & Selection",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the notification from the candidate that they are declining the offer.",
-      "expected_outcome": "Recruiter is informed by the candidate.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the notification from the candidate that they are declining the offer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter is informed by the candidate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask for the reason for the decline, if the candidate is willing to share.",
-      "expected_outcome": "Recruiter learns the candidate accepted a competing offer with a higher salary.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask for the reason for the decline, if the candidate is willing to share.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter learns the candidate accepted a competing offer with a higher salary."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the candidate's status in the ATS to 'Offer Declined' and log the reason.",
-      "expected_outcome": "Recruiter accurately updates the candidate's record in the ATS.",
-      "required_tools": [
-        "update_candidate_status",
-        "log_decline_reason"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the candidate's status in the ATS to 'Offer Declined' and log the reason.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter accurately updates the candidate's record in the ATS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10770",
-  "title": "API Penetration Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "API Penetration Test",
+    "compliance_level": "Standard"
+  },
   "description": "A penetration tester is tasked with finding security flaws in a new REST API.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Penetration Testing",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use an API testing tool to enumerate all available API endpoints and parameters.",
-      "expected_outcome": "Tester successfully maps out the API's attack surface.",
-      "required_tools": [
-        "enumerate_api_endpoints"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use an API testing tool to enumerate all available API endpoints and parameters.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Tester successfully maps out the API's attack surface."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Test for authentication and authorization flaws by attempting to access endpoints without proper credentials or as a different user.",
-      "expected_outcome": "Tester discovers an endpoint that returns data belonging to another user, demonstrating a Broken Object Level Authorization (BOLA) flaw.",
-      "required_tools": [
-        "test_api_authorization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "exploit_success_rate",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Test for authentication and authorization flaws by attempting to access endpoints without proper credentials or as a different user.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Tester discovers an endpoint that returns data belonging to another user, demonstrating a Broken Object Level Authorization (BOLA) flaw."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the vulnerability with a proof-of-concept exploit and report it to the development team.",
-      "expected_outcome": "Tester provides a clear, actionable report that allows developers to fix the flaw.",
-      "required_tools": [
-        "document_vulnerability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "reporting_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the vulnerability with a proof-of-concept exploit and report it to the development team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Tester provides a clear, actionable report that allows developers to fix the flaw."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

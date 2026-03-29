@@ -1,49 +1,59 @@
 {
-  "scenario_id": "tax-rep-13774",
-  "title": "Complete Power of Attorney (Form 2848)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Complete Power of Attorney (Form 2848)",
+    "compliance_level": "Standard"
+  },
   "description": "A tax professional needs to be formally authorized to represent a client before the IRS.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Account & Transcript Analysis",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the client's information and the tax professional's information (including CAF number).",
-      "expected_outcome": "Agent collects all necessary data for the form.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the client's information and the tax professional's information (including CAF number).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary data for the form."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Specify the tax matters and years for which representation is authorized.",
-      "expected_outcome": "Agent clearly defines the scope of the representation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Specify the tax matters and years for which representation is authorized.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly defines the scope of the representation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare Form 2848, obtain signatures from both the client and the professional, and file it with the IRS.",
-      "expected_outcome": "Agent successfully prepares and files the Power of Attorney.",
-      "required_tools": [
-        "prepare_form_2848",
-        "file_document_with_irs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare Form 2848, obtain signatures from both the client and the professional, and file it with the IRS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully prepares and files the Power of Attorney."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

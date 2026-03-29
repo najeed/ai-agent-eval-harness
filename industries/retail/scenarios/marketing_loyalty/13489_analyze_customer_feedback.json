@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-ml-13489",
-  "title": "Analyze Customer Feedback",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Customer Feedback",
+    "compliance_level": "Standard"
+  },
   "description": "A manager wants to understand common themes from recent customer satisfaction surveys.",
-  "use_case": "Marketing & Loyalty",
-  "core_function": "Customer Feedback & Reviews",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the survey analytics dashboard.",
-      "expected_outcome": "The manager accesses the feedback reporting tool.",
-      "required_tools": [
-        "open_analytics_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the survey analytics dashboard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager accesses the feedback reporting tool."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Filter for all survey responses from the last month.",
-      "expected_outcome": "The dashboard displays data for the selected time period.",
-      "required_tools": [
-        "filter_report_by_date"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Filter for all survey responses from the last month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The dashboard displays data for the selected time period."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the keyword analysis tool, which shows that 'long checkout lines' is a frequently mentioned negative term.",
-      "expected_outcome": "The manager identifies a key area for operational improvement based on customer feedback.",
-      "required_tools": [
-        "view_keyword_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the keyword analysis tool, which shows that 'long checkout lines' is a frequently mentioned negative term.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager identifies a key area for operational improvement based on customer feedback."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

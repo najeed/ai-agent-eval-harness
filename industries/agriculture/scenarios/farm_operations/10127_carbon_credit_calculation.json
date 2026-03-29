@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ag-fo-10127",
-  "title": "Calculate Carbon Credits from No-Till Farming",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Carbon Credits from No-Till Farming",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer who has switched to no-till farming wants to estimate the amount of carbon credits they may be eligible for.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Financial Management & Compliance",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather data on the farm's acreage, location, soil type, and number of years under no-till practice.",
-      "expected_outcome": "Agent collects all the necessary parameters.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather data on the farm's acreage, location, soil type, and number of years under no-till practice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all the necessary parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use an approved carbon sequestration model to calculate the estimated tons of CO2 equivalent sequestered per year.",
-      "expected_outcome": "Agent calculates the estimated carbon sequestration amount.",
-      "required_tools": [
-        "calculate_carbon_sequestration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use an approved carbon sequestration model to calculate the estimated tons of CO2 equivalent sequestered per year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the estimated carbon sequestration amount."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide an estimate of the potential financial value based on current carbon market prices.",
-      "expected_outcome": "Agent gives an estimated monetary value of the generated credits.",
-      "required_tools": [
-        "get_carbon_market_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide an estimate of the potential financial value based on current carbon market prices.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gives an estimated monetary value of the generated credits."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

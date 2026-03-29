@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-191",
-  "title": "Check SOW Against Budget",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check SOW Against Budget",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must verify that the work described in a Statement of Work (SOW) can be completed within the allocated project budget.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Estimate the total effort (in days) required for the tasks listed in the SOW.",
-      "expected_outcome": "Agent provides a reasonable total effort estimate.",
-      "required_tools": [
-        "estimate_task_duration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 0.85
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Estimate the total effort (in days) required for the tasks listed in the SOW.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a reasonable total effort estimate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total estimated cost based on the effort and standard day rates.",
-      "expected_outcome": "Agent correctly calculates the total estimated project cost.",
-      "required_tools": [
-        "calculate_project_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total estimated cost based on the effort and standard day rates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the total estimated project cost."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the estimated cost against the project budget and flag any discrepancy.",
-      "expected_outcome": "Agent reports that the estimated cost is 10% over the allocated budget.",
-      "required_tools": [
-        "calculate_variance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the estimated cost against the project budget and flag any discrepancy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reports that the estimated cost is 10% over the allocated budget."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-gs-14218",
-  "title": "Handle Guest Request for Accessible Seating",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Guest Request for Accessible Seating",
+    "compliance_level": "Standard"
+  },
   "description": "A guest who purchased standard tickets has since broken their leg and now requires wheelchair accessible seating.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Accessibility & Special Needs",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the guest's original order.",
-      "expected_outcome": "Agent finds the guest's original ticket purchase.",
-      "required_tools": [
-        "search_ticket_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the guest's original order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the guest's original ticket purchase."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the availability of unsold accessible seats for the event.",
-      "expected_outcome": "Agent finds an available wheelchair space with a companion seat.",
-      "required_tools": [
-        "get_accessible_seating_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the availability of unsold accessible seats for the event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an available wheelchair space with a companion seat."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process an exchange for the guest's original tickets to the new accessible seats.",
-      "expected_outcome": "Agent successfully voids the old tickets and issues the new ones.",
-      "required_tools": [
-        "exchange_tickets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process an exchange for the guest's original tickets to the new accessible seats.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully voids the old tickets and issues the new ones."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Inform the guest of their new seat location and offer to arrange for wheelchair assistance upon arrival.",
-      "expected_outcome": "Agent provides the new details and logs a request for assistance.",
-      "required_tools": [
-        "log_assistance_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Inform the guest of their new seat location and offer to arrange for wheelchair assistance upon arrival.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the new details and logs a request for assistance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

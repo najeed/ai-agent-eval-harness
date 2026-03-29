@@ -1,50 +1,59 @@
 {
-  "scenario_id": "mfg-qc-12346",
-  "title": "Perform Product Genealogy Search",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Product Genealogy Search",
+    "compliance_level": "Standard"
+  },
   "description": "To investigate a quality trend, an engineer needs to find all finished products that were made using a specific lot of raw material.",
-  "use_case": "Quality Assurance & Control",
-  "core_function": "Traceability & Genealogy",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Enter the lot number of the raw material to be traced.",
-      "expected_outcome": "Agent enters the specific lot number into the system.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Enter the lot number of the raw material to be traced.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent enters the specific lot number into the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Execute a 'where-used' search to find all work orders that consumed this lot.",
-      "expected_outcome": "The system returns a list of work orders where the material lot was used.",
-      "required_tools": [
-        "trace_material_lot_usage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Execute a 'where-used' search to find all work orders that consumed this lot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system returns a list of work orders where the material lot was used."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a list of the final product serial numbers associated with those work orders.",
-      "expected_outcome": "Agent generates a comprehensive list of all finished goods potentially affected.",
-      "required_tools": [
-        "get_serial_numbers_from_wo"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a list of the final product serial numbers associated with those work orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a comprehensive list of all finished goods potentially affected."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

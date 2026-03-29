@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-as-11005",
-  "title": "Student Cannot Log In to LMS",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Student Cannot Log In to LMS",
+    "compliance_level": "Standard"
+  },
   "description": "A student is unable to log in to the Learning Management System (LMS) to access their online course.",
-  "use_case": "Academic Support",
-  "core_function": "Learning Management System (LMS) Support",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and confirm their enrollment in an online course.",
-      "expected_outcome": "Agent verifies the student's identity and active enrollment.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and confirm their enrollment in an online course.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the student's identity and active enrollment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to reset the student's password for the LMS.",
-      "expected_outcome": "Agent successfully triggers a password reset email to the student's university address.",
-      "required_tools": [
-        "reset_lms_password"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to reset the student's password for the LMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully triggers a password reset email to the student's university address."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the student to follow the password reset link in their email and try logging in again.",
-      "expected_outcome": "Agent provides clear instructions for the student to resolve the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the student to follow the password reset link in their email and try logging in again.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions for the student to resolve the issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

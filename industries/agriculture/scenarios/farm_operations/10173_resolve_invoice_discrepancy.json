@@ -1,67 +1,72 @@
 {
-  "scenario_id": "ag-fo-10173",
-  "title": "Resolve a Supplier Invoice Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve a Supplier Invoice Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer has received an invoice from a chemical supplier that does not match their own records.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Supply Chain & Inventory",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the supplier's invoice.",
-      "expected_outcome": "Agent gets the invoice details.",
-      "required_tools": [
-        "get_invoice_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the supplier's invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the invoice details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the farm's corresponding purchase order and delivery receipts.",
-      "expected_outcome": "Agent gets the farm's internal records for the transaction.",
-      "required_tools": [
-        "get_purchase_order",
-        "get_delivery_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the farm's corresponding purchase order and delivery receipts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the farm's internal records for the transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the documents and identify the discrepancy.",
-      "expected_outcome": "Agent finds the invoice incorrectly charged for 100 gallons, while the delivery receipt shows only 90 gallons were delivered.",
-      "required_tools": [
-        "compare_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the documents and identify the discrepancy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the invoice incorrectly charged for 100 gallons, while the delivery receipt shows only 90 gallons were delivered."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Draft an email to the supplier outlining the discrepancy and requesting a corrected invoice.",
-      "expected_outcome": "Agent generates a professional email with all the relevant details and attachments.",
-      "required_tools": [
-        "draft_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Draft an email to the supplier outlining the discrepancy and requesting a corrected invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a professional email with all the relevant details and attachments."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

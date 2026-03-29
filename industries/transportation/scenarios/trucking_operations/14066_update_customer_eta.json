@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tr-to-14066",
-  "title": "Update Customer with Revised ETA",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Customer with Revised ETA",
+    "compliance_level": "Standard"
+  },
   "description": "A driver is delayed by weather. The dispatcher must provide the customer with a new estimated time of arrival (ETA).",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Dispatch & Load Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The driver reports a delay due to a snowstorm.",
-      "expected_outcome": "The dispatcher logs the delay reason.",
-      "required_tools": [
-        "log_delay_reason"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The driver reports a delay due to a snowstorm.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The dispatcher logs the delay reason."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system recalculates the ETA based on the driver's current location and the reduced speed.",
-      "expected_outcome": "A new, later ETA is generated.",
-      "required_tools": [
-        "recalculate_eta"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system recalculates the ETA based on the driver's current location and the reduced speed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new, later ETA is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The dispatcher sends an automated notification to the customer with the revised ETA.",
-      "expected_outcome": "The customer is proactively informed of the delay.",
-      "required_tools": [
-        "send_customer_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The dispatcher sends an automated notification to the customer with the revised ETA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer is proactively informed of the delay."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

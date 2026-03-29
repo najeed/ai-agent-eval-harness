@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-cm-11821",
-  "title": "Billing - Handle Billing Dispute",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Billing - Handle Billing Dispute",
+    "compliance_level": "Standard"
+  },
   "description": "A client is disputing a charge on their invoice for 'After-Hours Project Work' that they claim was not approved.",
-  "use_case": "Client & Contract Management",
-  "core_function": "Billing & Invoicing",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the specific invoice and the time entries associated with the disputed charge.",
-      "expected_outcome": "The account manager finds the time entries for the after-hours work.",
-      "required_tools": [
-        "get_invoice_details",
-        "get_time_entries"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the specific invoice and the time entries associated with the disputed charge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account manager finds the time entries for the after-hours work."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the project's communication history for an email or ticket where the client approved the after-hours work.",
-      "expected_outcome": "The account manager finds an email from the client's point of contact approving the work.",
-      "required_tools": [
-        "search_ticket_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the project's communication history for an email or ticket where the client approved the after-hours work.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account manager finds an email from the client's point of contact approving the work."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present the proof of authorization to the client to justify the charge.",
-      "expected_outcome": "The client agrees to the charge after seeing the proof of approval.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present the proof of authorization to the client to justify the charge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client agrees to the charge after seeing the proof of approval."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

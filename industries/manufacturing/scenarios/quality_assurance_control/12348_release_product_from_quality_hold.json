@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-qc-12348",
-  "title": "Release Product from Quality Hold",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Release Product from Quality Hold",
+    "compliance_level": "Standard"
+  },
   "description": "A batch of products was held for inspection and has now been cleared. A quality technician needs to release it for shipment.",
-  "use_case": "Quality Assurance & Control",
-  "core_function": "Quality Inspection & Testing",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the inventory batch that is on 'Quality Hold'.",
-      "expected_outcome": "Agent finds the correct batch in the inventory system.",
-      "required_tools": [
-        "find_inventory_by_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the inventory batch that is on 'Quality Hold'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct batch in the inventory system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the associated inspection record is complete and has a 'Pass' status.",
-      "expected_outcome": "Agent confirms the inspection was passed and all data is entered.",
-      "required_tools": [
-        "get_inspection_record_by_batch"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the associated inspection record is complete and has a 'Pass' status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the inspection was passed and all data is entered."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Change the inventory status from 'Quality Hold' to 'Available' or 'Finished Good'.",
-      "expected_outcome": "Agent successfully updates the inventory status, making it available for allocation to orders.",
-      "required_tools": [
-        "update_inventory_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Change the inventory status from 'Quality Hold' to 'Available' or 'Finished Good'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the inventory status, making it available for allocation to orders."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

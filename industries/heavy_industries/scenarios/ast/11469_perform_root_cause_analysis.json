@@ -1,56 +1,59 @@
 {
-  "scenario_id": "heavy-industries-ast-11469",
-  "title": "Perform Root Cause Analysis (RCA) on Failure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Root Cause Analysis (RCA) on Failure",
+    "compliance_level": "Standard"
+  },
   "description": "Following a major equipment failure, a reliability engineer leads an RCA session to prevent recurrence.",
-  "use_case": "Asset & Maintenance Management",
-  "core_function": "Reliability Engineering",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all available data about the failure, including operator logs, maintenance history, and alarm data.",
-      "expected_outcome": "Agent successfully compiles all relevant information.",
-      "required_tools": [
-        "get_operator_logs",
-        "get_maintenance_history",
-        "get_alarm_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all available data about the failure, including operator logs, maintenance history, and alarm data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully compiles all relevant information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a structured RCA method, like a '5 Whys' or 'Fishbone Diagram', to analyze the data and identify potential causes.",
-      "expected_outcome": "The team works through the methodology to brainstorm causes.",
-      "required_tools": [
-        "facilitate_rca_session"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a structured RCA method, like a '5 Whys' or 'Fishbone Diagram', to analyze the data and identify potential causes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team works through the methodology to brainstorm causes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify the most likely root cause and create corrective actions to address it.",
-      "expected_outcome": "The team determines the root cause was a design flaw and creates a corrective action to redesign the faulty component.",
-      "required_tools": [
-        "document_root_cause",
-        "create_corrective_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify the most likely root cause and create corrective actions to address it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team determines the root cause was a design flaw and creates a corrective action to redesign the faulty component."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

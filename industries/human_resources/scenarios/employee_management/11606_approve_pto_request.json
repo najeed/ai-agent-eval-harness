@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-em-11606",
-  "title": "Approve a PTO Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Approve a PTO Request",
+    "compliance_level": "Standard"
+  },
   "description": "A manager needs to approve a vacation request submitted by one of their direct reports.",
-  "use_case": "Employee Management",
-  "core_function": "Time & Attendance",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the pending time-off requests in the HRIS manager self-service portal.",
-      "expected_outcome": "Manager successfully navigates to the approval queue.",
-      "required_tools": [
-        "view_pending_approvals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the pending time-off requests in the HRIS manager self-service portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager successfully navigates to the approval queue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the employee's request and check the team calendar for potential conflicts.",
-      "expected_outcome": "Manager sees no conflicts with other team members' time off.",
-      "required_tools": [
-        "view_team_calendar"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the employee's request and check the team calendar for potential conflicts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager sees no conflicts with other team members' time off."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Approve the time-off request in the system.",
-      "expected_outcome": "Manager clicks 'Approve', which notifies the employee and updates their leave balance.",
-      "required_tools": [
-        "approve_time_off_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Approve the time-off request in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager clicks 'Approve', which notifies the employee and updates their leave balance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

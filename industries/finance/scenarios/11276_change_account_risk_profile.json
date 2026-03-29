@@ -1,83 +1,61 @@
 {
-  "scenario_id": "finance-wm-11276",
-  "title": "Change Account Risk Profile",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Change Account Risk Profile",
+    "compliance_level": "Standard"
+  },
   "description": "A client has received a promotion and wants to increase their risk tolerance from 'Balanced' to 'Growth'.",
-  "use_case": "Wealth Management",
-  "core_function": "Client Onboarding & KYC",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Administer a new risk tolerance questionnaire to confirm the client's suitability for a higher risk profile.",
-      "expected_outcome": "Agent confirms the new questionnaire results align with a 'Growth' profile.",
-      "required_tools": [
-        "assess_risk_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Administer a new risk tolerance questionnaire to confirm the client's suitability for a higher risk profile.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the new questionnaire results align with a 'Growth' profile."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the client's official risk profile in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully changes the client's profile setting."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the client's official risk profile in the system.",
-      "expected_outcome": "Agent successfully changes the client's profile setting.",
-      "required_tools": [
-        "update_client_investment_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Discuss the necessary portfolio changes to align with the new 'Growth' strategy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent explains that this will involve selling some bonds to buy more stocks."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Discuss the necessary portfolio changes to align with the new 'Growth' strategy.",
-      "expected_outcome": "Agent explains that this will involve selling some bonds to buy more stocks.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

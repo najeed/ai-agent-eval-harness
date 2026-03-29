@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-ops-12678",
-  "title": "Manage from Remote Operations Center",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage from Remote Operations Center",
+    "compliance_level": "Standard"
+  },
   "description": "An operator in a remote operations center (ROC) in a city is controlling equipment at a mine site thousands of kilometers away.",
-  "use_case": "Mine Operations",
-  "core_function": "Load & Haul",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into the system and take control of a semi-autonomous dozer at the mine site.",
-      "expected_outcome": "The operator establishes a secure connection and has control of the dozer.",
-      "required_tools": [
-        "login_to_remote_control_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into the system and take control of a semi-autonomous dozer at the mine site.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator establishes a secure connection and has control of the dozer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Using video feeds and sensor data, operate the dozer to clean up the area around a shovel.",
-      "expected_outcome": "The dozer task is completed efficiently and safely from the remote location.",
-      "required_tools": [
-        "operate_remote_equipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "operational_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Using video feeds and sensor data, operate the dozer to clean up the area around a shovel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The dozer task is completed efficiently and safely from the remote location."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After completing the task, park the dozer in a safe location and hand control back to the autonomous system.",
-      "expected_outcome": "The remote operation is completed, and the equipment is returned to autonomous mode.",
-      "required_tools": [
-        "park_equipment",
-        "release_remote_control"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After completing the task, park the dozer in a safe location and hand control back to the autonomous system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The remote operation is completed, and the equipment is returned to autonomous mode."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

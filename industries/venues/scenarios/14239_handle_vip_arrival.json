@@ -1,51 +1,59 @@
 {
-  "scenario_id": "venues-sh-14239",
-  "title": "Handle a VIP Arrival",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a VIP Arrival",
+    "compliance_level": "Standard"
+  },
   "description": "The CEO of a major sponsor is arriving for a game and needs to be escorted to their suite.",
-  "use_case": "Sales & Hospitality",
-  "core_function": "VIP & Hospitality Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive notification that the VIP has arrived at the VIP entrance.",
-      "expected_outcome": "Agent acknowledges the arrival.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive notification that the VIP has arrived at the VIP entrance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the arrival."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Look up the VIP's details, including their suite number and designated hospitality manager.",
-      "expected_outcome": "Agent finds the VIP's information in the guest list.",
-      "required_tools": [
-        "search_guest_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Look up the VIP's details, including their suite number and designated hospitality manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the VIP's information in the guest list."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch the designated hospitality manager to the VIP entrance to greet the guest.",
-      "expected_outcome": "Agent contacts the manager and directs them to the entrance.",
-      "required_tools": [
-        "dispatch_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch the designated hospitality manager to the VIP entrance to greet the guest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent contacts the manager and directs them to the entrance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

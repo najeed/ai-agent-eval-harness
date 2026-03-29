@@ -1,64 +1,72 @@
 {
-  "scenario_id": "legal-ldr-12127",
-  "title": "Redact a Document for Production",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Redact a Document for Production",
+    "compliance_level": "Standard"
+  },
   "description": "During discovery, an attorney needs to redact privileged information from a document before producing it to the other side.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the document in a redaction tool.",
-      "expected_outcome": "Agent has the document loaded in the appropriate software.",
-      "required_tools": [
-        "redaction_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the document in a redaction tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the document loaded in the appropriate software."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify all instances of attorney-client communication or attorney work product within the document.",
-      "expected_outcome": "Agent correctly identifies the specific text to be redacted.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify all instances of attorney-client communication or attorney work product within the document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the specific text to be redacted."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply black-box redactions over the privileged text.",
-      "expected_outcome": "Agent successfully covers the sensitive information.",
-      "required_tools": [
-        "redaction_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply black-box redactions over the privileged text.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully covers the sensitive information."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Produce a new version of the document with the redactions permanently applied.",
-      "expected_outcome": "A safe, redacted version of the document is created for production.",
-      "required_tools": [
-        "redaction_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Produce a new version of the document with the redactions permanently applied.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A safe, redacted version of the document is created for production."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

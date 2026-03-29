@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hr-er-11639",
-  "title": "Conduct Mandatory Compliance Training",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Mandatory Compliance Training",
+    "compliance_level": "Standard"
+  },
   "description": "HR needs to ensure all employees complete their annual mandatory 'Anti-Harassment' training.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Policy & Compliance",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Assign the 'Anti-Harassment' training module to all active employees in the LMS.",
-      "expected_outcome": "L&D specialist successfully assigns the training.",
-      "required_tools": [
-        "assign_training_module"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Assign the 'Anti-Harassment' training module to all active employees in the LMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "L&D specialist successfully assigns the training."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send communications to all employees about the requirement and the deadline for completion.",
-      "expected_outcome": "Specialist sends announcement and reminder emails.",
-      "required_tools": [
-        "send_mass_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send communications to all employees about the requirement and the deadline for completion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist sends announcement and reminder emails."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run a completion report from the LMS and follow up with employees who are not yet compliant.",
-      "expected_outcome": "Specialist generates a report and sends individual reminders to delinquent employees.",
-      "required_tools": [
-        "run_lms_report",
-        "send_reminder_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run a completion report from the LMS and follow up with employees who are not yet compliant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist generates a report and sends individual reminders to delinquent employees."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

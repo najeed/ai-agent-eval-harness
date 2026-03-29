@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11797",
-  "title": "Incident - Laptop Won't Boot",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Incident - Laptop Won't Boot",
+    "compliance_level": "Standard"
+  },
   "description": "An end-user reports that their company-issued laptop is not starting up and is showing a 'No Bootable Device' error.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "Incident & Request Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new ticket in the PSA, documenting the user's details and the specific error message.",
-      "expected_outcome": "A new ticket is created with all relevant initial information.",
-      "required_tools": [
-        "create_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new ticket in the PSA, documenting the user's details and the specific error message.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new ticket is created with all relevant initial information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the client's documentation to check the age and warranty status of the laptop.",
-      "expected_outcome": "Agent finds the laptop is 4 years old and out of warranty.",
-      "required_tools": [
-        "get_client_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the client's documentation to check the age and warranty status of the laptop.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the laptop is 4 years old and out of warranty."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Diagnose the issue as a likely hard drive failure and arrange for a replacement laptop to be configured and shipped to the user.",
-      "expected_outcome": "Agent correctly diagnoses the hardware failure and initiates the laptop replacement process.",
-      "required_tools": [
-        "create_asset_replacement_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Diagnose the issue as a likely hard drive failure and arrange for a replacement laptop to be configured and shipped to the user.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly diagnoses the hardware failure and initiates the laptop replacement process."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

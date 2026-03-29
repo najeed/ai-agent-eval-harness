@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ct-12137",
-  "title": "Draft an Employment Agreement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft an Employment Agreement",
+    "compliance_level": "Standard"
+  },
   "description": "An in-house counsel needs to draft a standard employment agreement for a new executive.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Contract Lifecycle Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the company's executive employment agreement template.",
-      "expected_outcome": "Agent retrieves the correct template.",
-      "required_tools": [
-        "get_document_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the company's executive employment agreement template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Incorporate the specific terms from the offer letter, such as salary, bonus potential, and start date.",
-      "expected_outcome": "Agent customizes the template with the executive's specific deal terms.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Incorporate the specific terms from the offer letter, such as salary, bonus potential, and start date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent customizes the template with the executive's specific deal terms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Ensure the non-compete and confidentiality clauses are compliant with state law.",
-      "expected_outcome": "Agent verifies the restrictive covenants are enforceable in the relevant jurisdiction.",
-      "required_tools": [
-        "legal_research_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Ensure the non-compete and confidentiality clauses are compliant with state law.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the restrictive covenants are enforceable in the relevant jurisdiction."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

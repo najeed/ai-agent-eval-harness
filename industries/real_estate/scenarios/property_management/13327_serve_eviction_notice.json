@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13327",
-  "title": "Serve an Eviction Notice for Non-Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Serve an Eviction Notice for Non-Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant has failed to pay rent for two months despite warnings. The property manager must begin the formal eviction process.",
-  "use_case": "Property Management",
-  "core_function": "Rent Collection & Financials",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the tenant's payment history and confirm the total amount of unpaid rent.",
-      "expected_outcome": "Agent has accurate records of the delinquency.",
-      "required_tools": [
-        "get_tenant_ledger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the tenant's payment history and confirm the total amount of unpaid rent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has accurate records of the delinquency."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the appropriate legal notice for non-payment of rent as required by state law (e.g., '3-Day Pay or Quit').",
-      "expected_outcome": "A legally compliant eviction notice is created.",
-      "required_tools": [
-        "generate_legal_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the appropriate legal notice for non-payment of rent as required by state law (e.g., '3-Day Pay or Quit').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A legally compliant eviction notice is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Arrange for the notice to be legally served to the tenant by a professional process server.",
-      "expected_outcome": "The notice is served and proof of service is obtained.",
-      "required_tools": [
-        "hire_process_server"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Arrange for the notice to be legally served to the tenant by a professional process server.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The notice is served and proof of service is obtained."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10787",
-  "title": "Virtual Patching with WAF",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Virtual Patching with WAF",
+    "compliance_level": "Standard"
+  },
   "description": "A critical vulnerability is found in a legacy web application that cannot be immediately patched. An analyst must apply a 'virtual patch' using a Web Application Firewall (WAF).",
-  "use_case": "Vulnerability Management",
-  "core_function": "Patch Management & Remediation",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the vulnerability to understand the specific type of malicious request that exploits it.",
-      "expected_outcome": "Analyst understands the attack vector (e.g., a specific HTTP header with a malicious value).",
-      "required_tools": [
-        "get_cve_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "technical_understanding",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the vulnerability to understand the specific type of malicious request that exploits it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst understands the attack vector (e.g., a specific HTTP header with a malicious value)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a custom rule in the WAF to inspect incoming traffic and block any requests that match the exploit pattern.",
-      "expected_outcome": "Analyst successfully writes and deploys a WAF rule to block the attack.",
-      "required_tools": [
-        "create_waf_rule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "rule_creation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a custom rule in the WAF to inspect incoming traffic and block any requests that match the exploit pattern.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully writes and deploys a WAF rule to block the attack."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Test the rule to ensure it blocks the exploit without blocking legitimate traffic.",
-      "expected_outcome": "The virtual patch is confirmed to be effective and does not cause unintended side effects.",
-      "required_tools": [
-        "test_waf_rule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "testing_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Test the rule to ensure it blocks the exploit without blocking legitimate traffic.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The virtual patch is confirmed to be effective and does not cause unintended side effects."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hr-os-11613",
-  "title": "Generate a Headcount Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a Headcount Report",
+    "compliance_level": "Standard"
+  },
   "description": "A department head needs a report of their current headcount, broken down by job title.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Reporting & Analytics",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the reporting module of the HRIS.",
-      "expected_outcome": "Analyst successfully navigates to the reporting tool.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the reporting module of the HRIS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully navigates to the reporting tool."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run the standard 'Headcount by Department' report, filtering for the specific department.",
-      "expected_outcome": "Analyst successfully generates the report with the correct data.",
-      "required_tools": [
-        "run_hris_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run the standard 'Headcount by Department' report, filtering for the specific department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully generates the report with the correct data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Export the report to Excel and send it to the department head.",
-      "expected_outcome": "Analyst successfully exports and emails the report.",
-      "required_tools": [
-        "export_report",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Export the report to Excel and send it to the department head.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully exports and emails the report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

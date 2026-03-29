@@ -1,51 +1,59 @@
 {
-  "scenario_id": "legal-ct-12195",
-  "title": "Draft Website Terms of Service",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft Website Terms of Service",
+    "compliance_level": "Standard"
+  },
   "description": "An in-house counsel needs to draft the Terms of Service (ToS) for a new software-as-a-service (SaaS) product.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Contract Lifecycle Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the product's functionality to understand the service being offered.",
-      "expected_outcome": "Agent understands what the SaaS product does.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the product's functionality to understand the service being offered.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands what the SaaS product does."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select a ToS template appropriate for a SaaS product.",
-      "expected_outcome": "Agent starts with a relevant template.",
-      "required_tools": [
-        "get_document_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select a ToS template appropriate for a SaaS product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent starts with a relevant template."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft key clauses, including user license grants, acceptable use policies, disclaimer of warranties, and limitation of liability.",
-      "expected_outcome": "Agent drafts a comprehensive ToS that protects the company.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft key clauses, including user license grants, acceptable use policies, disclaimer of warranties, and limitation of liability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a comprehensive ToS that protects the company."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13362",
-  "title": "Terminate a Purchase Contract",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Terminate a Purchase Contract",
+    "compliance_level": "Standard"
+  },
   "description": "During the inspection period, a buyer decides to terminate the purchase contract due to major structural issues found.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Escrow",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Advise the buyer on their right to terminate under the inspection contingency.",
-      "expected_outcome": "The buyer understands their contractual right to cancel.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Advise the buyer on their right to terminate under the inspection contingency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The buyer understands their contractual right to cancel."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a formal notice of termination and a request for the return of the earnest money deposit.",
-      "expected_outcome": "A legally sound termination notice is generated.",
-      "required_tools": [
-        "generate_termination_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a formal notice of termination and a request for the return of the earnest money deposit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A legally sound termination notice is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the termination notice to the listing agent and the title company to initiate the earnest money refund process.",
-      "expected_outcome": "All parties are notified of the termination, and the process to refund the deposit begins.",
-      "required_tools": [
-        "send_document",
-        "contact_title_company"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the termination notice to the listing agent and the title company to initiate the earnest money refund process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All parties are notified of the termination, and the process to refund the deposit begins."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

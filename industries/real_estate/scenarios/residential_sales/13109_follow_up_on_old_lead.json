@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13109",
-  "title": "Follow Up on Old Lead",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Follow Up on Old Lead",
+    "compliance_level": "Standard"
+  },
   "description": "An agent wants to re-engage a lead who showed interest 6 months ago but never bought a house.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Lead & Client Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the contact record in the CRM and review past communication and search history.",
-      "expected_outcome": "Agent retrieves the contact's history, noting they were looking for a 3-bed, 2-bath under $500k.",
-      "required_tools": [
-        "get_crm_contact_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the contact record in the CRM and review past communication and search history.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the contact's history, noting they were looking for a 3-bed, 2-bath under $500k."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Find a current, active listing that matches the lead's old criteria.",
-      "expected_outcome": "Agent finds a suitable active property on the MLS.",
-      "required_tools": [
-        "search_mls_for_actives"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Find a current, active listing that matches the lead's old criteria.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a suitable active property on the MLS."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft and send a personalized follow-up email referencing a past conversation and suggesting the new property.",
-      "expected_outcome": "A personalized email is sent to the lead to re-engage them.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft and send a personalized follow-up email referencing a past conversation and suggesting the new property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A personalized email is sent to the lead to re-engage them."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

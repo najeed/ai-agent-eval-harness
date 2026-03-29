@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-co-11079",
-  "title": "Cancel a Room Reservation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cancel a Room Reservation",
+    "compliance_level": "Standard"
+  },
   "description": "A student club needs to cancel their reservation for a meeting room.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Event & Facilities Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student group and the specific reservation to be cancelled.",
-      "expected_outcome": "Agent locates the correct booking in the system.",
-      "required_tools": [
-        "get_facility_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student group and the specific reservation to be cancelled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct booking in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Process the cancellation in the facility scheduling system.",
-      "expected_outcome": "Agent successfully cancels the booking, freeing up the room.",
-      "required_tools": [
-        "cancel_facility_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Process the cancellation in the facility scheduling system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully cancels the booking, freeing up the room."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a cancellation confirmation to the event organizer.",
-      "expected_outcome": "Agent sends a confirmation email.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a cancellation confirmation to the event organizer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a confirmation email."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

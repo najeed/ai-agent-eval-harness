@@ -1,54 +1,59 @@
 {
-  "scenario_id": "cyber-vm-10772",
-  "title": "Weekly Threat Intelligence Briefing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Weekly Threat Intelligence Briefing",
+    "compliance_level": "Standard"
+  },
   "description": "A threat intelligence analyst must prepare the weekly threat briefing for the CISO and security leadership.",
-  "use_case": "Vulnerability Management",
-  "core_function": "Threat Intelligence Integration",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review all major threat intelligence reports, security news, and new CVEs from the past week.",
-      "expected_outcome": "Analyst synthesizes a large amount of information into key themes.",
-      "required_tools": [
-        "review_threat_feeds",
-        "review_security_news"
-      ],
-      "success_criteria": [
-        {
-          "metric": "research_completeness",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review all major threat intelligence reports, security news, and new CVEs from the past week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst synthesizes a large amount of information into key themes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the threats and vulnerabilities that are most relevant to the organization.",
-      "expected_outcome": "Analyst correctly filters the information down to what is most important for their specific company.",
-      "required_tools": [
-        "assess_threat_relevance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the threats and vulnerabilities that are most relevant to the organization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly filters the information down to what is most important for their specific company."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a concise presentation summarizing the key threats, their potential impact, and recommended actions.",
-      "expected_outcome": "Analyst produces a clear, actionable briefing for leadership.",
-      "required_tools": [
-        "create_presentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a concise presentation summarizing the key threats, their potential impact, and recommended actions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst produces a clear, actionable briefing for leadership."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

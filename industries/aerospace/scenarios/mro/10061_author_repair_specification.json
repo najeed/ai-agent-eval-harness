@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10061",
-  "title": "Author a Repair Specification",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Author a Repair Specification",
+    "compliance_level": "Standard"
+  },
   "description": "An aircraft has damage that is not covered by the Structural Repair Manual. A stress engineer must analyze the damage and write a custom repair specification.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Technical Documentation & Compliance",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the location and extent of the damage.",
-      "expected_outcome": "Agent fully characterizes the structural damage.",
-      "required_tools": [
-        "analyze_damage_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the location and extent of the damage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fully characterizes the structural damage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a stress analysis to design a repair (e.g., a doubler plate) that restores the original strength of the structure.",
-      "expected_outcome": "Agent designs a repair that meets all safety and certification requirements.",
-      "required_tools": [
-        "run_fea_simulation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a stress analysis to design a repair (e.g., a doubler plate) that restores the original strength of the structure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent designs a repair that meets all safety and certification requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Author a formal repair specification document with detailed instructions and drawings for the technicians to follow.",
-      "expected_outcome": "Agent creates a clear, detailed, and compliant repair document.",
-      "required_tools": [
-        "author_repair_specification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Author a formal repair specification document with detailed instructions and drawings for the technicians to follow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a clear, detailed, and compliant repair document."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

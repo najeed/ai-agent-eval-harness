@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13582",
-  "title": "Update Asset Record After Repair",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Asset Record After Repair",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance crew has just repaired a broken water pump. An operator must update the asset's records.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Smart Asset Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a completed work order for the repair of 'Water Pump #4'.",
-      "expected_outcome": "Agent acknowledges the completed work.",
-      "required_tools": [
-        "get_work_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a completed work order for the repair of 'Water Pump #4'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the completed work."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Locate 'Water Pump #4' in the asset management database.",
-      "expected_outcome": "Agent finds the correct asset record.",
-      "required_tools": [
-        "get_asset_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Locate 'Water Pump #4' in the asset management database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct asset record."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add a new entry to the asset's maintenance history, detailing the repair work done and the date.",
-      "expected_outcome": "Agent successfully updates the maintenance log for the asset.",
-      "required_tools": [
-        "update_asset_maintenance_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add a new entry to the asset's maintenance history, detailing the repair work done and the date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the maintenance log for the asset."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

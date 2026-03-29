@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10004",
-  "title": "Schedule an Engine Overhaul",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule an Engine Overhaul",
+    "compliance_level": "Standard"
+  },
   "description": "An MRO planner needs to schedule an engine for a complete overhaul based on its accumulated flight hours.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Maintenance Planning",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the engine's maintenance history and current flight hours to confirm it is due for an overhaul.",
-      "expected_outcome": "Agent confirms the engine has exceeded the threshold for a scheduled overhaul.",
-      "required_tools": [
-        "get_engine_maintenance_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the engine's maintenance history and current flight hours to confirm it is due for an overhaul.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the engine has exceeded the threshold for a scheduled overhaul."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the MRO facility's capacity and schedule the engine for an available slot.",
-      "expected_outcome": "Agent books a slot for the engine overhaul in the MRO schedule.",
-      "required_tools": [
-        "check_mro_capacity",
-        "schedule_mro_job"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the MRO facility's capacity and schedule the engine for an available slot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent books a slot for the engine overhaul in the MRO schedule."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a work package for the overhaul, including all required service bulletins and airworthiness directives.",
-      "expected_outcome": "Agent generates a complete and compliant work package for the technicians.",
-      "required_tools": [
-        "generate_mro_work_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a work package for the overhaul, including all required service bulletins and airworthiness directives.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a complete and compliant work package for the technicians."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

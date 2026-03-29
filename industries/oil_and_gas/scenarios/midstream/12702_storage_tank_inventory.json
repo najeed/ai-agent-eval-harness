@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-mid-12702",
-  "title": "Daily Crude Oil Storage Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Daily Crude Oil Storage Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A terminal operator must reconcile the measured inventory in a crude oil storage tank with the book inventory from the scheduling system.",
-  "use_case": "Midstream",
-  "core_function": "Terminal & Storage Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the latest level and temperature readings for crude oil tank TK-204.",
-      "expected_outcome": "Accurate, real-time readings are retrieved from the tank gauging system.",
-      "required_tools": [
-        "get_tank_gauge_reading"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the latest level and temperature readings for crude oil tank TK-204.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Accurate, real-time readings are retrieved from the tank gauging system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the temperature-corrected volume of oil in the tank.",
-      "expected_outcome": "The net standard volume is calculated correctly.",
-      "required_tools": [
-        "calculate_corrected_volume"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the temperature-corrected volume of oil in the tank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The net standard volume is calculated correctly."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the calculated volume with the book inventory. If a discrepancy exists, flag for investigation.",
-      "expected_outcome": "The physical and book inventories are compared, and a small discrepancy is flagged.",
-      "required_tools": [
-        "get_book_inventory",
-        "log_inventory_discrepancy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the calculated volume with the book inventory. If a discrepancy exists, flag for investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The physical and book inventories are compared, and a small discrepancy is flagged."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

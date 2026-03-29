@@ -1,50 +1,59 @@
 {
-  "scenario_id": "legal-ct-12183",
-  "title": "Create a Contract Abstraction",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Contract Abstraction",
+    "compliance_level": "Standard"
+  },
   "description": "For a large portfolio of real estate leases, a paralegal needs to create 'abstractions' or summaries of each lease, extracting key data into a spreadsheet.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Contract Lifecycle Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "For each lease, identify and extract key data points like Landlord, Tenant, Rent, Commencement Date, Expiration Date, and Renewal Options.",
-      "expected_outcome": "Agent extracts all the defined data points from the lease.",
-      "required_tools": [
-        "document_parsing_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "For each lease, identify and extract key data points like Landlord, Tenant, Rent, Commencement Date, Expiration Date, and Renewal Options.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent extracts all the defined data points from the lease."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate a new row in a master spreadsheet with the extracted data for each lease.",
-      "expected_outcome": "Agent successfully adds the data to the summary spreadsheet.",
-      "required_tools": [
-        "spreadsheet_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate a new row in a master spreadsheet with the extracted data for each lease.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the data to the summary spreadsheet."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Repeat the process for all leases in the portfolio.",
-      "expected_outcome": "A complete contract abstraction spreadsheet is created for the entire portfolio.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Repeat the process for all leases in the portfolio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete contract abstraction spreadsheet is created for the entire portfolio."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

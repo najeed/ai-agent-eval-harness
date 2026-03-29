@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-tm-13689",
-  "title": "Handle a Player Being Waived",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Player Being Waived",
+    "compliance_level": "Standard"
+  },
   "description": "A team decides to release a player from their contract. The GM must place the player on waivers.",
-  "use_case": "Team & Player Management",
-  "core_function": "Contract & Roster Management",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Inform the player and their agent of the team's decision.",
-      "expected_outcome": "The player and agent are officially notified.",
-      "required_tools": [
-        "notify_player_agent"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Inform the player and their agent of the team's decision.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The player and agent are officially notified."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Submit the official waiver request to the league office.",
-      "expected_outcome": "Agent successfully places the player on the league's waiver wire.",
-      "required_tools": [
-        "submit_waiver_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Submit the official waiver request to the league office.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully places the player on the league's waiver wire."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the waiver wire to see if the player is claimed by another team.",
-      "expected_outcome": "Agent tracks the waiver process.",
-      "required_tools": [
-        "monitor_waiver_wire"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the waiver wire to see if the player is claimed by another team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent tracks the waiver process."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

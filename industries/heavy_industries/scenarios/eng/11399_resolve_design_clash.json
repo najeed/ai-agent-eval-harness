@@ -1,55 +1,59 @@
 {
-  "scenario_id": "heavy-industries-eng-11399",
-  "title": "Resolve Design Clash in 3D Model",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Design Clash in 3D Model",
+    "compliance_level": "Standard"
+  },
   "description": "An automated clash detection report from the 3D model shows a newly designed pipe rack interfering with an existing structural beam.",
-  "use_case": "Engineering & Design",
-  "core_function": "Design & Simulation",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the clash detection report and locate the specific clash between the pipe rack and the beam.",
-      "expected_outcome": "Agent correctly identifies the two interfering components in the 3D model viewer.",
-      "required_tools": [
-        "get_clash_detection_report",
-        "view_3d_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the clash detection report and locate the specific clash between the pipe rack and the beam.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the two interfering components in the 3D model viewer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Consult the design specifications for both the piping and structural elements to check for constraints.",
-      "expected_outcome": "Agent determines the structural beam cannot be moved, but the pipe rack has some routing flexibility.",
-      "required_tools": [
-        "get_design_specification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Consult the design specifications for both the piping and structural elements to check for constraints.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the structural beam cannot be moved, but the pipe rack has some routing flexibility."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Modify the pipe rack's path in the CAD model to avoid the beam and submit the change for review.",
-      "expected_outcome": "Agent successfully reroutes the pipe rack, resolves the clash, and submits the updated drawing for approval.",
-      "required_tools": [
-        "update_cad_model",
-        "submit_drawing_for_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Modify the pipe rack's path in the CAD model to avoid the beam and submit the change for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reroutes the pipe rack, resolves the clash, and submits the updated drawing for approval."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

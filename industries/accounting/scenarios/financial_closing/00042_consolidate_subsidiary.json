@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-fc-42",
-  "title": "Consolidate a Subsidiary's Financials",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Consolidate a Subsidiary's Financials",
+    "compliance_level": "Standard"
+  },
   "description": "A parent company needs to consolidate the financial results of a wholly-owned subsidiary into its own financial statements.",
-  "use_case": "Financial Closing & Reporting",
-  "core_function": "Period-End Close Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the final trial balances for both the parent company and the subsidiary.",
-      "expected_outcome": "Agent gets both trial balances.",
-      "required_tools": [
-        "get_trial_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the final trial balances for both the parent company and the subsidiary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets both trial balances."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify and prepare the necessary elimination entries for intercompany transactions (e.g., loans, sales).",
-      "expected_outcome": "Agent prepares all required elimination entries.",
-      "required_tools": [
-        "identify_intercompany_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify and prepare the necessary elimination entries for intercompany transactions (e.g., loans, sales).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares all required elimination entries."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Combine the trial balances and post the elimination entries to produce a consolidated trial balance.",
-      "expected_outcome": "Agent successfully generates the consolidated trial balance.",
-      "required_tools": [
-        "run_consolidation_process"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Combine the trial balances and post the elimination entries to produce a consolidated trial balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the consolidated trial balance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

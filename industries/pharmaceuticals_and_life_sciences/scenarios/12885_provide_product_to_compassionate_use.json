@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12885",
-  "title": "Provide Product via Compassionate Use",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Product via Compassionate Use",
+    "compliance_level": "Standard"
+  },
   "description": "A physician requests access to an investigational drug for a seriously ill patient who is not eligible for a clinical trial (compassionate use).",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Patient Support Programs",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive and log the compassionate use request from the physician.",
-      "expected_outcome": "Agent logs the request in the appropriate system.",
-      "required_tools": [
-        "log_compassionate_use_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive and log the compassionate use request from the physician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the request in the appropriate system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Route the request to an internal review committee to assess the medical rationale and ethical considerations.",
-      "expected_outcome": "Agent routes the request for review.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Route the request to an internal review committee to assess the medical rationale and ethical considerations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent routes the request for review."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If approved, submit the request to the appropriate regulatory authority (e.g., as a single-patient IND to the FDA).",
-      "expected_outcome": "Agent prepares and submits the required regulatory paperwork.",
-      "required_tools": [
-        "submit_to_regulatory_gateway"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If approved, submit the request to the appropriate regulatory authority (e.g., as a single-patient IND to the FDA).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares and submits the required regulatory paperwork."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Once approved by regulators, coordinate the shipment of the drug to the physician.",
-      "expected_outcome": "Agent creates a shipment order for the investigational drug.",
-      "required_tools": [
-        "create_shipment_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Once approved by regulators, coordinate the shipment of the drug to the physician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a shipment order for the investigational drug."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "airline-las-10276",
-  "title": "Handle Family Seating",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Family Seating",
+    "compliance_level": "Standard"
+  },
   "description": "A family with young children is booking a flight and wants to ensure they can sit together.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Ancillary Revenue & Sales",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "During booking, identify that the passengers are a family traveling with children.",
-      "expected_outcome": "Agent recognizes the family booking.",
-      "required_tools": [
-        "get_passenger_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "During booking, identify that the passengers are a family traveling with children.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recognizes the family booking."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the seat map for a block of adjacent seats large enough for the family.",
-      "expected_outcome": "Agent finds a row of available seats.",
-      "required_tools": [
-        "get_seat_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the seat map for a block of adjacent seats large enough for the family.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a row of available seats."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the family to the adjacent seats, ensuring each child is seated next to an adult, in compliance with airline policy.",
-      "expected_outcome": "Agent successfully assigns the family to seats together.",
-      "required_tools": [
-        "assign_group_seats"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the family to the adjacent seats, ensuring each child is seated next to an adult, in compliance with airline policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully assigns the family to seats together."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

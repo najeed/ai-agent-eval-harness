@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-mid-12713",
-  "title": "Manage Pipeline Pigging Operation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Pipeline Pigging Operation",
+    "compliance_level": "Standard"
+  },
   "description": "An operator schedules and monitors the run of a 'smart pig' (an inline inspection tool) through a pipeline to check for corrosion.",
-  "use_case": "Midstream",
-  "core_function": "Pipeline Operations & Control",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Schedule the pig run in the operations system, notifying all affected parties.",
-      "expected_outcome": "The pigging operation is officially scheduled.",
-      "required_tools": [
-        "schedule_pigging_run"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Schedule the pig run in the operations system, notifying all affected parties.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The pigging operation is officially scheduled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Monitor the pig's progress through the pipeline by tracking its location via pig signallers.",
-      "expected_outcome": "The operator tracks the pig in real-time as it passes key points.",
-      "required_tools": [
-        "get_pig_location_updates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Monitor the pig's progress through the pipeline by tracking its location via pig signallers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator tracks the pig in real-time as it passes key points."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the pig has been successfully received at the downstream trap and log the completion of the run.",
-      "expected_outcome": "The run is logged as complete, and the inspection data is ready for download.",
-      "required_tools": [
-        "confirm_pig_receipt",
-        "log_operation_complete"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the pig has been successfully received at the downstream trap and log the completion of the run.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The run is logged as complete, and the inspection data is ready for download."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

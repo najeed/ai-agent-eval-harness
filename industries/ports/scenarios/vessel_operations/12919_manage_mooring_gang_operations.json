@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ports-vo-12919",
-  "title": "Manage Mooring Gang Operations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Mooring Gang Operations",
+    "compliance_level": "Standard"
+  },
   "description": "A vessel is arriving. The mooring gang supervisor must direct the linesmen to safely secure the vessel.",
-  "use_case": "Vessel Operations",
-  "core_function": "Mooring & Unmooring Operations",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the vessel's mooring plan, showing the number and arrangement of mooring lines.",
-      "expected_outcome": "Supervisor reviews the plan which specifies 8 mooring lines.",
-      "required_tools": [
-        "get_vessel_mooring_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the vessel's mooring plan, showing the number and arrangement of mooring lines.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Supervisor reviews the plan which specifies 8 mooring lines."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Position the linesmen at the correct bollards on the quay as the vessel approaches.",
-      "expected_outcome": "The crew is correctly positioned to catch the heaving lines from the ship.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Position the linesmen at the correct bollards on the quay as the vessel approaches.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew is correctly positioned to catch the heaving lines from the ship."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Direct the team to secure the mooring lines in the correct sequence and confirm to the pilot when the vessel is 'all fast'.",
-      "expected_outcome": "All lines are secured, and the supervisor radios 'all fast' to the vessel's pilot.",
-      "required_tools": [
-        "report_vessel_all_fast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Direct the team to secure the mooring lines in the correct sequence and confirm to the pilot when the vessel is 'all fast'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All lines are secured, and the supervisor radios 'all fast' to the vessel's pilot."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

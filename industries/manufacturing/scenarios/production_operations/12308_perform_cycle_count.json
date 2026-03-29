@@ -1,50 +1,59 @@
 {
-  "scenario_id": "mfg-po-12308",
-  "title": "Perform a Cycle Count",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Cycle Count",
+    "compliance_level": "Standard"
+  },
   "description": "A warehouse operator is tasked with performing a cycle count for a specific inventory item at a production line.",
-  "use_case": "Production & Operations",
-  "core_function": "Material & Inventory Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the system's expected on-hand quantity for the specified item at that location.",
-      "expected_outcome": "Agent pulls the current inventory level from the ERP system.",
-      "required_tools": [
-        "get_inventory_on_hand"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the system's expected on-hand quantity for the specified item at that location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls the current inventory level from the ERP system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a physical count of the item at the location.",
-      "expected_outcome": "Operator physically counts the items.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a physical count of the item at the location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator physically counts the items."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the physical count into the system and flag any discrepancy for review.",
-      "expected_outcome": "Agent enters the counted quantity and the system flags a variance for a manager to investigate.",
-      "required_tools": [
-        "enter_cycle_count"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the physical count into the system and flag any discrepancy for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent enters the counted quantity and the system flags a variance for a manager to investigate."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

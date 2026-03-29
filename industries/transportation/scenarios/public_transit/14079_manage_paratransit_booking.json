@@ -1,63 +1,72 @@
 {
-  "scenario_id": "tr-pt-14079",
-  "title": "Manage a Paratransit Booking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Paratransit Booking",
+    "compliance_level": "Standard"
+  },
   "description": "An eligible passenger with a disability calls to book a door-to-door paratransit ride for a medical appointment.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Service Planning & Scheduling",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the passenger's eligibility for paratransit service.",
-      "expected_outcome": "Agent confirms the passenger is a registered paratransit client.",
-      "required_tools": [
-        "get_paratransit_client_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the passenger's eligibility for paratransit service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the passenger is a registered paratransit client."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the trip details: date, time, origin, and destination.",
-      "expected_outcome": "Agent accurately records all trip information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the trip details: date, time, origin, and destination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records all trip information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the trip in the paratransit scheduling system.",
-      "expected_outcome": "The trip is successfully booked.",
-      "required_tools": [
-        "book_paratransit_trip"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the trip in the paratransit scheduling system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The trip is successfully booked."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Provide the passenger with a pickup time window and a confirmation number for their trip.",
-      "expected_outcome": "The passenger has all the necessary information for their booking.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Provide the passenger with a pickup time window and a confirmation number for their trip.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The passenger has all the necessary information for their booking."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

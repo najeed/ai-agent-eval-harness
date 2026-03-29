@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14147",
-  "title": "Automated Capacitor Bank Switching",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Automated Capacitor Bank Switching",
+    "compliance_level": "Standard"
+  },
   "description": "The DMS automatically switches capacitor banks on a feeder to manage reactive power and improve voltage.",
-  "use_case": "Grid Operations",
-  "core_function": "Distribution Automation",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor real-time power factor on the feeder.",
-      "expected_outcome": "System gathers live power factor readings.",
-      "required_tools": [
-        "get_real_time_power_factor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor real-time power factor on the feeder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System gathers live power factor readings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system detects a low power factor, indicating a need for reactive power support.",
-      "expected_outcome": "System identifies the need to switch on a capacitor bank.",
-      "required_tools": [
-        "analyze_power_factor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system detects a low power factor, indicating a need for reactive power support.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System identifies the need to switch on a capacitor bank."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a command to close the switch for the optimal capacitor bank to bring the power factor closer to unity.",
-      "expected_outcome": "System successfully operates the capacitor bank switch.",
-      "required_tools": [
-        "execute_capacitor_bank_command"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a command to close the switch for the optimal capacitor bank to bring the power factor closer to unity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully operates the capacitor bank switch."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

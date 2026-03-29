@@ -1,67 +1,72 @@
 {
-  "scenario_id": "energy-cs-11131",
-  "title": "Generate Monthly Home Energy Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Monthly Home Energy Report",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to automatically generate a personalized monthly energy report for a residential customer with rooftop solar.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Billing & Program Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's electricity consumption, solar generation, and grid import/export data for the past month.",
-      "expected_outcome": "Agent gathers all necessary interval data.",
-      "required_tools": [
-        "get_customer_energy_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's electricity consumption, solar generation, and grid import/export data for the past month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all necessary interval data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare their consumption to the previous month and the same month last year.",
-      "expected_outcome": "Agent calculates the percentage change in energy use.",
-      "required_tools": [
-        "compare_energy_usage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare their consumption to the previous month and the same month last year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the percentage change in energy use."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a personalized tip for energy savings based on their usage patterns (e.g., 'You used 20% more energy during peak hours. Consider shifting laundry to off-peak times.').",
-      "expected_outcome": "Agent generates a relevant, data-driven savings tip.",
-      "required_tools": [
-        "generate_savings_tip"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a personalized tip for energy savings based on their usage patterns (e.g., 'You used 20% more energy during peak hours. Consider shifting laundry to off-peak times.').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a relevant, data-driven savings tip."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Compile the information into a visually appealing report and email it to the customer.",
-      "expected_outcome": "Agent successfully generates and sends the report.",
-      "required_tools": [
-        "generate_home_energy_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Compile the information into a visually appealing report and email it to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates and sends the report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-it-10363",
-  "title": "Audit API Security",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit API Security",
+    "compliance_level": "Standard"
+  },
   "description": "An IT auditor reviews the security controls for the company's public-facing APIs.",
-  "use_case": "IT Audit",
-  "core_function": "Application Controls Testing",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the API documentation to ensure it does not expose sensitive information.",
-      "expected_outcome": "The documentation review is completed.",
-      "required_tools": [
-        "review_technical_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the API documentation to ensure it does not expose sensitive information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The documentation review is completed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that all APIs require authentication, such as an API key or OAuth token.",
-      "expected_outcome": "Auditor confirms authentication is enforced on all API endpoints.",
-      "required_tools": [
-        "perform_api_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "control_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that all APIs require authentication, such as an API key or OAuth token.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor confirms authentication is enforced on all API endpoints."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that rate limiting is implemented to prevent denial-of-service attacks.",
-      "expected_outcome": "Auditor sends a high volume of test requests and confirms they are throttled correctly.",
-      "required_tools": [
-        "perform_api_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "control_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that rate limiting is implemented to prevent denial-of-service attacks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor sends a high volume of test requests and confirms they are throttled correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,55 +1,59 @@
 {
-  "scenario_id": "media-cp-12593",
-  "title": "Book Travel for Film Festival",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book Travel for Film Festival",
+    "compliance_level": "Standard"
+  },
   "description": "A film has been accepted into an international film festival. An agent needs to book flights and hotels for the director and two lead actors.",
-  "use_case": "Content Production & Management",
-  "core_function": "Asset Management & Logistics",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the travel dates and the list of attendees.",
-      "expected_outcome": "Agent has the required travel details.",
-      "required_tools": [
-        "get_event_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the travel dates and the list of attendees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the required travel details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for flights and hotels that meet the company's travel policy and budget.",
-      "expected_outcome": "Agent finds suitable flight and hotel options.",
-      "required_tools": [
-        "search_flights",
-        "search_hotels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for flights and hotels that meet the company's travel policy and budget.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds suitable flight and hotel options."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the selected flights and hotels and send the itineraries to the attendees.",
-      "expected_outcome": "Agent successfully completes all bookings and sends confirmations.",
-      "required_tools": [
-        "book_flight",
-        "book_hotel",
-        "send_itinerary"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the selected flights and hotels and send the itineraries to the attendees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes all bookings and sends confirmations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

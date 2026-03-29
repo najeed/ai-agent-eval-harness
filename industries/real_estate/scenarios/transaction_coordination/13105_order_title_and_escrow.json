@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-tc-13105",
-  "title": "Order Title and Escrow Services",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Order Title and Escrow Services",
+    "compliance_level": "Standard"
+  },
   "description": "For a new transaction, the TC needs to open escrow and order a preliminary title report.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Transaction Coordination",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the purchase agreement and contact information for the chosen title/escrow company.",
-      "expected_outcome": "Agent has the contract and the contact details for the specified escrow officer.",
-      "required_tools": [
-        "get_transaction_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the purchase agreement and contact information for the chosen title/escrow company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the contract and the contact details for the specified escrow officer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Email the purchase agreement to the escrow officer with a request to open escrow.",
-      "expected_outcome": "A correctly formatted email with the contract attached is sent to the escrow officer.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Email the purchase agreement to the escrow officer with a request to open escrow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A correctly formatted email with the contract attached is sent to the escrow officer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the escrow number and preliminary title report delivery date in the transaction management system.",
-      "expected_outcome": "The TC updates the transaction file with the escrow # and sets a task reminder for the title report.",
-      "required_tools": [
-        "update_transaction_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the escrow number and preliminary title report delivery date in the transaction management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The TC updates the transaction file with the escrow # and sets a task reminder for the title report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

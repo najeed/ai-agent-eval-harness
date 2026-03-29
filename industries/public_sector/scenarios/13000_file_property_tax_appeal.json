@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-pa-13000",
-  "title": "File a Property Tax Assessment Appeal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File a Property Tax Assessment Appeal",
+    "compliance_level": "Standard"
+  },
   "description": "A homeowner believes their property tax assessment is too high and wants to file an appeal.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Taxation & Revenue",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the homeowner and their property parcel.",
-      "expected_outcome": "Agent locates the correct property record.",
-      "required_tools": [
-        "get_property_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the homeowner and their property parcel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct property record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the appeals process and provide the necessary forms.",
-      "expected_outcome": "Agent clearly explains the steps and provides a link to the appeal application form.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the appeals process and provide the necessary forms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the steps and provides a link to the appeal application form."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Accept the submitted appeal application and schedule a hearing with the assessment board.",
-      "expected_outcome": "Agent logs the appeal and schedules a hearing date.",
-      "required_tools": [
-        "submit_tax_appeal",
-        "schedule_hearing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Accept the submitted appeal application and schedule a hearing with the assessment board.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the appeal and schedules a hearing date."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

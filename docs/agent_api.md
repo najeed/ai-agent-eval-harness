@@ -124,6 +124,8 @@ When using `--protocol local`, the harness communicates via **Standard I/O**.
 2.  **Response**: Agent must write a single-line JSON response to `stdout`.
 3.  **Logs**: Anything the agent writes to `stderr` is captured and emitted as an engine log.
 
+This protocol is ideal for evaluating agents written in languages other than Python or for running agents in isolated containers.
+
 ### Example Agent (Python)
 ```python
 import sys, json
@@ -140,7 +142,7 @@ When using `--protocol socket`, the harness opens a persistent connection:
 -   **TCP**: `host:port`
 -   **Unix**: `/path/to/socket`
 
-Payloads are exchanged as JSON strings followed by a newline `\n`. The harness ensures persistent connection stability during multi-attempt evaluations.
+Payloads are exchanged as JSON strings followed by a newline `\n`. The harness ensures persistent connection stability during multi-attempt evaluations. This protocol is recommended for high-performance integrations or cross-service communication.
 
 ---
 
@@ -186,6 +188,16 @@ When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harne
   "conversation_history": [...]
 }
 ```
+
+### 🌐 URL Configurability (.env)
+All ecosystem URLs are sourced from environment variables to enable zero-touch scaling in Docker/CI environments. Prioritized fallbacks are defined in `eval_runner/config.py`:
+
+| Provider | .env Key | Default Fallback |
+|---|---|---|
+| Ollama | `OLLAMA_API_URL` | `http://localhost:11434/api/chat` |
+| AutoGen | `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` |
+| Claude | `CLAUDE_API_URL` | `https://api.anthropic.com/v1/messages` |
+| Gemini | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/models` |
 
 ## Scenario-Level Judge Configuration
 The `luna_judge_score` metric can be customized per-scenario or per-criterion using the `judge_config` object. This allows for granular control over the evaluation model and scoring rubrics.

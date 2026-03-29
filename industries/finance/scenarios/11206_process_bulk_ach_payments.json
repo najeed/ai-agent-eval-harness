@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-cf-11206",
-  "title": "Process Corporate ACH Payment File",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Corporate ACH Payment File",
+    "compliance_level": "Standard"
+  },
   "description": "A corporate client's treasury department needs to process a payroll file via ACH.",
-  "use_case": "Corporate Finance",
-  "core_function": "Treasury & Cash Management",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive and validate the format of the ACH payment file.",
-      "expected_outcome": "Agent confirms the file format is correct and all required fields are present.",
-      "required_tools": [
-        "validate_ach_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive and validate the format of the ACH payment file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the file format is correct and all required fields are present."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the corporate account for sufficient funds to cover the total payroll amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the account balance is sufficient."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the corporate account for sufficient funds to cover the total payroll amount.",
-      "expected_outcome": "Agent confirms the account balance is sufficient.",
-      "required_tools": [
-        "check_account_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the ACH batch for processing on the specified settlement date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules the payment batch and provides a confirmation ID."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the ACH batch for processing on the specified settlement date.",
-      "expected_outcome": "Agent successfully schedules the payment batch and provides a confirmation ID.",
-      "required_tools": [
-        "schedule_ach_batch"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

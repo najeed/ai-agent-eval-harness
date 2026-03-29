@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ct-12888",
-  "title": "Forecast Clinical Trial Supply Needs",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Forecast Clinical Trial Supply Needs",
+    "compliance_level": "Standard"
+  },
   "description": "A supply chain manager needs to forecast the total amount of investigational product needed for the entire duration of a global clinical trial.",
-  "use_case": "Clinical Trials",
-  "core_function": "Trial Design & Feasibility",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Input the key trial parameters into a forecasting tool (e.g., number of patients, number of sites, treatment duration, dosage).",
-      "expected_outcome": "Agent accurately enters all parameters from the protocol.",
-      "required_tools": [
-        "input_forecasting_parameters"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Input the key trial parameters into a forecasting tool (e.g., number of patients, number of sites, treatment duration, dosage).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately enters all parameters from the protocol."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a simulation to model the supply needs over the life of the study, accounting for variables like patient recruitment rates.",
-      "expected_outcome": "Agent runs the simulation.",
-      "required_tools": [
-        "run_supply_chain_simulation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a simulation to model the supply needs over the life of the study, accounting for variables like patient recruitment rates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the simulation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the output to determine the total number of kits to manufacture.",
-      "expected_outcome": "Agent analyzes the report and determines the total required quantity, including overage.",
-      "required_tools": [
-        "analyze_forecasting_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the output to determine the total number of kits to manufacture.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent analyzes the report and determines the total required quantity, including overage."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a report to inform the manufacturing and packaging plan.",
-      "expected_outcome": "Agent creates a formal report that will be used to schedule the manufacturing of the clinical trial material.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a report to inform the manufacturing and packaging plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a formal report that will be used to schedule the manufacturing of the clinical trial material."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

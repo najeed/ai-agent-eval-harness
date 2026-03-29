@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-bm-13612",
-  "title": "Activate Stadium Sponsorship Deal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Activate Stadium Sponsorship Deal",
+    "compliance_level": "Standard"
+  },
   "description": "A new sponsor has signed a deal that includes digital signage inside the stadium. An agent must ensure their ads are displayed during games.",
-  "use_case": "Broadcasting & Media",
-  "core_function": "Sponsorship & Advertising",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the sponsorship agreement to confirm the ad placement details.",
-      "expected_outcome": "Agent confirms the sponsor gets 5 minutes of screen time on the main video board per game.",
-      "required_tools": [
-        "get_sponsorship_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the sponsorship agreement to confirm the ad placement details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the sponsor gets 5 minutes of screen time on the main video board per game."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Upload the sponsor's ad creatives to the stadium's digital signage system.",
-      "expected_outcome": "Agent successfully uploads the video ads.",
-      "required_tools": [
-        "upload_to_signage_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Upload the sponsor's ad creatives to the stadium's digital signage system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the video ads."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the ads to run at specified times during the next game.",
-      "expected_outcome": "Agent programs the signage system to display the ads during game breaks.",
-      "required_tools": [
-        "schedule_digital_signage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the ads to run at specified times during the next game.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent programs the signage system to display the ads during game breaks."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

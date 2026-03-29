@@ -1,52 +1,59 @@
 {
-  "scenario_id": "auto-cs-10410",
-  "title": "Activate In-Car Wi-Fi Hotspot Trial",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Activate In-Car Wi-Fi Hotspot Trial",
+    "compliance_level": "Standard"
+  },
   "description": "A new car owner wants to activate the free trial for their in-car Wi-Fi hotspot.",
-  "use_case": "Connected Services & In-Car Experience",
-  "core_function": "Subscription Management",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and vehicle, and verify eligibility for the Wi-Fi trial.",
-      "expected_outcome": "Agent confirms the vehicle is eligible for a 3-month/3GB free trial.",
-      "required_tools": [
-        "get_customer_details",
-        "get_connected_service_eligibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and vehicle, and verify eligibility for the Wi-Fi trial.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the vehicle is eligible for a 3-month/3GB free trial."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the terms of the trial (duration, data cap) and what happens when it expires.",
-      "expected_outcome": "Agent clearly communicates the trial terms and conditions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the terms of the trial (duration, data cap) and what happens when it expires.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the trial terms and conditions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Activate the Wi-Fi hotspot service on the customer's account.",
-      "expected_outcome": "Agent successfully activates the service, and it becomes available in the vehicle.",
-      "required_tools": [
-        "activate_connected_service"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Activate the Wi-Fi hotspot service on the customer's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully activates the service, and it becomes available in the vehicle."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

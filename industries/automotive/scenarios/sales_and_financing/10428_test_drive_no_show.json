@@ -1,53 +1,59 @@
 {
-  "scenario_id": "auto-sf-10428",
-  "title": "Follow Up on Test Drive No-Show",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Follow Up on Test Drive No-Show",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who scheduled a test drive did not show up. A salesperson needs to follow up.",
-  "use_case": "Vehicle Sales & Financing",
-  "core_function": "Sales Consultation & Configuration",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer who missed their test drive appointment.",
-      "expected_outcome": "Agent identifies the customer and the vehicle they were scheduled to drive.",
-      "required_tools": [
-        "get_dealership_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer who missed their test drive appointment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the customer and the vehicle they were scheduled to drive."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the customer to see if they are still interested and would like to reschedule.",
-      "expected_outcome": "Agent makes a polite follow-up call.",
-      "required_tools": [
-        "contact_customer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the customer to see if they are still interested and would like to reschedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a polite follow-up call."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the customer is interested, find a new time and reschedule the test drive.",
-      "expected_outcome": "Agent successfully reschedules the appointment for a new time.",
-      "required_tools": [
-        "schedule_test_drive"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the customer is interested, find a new time and reschedule the test drive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reschedules the appointment for a new time."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

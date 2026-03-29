@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-proc-12651",
-  "title": "Perform Metallurgical Bottle Roll Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Metallurgical Bottle Roll Test",
+    "compliance_level": "Standard"
+  },
   "description": "A lab technician performs a bottle roll test on a new ore sample to determine its leach characteristics and potential gold recovery.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Mineral Separation",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare the ore sample by crushing and grinding it to the target particle size.",
-      "expected_outcome": "The sample is correctly prepared for the test.",
-      "required_tools": [
-        "prepare_met_sample"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare the ore sample by crushing and grinding it to the target particle size.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sample is correctly prepared for the test."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Place the sample in a bottle with a cyanide solution and place it on rollers for a set amount of time (e.g., 24 hours).",
-      "expected_outcome": "The leach test is set up and run according to standard procedure.",
-      "required_tools": [
-        "run_bottle_roll_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Place the sample in a bottle with a cyanide solution and place it on rollers for a set amount of time (e.g., 24 hours).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The leach test is set up and run according to standard procedure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After the test, assay the remaining solids and the solution to calculate the final gold extraction.",
-      "expected_outcome": "The test results are calculated, showing a 92% gold extraction for this ore type.",
-      "required_tools": [
-        "assay_sample",
-        "calculate_extraction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "After the test, assay the remaining solids and the solution to calculate the final gold extraction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The test results are calculated, showing a 92% gold extraction for this ore type."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

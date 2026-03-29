@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13147",
-  "title": "Investigate Unauthorized Pet",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Unauthorized Pet",
+    "compliance_level": "Standard"
+  },
   "description": "During a routine inspection, a property manager notices evidence of an unauthorized pet (e.g., a dog bowl).",
-  "use_case": "Property Management",
-  "core_function": "Compliance & Legal",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the tenant's lease to confirm the pet policy and if any pets are authorized.",
-      "expected_outcome": "Agent confirms the lease has a strict 'no pets' clause.",
-      "required_tools": [
-        "get_lease_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the tenant's lease to confirm the pet policy and if any pets are authorized.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the lease has a strict 'no pets' clause."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Issue a 'Cure or Quit' notice to the tenant regarding the unauthorized pet.",
-      "expected_outcome": "A formal notice is generated, giving the tenant a specific timeframe to remove the pet or vacate the property.",
-      "required_tools": [
-        "send_legal_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Issue a 'Cure or Quit' notice to the tenant regarding the unauthorized pet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal notice is generated, giving the tenant a specific timeframe to remove the pet or vacate the property."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule a follow-up inspection for after the notice period expires.",
-      "expected_outcome": "A new inspection is scheduled in the system to verify compliance.",
-      "required_tools": [
-        "schedule_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule a follow-up inspection for after the notice period expires.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new inspection is scheduled in the system to verify compliance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

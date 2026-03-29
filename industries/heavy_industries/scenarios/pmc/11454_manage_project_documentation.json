@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-pmc-11454",
-  "title": "Manage Final Project Documentation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Final Project Documentation",
+    "compliance_level": "Standard"
+  },
   "description": "As a project nears completion, a document controller must assemble the final handover package of all drawings, manuals, and certificates for the client.",
-  "use_case": "Project Management & Controls",
-  "core_function": "Project Reporting & Communication",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all required handover documents from the project plan.",
-      "expected_outcome": "The system generates a checklist of all required documents.",
-      "required_tools": [
-        "get_handover_document_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all required handover documents from the project plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a checklist of all required documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each item on the checklist, retrieve the final approved version from the document management system.",
-      "expected_outcome": "The agent gathers all the final documents.",
-      "required_tools": [
-        "get_approved_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each item on the checklist, retrieve the final approved version from the document management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent gathers all the final documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile all the documents into a single, structured handover package and transmit it to the client.",
-      "expected_outcome": "Agent creates the final documentation package and formally transmits it.",
-      "required_tools": [
-        "compile_document_package",
-        "transmit_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile all the documents into a single, structured handover package and transmit it to the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the final documentation package and formally transmits it."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

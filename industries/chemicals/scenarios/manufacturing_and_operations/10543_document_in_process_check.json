@@ -1,50 +1,59 @@
 {
-  "scenario_id": "chemicals-mfg-10543",
-  "title": "Document In-Process Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document In-Process Check",
+    "compliance_level": "Standard"
+  },
   "description": "A plant operator needs to perform a required in-process check (e.g., pH measurement) and record the result in the electronic batch record.",
-  "use_case": "Manufacturing & Operations",
-  "core_function": "Plant Operations",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the current step in the batch record, which requires a pH check.",
-      "expected_outcome": "Agent finds the 'Check pH' step in the active batch instructions.",
-      "required_tools": [
-        "get_batch_instructions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the current step in the batch record, which requires a pH check.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the 'Check pH' step in the active batch instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take a sample from the reactor and measure its pH.",
-      "expected_outcome": "Operator performs the physical measurement.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take a sample from the reactor and measure its pH.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator performs the physical measurement."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the result (e.g., '7.2') into the batch record. The system confirms the result is within the required range and allows the operator to proceed.",
-      "expected_outcome": "Agent enters the result, the system validates it, and the next step in the batch becomes active.",
-      "required_tools": [
-        "enter_in_process_check_result"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the result (e.g., '7.2') into the batch record. The system confirms the result is within the required range and allows the operator to proceed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent enters the result, the system validates it, and the next step in the batch becomes active."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-maint-12619",
-  "title": "Manage Critical Spare Parts",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Critical Spare Parts",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance planner reviews the inventory of a critical spare part (e.g., a large motor for a mill) and ensures a spare is on hand.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Asset Strategy & Planning",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the inventory level for the SAG mill motor in the warehouse management system.",
-      "expected_outcome": "The system shows one spare motor is in stock.",
-      "required_tools": [
-        "check_spare_part_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the inventory level for the SAG mill motor in the warehouse management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows one spare motor is in stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the maintenance strategy, which specifies that one spare must always be held in inventory.",
-      "expected_outcome": "The current inventory level is confirmed to be compliant with the strategy.",
-      "required_tools": [
-        "get_maintenance_strategy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the maintenance strategy, which specifies that one spare must always be held in inventory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The current inventory level is confirmed to be compliant with the strategy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If a spare was used, create a high-priority purchase order to procure a new one with a long lead time.",
-      "expected_outcome": "No action needed as a spare is on hand, but the process to reorder is confirmed.",
-      "required_tools": [
-        "create_purchase_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If a spare was used, create a high-priority purchase order to procure a new one with a long lead time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "No action needed as a spare is on hand, but the process to reorder is confirmed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

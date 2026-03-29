@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-ia-10351",
-  "title": "Review Another Auditor's Workpapers",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Another Auditor's Workpapers",
+    "compliance_level": "Standard"
+  },
   "description": "An audit manager performs a quality review of a junior auditor's workpapers before the audit is finalized.",
-  "use_case": "Internal Audit",
-  "core_function": "Workpaper & Finding Documentation",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the workpaper to ensure the test procedures performed are sufficient to support the conclusion.",
-      "expected_outcome": "The manager assesses the adequacy of the audit work.",
-      "required_tools": [
-        "review_audit_workpaper"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the workpaper to ensure the test procedures performed are sufficient to support the conclusion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager assesses the adequacy of the audit work."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check that all test exceptions have been clearly documented and investigated.",
-      "expected_outcome": "The manager verifies the completeness of the documentation.",
-      "required_tools": [
-        "review_audit_workpaper"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check that all test exceptions have been clearly documented and investigated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager verifies the completeness of the documentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Leave review notes for the junior auditor, asking them to clarify a point or perform one additional test step.",
-      "expected_outcome": "The manager provides feedback for improvement, ensuring the final workpaper is of high quality.",
-      "required_tools": [
-        "add_review_notes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Leave review notes for the junior auditor, asking them to clarify a point or perform one additional test step.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager provides feedback for improvement, ensuring the final workpaper is of high quality."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

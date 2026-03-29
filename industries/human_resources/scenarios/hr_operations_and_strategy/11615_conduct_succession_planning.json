@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-os-11615",
-  "title": "Conduct Succession Planning for a Key Role",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Succession Planning for a Key Role",
+    "compliance_level": "Standard"
+  },
   "description": "An HR business partner is facilitating a succession planning meeting for a 'Director of Engineering' role.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Workforce Planning",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the key role and its required competencies from the company's job architecture.",
-      "expected_outcome": "HRBP retrieves the profile for the Director role.",
-      "required_tools": [
-        "get_job_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the key role and its required competencies from the company's job architecture.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP retrieves the profile for the Director role."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify high-potential internal employees who could be potential successors.",
-      "expected_outcome": "HRBP identifies 2-3 potential internal candidates based on performance data.",
-      "required_tools": [
-        "get_high_potential_employees"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify high-potential internal employees who could be potential successors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP identifies 2-3 potential internal candidates based on performance data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the readiness level and development gaps for each potential successor in the succession planning tool.",
-      "expected_outcome": "HRBP facilitates a discussion with leadership and documents the outcomes in the system.",
-      "required_tools": [
-        "update_succession_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the readiness level and development gaps for each potential successor in the succession planning tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP facilitates a discussion with leadership and documents the outcomes in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

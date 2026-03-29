@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-po-12311",
-  "title": "Monitor Overall Equipment Effectiveness (OEE)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor Overall Equipment Effectiveness (OEE)",
+    "compliance_level": "Standard"
+  },
   "description": "A plant manager wants to review the OEE score for the main assembly line for the previous day.",
-  "use_case": "Production & Operations",
-  "core_function": "Real-time Monitoring & Control",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the assembly line and the desired date range for the OEE report.",
-      "expected_outcome": "Agent selects 'Assembly Line 1' and yesterday's date.",
-      "required_tools": [
-        "get_oee_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the assembly line and the desired date range for the OEE report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects 'Assembly Line 1' and yesterday's date."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the OEE score and its components (Availability, Performance, Quality).",
-      "expected_outcome": "Agent retrieves the report showing an OEE of 75% (90% Availability, 95% Performance, 88% Quality).",
-      "required_tools": [
-        "get_oee_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the OEE score and its components (Availability, Performance, Quality).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the report showing an OEE of 75% (90% Availability, 95% Performance, 88% Quality)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Drill down into the largest loss factor, which is Quality, to see the main reasons for defects.",
-      "expected_outcome": "Agent identifies that 'surface scratches' were the primary quality defect recorded.",
-      "required_tools": [
-        "get_quality_loss_reasons"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Drill down into the largest loss factor, which is Quality, to see the main reasons for defects.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that 'surface scratches' were the primary quality defect recorded."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-pm-12178",
-  "title": "Write Off an Uncollectible Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write Off an Uncollectible Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "After numerous attempts to collect, a firm decides to write off an old, unpaid invoice. The billing manager needs to process this.",
-  "use_case": "Law Practice Management",
-  "core_function": "Billing & Timekeeping",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the specific unpaid invoice in the billing system.",
-      "expected_outcome": "Agent finds the correct invoice.",
-      "required_tools": [
-        "billing_software_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the specific unpaid invoice in the billing system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the responsible partner has approved the write-off.",
-      "expected_outcome": "Agent confirms approval is documented.",
-      "required_tools": [
-        "case_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the responsible partner has approved the write-off.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms approval is documented."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply a credit to the invoice for the full outstanding amount, using the reason code 'Bad Debt Write-Off'.",
-      "expected_outcome": "The invoice balance is zeroed out in the system.",
-      "required_tools": [
-        "billing_software_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply a credit to the invoice for the full outstanding amount, using the reason code 'Bad Debt Write-Off'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The invoice balance is zeroed out in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

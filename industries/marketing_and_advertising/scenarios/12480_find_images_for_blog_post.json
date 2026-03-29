@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12480",
-  "title": "Find Images for a Blog Post",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find Images for a Blog Post",
+    "compliance_level": "Standard"
+  },
   "description": "A content manager needs to find 2-3 licensed stock photos to include in a new blog post.",
-  "use_case": "Content & Creative Development",
-  "core_function": "Creative Asset Development",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the main theme and keywords of the blog post.",
-      "expected_outcome": "Agent understands the visual style needed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the main theme and keywords of the blog post.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the visual style needed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search a stock photography website for relevant images using the identified keywords.",
-      "expected_outcome": "Agent generates a list of potential images.",
-      "required_tools": [
-        "stock_photo_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search a stock photography website for relevant images using the identified keywords.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of potential images."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select and download 2-3 high-quality, on-brand images.",
-      "expected_outcome": "Agent acquires the necessary visual assets for the blog post.",
-      "required_tools": [
-        "stock_photo_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select and download 2-3 high-quality, on-brand images.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acquires the necessary visual assets for the blog post."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

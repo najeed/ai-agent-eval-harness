@@ -1,51 +1,59 @@
 {
-  "scenario_id": "utils-cs-14123",
-  "title": "Report Low Water Pressure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Low Water Pressure",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to report that their water pressure has been very low all day.",
-  "use_case": "Customer Service",
-  "core_function": "Service Orders",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's account and address.",
-      "expected_outcome": "Agent correctly identifies the customer.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's account and address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the network operations dashboard for any known issues, maintenance, or water main breaks in the customer's area.",
-      "expected_outcome": "Agent finds that a nearby water main break (from scenario utils-cs-011) is affecting pressure in the area.",
-      "required_tools": [
-        "query_water_network_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the network operations dashboard for any known issues, maintenance, or water main breaks in the customer's area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that a nearby water main break (from scenario utils-cs-011) is affecting pressure in the area."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer about the ongoing repair work and provide an estimated time for pressure to be restored.",
-      "expected_outcome": "Agent clearly communicates the cause of the issue and the ETR.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer about the ongoing repair work and provide an estimated time for pressure to be restored.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the cause of the issue and the ETR."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

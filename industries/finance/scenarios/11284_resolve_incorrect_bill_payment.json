@@ -1,85 +1,61 @@
 {
-  "scenario_id": "finance-rb-11284",
-  "title": "Resolve Incorrect Bill Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Incorrect Bill Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A customer used bill pay to send money to a utility company, but entered the wrong account number and the payment was not credited.",
-  "use_case": "Retail Banking",
-  "core_function": "Payments & Transfers",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and the specific bill payment in question.",
-      "expected_outcome": "Agent locates the payment and confirms the details with the customer.",
-      "required_tools": [
-        "get_payment_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and the specific bill payment in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the payment and confirms the details with the customer."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate a payment trace to determine the status of the funds.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent starts a trace and finds the payment was rejected by the utility company's bank."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate a payment trace to determine the status of the funds.",
-      "expected_outcome": "Agent starts a trace and finds the payment was rejected by the utility company's bank.",
-      "required_tools": [
-        "initiate_payment_trace"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once funds are returned, credit the customer's account and advise them to resubmit the payment with the correct account number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent returns the money to the customer's account and provides clear instructions for resubmission."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once funds are returned, credit the customer's account and advise them to resubmit the payment with the correct account number.",
-      "expected_outcome": "Agent returns the money to the customer's account and provides clear instructions for resubmission.",
-      "required_tools": [
-        "apply_manual_credit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

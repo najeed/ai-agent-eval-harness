@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12397",
-  "title": "Conduct Competitor Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Competitor Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A strategist needs to analyze the social media presence of three key competitors to inform an upcoming campaign strategy.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Market & Audience Research",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the social media profiles of the three specified competitors.",
-      "expected_outcome": "Agent correctly locates the official social media accounts for the competitors.",
-      "required_tools": [
-        "web_search"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the social media profiles of the three specified competitors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly locates the official social media accounts for the competitors."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze their posting frequency, content themes, and engagement rates over the last 30 days.",
-      "expected_outcome": "Agent extracts and summarizes key performance metrics for each competitor.",
-      "required_tools": [
-        "social_media_analytics_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze their posting frequency, content themes, and engagement rates over the last 30 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent extracts and summarizes key performance metrics for each competitor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a summary report highlighting competitor strengths, weaknesses, and opportunities for our brand.",
-      "expected_outcome": "Agent produces a concise report with actionable insights.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "insight_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a summary report highlighting competitor strengths, weaknesses, and opportunities for our brand.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a concise report with actionable insights."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

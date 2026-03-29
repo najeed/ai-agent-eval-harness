@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13225",
-  "title": "Post-Closing Client Follow-Up",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Post-Closing Client Follow-Up",
+    "compliance_level": "Standard"
+  },
   "description": "A transaction closed last week. The agent needs to follow up with the client and ask for a review.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Post-Sale",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify clients whose transactions closed between 7 and 14 days ago.",
-      "expected_outcome": "Agent correctly identifies the recent client.",
-      "required_tools": [
-        "get_recently_closed_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify clients whose transactions closed between 7 and 14 days ago.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the recent client."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a follow-up email to the client, checking in to see how they are settling in.",
-      "expected_outcome": "Agent sends a personalized, thoughtful email.",
-      "required_tools": [
-        "send_email_to_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a follow-up email to the client, checking in to see how they are settling in.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a personalized, thoughtful email."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "In the email, include a link for the client to leave a review on Zillow or Yelp.",
-      "expected_outcome": "Agent successfully requests a review.",
-      "required_tools": [
-        "generate_review_link"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "In the email, include a link for the client to leave a review on Zillow or Yelp.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully requests a review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

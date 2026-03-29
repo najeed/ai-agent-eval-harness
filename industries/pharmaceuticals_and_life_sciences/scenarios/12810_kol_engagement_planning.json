@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12810",
-  "title": "Plan Key Opinion Leader Engagement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Key Opinion Leader Engagement",
+    "compliance_level": "Standard"
+  },
   "description": "A Medical Science Liaison (MSL) needs to identify and plan an engagement with a Key Opinion Leader (KOL) for a new drug launch.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Key Opinion Leader (KOL) Engagement",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify top KOLs in the field of cardiology based on publications and conference presentations.",
-      "expected_outcome": "Agent queries a database and identifies Dr. Smith as a top-tier KOL.",
-      "required_tools": [
-        "search_kol_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify top KOLs in the field of cardiology based on publications and conference presentations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent queries a database and identifies Dr. Smith as a top-tier KOL."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review Dr. Smith's recent research and past interactions with the company.",
-      "expected_outcome": "Agent finds that Dr. Smith has published on a relevant mechanism of action and had a positive interaction with the company 2 years ago.",
-      "required_tools": [
-        "get_kol_interaction_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review Dr. Smith's recent research and past interactions with the company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that Dr. Smith has published on a relevant mechanism of action and had a positive interaction with the company 2 years ago."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Develop a scientific engagement plan with tailored discussion points for Dr. Smith.",
-      "expected_outcome": "Agent drafts a plan focusing on the new drug's novel mechanism of action.",
-      "required_tools": [
-        "create_engagement_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_relevance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Develop a scientific engagement plan with tailored discussion points for Dr. Smith.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a plan focusing on the new drug's novel mechanism of action."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Log the planned engagement in the CRM system.",
-      "expected_outcome": "Agent creates a new activity record in the CRM for the planned meeting.",
-      "required_tools": [
-        "log_activity_in_crm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Log the planned engagement in the CRM system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new activity record in the CRM for the planned meeting."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

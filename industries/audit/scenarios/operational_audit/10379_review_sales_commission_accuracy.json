@@ -1,54 +1,59 @@
 {
-  "scenario_id": "audit-op-10379",
-  "title": "Review Sales Commission Payment Accuracy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Sales Commission Payment Accuracy",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor reviews sales commission payments to ensure they were calculated correctly.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Process Efficiency Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the commission payment data for the last quarter.",
-      "expected_outcome": "The auditor has the payment data.",
-      "required_tools": [
-        "get_payment_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the commission payment data for the last quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor has the payment data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select a sample of 20 commission payments.",
-      "expected_outcome": "A sample is selected for testing.",
-      "required_tools": [
-        "select_sample"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select a sample of 20 commission payments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A sample is selected for testing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each payment, obtain the underlying sales data and manually recalculate the commission based on the official commission plan.",
-      "expected_outcome": "The auditor finds two payments that were miscalculated due to using the wrong commission rate, resulting in overpayments.",
-      "required_tools": [
-        "get_sales_data",
-        "get_commission_plan",
-        "recalculate_manually"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each payment, obtain the underlying sales data and manually recalculate the commission based on the official commission plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor finds two payments that were miscalculated due to using the wrong commission rate, resulting in overpayments."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

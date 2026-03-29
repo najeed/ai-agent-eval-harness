@@ -1,49 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10966",
-  "title": "Handle Report of Phishing Email",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Report of Phishing Email",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports receiving a suspicious email that looks like it's from the company but asks for their password.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Issue Resolution",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Advise the customer that the email is fraudulent and they should not click any links or provide information.",
-      "expected_outcome": "Agent provides immediate, clear security advice.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Advise the customer that the email is fraudulent and they should not click any links or provide information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides immediate, clear security advice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask the customer to forward the suspicious email to the company's security department for investigation.",
-      "expected_outcome": "Agent provides the correct email address (e.g., security@company.com) for reporting.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask the customer to forward the suspicious email to the company's security department for investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct email address (e.g., security@company.com) for reporting."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend that the customer change their account password as a precaution.",
-      "expected_outcome": "Agent provides a link to the legitimate password reset page.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend that the customer change their account password as a precaution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a link to the legitimate password reset page."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

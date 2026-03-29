@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11747",
-  "title": "Draft Statement of Work (SOW)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft Statement of Work (SOW)",
+    "compliance_level": "Standard"
+  },
   "description": "Following a successful discovery phase, a consultant needs to draft an SOW for a standard implementation project.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Project Scoping & SOW",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the appropriate SOW template for a 'Standard Implementation'.",
-      "expected_outcome": "Consultant chooses the correct template from the document library.",
-      "required_tools": [
-        "get_sow_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the appropriate SOW template for a 'Standard Implementation'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant chooses the correct template from the document library."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Fill in the SOW with the customer's details, project scope, timeline, and cost, based on the discovery document.",
-      "expected_outcome": "Consultant creates a detailed and accurate SOW.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Fill in the SOW with the customer's details, project scope, timeline, and cost, based on the discovery document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant creates a detailed and accurate SOW."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the draft SOW to the customer for review and signature.",
-      "expected_outcome": "Consultant sends the SOW to the customer.",
-      "required_tools": [
-        "send_for_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the draft SOW to the customer for review and signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant sends the SOW to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

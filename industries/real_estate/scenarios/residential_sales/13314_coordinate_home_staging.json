@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13314",
-  "title": "Coordinate Professional Home Staging",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate Professional Home Staging",
+    "compliance_level": "Standard"
+  },
   "description": "A listing agent advises a seller to use a professional stager to improve the home's appeal and coordinates the process.",
-  "use_case": "Residential Sales",
-  "core_function": "Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the benefits of staging and provide the seller with a list of preferred staging companies.",
-      "expected_outcome": "Agent effectively communicates the value proposition of staging.",
-      "required_tools": [
-        "get_vendor_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the benefits of staging and provide the seller with a list of preferred staging companies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent effectively communicates the value proposition of staging."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Schedule a consultation between the seller and the selected staging company.",
-      "expected_outcome": "A consultation appointment is successfully booked.",
-      "required_tools": [
-        "schedule_vendor_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Schedule a consultation between the seller and the selected staging company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A consultation appointment is successfully booked."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Coordinate with the stager and photographer to ensure the home is staged before photos are taken.",
-      "expected_outcome": "Staging and photography are completed in the correct sequence before the listing goes live.",
-      "required_tools": [
-        "update_project_timeline"
-      ],
-      "success_criteria": [
-        {
-          "metric": "coordination_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Coordinate with the stager and photographer to ensure the home is staged before photos are taken.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Staging and photography are completed in the correct sequence before the listing goes live."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

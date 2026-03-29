@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11484",
-  "title": "Request Surveying Services",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Surveying Services",
+    "compliance_level": "Standard"
+  },
   "description": "A crew is ready to lay out the foundations for a new structure and needs a survey team to stake out the building corners.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Site Management & Logistics",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new survey request in the system.",
-      "expected_outcome": "The supervisor initiates a new request.",
-      "required_tools": [
-        "create_survey_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new survey request in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The supervisor initiates a new request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Specify the coordinates that need to be staked out, referencing the official site plan drawing.",
-      "expected_outcome": "The supervisor provides the required coordinates from the drawing.",
-      "required_tools": [
-        "update_survey_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Specify the coordinates that need to be staked out, referencing the official site plan drawing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The supervisor provides the required coordinates from the drawing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the request to the project's survey team.",
-      "expected_outcome": "The survey team receives the request and schedules the work.",
-      "required_tools": [
-        "submit_survey_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the request to the project's survey team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The survey team receives the request and schedules the work."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

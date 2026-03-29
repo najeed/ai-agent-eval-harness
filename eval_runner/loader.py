@@ -114,8 +114,28 @@ def load_scenario(
             scenario_data["dataset"]["path"] = str(absolute_ds_path)
             print(f"      [Loader] Resolved relative dataset path: {ds_path} -> {absolute_ds_path}")
 
-    # Note: validation is only for standard scenario files
-    validate(instance=scenario_data, schema=_get_schema())
+    # Standard Workflow Check
+    if "workflow" not in scenario_data:
+        raise ValueError("Scenario missing required 'workflow' block (Unified Standard).")
+    
+    # Ensure 'workflow' is a dictionary
+    if not isinstance(scenario_data["workflow"], dict):
+        raise ValueError("Invalid 'workflow' block structure (must be a dictionary).")
+
+    # Handle validation
+    try:
+        # Ensure metadata exists for v1.2 compliance
+        if "metadata" not in scenario_data:
+            scenario_data["metadata"] = {
+                "name": scenario_data.get("scenario_id", "scenario"),
+                "compliance_level": "Standard"
+            }
+        
+        from jsonschema import validate, ValidationError
+        validate(instance=scenario_data, schema=_get_schema())
+    except ValidationError as e:
+        print(f"   [Loader] Validation Error in {file_path}: {e.message}")
+        raise
 
     # Inject path for traceability in repro scripts/reports
     scenario_data["path"] = path_str
@@ -141,8 +161,12 @@ def load_dataset(file_path: Union[str, Path], format_type: Optional[str] = None)
         for p in path_obj.glob("**/*.json"):
             try:
                 all_scenarios.extend(load_single_scenario(p))
+            except ValidationError as e:
+                print(f"      [Loader] Validation Error in {p}: {e.message}")
+                continue
             except Exception as e:
-                print(f"   [Loader] Warning: Failed to load scenario {p}: {e}")
+                print(f"      [Loader] unexpected Error in {p}: {e}")
+                continue
         return all_scenarios
 
     # Handle Single File

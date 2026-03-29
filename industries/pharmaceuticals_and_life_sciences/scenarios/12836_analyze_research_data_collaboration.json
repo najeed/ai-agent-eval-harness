@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rd-12836",
-  "title": "Collaborate on Research Data Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Collaborate on Research Data Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A team of scientists is collaborating on the analysis of a large dataset and needs to share results and interpretations.",
-  "use_case": "Research & Development",
-  "core_function": "Research Data Analysis",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Upload a large dataset to a shared, secure research platform.",
-      "expected_outcome": "Agent successfully uploads the dataset to the collaborative workspace.",
-      "required_tools": [
-        "upload_dataset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Upload a large dataset to a shared, secure research platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the dataset to the collaborative workspace."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "One scientist performs an analysis and shares the resulting plots and code with the team within the platform.",
-      "expected_outcome": "Agent shares the analysis, and team members are notified.",
-      "required_tools": [
-        "share_analysis_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "One scientist performs an analysis and shares the resulting plots and code with the team within the platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent shares the analysis, and team members are notified."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Another scientist adds comments and annotations to the shared plots.",
-      "expected_outcome": "Agent successfully adds comments, suggesting an alternative way to visualize the data.",
-      "required_tools": [
-        "add_comments_to_visualization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Another scientist adds comments and annotations to the shared plots.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds comments, suggesting an alternative way to visualize the data."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The team jointly drafts a summary of the findings within the platform's collaborative document editor.",
-      "expected_outcome": "The team works together in real-time to produce a consensus summary of the results.",
-      "required_tools": [
-        "collaborate_on_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The team jointly drafts a summary of the findings within the platform's collaborative document editor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team works together in real-time to produce a consensus summary of the results."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

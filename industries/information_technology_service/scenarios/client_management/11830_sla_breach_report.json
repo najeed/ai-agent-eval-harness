@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-cm-11830",
-  "title": "SLA Reporting - Report on SLA Breach",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "SLA Reporting - Report on SLA Breach",
+    "compliance_level": "Standard"
+  },
   "description": "A client has inquired about a specific high-priority ticket that they feel took too long to resolve.",
-  "use_case": "Client & Contract Management",
-  "core_function": "Service Level Agreement (SLA) & Reporting",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the specific ticket in the PSA tool.",
-      "expected_outcome": "The account manager finds the ticket.",
-      "required_tools": [
-        "get_ticket_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the specific ticket in the PSA tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account manager finds the ticket."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the ticket's audit trail and time entries to analyze its lifecycle.",
-      "expected_outcome": "The analysis shows that while the initial response was within SLA, the resolution time breached the SLA due to waiting for a third-party vendor.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the ticket's audit trail and time entries to analyze its lifecycle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis shows that while the initial response was within SLA, the resolution time breached the SLA due to waiting for a third-party vendor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare a root cause analysis (RCA) report for the client, explaining the reason for the delay and apologizing for the breach.",
-      "expected_outcome": "A transparent RCA is provided to the client, maintaining trust despite the SLA breach.",
-      "required_tools": [
-        "generate_rca_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare a root cause analysis (RCA) report for the client, explaining the reason for the delay and apologizing for the breach.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A transparent RCA is provided to the client, maintaining trust despite the SLA breach."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

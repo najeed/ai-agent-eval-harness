@@ -1,55 +1,59 @@
 {
-  "scenario_id": "mining-geo-12609",
-  "title": "Log Exploration Drill Core",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Log Exploration Drill Core",
+    "compliance_level": "Standard"
+  },
   "description": "A geologist logs exploration drill core, recording rock type, alteration, mineralization, and structural data.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Resource Modeling",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the digital core logging software and enter the drillhole ID and depth intervals.",
-      "expected_outcome": "A new logging session is started for the correct drillhole.",
-      "required_tools": [
-        "start_core_logging_session"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the digital core logging software and enter the drillhole ID and depth intervals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new logging session is started for the correct drillhole."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each depth interval, record the lithology, mineralogy, and structural features observed in the core.",
-      "expected_outcome": "A detailed geological log is captured in a structured format.",
-      "required_tools": [
-        "log_lithology",
-        "log_mineralization",
-        "log_structure"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each depth interval, record the lithology, mineralogy, and structural features observed in the core.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A detailed geological log is captured in a structured format."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Mark the intervals to be sampled for assaying and generate the sample tags.",
-      "expected_outcome": "Sample intervals are defined, and the data is saved to the central database.",
-      "required_tools": [
-        "define_sample_intervals",
-        "save_log_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Mark the intervals to be sampled for assaying and generate the sample tags.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Sample intervals are defined, and the data is saved to the central database."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

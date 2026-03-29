@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12735",
-  "title": "Request LWD Services",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request LWD Services",
+    "compliance_level": "Standard"
+  },
   "description": "A geologist decides to run a Logging-While-Drilling (LWD) tool to get real-time formation data in the next section of a well.",
-  "use_case": "Upstream",
-  "core_function": "Geoscience & Exploration",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the drilling plan to identify the target interval for LWD.",
-      "expected_outcome": "The geologist confirms the depth interval for the logging run.",
-      "required_tools": [
-        "get_drilling_program_specs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the drilling plan to identify the target interval for LWD.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The geologist confirms the depth interval for the logging run."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the appropriate LWD tool suite (e.g., Gamma Ray, Resistivity, Neutron-Density) for the geological objectives.",
-      "expected_outcome": "A suitable combination of LWD tools is selected.",
-      "required_tools": [
-        "get_available_lwd_tools"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the appropriate LWD tool suite (e.g., Gamma Ray, Resistivity, Neutron-Density) for the geological objectives.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A suitable combination of LWD tools is selected."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a formal request to the drilling contractor and LWD service company to add the tool to the next bottom hole assembly (BHA).",
-      "expected_outcome": "A service request is sent and acknowledged by the relevant parties.",
-      "required_tools": [
-        "create_service_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a formal request to the drilling contractor and LWD service company to add the tool to the next bottom hole assembly (BHA).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A service request is sent and acknowledged by the relevant parties."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

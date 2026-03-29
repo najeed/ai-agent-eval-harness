@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ports-to-12922",
-  "title": "Manage Horizontal Transport Fleet",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Horizontal Transport Fleet",
+    "compliance_level": "Standard"
+  },
   "description": "A dispatcher for terminal tractors (ITVs) must efficiently assign jobs to move containers from the ship to the yard.",
-  "use_case": "Terminal Operations",
-  "core_function": "Horizontal Transport",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the queue of containers being discharged by the quay cranes.",
-      "expected_outcome": "Dispatcher sees a queue of containers waiting for pickup at the quayside.",
-      "required_tools": [
-        "get_crane_work_queue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the queue of containers being discharged by the quay cranes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher sees a queue of containers waiting for pickup at the quayside."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify available terminal tractors and their current locations.",
-      "expected_outcome": "Dispatcher sees three available tractors near the vessel.",
-      "required_tools": [
-        "get_vehicle_gps_locations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify available terminal tractors and their current locations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher sees three available tractors near the vessel."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the next container move to the closest available tractor.",
-      "expected_outcome": "The system sends a job ticket to the tractor driver's terminal, instructing them which container to pick up and where to take it.",
-      "required_tools": [
-        "dispatch_job_to_tractor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the next container move to the closest available tractor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system sends a job ticket to the tractor driver's terminal, instructing them which container to pick up and where to take it."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

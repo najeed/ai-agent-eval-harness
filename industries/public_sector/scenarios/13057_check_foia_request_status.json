@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-rc-13057",
-  "title": "Check the Status of a FOIA Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check the Status of a FOIA Request",
+    "compliance_level": "Standard"
+  },
   "description": "A journalist who filed a FOIA request two weeks ago is calling to check on its status.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Public Records & FOIA",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the journalist and their request using the tracking number.",
-      "expected_outcome": "The records officer successfully locates the pending request.",
-      "required_tools": [
-        "get_foia_request_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the journalist and their request using the tracking number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The records officer successfully locates the pending request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the current status from the system.",
-      "expected_outcome": "The officer finds the status is 'In Review' with the legal department.",
-      "required_tools": [
-        "get_foia_request_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the current status from the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer finds the status is 'In Review' with the legal department."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a status update to the journalist.",
-      "expected_outcome": "The officer informs the journalist that the request is still under review.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a status update to the journalist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer informs the journalist that the request is still under review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

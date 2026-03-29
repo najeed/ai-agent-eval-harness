@@ -1,67 +1,72 @@
 {
-  "scenario_id": "smartcities-ps-13560",
-  "title": "Identify Crime Pattern Using Predictive Analytics",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Crime Pattern Using Predictive Analytics",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst uses the system to find a pattern in a series of recent commercial burglaries.",
-  "use_case": "Public Safety & Security",
-  "core_function": "Predictive Policing & Prevention",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Filter all crime reports from the last 30 days for the type 'commercial burglary'.",
-      "expected_outcome": "Agent retrieves a list of the relevant crime reports.",
-      "required_tools": [
-        "get_crime_reports"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Filter all crime reports from the last 30 days for the type 'commercial burglary'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of the relevant crime reports."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Plot the locations and times of the burglaries on a map.",
-      "expected_outcome": "Agent visualizes the data geographically and temporally.",
-      "required_tools": [
-        "plot_data_on_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Plot the locations and times of the burglaries on a map.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent visualizes the data geographically and temporally."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system's pattern detection algorithm identifies that all burglaries occurred on Tuesday nights between 1 AM and 3 AM in a specific industrial park.",
-      "expected_outcome": "Agent successfully identifies a clear crime pattern.",
-      "required_tools": [
-        "run_pattern_detection_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system's pattern detection algorithm identifies that all burglaries occurred on Tuesday nights between 1 AM and 3 AM in a specific industrial park.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully identifies a clear crime pattern."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a bulletin for the police department detailing the identified pattern.",
-      "expected_outcome": "Agent communicates the intelligence to patrol officers.",
-      "required_tools": [
-        "create_police_bulletin"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a bulletin for the police department detailing the identified pattern.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent communicates the intelligence to patrol officers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13517",
-  "title": "Manage Graffiti Removal Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Graffiti Removal Request",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen reports graffiti on a public building. An operator dispatches a cleaning crew.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Citizen Reporting & Service Requests",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge a 'graffiti' service request from the 311 system, including a photo of the graffiti.",
-      "expected_outcome": "Agent retrieves the report details.",
-      "required_tools": [
-        "get_citizen_service_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge a 'graffiti' service request from the 311 system, including a photo of the graffiti.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the report details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the asset (e.g., 'Community Center Wall') and create a 'Graffiti Removal' work order.",
-      "expected_outcome": "Agent creates the appropriate work order type.",
-      "required_tools": [
-        "get_asset_by_location",
-        "create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the asset (e.g., 'Community Center Wall') and create a 'Graffiti Removal' work order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the appropriate work order type."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the work order to the city's mobile cleaning crew.",
-      "expected_outcome": "Agent dispatches the cleaning crew.",
-      "required_tools": [
-        "assign_work_order_to_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the work order to the city's mobile cleaning crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches the cleaning crew."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

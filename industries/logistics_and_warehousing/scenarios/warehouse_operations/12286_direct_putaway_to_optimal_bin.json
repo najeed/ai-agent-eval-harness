@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-wo-12286",
-  "title": "Direct Put-Away to Optimal Bin",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Direct Put-Away to Optimal Bin",
+    "compliance_level": "Standard"
+  },
   "description": "After receiving an item, the WMS must direct the operator to the best possible storage bin, considering space, item type, and existing stock.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Inbound & Receiving",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "An operator scans a newly received item.",
-      "expected_outcome": "The system identifies the item.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "An operator scans a newly received item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system identifies the item."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system analyzes put-away rules: first, it looks for an existing pick face for that item with available capacity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system checks for a primary location to top-off."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system analyzes put-away rules: first, it looks for an existing pick face for that item with available capacity.",
-      "expected_outcome": "The system checks for a primary location to top-off.",
-      "required_tools": [
-        "find_optimal_putaway_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Finding no room in the pick face, the system then finds the closest available bulk storage location that can fit the pallet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system suggests an optimal bulk storage bin."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The system creates a put-away task directing the operator to the suggested location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator receives a clear instruction for where to store the item."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Finding no room in the pick face, the system then finds the closest available bulk storage location that can fit the pallet.",
-      "expected_outcome": "The system suggests an optimal bulk storage bin.",
-      "required_tools": [
-        "find_optimal_putaway_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "The system creates a put-away task directing the operator to the suggested location.",
-      "expected_outcome": "The operator receives a clear instruction for where to store the item.",
-      "required_tools": [
-        "create_putaway_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13567",
-  "title": "Retire an Old Public Asset",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Retire an Old Public Asset",
+    "compliance_level": "Standard"
+  },
   "description": "A public fountain is being decommissioned. An operator must update the city's asset records.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Smart Asset Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a work order confirming the decommissioning of the 'Central Plaza Fountain'.",
-      "expected_outcome": "Agent acknowledges the asset change.",
-      "required_tools": [
-        "get_work_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a work order confirming the decommissioning of the 'Central Plaza Fountain'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the asset change."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Locate the fountain in the asset management database.",
-      "expected_outcome": "Agent finds the correct asset record.",
-      "required_tools": [
-        "get_asset_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Locate the fountain in the asset management database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct asset record."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Change the asset's status to 'Decommissioned' and archive its record.",
-      "expected_outcome": "Agent successfully updates the asset database to reflect the change.",
-      "required_tools": [
-        "update_asset_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Change the asset's status to 'Decommissioned' and archive its record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the asset database to reflect the change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

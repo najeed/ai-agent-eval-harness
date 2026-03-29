@@ -1,53 +1,59 @@
 {
-  "scenario_id": "energy-tr-11165",
-  "title": "Identify M&A Target",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify M&A Target",
+    "compliance_level": "Standard"
+  },
   "description": "A corporate development team wants to identify potential acquisition targets: small-scale renewable energy developers with projects in a specific region.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Portfolio Optimization",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan public databases and industry news for renewable project developers with a portfolio of 50-200 MW in the target region.",
-      "expected_outcome": "Agent identifies a list of 5 potential target companies.",
-      "required_tools": [
-        "search_project_databases",
-        "scan_industry_news"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan public databases and industry news for renewable project developers with a portfolio of 50-200 MW in the target region.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a list of 5 potential target companies."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each target, compile a profile including their project pipeline, key management personnel, and any available financial data.",
-      "expected_outcome": "Agent creates a detailed profile for each of the 5 companies.",
-      "required_tools": [
-        "create_company_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_completeness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each target, compile a profile including their project pipeline, key management personnel, and any available financial data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed profile for each of the 5 companies."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a preliminary valuation of the most promising target based on their project pipeline and comparable transactions.",
-      "expected_outcome": "Agent provides a rough valuation range for the top target.",
-      "required_tools": [
-        "perform_preliminary_valuation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a preliminary valuation of the most promising target based on their project pipeline and comparable transactions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a rough valuation range for the top target."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

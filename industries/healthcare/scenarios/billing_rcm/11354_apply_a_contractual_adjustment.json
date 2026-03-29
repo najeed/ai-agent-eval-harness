@@ -1,83 +1,61 @@
 {
-  "scenario_id": "hc-brc-11354",
-  "title": "Apply a Contractual Adjustment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply a Contractual Adjustment",
+    "compliance_level": "Standard"
+  },
   "description": "A biller is manually posting a payment and needs to apply the correct contractual adjustment based on the payer's allowed amount.",
-  "use_case": "Billing & Revenue Cycle Management",
-  "core_function": "Charge Capture & Coding",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the claim, the total charges, and the allowed amount from the explanation of benefits (EOB).",
-      "expected_outcome": "Biller has all the necessary financial figures.",
-      "required_tools": [
-        "get_claim_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the claim, the total charges, and the allowed amount from the explanation of benefits (EOB).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Biller has all the necessary financial figures."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the contractual adjustment amount (Total Charges - Allowed Amount).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Biller correctly calculates the amount that needs to be written off."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the contractual adjustment amount (Total Charges - Allowed Amount).",
-      "expected_outcome": "Biller correctly calculates the amount that needs to be written off.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Post the payment and the contractual adjustment to the claim.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The payment is posted, the adjustment is applied, and the remaining balance is correctly identified."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Post the payment and the contractual adjustment to the claim.",
-      "expected_outcome": "The payment is posted, the adjustment is applied, and the remaining balance is correctly identified.",
-      "required_tools": [
-        "post_insurance_payment",
-        "post_contractual_adjustment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

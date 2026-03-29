@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-140",
-  "title": "Anonymize a Case Study",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Anonymize a Case Study",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must take a completed project report and anonymize it so it can be used as a public case study.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Replace the client's name throughout the document with a generic descriptor like 'a leading retail company'.",
-      "expected_outcome": "Agent successfully replaces all instances of the client name.",
-      "required_tools": [
-        "find_and_replace"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Replace the client's name throughout the document with a generic descriptor like 'a leading retail company'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully replaces all instances of the client name."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Redact all specific financial figures by replacing them with descriptive phrases (e.g., 'significant revenue growth', 'multi-million dollar investment').",
-      "expected_outcome": "Agent correctly redacts all financial data.",
-      "required_tools": [
-        "redact_financial_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Redact all specific financial figures by replacing them with descriptive phrases (e.g., 'significant revenue growth', 'multi-million dollar investment').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly redacts all financial data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remove all names of individual client employees.",
-      "expected_outcome": "Agent successfully removes all names.",
-      "required_tools": [
-        "identify_pii",
-        "redact_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remove all names of individual client employees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully removes all names."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-so-13403",
-  "title": "Perform a Mid-Day Cash Pickup",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Mid-Day Cash Pickup",
+    "compliance_level": "Standard"
+  },
   "description": "A POS terminal has accumulated too much cash, and a manager needs to perform a cash pickup to move excess funds to the safe.",
-  "use_case": "Store Operations",
-  "core_function": "Store Opening & Closing",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into the POS terminal with manager credentials and initiate a 'Cash Pickup' transaction.",
-      "expected_outcome": "The manager starts the secure cash management function.",
-      "required_tools": [
-        "initiate_cash_pickup"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into the POS terminal with manager credentials and initiate a 'Cash Pickup' transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager starts the secure cash management function."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the amount of cash being removed from the drawer.",
-      "expected_outcome": "The manager accurately records the amount being transferred.",
-      "required_tools": [
-        "enter_pickup_amount"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the amount of cash being removed from the drawer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager accurately records the amount being transferred."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete the transaction, which prints a slip. The manager takes the cash and the slip to the back office to deposit in the safe.",
-      "expected_outcome": "The cash is securely removed from the POS, and the terminal's balance is updated.",
-      "required_tools": [
-        "complete_cash_management_tx"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete the transaction, which prints a slip. The manager takes the cash and the slip to the back office to deposit in the safe.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The cash is securely removed from the POS, and the terminal's balance is updated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

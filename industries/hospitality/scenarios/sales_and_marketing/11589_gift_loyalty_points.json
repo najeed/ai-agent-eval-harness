@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-sm-11589",
-  "title": "Gift Loyalty Points for Service Recovery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Gift Loyalty Points for Service Recovery",
+    "compliance_level": "Standard"
+  },
   "description": "After resolving a guest's complaint, a manager decides to gift them some loyalty points as a gesture of goodwill.",
-  "use_case": "Sales & Marketing",
-  "core_function": "Loyalty Program Management",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the guest's loyalty account.",
-      "expected_outcome": "The agent finds the guest's account.",
-      "required_tools": [
-        "lms_get_member_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the guest's loyalty account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent finds the guest's account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Manually adjust the guest's point balance, adding the gifted points.",
-      "expected_outcome": "5,000 points are added to the guest's account.",
-      "required_tools": [
-        "lms_adjust_points"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Manually adjust the guest's point balance, adding the gifted points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "5,000 points are added to the guest's account."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add a note to the transaction explaining it was for service recovery.",
-      "expected_outcome": "The transaction is documented.",
-      "required_tools": [
-        "lms_add_transaction_note"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add a note to the transaction explaining it was for service recovery.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The transaction is documented."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

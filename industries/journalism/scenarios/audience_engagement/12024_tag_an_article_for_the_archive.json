@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12024",
-  "title": "Tag an Article for the Archive",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Tag an Article for the Archive",
+    "compliance_level": "Standard"
+  },
   "description": "After a story is published, an archivist needs to add relevant metadata and tags to it before committing it to the long-term digital archive.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Archive Management",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Read the article to identify the key people, places, organizations, and topics mentioned.",
-      "expected_outcome": "Agent creates a list of key entities in the story.",
-      "required_tools": [
-        "document_viewer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehensiveness_of_list",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Read the article to identify the key people, places, organizations, and topics mentioned.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a list of key entities in the story."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter these key entities as tags in the archive management system.",
-      "expected_outcome": "The article is tagged with relevant metadata.",
-      "required_tools": [
-        "archive_management_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter these key entities as tags in the archive management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The article is tagged with relevant metadata."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Commit the article and its tags to the permanent archive.",
-      "expected_outcome": "The story is successfully archived and is now searchable by its new tags.",
-      "required_tools": [
-        "archive_management_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Commit the article and its tags to the permanent archive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The story is successfully archived and is now searchable by its new tags."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

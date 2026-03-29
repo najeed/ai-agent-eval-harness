@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12151",
-  "title": "Produce Documents in Discovery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Produce Documents in Discovery",
+    "compliance_level": "Standard"
+  },
   "description": "After completing a document review, a paralegal needs to produce the 'Responsive' and non-privileged documents to the opposing counsel.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "In the e-discovery platform, select all documents tagged as 'Responsive' and not tagged as 'Privileged'.",
-      "expected_outcome": "Agent correctly identifies the set of documents to be produced.",
-      "required_tools": [
-        "ediscovery_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "In the e-discovery platform, select all documents tagged as 'Responsive' and not tagged as 'Privileged'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the set of documents to be produced."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Export the selected documents as text-searchable PDFs with their original metadata.",
-      "expected_outcome": "Agent generates the production set in the correct format.",
-      "required_tools": [
-        "ediscovery_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Export the selected documents as text-searchable PDFs with their original metadata.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates the production set in the correct format."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Share the production set with opposing counsel via a secure file transfer link.",
-      "expected_outcome": "The documents are successfully and securely produced.",
-      "required_tools": [
-        "secure_file_transfer_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Share the production set with opposing counsel via a secure file transfer link.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The documents are successfully and securely produced."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

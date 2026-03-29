@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-sp-14312",
-  "title": "Create a Purchase Order for a Supplier",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Purchase Order for a Supplier",
+    "compliance_level": "Standard"
+  },
   "description": "A procurement manager needs to create a new purchase order to replenish stock for a popular product.",
-  "use_case": "Supplier & Procurement Management",
-  "core_function": "Purchase Order Management",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify that a product's inventory has fallen below the reorder threshold.",
-      "expected_outcome": "Agent receives an alert that stock for a specific item is low.",
-      "required_tools": [
-        "get_low_stock_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify that a product's inventory has fallen below the reorder threshold.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives an alert that stock for a specific item is low."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new purchase order for the product from the primary supplier.",
-      "expected_outcome": "Agent successfully creates a new PO in the system.",
-      "required_tools": [
-        "create_purchase_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new purchase order for the product from the primary supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new PO in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the purchase order to the supplier.",
-      "expected_outcome": "Agent emails the PO to the supplier's sales contact.",
-      "required_tools": [
-        "send_purchase_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the purchase order to the supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent emails the PO to the supplier's sales contact."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

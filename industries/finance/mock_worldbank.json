@@ -1,0 +1,7 @@
+[
+  {"country": {"value": "United States", "id": "US"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
+  {"country": {"value": "China", "id": "CN"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"},
+  {"country": {"value": "Japan", "id": "JP"}, "indicator": {"value": "GDP"}, "value": 4937421000000, "date": "2021"},
+  {"country": {"value": "Germany", "id": "DE"}, "indicator": {"value": "GDP"}, "value": 4223116000000, "date": "2021"},
+  {"country": {"value": "United Kingdom", "id": "GB"}, "indicator": {"value": "GDP"}, "value": 3131377000000, "date": "2021"}
+]

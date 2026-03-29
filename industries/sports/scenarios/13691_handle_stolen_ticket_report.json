@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-fe-13691",
-  "title": "Handle a Stolen Ticket Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Stolen Ticket Report",
+    "compliance_level": "Standard"
+  },
   "description": "A fan reports that their physical tickets for a game were stolen.",
-  "use_case": "Fan Engagement & Ticketing",
-  "core_function": "Ticketing & Access Control",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the fan and the specific tickets that were stolen.",
-      "expected_outcome": "Agent locates the tickets in the system.",
-      "required_tools": [
-        "get_fan_account_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the fan and the specific tickets that were stolen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the tickets in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Deactivate the barcodes of the stolen physical tickets to render them invalid.",
-      "expected_outcome": "Agent successfully invalidates the old tickets.",
-      "required_tools": [
-        "deactivate_ticket_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Deactivate the barcodes of the stolen physical tickets to render them invalid.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully invalidates the old tickets."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reissue the tickets to the fan as mobile tickets through the team's app.",
-      "expected_outcome": "Agent provides the fan with new, secure mobile tickets.",
-      "required_tools": [
-        "reissue_ticket_as_mobile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reissue the tickets to the fan as mobile tickets through the team's app.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the fan with new, secure mobile tickets."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

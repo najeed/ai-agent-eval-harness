@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pa-13015",
-  "title": "Submit a Bid for a Government Contract",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Submit a Bid for a Government Contract",
+    "compliance_level": "Standard"
+  },
   "description": "A registered vendor is submitting a bid for a public works contract.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Procurement & Contracts",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the vendor and the specific contract they are bidding on.",
-      "expected_outcome": "Agent locates the vendor's profile and the open contract.",
-      "required_tools": [
-        "get_vendor_profile",
-        "get_contract_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the vendor and the specific contract they are bidding on.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the vendor's profile and the open contract."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that all required bidding documents have been uploaded.",
-      "expected_outcome": "Agent confirms that the bid package is complete.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that all required bidding documents have been uploaded.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the bid package is complete."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Accept and timestamp the bid submission before the deadline.",
-      "expected_outcome": "Agent successfully logs the bid as received on time.",
-      "required_tools": [
-        "submit_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Accept and timestamp the bid submission before the deadline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully logs the bid as received on time."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

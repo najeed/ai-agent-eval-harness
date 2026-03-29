@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13990",
-  "title": "Handle Medical Emergency Onboard a Flight",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Medical Emergency Onboard a Flight",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger on a flight is experiencing a medical emergency. The flight crew contacts the ground-based operations center for assistance.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Disruption Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Establish communication with the flight crew and gather information about the passenger's condition.",
-      "expected_outcome": "Agent collects critical details about the medical situation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Establish communication with the flight crew and gather information about the passenger's condition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects critical details about the medical situation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Connect the flight crew with a remote medical advisory service for professional guidance.",
-      "expected_outcome": "Agent successfully patches in a medical professional to assist the crew.",
-      "required_tools": [
-        "contact_remote_medical_service"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Connect the flight crew with a remote medical advisory service for professional guidance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully patches in a medical professional to assist the crew."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on medical advice, determine if the flight needs to be diverted to the nearest suitable airport and coordinate the diversion.",
-      "expected_outcome": "Agent identifies the best diversion airport and coordinates with air traffic control and ground staff.",
-      "required_tools": [
-        "coordinate_flight_diversion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on medical advice, determine if the flight needs to be diverted to the nearest suitable airport and coordinate the diversion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the best diversion airport and coordinates with air traffic control and ground staff."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

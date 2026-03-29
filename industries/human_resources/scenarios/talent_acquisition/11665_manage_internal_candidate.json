@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-ta-11665",
-  "title": "Manage an Internal Candidate Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage an Internal Candidate Application",
+    "compliance_level": "Standard"
+  },
   "description": "A current employee has applied for an open position in another department.",
-  "use_case": "Talent Acquisition",
-  "core_function": "Sourcing & Screening",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the internal candidate's application in the ATS.",
-      "expected_outcome": "Recruiter sees the application and notes the candidate is a current employee.",
-      "required_tools": [
-        "get_candidate_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the internal candidate's application in the ATS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter sees the application and notes the candidate is a current employee."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Notify the employee's current manager of their application, per company policy.",
-      "expected_outcome": "Recruiter informs the current manager of the employee's interest in the new role.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Notify the employee's current manager of their application, per company policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter informs the current manager of the employee's interest in the new role."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the employee's internal performance history and tenure alongside their resume.",
-      "expected_outcome": "Recruiter considers both internal performance data and external experience during the screening process.",
-      "required_tools": [
-        "get_employee_performance_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the employee's internal performance history and tenure alongside their resume.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter considers both internal performance data and external experience during the screening process."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

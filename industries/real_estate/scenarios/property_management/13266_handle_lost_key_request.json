@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13266",
-  "title": "Handle a Tenant's Lost Key Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Tenant's Lost Key Request",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant has lost their key and needs a replacement. The agent must provide a new key and charge the tenant.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the tenant's request for a new key.",
-      "expected_outcome": "Agent logs the request from the tenant.",
-      "required_tools": [
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the tenant's request for a new key.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the request from the tenant."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the lease agreement for the key replacement fee amount.",
-      "expected_outcome": "Agent finds the correct fee in the lease document.",
-      "required_tools": [
-        "get_lease_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the lease agreement for the key replacement fee amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct fee in the lease document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Charge the replacement fee to the tenant's ledger and arrange for them to pick up a new key.",
-      "expected_outcome": "Agent applies the fee and coordinates key pickup.",
-      "required_tools": [
-        "apply_tenant_charge",
-        "send_tenant_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Charge the replacement fee to the tenant's ledger and arrange for them to pick up a new key.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent applies the fee and coordinates key pickup."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

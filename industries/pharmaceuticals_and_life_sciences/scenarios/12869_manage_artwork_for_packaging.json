@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12869",
-  "title": "Manage Artwork for Packaging Components",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Artwork for Packaging Components",
+    "compliance_level": "Standard"
+  },
   "description": "A labeling specialist must coordinate the update of artwork for a product carton following a change to the prescribing information.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Supply Chain & Traceability",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a notification that a labeling update requires a change to the product carton.",
-      "expected_outcome": "Agent identifies the required text change.",
-      "required_tools": [
-        "get_change_control_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a notification that a labeling update requires a change to the product carton.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the required text change."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new artwork change request in the artwork management system.",
-      "expected_outcome": "Agent initiates a new request, linking it to the parent change control.",
-      "required_tools": [
-        "create_artwork_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new artwork change request in the artwork management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates a new request, linking it to the parent change control."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the request to the graphic design vendor to create the new version of the artwork.",
-      "expected_outcome": "Agent sends the redlined text to the vendor.",
-      "required_tools": [
-        "send_request_to_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the request to the graphic design vendor to create the new version of the artwork.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the redlined text to the vendor."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Receive the proof from the vendor and route it for internal review and approval before ordering new cartons.",
-      "expected_outcome": "Agent receives the proof and routes it for sign-off.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Receive the proof from the vendor and route it for internal review and approval before ordering new cartons.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the proof and routes it for sign-off."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

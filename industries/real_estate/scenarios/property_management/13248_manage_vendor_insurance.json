@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13248",
-  "title": "Manage Vendor Insurance Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Vendor Insurance Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "A property management company must ensure all approved vendors have current liability insurance on file.",
-  "use_case": "Property Management",
-  "core_function": "Maintenance & Operations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all vendors whose insurance certificates are set to expire in the next 30 days.",
-      "expected_outcome": "Agent generates a list of vendors with expiring insurance.",
-      "required_tools": [
-        "get_vendor_compliance_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all vendors whose insurance certificates are set to expire in the next 30 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of vendors with expiring insurance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send an automated email request to each vendor for their updated certificate of insurance.",
-      "expected_outcome": "Agent successfully sends out reminder emails.",
-      "required_tools": [
-        "send_vendor_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send an automated email request to each vendor for their updated certificate of insurance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends out reminder emails."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Receive the new certificates, update the expiration date in the vendor's file, and flag any non-responsive vendors.",
-      "expected_outcome": "Agent updates compliant vendor files and flags non-compliant ones for follow-up.",
-      "required_tools": [
-        "update_vendor_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Receive the new certificates, update the expiration date in the vendor's file, and flag any non-responsive vendors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates compliant vendor files and flags non-compliant ones for follow-up."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

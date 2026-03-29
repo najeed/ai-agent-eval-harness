@@ -7,12 +7,17 @@ Updated to respect Zero-Touch architecture and immutable core.
 """
 
 from __future__ import annotations
+import json
+import os
 import importlib.metadata
 import concurrent.futures
 from typing import List, Any, Optional
+from pathlib import Path
 from . import config
+from . import discovery
 
 PLUGIN_TIMEOUT = config.PLUGIN_TIMEOUT
+PERSISTENT_PLUGINS_PATH = config.PROJECT_ROOT / ".aes" / "plugins.json"
 
 
 def _invoke_with_timeout(func, *args, **kwargs):
@@ -78,21 +83,44 @@ class PluginManager:
         self._loaded = False
 
     def load_plugins(self):
-        """Discovers and loads plugins from entry points."""
+        """Discovers and loads plugins from entry points and persistence."""
         if self._loaded:
             return
 
-        # 1. Discover external plugins via entry points
+        # 1. Discover external plugins via entry points (standard install)
         for entry_point in importlib.metadata.entry_points(group="eval_runner.plugins"):
             try:
                 plugin_cls = entry_point.load()
-                self.plugins.append(plugin_cls())
-                # print(f"   [Plugins] Loaded plugin: {entry_point.name}")
-            except Exception as e:
-                # print(f"   [Plugins] Failed to load plugin {entry_point.name}: {e}")
+                if not any(isinstance(p, plugin_cls) for p in self.plugins):
+                    self.plugins.append(plugin_cls())
+            except Exception:
                 pass
 
-        # 2. Fallback for internal essential plugins (Zero-Touch)
+        # 2. Load manually registered persistent plugins
+        if PERSISTENT_PLUGINS_PATH.exists():
+            try:
+                with open(PERSISTENT_PLUGINS_PATH, "r", encoding="utf-8") as f:
+                    persistent = json.load(f)
+                    for plugin_path in persistent.get("plugins", []):
+                        try:
+                            # Assuming format "module.ClassName"
+                            module_name, class_name = plugin_path.rsplit(".", 1)
+                            module = importlib.import_module(module_name)
+                            plugin_cls = getattr(module, class_name)
+                            if not any(isinstance(p, plugin_cls) for p in self.plugins):
+                                self.plugins.append(plugin_cls())
+                        except Exception as e:
+                            print(f"   [PluginManager] Failed to load persistent plugin {plugin_path}: {e}")
+            except Exception as e:
+                print(f"   [PluginManager] Failed to read {PERSISTENT_PLUGINS_PATH}: {e}")
+
+        # 3. Dynamic search in project-root 'plugins' directory
+        root_plugins = discovery.discover_plugins_in_directory(config.PROJECT_ROOT / "plugins", BaseEvalPlugin)
+        for p in root_plugins:
+            if not any(isinstance(existing, p.__class__) for existing in self.plugins):
+                self.plugins.append(p)
+
+        # 4. Fallback for internal essential plugins
         internal_plugin_classes = []
         try:
             from .coverage_plugin import CoveragePlugin
@@ -176,6 +204,38 @@ class PluginManager:
                 except Exception as e:
                     print(f"   [PluginManager] Error in interceptor {hook_name} for {plugin.__class__.__name__}: {e}")
         return True
+
+    def register_persistent(self, plugin_path: str):
+        """Register a plugin persistently by adding it to plugins.json."""
+        PERSISTENT_PLUGINS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        data = {"plugins": []}
+        if PERSISTENT_PLUGINS_PATH.exists():
+            with open(PERSISTENT_PLUGINS_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        
+        if plugin_path not in data["plugins"]:
+            data["plugins"].append(plugin_path)
+            with open(PERSISTENT_PLUGINS_PATH, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+            print(f"   [Plugins] Persistent registration saved: {plugin_path}")
+        else:
+            print(f"   [Plugins] Plugin legacy already exists: {plugin_path}")
+
+    def unregister_persistent(self, plugin_path: str):
+        """Unregister a plugin persistently."""
+        if not PERSISTENT_PLUGINS_PATH.exists():
+            return
+            
+        with open(PERSISTENT_PLUGINS_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            
+        if plugin_path in data["plugins"]:
+            data["plugins"].remove(plugin_path)
+            with open(PERSISTENT_PLUGINS_PATH, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+            print(f"   [Plugins] Persistent registration removed: {plugin_path}")
+        else:
+            print(f"   [Plugins] Plugin not found in persistence: {plugin_path}")
 
 
 manager = PluginManager()

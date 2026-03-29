@@ -274,7 +274,7 @@ def evaluate_scenario():
             {
                 "status": "started",
                 "message": f"Evaluation started for {path.name}",
-                "scenario_id": scenario_data.get("scenario_id"),
+                "scenario_id": scenario_data.get("scenario_id") or scenario_data.get("metadata", {}).get("id"),
             }
         )
     except Exception as e:
@@ -285,7 +285,8 @@ def evaluate_scenario():
 def save_scenario():
     """Saves or updates a scenario JSON file."""
     data = request.json or {}
-    scenario_id = data.get("scenario_id")
+    metadata_block = data.get("metadata", {})
+    scenario_id = data.get("scenario_id") or metadata_block.get("id")
     if not scenario_id:
         return jsonify({"error": "Missing scenario_id"}), 400
 
@@ -300,22 +301,33 @@ def save_scenario():
 
     file_path = output_dir / f"{safe_id}.json"
 
-    # Structure the AES JSON
+    # Structure the AES JSON (v1.2 compliant)
     scenario_obj = {
-        "scenario_id": safe_id,
-        "version": data.get("version", "2.0.0"),
-        "title": data.get("title", "Untitled Scenario"),
-        "industry": industry,
+        "aes_version": 1.2,
+        "metadata": {
+            "id": safe_id,
+            "name": data.get("title") or metadata_block.get("name") or "Untitled Scenario",
+            "compliance_level": metadata_block.get("compliance_level", "Standard"),
+            "industry": industry,
+            "tags": metadata_block.get("tags") or data.get("tags", []),
+            "created_at": datetime.now().isoformat(),
+        },
         "description": data.get("description", ""),
-        "tasks": data.get("tasks", []),
-        "metadata": data.get(
-            "metadata",
-            {
-                "difficulty": data.get("difficulty", 1),
-                "tags": data.get("tags", []),
-                "created_at": datetime.now().isoformat(),
-            },
-        ),
+        "industry": industry,
+        "workflow": data.get("workflow") or {
+            "nodes": [
+                {
+                    "id": t.get("task_id") or f"node_{i}",
+                    "task_description": t.get("description"),
+                    "expected_outcome": {
+                        "type": "typed_value",
+                        "data_type": "object",
+                        "value": t.get("expected_outcome")
+                    }
+                } for i, t in enumerate(data.get("tasks", []))
+            ],
+            "edges": [] # Simple linear edges could be inferred but we keep it clean
+        }
     }
 
     try:

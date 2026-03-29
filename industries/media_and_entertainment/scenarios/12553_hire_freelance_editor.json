@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-cp-12553",
-  "title": "Hire a Freelance Video Editor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Hire a Freelance Video Editor",
+    "compliance_level": "Standard"
+  },
   "description": "A production needs to hire a freelance video editor for a short-term project.",
-  "use_case": "Content Production & Management",
-  "core_function": "Pre-production & Development",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search a database of pre-approved freelancers for video editors with experience in the relevant genre.",
-      "expected_outcome": "Agent finds five suitable freelance editors.",
-      "required_tools": [
-        "search_freelancer_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search a database of pre-approved freelancers for video editors with experience in the relevant genre.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds five suitable freelance editors."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the availability of the shortlisted editors for the project dates.",
-      "expected_outcome": "Agent confirms two of the five editors are available.",
-      "required_tools": [
-        "check_freelancer_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the availability of the shortlisted editors for the project dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms two of the five editors are available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a contract offer to the selected editor.",
-      "expected_outcome": "Agent generates and sends a standard freelance contract.",
-      "required_tools": [
-        "generate_freelance_contract"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a contract offer to the selected editor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates and sends a standard freelance contract."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

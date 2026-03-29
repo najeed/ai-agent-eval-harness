@@ -1,52 +1,59 @@
 {
-  "scenario_id": "venues-fb-14256",
-  "title": "Handle a Broken Soda Machine",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Broken Soda Machine",
+    "compliance_level": "Standard"
+  },
   "description": "A concession stand reports that their soda fountain is not working.",
-  "use_case": "Food & Beverage (Concessions)",
-  "core_function": "Staff & Stand Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log a maintenance request for the broken soda machine.",
-      "expected_outcome": "Agent creates a new high-priority maintenance ticket.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log a maintenance request for the broken soda machine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new high-priority maintenance ticket."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch a beverage technician to the stand to troubleshoot the issue.",
-      "expected_outcome": "Agent assigns the ticket to the on-call beverage technician.",
-      "required_tools": [
-        "dispatch_technician"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch a beverage technician to the stand to troubleshoot the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the ticket to the on-call beverage technician."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Temporarily update the digital menu board at that stand to show fountain drinks as 'unavailable'.",
-      "expected_outcome": "Agent remotely updates the menu to prevent customer frustration.",
-      "required_tools": [
-        "update_digital_menu"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Temporarily update the digital menu board at that stand to show fountain drinks as 'unavailable'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent remotely updates the menu to prevent customer frustration."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

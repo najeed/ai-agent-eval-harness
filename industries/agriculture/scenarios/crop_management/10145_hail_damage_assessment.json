@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-cm-10145",
-  "title": "Assess Hail Damage Using Drone Imagery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assess Hail Damage Using Drone Imagery",
+    "compliance_level": "Standard"
+  },
   "description": "After a hailstorm, an insurance adjuster uses a drone to assess the percentage of crop damage in a field.",
-  "use_case": "Crop Management",
-  "core_function": "Harvesting & Logistics",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process high-resolution drone imagery of the damaged field.",
-      "expected_outcome": "Agent creates a high-resolution map of the field.",
-      "required_tools": [
-        "stitch_drone_images"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_processing_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process high-resolution drone imagery of the damaged field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a high-resolution map of the field."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the imagery to identify damaged plants and quantify the area of severe damage.",
-      "expected_outcome": "Agent's analysis shows that 35% of the field has suffered significant defoliation.",
-      "required_tools": [
-        "image_analysis_damage_assessment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the imagery to identify damaged plants and quantify the area of severe damage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent's analysis shows that 35% of the field has suffered significant defoliation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report for the insurance claim, including the damage percentage and a map highlighting the affected areas.",
-      "expected_outcome": "Agent creates a formal report suitable for an insurance claim.",
-      "required_tools": [
-        "generate_damage_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report for the insurance claim, including the damage percentage and a map highlighting the affected areas.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a formal report suitable for an insurance claim."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

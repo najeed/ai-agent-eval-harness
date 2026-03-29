@@ -1,66 +1,72 @@
 {
-  "scenario_id": "journalism-cp-12035",
-  "title": "Select Photos for a Photo Essay",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Select Photos for a Photo Essay",
+    "compliance_level": "Standard"
+  },
   "description": "A photographer has submitted 200 photos from an event. A photo editor must select the 10-15 best images that tell a cohesive story.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Multimedia & Visuals",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review all 200 photos, giving each a preliminary rating for technical quality and emotional impact.",
-      "expected_outcome": "All photos are reviewed and rated.",
-      "required_tools": [
-        "photo_management_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review all 200 photos, giving each a preliminary rating for technical quality and emotional impact.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All photos are reviewed and rated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select a short list of the 30-40 strongest images.",
-      "expected_outcome": "The pool of photos is narrowed down.",
-      "required_tools": [
-        "photo_management_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "quality_of_selection",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select a short list of the 30-40 strongest images.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The pool of photos is narrowed down."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Arrange the shortlisted photos into a sequence that creates a compelling visual narrative with a beginning, middle, and end.",
-      "expected_outcome": "The final selection of photos tells a story.",
-      "required_tools": [
-        "photo_management_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "narrative_coherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Arrange the shortlisted photos into a sequence that creates a compelling visual narrative with a beginning, middle, and end.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The final selection of photos tells a story."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Write a short caption for each of the final photos.",
-      "expected_outcome": "All selected photos have descriptive captions.",
-      "required_tools": [
-        "text_editor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_clarity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Write a short caption for each of the final photos.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All selected photos have descriptive captions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

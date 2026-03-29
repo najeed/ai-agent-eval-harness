@@ -1,39 +1,46 @@
 {
-  "scenario_id": "construction-os-10605",
-  "title": "Create Daily Site Log",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Daily Site Log",
+    "compliance_level": "Standard"
+  },
   "description": "A site superintendent needs to create the daily log for the day's activities.",
-  "use_case": "On-Site Operations",
-  "core_function": "Daily Operations & Reporting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the weather conditions as 'Sunny, 75\u00b0F' and note the presence of 5 electricians, 8 carpenters, and 1 site inspector.",
-      "expected_outcome": "The daily log is created with the specified weather and personnel details.",
-      "required_tools": [
-        "create_daily_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the weather conditions as 'Sunny, 75\u00b0F' and note the presence of 5 electricians, 8 carpenters, and 1 site inspector.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The daily log is created with the specified weather and personnel details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Record that the 'Rough-in electrical, 2nd floor' task was completed and attach a progress photo.",
-      "expected_outcome": "The task completion and photo are successfully added to the daily log.",
-      "required_tools": [
-        "update_daily_log",
-        "attach_photo_to_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Record that the 'Rough-in electrical, 2nd floor' task was completed and attach a progress photo.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The task completion and photo are successfully added to the daily log."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "legal-ct-12107",
-  "title": "File a Trademark Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File a Trademark Application",
+    "compliance_level": "Standard"
+  },
   "description": "An IP paralegal needs to file a new trademark application with the USPTO for a client's new product name.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Intellectual Property (IP) Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Conduct a knockout search of the USPTO database to ensure the proposed trademark is not already in use.",
-      "expected_outcome": "Agent confirms the mark appears to be available.",
-      "required_tools": [
-        "uspto_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Conduct a knockout search of the USPTO database to ensure the proposed trademark is not already in use.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the mark appears to be available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather all necessary information for the application, including the owner's name, the mark itself, the goods/services it applies to, and a specimen showing the mark in use.",
-      "expected_outcome": "Agent collects all required data and files.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather all necessary information for the application, including the owner's name, the mark itself, the goods/services it applies to, and a specimen showing the mark in use.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all required data and files."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete and file the application through the USPTO's online portal.",
-      "expected_outcome": "Agent successfully submits the trademark application.",
-      "required_tools": [
-        "uspto_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete and file the application through the USPTO's online portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the trademark application."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-cp-12549",
-  "title": "Prepare for Sound Mixing Session",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare for Sound Mixing Session",
+    "compliance_level": "Standard"
+  },
   "description": "A sound mixer needs the final audio tracks for a scene to begin the mixing process.",
-  "use_case": "Content Production & Management",
-  "core_function": "Post-production & VFX",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all separated audio tracks (dialogue, effects, music) for the specified scene.",
-      "expected_outcome": "Agent gathers all the individual audio stems.",
-      "required_tools": [
-        "get_audio_stems_for_scene"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all separated audio tracks (dialogue, effects, music) for the specified scene.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all the individual audio stems."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Package the audio tracks into a standardized format (e.g., AAF) for the mixing software.",
-      "expected_outcome": "Agent successfully exports an AAF file.",
-      "required_tools": [
-        "export_aaf_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Package the audio tracks into a standardized format (e.g., AAF) for the mixing software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully exports an AAF file."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Deliver the AAF package to the sound mixer.",
-      "expected_outcome": "Agent securely transfers the file.",
-      "required_tools": [
-        "transfer_files_securely"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Deliver the AAF package to the sound mixer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely transfers the file."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

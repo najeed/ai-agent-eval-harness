@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12177",
-  "title": "Request Medical Records",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Medical Records",
+    "compliance_level": "Standard"
+  },
   "description": "In a personal injury case, a paralegal needs to request the plaintiff's medical records from a hospital.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain a signed HIPAA authorization from the client.",
-      "expected_outcome": "Agent confirms a valid authorization is on file.",
-      "required_tools": [
-        "case_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain a signed HIPAA authorization from the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms a valid authorization is on file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a letter to the hospital's medical records department requesting all records related to the client's treatment for their injuries.",
-      "expected_outcome": "Agent writes a clear and specific request letter.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a letter to the hospital's medical records department requesting all records related to the client's treatment for their injuries.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a clear and specific request letter."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the request letter along with the signed HIPAA authorization to the hospital.",
-      "expected_outcome": "The request is successfully submitted.",
-      "required_tools": [
-        "email_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the request letter along with the signed HIPAA authorization to the hospital.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The request is successfully submitted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

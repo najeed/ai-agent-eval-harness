@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-maint-12664",
-  "title": "Manage Maintenance Backlog",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Maintenance Backlog",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance superintendent reviews the backlog of open work orders to prioritize them and ensure the most critical work is done first.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Work Management",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a report of all open and unassigned work orders from the CMMS.",
-      "expected_outcome": "A list of all backlogged work is generated.",
-      "required_tools": [
-        "get_work_order_backlog"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a report of all open and unassigned work orders from the CMMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of all backlogged work is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review each work order and assign it a priority based on its safety and production criticality.",
-      "expected_outcome": "All work orders in the backlog are prioritized.",
-      "required_tools": [
-        "prioritize_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review each work order and assign it a priority based on its safety and production criticality.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All work orders in the backlog are prioritized."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Develop the maintenance schedule for the upcoming week, ensuring that the highest priority work from the backlog is included.",
-      "expected_outcome": "The weekly schedule is created, effectively managing the backlog and focusing resources on the most important jobs.",
-      "required_tools": [
-        "create_weekly_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Develop the maintenance schedule for the upcoming week, ensuring that the highest priority work from the backlog is included.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The weekly schedule is created, effectively managing the backlog and focusing resources on the most important jobs."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

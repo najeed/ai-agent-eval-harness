@@ -1,52 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11995",
-  "title": "Review Policy for Rating Errors",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Policy for Rating Errors",
+    "compliance_level": "Standard"
+  },
   "description": "A customer believes their premium is too high and is asking for a review of their policy for any potential rating errors.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Underwriting & Quoting",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the policyholder and retrieve all their policy details and rating information.",
-      "expected_outcome": "Agent pulls up the complete policy file.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the policyholder and retrieve all their policy details and rating information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the complete policy file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Manually review all rating factors (e.g., address, vehicle use, driver assignments, discounts) for accuracy.",
-      "expected_outcome": "Agent reviews the policy and finds that a multi-policy discount was not correctly applied.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Manually review all rating factors (e.g., address, vehicle use, driver assignments, discounts) for accuracy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the policy and finds that a multi-policy discount was not correctly applied."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Correct the error, recalculate the premium, and process a refund for the overpayment.",
-      "expected_outcome": "Agent corrects the discount, resulting in a lower premium, and issues a refund to the customer.",
-      "required_tools": [
-        "recalculate_premium",
-        "process_refund"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Correct the error, recalculate the premium, and process a refund for the overpayment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent corrects the discount, resulting in a lower premium, and issues a refund to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

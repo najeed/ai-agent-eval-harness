@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13933",
-  "title": "Book a Dinner Cruise Package",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book a Dinner Cruise Package",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to book a dinner cruise package on the Seine River in Paris.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Package & Itinerary Creation",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search for available dinner cruise packages on the desired date.",
-      "expected_outcome": "Agent finds several dinner cruise options with different menus and prices.",
-      "required_tools": [
-        "search_packages"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search for available dinner cruise packages on the desired date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds several dinner cruise options with different menus and prices."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Present the options to the customer and help them select a package.",
-      "expected_outcome": "Customer selects the 'Prestige Menu' dinner cruise.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Present the options to the customer and help them select a package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Customer selects the 'Prestige Menu' dinner cruise."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the selected dinner cruise package and process the payment.",
-      "expected_outcome": "Agent successfully books the package and provides a voucher.",
-      "required_tools": [
-        "book_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the selected dinner cruise package and process the payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books the package and provides a voucher."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

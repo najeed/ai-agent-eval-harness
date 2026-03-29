@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-eng-11403",
-  "title": "Update Drawing with As-Built Redlines",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Drawing with As-Built Redlines",
+    "compliance_level": "Standard"
+  },
   "description": "The field team has returned a 'red-line' drawing showing a minor change made during construction. A designer must update the official CAD drawing.",
-  "use_case": "Engineering & Design",
-  "core_function": "Document Control",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan and upload the red-lined drawing to the document management system.",
-      "expected_outcome": "Agent successfully digitizes and logs the red-line markup.",
-      "required_tools": [
-        "upload_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan and upload the red-lined drawing to the document management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully digitizes and logs the red-line markup."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check out the corresponding CAD drawing to begin edits.",
-      "expected_outcome": "Agent successfully checks out the drawing, locking it from edits by others.",
-      "required_tools": [
-        "checkout_drawing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check out the corresponding CAD drawing to begin edits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully checks out the drawing, locking it from edits by others."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the CAD drawing to reflect the red-lined changes and submit it as a new revision for approval.",
-      "expected_outcome": "Agent updates the design, creates a new revision (e.g., Rev B), and submits it to the approval workflow.",
-      "required_tools": [
-        "update_cad_model",
-        "submit_drawing_for_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the CAD drawing to reflect the red-lined changes and submit it as a new revision for approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the design, creates a new revision (e.g., Rev B), and submits it to the approval workflow."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

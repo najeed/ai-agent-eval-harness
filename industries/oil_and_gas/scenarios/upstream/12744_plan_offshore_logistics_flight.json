@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12744",
-  "title": "Plan Helicopter Flight for Crew Change",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Helicopter Flight for Crew Change",
+    "compliance_level": "Standard"
+  },
   "description": "A logistics coordinator plans a helicopter flight to transport personnel to and from an offshore platform.",
-  "use_case": "Upstream",
-  "core_function": "Asset & Maintenance Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate the passenger manifest for the flight based on crew change schedules.",
-      "expected_outcome": "A complete list of passengers for the flight is created.",
-      "required_tools": [
-        "generate_passenger_manifest"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate the passenger manifest for the flight based on crew change schedules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete list of passengers for the flight is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total weight of passengers and cargo to ensure it is within the helicopter's operational limits.",
-      "expected_outcome": "The weight and balance calculation is completed and confirmed to be safe.",
-      "required_tools": [
-        "calculate_weight_and_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total weight of passengers and cargo to ensure it is within the helicopter's operational limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The weight and balance calculation is completed and confirmed to be safe."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the flight with the helicopter operator and send the final manifest and schedule to all parties.",
-      "expected_outcome": "The flight is officially booked and confirmed.",
-      "required_tools": [
-        "book_helicopter_flight",
-        "send_flight_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the flight with the helicopter operator and send the final manifest and schedule to all parties.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The flight is officially booked and confirmed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13864",
-  "title": "Provision VPN for New Business Customer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provision VPN for New Business Customer",
+    "compliance_level": "Standard"
+  },
   "description": "A new enterprise customer requires a secure VPN tunnel to be configured between their office and the telecom network.",
-  "use_case": "Network Operations",
-  "core_function": "Network Provisioning",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the VPN configuration parameters from the customer's service order.",
-      "expected_outcome": "Agent gets the required IP addresses, encryption type, and pre-shared key.",
-      "required_tools": [
-        "get_service_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the VPN configuration parameters from the customer's service order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the required IP addresses, encryption type, and pre-shared key."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply the VPN configuration to the edge router serving the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully configures the VPN tunnel on the router."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply the VPN configuration to the edge router serving the customer.",
-      "expected_outcome": "Agent successfully configures the VPN tunnel on the router.",
-      "required_tools": [
-        "configure_vpn_tunnel"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run a connectivity test to ensure the VPN tunnel is active and passing traffic.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pings the customer's internal IP through the tunnel and gets a successful reply."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run a connectivity test to ensure the VPN tunnel is active and passing traffic.",
-      "expected_outcome": "Agent pings the customer's internal IP through the tunnel and gets a successful reply.",
-      "required_tools": [
-        "test_vpn_connectivity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

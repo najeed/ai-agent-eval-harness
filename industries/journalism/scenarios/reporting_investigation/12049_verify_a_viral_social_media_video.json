@@ -1,67 +1,72 @@
 {
-  "scenario_id": "journalism-ri-12049",
-  "title": "Verify a Viral Social Media Video",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify a Viral Social Media Video",
+    "compliance_level": "Standard"
+  },
   "description": "A dramatic video of an event is going viral. A reporter must verify its authenticity before reporting on it.",
-  "use_case": "Reporting & Investigation",
-  "core_function": "Data Journalism & Fact-Checking",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Perform a reverse image search on keyframes from the video to see where it first appeared online.",
-      "expected_outcome": "Agent traces the video back to its original poster.",
-      "required_tools": [
-        "reverse_image_search"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Perform a reverse image search on keyframes from the video to see where it first appeared online.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent traces the video back to its original poster."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the video's metadata for clues about the date and time it was created.",
-      "expected_outcome": "Agent extracts and analyzes the video's metadata.",
-      "required_tools": [
-        "check_video_metadata"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the video's metadata for clues about the date and time it was created.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent extracts and analyzes the video's metadata."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use landmarks, weather, and shadows in the video to geolocate it and confirm it matches the claimed location and time.",
-      "expected_outcome": "Agent corroborates the video's context using external information.",
-      "required_tools": [
-        "online_maps",
-        "get_weather_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use landmarks, weather, and shadows in the video to geolocate it and confirm it matches the claimed location and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent corroborates the video's context using external information."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Attempt to contact the original poster to ask for more information.",
-      "expected_outcome": "Agent reaches out to the source for direct confirmation.",
-      "required_tools": [
-        "search_social_media"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Attempt to contact the original poster to ask for more information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reaches out to the source for direct confirmation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-so-10717",
-  "title": "User-Reported Phishing Triage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "User-Reported Phishing Triage",
+    "compliance_level": "Standard"
+  },
   "description": "A SOC analyst receives an email reported by a user as suspicious and must determine if it is malicious.",
-  "use_case": "Security Operations (SecOps)",
-  "core_function": "Incident Detection & Triage",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the headers of the reported email to check for signs of spoofing.",
-      "expected_outcome": "Analyst identifies that the email's 'From' address is forged.",
-      "required_tools": [
-        "analyze_email_headers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the headers of the reported email to check for signs of spoofing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst identifies that the email's 'From' address is forged."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Detonate the email's attachment in a sandbox environment to observe its behavior.",
-      "expected_outcome": "The sandbox analysis shows the attachment attempts to download and execute malware.",
-      "required_tools": [
-        "detonate_sandbox"
-      ],
-      "success_criteria": [
-        {
-          "metric": "malware_detection_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Detonate the email's attachment in a sandbox environment to observe its behavior.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sandbox analysis shows the attachment attempts to download and execute malware."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the email is malicious and initiate a search for other users who may have received the same email.",
-      "expected_outcome": "Analyst validates the threat and begins scoping the extent of the campaign.",
-      "required_tools": [
-        "search_email_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "incident_scoping_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the email is malicious and initiate a search for other users who may have received the same email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst validates the threat and begins scoping the extent of the campaign."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

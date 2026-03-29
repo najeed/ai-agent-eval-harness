@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-mr-12365",
-  "title": "Adjust a PM Schedule",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Adjust a PM Schedule",
+    "compliance_level": "Standard"
+  },
   "description": "Based on usage data, a reliability engineer has determined that a PM task can be done less frequently. They need to adjust the schedule.",
-  "use_case": "Maintenance & Repair",
-  "core_function": "Preventive Maintenance",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the specific PM task in the maintenance plan for the asset.",
-      "expected_outcome": "Agent finds the 'Quarterly Lubrication' task.",
-      "required_tools": [
-        "get_asset_pm_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the specific PM task in the maintenance plan for the asset.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the 'Quarterly Lubrication' task."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Change the frequency of the PM from every 3 months to every 4 months.",
-      "expected_outcome": "Agent updates the PM frequency in the system.",
-      "required_tools": [
-        "update_pm_frequency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Change the frequency of the PM from every 3 months to every 4 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the PM frequency in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recalculate the future PM due dates based on the new frequency.",
-      "expected_outcome": "Agent confirms the system has generated a new schedule of future PM dates.",
-      "required_tools": [
-        "recalculate_pm_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recalculate the future PM due dates based on the new frequency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the system has generated a new schedule of future PM dates."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

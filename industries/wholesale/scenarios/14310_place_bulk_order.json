@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-om-14310",
-  "title": "Retailer Places a Bulk Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Retailer Places a Bulk Order",
+    "compliance_level": "Standard"
+  },
   "description": "A retail chain places a large purchase order for multiple products to stock its stores for the upcoming season.",
-  "use_case": "Order Management & Sales",
-  "core_function": "Quoting & Order Placement",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the purchase order from the retailer and enter it into the order management system.",
-      "expected_outcome": "Agent successfully creates a new sales order with all items and quantities from the retailer's PO.",
-      "required_tools": [
-        "create_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the purchase order from the retailer and enter it into the order management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new sales order with all items and quantities from the retailer's PO."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check inventory levels for all items on the order.",
-      "expected_outcome": "Agent confirms that all items are in stock and can be fulfilled completely.",
-      "required_tools": [
-        "check_inventory_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check inventory levels for all items on the order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that all items are in stock and can be fulfilled completely."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send an order confirmation to the retailer with an estimated shipping date.",
-      "expected_outcome": "Agent sends a formal confirmation email to the customer.",
-      "required_tools": [
-        "send_order_confirmation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send an order confirmation to the retailer with an estimated shipping date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a formal confirmation email to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

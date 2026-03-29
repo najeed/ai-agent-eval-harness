@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tax-plan-13751",
-  "title": "Plan for Business Succession",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan for Business Succession",
+    "compliance_level": "Standard"
+  },
   "description": "An aging business owner wants to create a tax-efficient plan to transfer the business to their children.",
-  "use_case": "Tax Planning & Advisory",
-  "core_function": "Business Tax Strategy",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the different succession strategies (e.g., gift, sale, inheritance) and their tax consequences.",
-      "expected_outcome": "Agent outlines the pros and cons of various options.",
-      "required_tools": [
-        "analyze_succession_strategies"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the different succession strategies (e.g., gift, sale, inheritance) and their tax consequences.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent outlines the pros and cons of various options."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Value the business to understand potential gift or estate tax implications.",
-      "expected_outcome": "Agent obtains a professional valuation of the business.",
-      "required_tools": [
-        "get_business_valuation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Value the business to understand potential gift or estate tax implications.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains a professional valuation of the business."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend a strategy that minimizes the overall tax burden for the family and ensures a smooth transition.",
-      "expected_outcome": "Agent provides a comprehensive succession plan.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend a strategy that minimizes the overall tax burden for the family and ensures a smooth transition.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a comprehensive succession plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

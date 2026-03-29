@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-er-11683",
-  "title": "Manage a Union Grievance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Union Grievance",
+    "compliance_level": "Standard"
+  },
   "description": "A union representative has filed a grievance on behalf of an employee, alleging a violation of the collective bargaining agreement (CBA).",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Employee Inquiries & Grievances",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the formal grievance and log it in the labor relations case management system.",
-      "expected_outcome": "The labor relations specialist creates a new case for the grievance.",
-      "required_tools": [
-        "create_labor_relations_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the formal grievance and log it in the labor relations case management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The labor relations specialist creates a new case for the grievance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the specific CBA article cited in the grievance.",
-      "expected_outcome": "Specialist reviews the CBA to understand the alleged violation.",
-      "required_tools": [
-        "get_cba_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the specific CBA article cited in the grievance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist reviews the CBA to understand the alleged violation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule a grievance hearing with the union representative, the employee, and management to discuss the issue.",
-      "expected_outcome": "Specialist schedules the formal hearing as required by the CBA.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule a grievance hearing with the union representative, the employee, and management to discuss the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist schedules the formal hearing as required by the CBA."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

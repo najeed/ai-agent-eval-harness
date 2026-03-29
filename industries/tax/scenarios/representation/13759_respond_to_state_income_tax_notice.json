@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tax-rep-13759",
-  "title": "Respond to a State Income Tax Notice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a State Income Tax Notice",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer receives a notice from their state's Department of Revenue claiming they miscalculated a state-specific credit.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Notice & Correspondence Management",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the state notice to understand the specific issue.",
-      "expected_outcome": "Agent identifies the credit that the state has adjusted.",
-      "required_tools": [
-        "analyze_state_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the state notice to understand the specific issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the credit that the state has adjusted."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the state tax laws regarding the credit in question.",
-      "expected_outcome": "Agent researches the state's rules and finds the taxpayer was, in fact, ineligible for the credit.",
-      "required_tools": [
-        "research_state_tax_law"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the state tax laws regarding the credit in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent researches the state's rules and finds the taxpayer was, in fact, ineligible for the credit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the client to accept the state's adjustment and pay the additional tax.",
-      "expected_outcome": "Agent provides clear advice based on the correct interpretation of state law.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the client to accept the state's adjustment and pay the additional tax.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear advice based on the correct interpretation of state law."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

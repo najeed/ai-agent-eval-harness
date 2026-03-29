@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ports-vo-12980",
-  "title": "Handle a Vessel Diversion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Vessel Diversion",
+    "compliance_level": "Standard"
+  },
   "description": "A vessel scheduled to arrive at the port is diverted to another port by its owners at the last minute.",
-  "use_case": "Vessel Operations",
-  "core_function": "Berth & Pilotage Management",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive notification from the vessel agent that the vessel will no longer be calling at the port.",
-      "expected_outcome": "The scheduler receives the cancellation notice.",
-      "required_tools": [
-        "get_cancellation_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive notification from the vessel agent that the vessel will no longer be calling at the port.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The scheduler receives the cancellation notice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cancel the vessel's berth allocation in the scheduling system.",
-      "expected_outcome": "The berth previously assigned to the vessel is now shown as available.",
-      "required_tools": [
-        "cancel_berth_allocation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cancel the vessel's berth allocation in the scheduling system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The berth previously assigned to the vessel is now shown as available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cancel all associated pilot, tug, and mooring services to avoid cancellation fees.",
-      "expected_outcome": "All booked services for the vessel call are successfully cancelled.",
-      "required_tools": [
-        "cancel_pilot_tugs",
-        "cancel_mooring_gang"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cancel all associated pilot, tug, and mooring services to avoid cancellation fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All booked services for the vessel call are successfully cancelled."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

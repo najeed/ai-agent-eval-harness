@@ -1,50 +1,59 @@
 {
-  "scenario_id": "venues-gs-14271",
-  "title": "Provide Wheelchair Assistance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Wheelchair Assistance",
+    "compliance_level": "Standard"
+  },
   "description": "An elderly guest arriving at the main entrance requests wheelchair assistance to get to their seat.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Accessibility & Special Needs",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the request and ask for the guest's seat location.",
-      "expected_outcome": "Agent gets the seat details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the request and ask for the guest's seat location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the seat details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch a guest services staff member with a wheelchair to the guest's location.",
-      "expected_outcome": "Agent assigns the task to the nearest available staff member.",
-      "required_tools": [
-        "dispatch_staff_with_wheelchair"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch a guest services staff member with a wheelchair to the guest's location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the task to the nearest available staff member."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the assistance request in the system.",
-      "expected_outcome": "Agent creates a record of the assistance provided.",
-      "required_tools": [
-        "log_assistance_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the assistance request in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a record of the assistance provided."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

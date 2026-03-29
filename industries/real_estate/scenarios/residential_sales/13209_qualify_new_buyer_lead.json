@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13209",
-  "title": "Qualify a New Buyer Lead",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Qualify a New Buyer Lead",
+    "compliance_level": "Standard"
+  },
   "description": "A new lead comes in from the website. The agent needs to make initial contact and determine if the buyer is pre-approved for a loan.",
-  "use_case": "Residential Sales",
-  "core_function": "Buyer & Seller Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the new lead's contact information and property inquiry from the CRM.",
-      "expected_outcome": "Agent correctly identifies the new lead's details.",
-      "required_tools": [
-        "get_lead_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the new lead's contact information and property inquiry from the CRM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the new lead's details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the lead to introduce themself, understand their needs, and ask about their financing status.",
-      "expected_outcome": "Agent makes contact and learns the buyer is not yet pre-approved.",
-      "required_tools": [
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the lead to introduce themself, understand their needs, and ask about their financing status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes contact and learns the buyer is not yet pre-approved."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Refer the lead to a list of trusted mortgage lenders to begin the pre-approval process.",
-      "expected_outcome": "Agent provides a helpful referral to the lead.",
-      "required_tools": [
-        "send_lender_referrals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Refer the lead to a list of trusted mortgage lenders to begin the pre-approval process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a helpful referral to the lead."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

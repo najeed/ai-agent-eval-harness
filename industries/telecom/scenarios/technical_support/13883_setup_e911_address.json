@@ -1,82 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13883",
-  "title": "Setup e911 Address for VoIP Service",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Setup e911 Address for VoIP Service",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with a VoIP (internet phone) service needs to set or update their e911 address for emergency services.",
-  "use_case": "Technical Support",
-  "core_function": "Value-Added Service Support",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the importance of an accurate e911 address for VoIP services.",
-      "expected_outcome": "Agent clearly communicates why this is a critical setting.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the importance of an accurate e911 address for VoIP services.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates why this is a critical setting."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the customer to the online portal where they can update their e911 address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions to find the correct page."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the customer to the online portal where they can update their e911 address.",
-      "expected_outcome": "Agent provides clear instructions to find the correct page.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify in the system that the e911 address has been successfully updated by the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the system and confirms the new address is saved."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify in the system that the e911 address has been successfully updated by the customer.",
-      "expected_outcome": "Agent checks the system and confirms the new address is saved.",
-      "required_tools": [
-        "get_e911_address"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

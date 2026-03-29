@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-am-10095",
-  "title": "Manage Export Control Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Export Control Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer needs to share a technical drawing with a foreign supplier, but must first ensure it complies with ITAR (International Traffic in Arms Regulations).",
-  "use_case": "Aircraft Manufacturing",
-  "core_function": "Supply Chain & Procurement",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the technical data to be shared.",
-      "expected_outcome": "Agent specifies the drawing number.",
-      "required_tools": [
-        "get_document_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the technical data to be shared.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent specifies the drawing number."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the drawing's classification against the U.S. Munitions List to determine if it is export-controlled.",
-      "expected_outcome": "Agent determines the drawing is controlled under ITAR.",
-      "required_tools": [
-        "check_export_classification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the drawing's classification against the U.S. Munitions List to determine if it is export-controlled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the drawing is controlled under ITAR."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply for an export license or verify that a license exception is available before sending the data to the foreign supplier.",
-      "expected_outcome": "Agent determines a license is required and submits the application.",
-      "required_tools": [
-        "apply_for_export_license"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply for an export license or verify that a license exception is available before sending the data to the foreign supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines a license is required and submits the application."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

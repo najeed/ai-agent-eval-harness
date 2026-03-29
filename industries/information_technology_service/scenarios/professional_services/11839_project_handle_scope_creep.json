@@ -1,49 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11839",
-  "title": "Project Management - Handle Scope Creep",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Management - Handle Scope Creep",
+    "compliance_level": "Standard"
+  },
   "description": "During a project, a client asks a technician to perform a task that is outside the original scope of work.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Project Execution & Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The technician politely informs the client that the request is out of scope and that they should speak to the project manager.",
-      "expected_outcome": "The technician correctly avoids performing out-of-scope work and directs the client to the proper channel.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The technician politely informs the client that the request is out of scope and that they should speak to the project manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician correctly avoids performing out-of-scope work and directs the client to the proper channel."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The project manager contacts the client to discuss the new request.",
-      "expected_outcome": "The PM and client discuss the new requirement.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The project manager contacts the client to discuss the new request.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PM and client discuss the new requirement."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The project manager creates a formal change order for the additional work, which the client approves.",
-      "expected_outcome": "The scope creep is managed formally through a change order, ensuring the work is properly billed.",
-      "required_tools": [
-        "create_change_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The project manager creates a formal change order for the additional work, which the client approves.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The scope creep is managed formally through a change order, ensuring the work is properly billed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

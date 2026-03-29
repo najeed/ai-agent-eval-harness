@@ -1,48 +1,59 @@
 {
-  "scenario_id": "ps-cs-13049",
-  "title": "Check Voter Registration Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Voter Registration Status",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen wants to check if they are registered to vote at their current address.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Information & Inquiry Resolution",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the citizen's name, address, and date of birth.",
-      "expected_outcome": "Agent collects the information needed to perform the search.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the citizen's name, address, and date of birth.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the information needed to perform the search."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the statewide voter registration database.",
-      "expected_outcome": "Agent successfully searches the database.",
-      "required_tools": [
-        "search_voter_registration_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the statewide voter registration database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully searches the database."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the citizen of their registration status and polling place location.",
-      "expected_outcome": "Agent confirms the citizen is registered and provides their polling location.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the citizen of their registration status and polling place location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the citizen is registered and provides their polling location."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

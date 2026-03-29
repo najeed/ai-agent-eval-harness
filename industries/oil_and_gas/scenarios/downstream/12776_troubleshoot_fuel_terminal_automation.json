@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12776",
-  "title": "Troubleshoot Fuel Terminal Automation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Troubleshoot Fuel Terminal Automation",
+    "compliance_level": "Standard"
+  },
   "description": "A truck driver at a fuel loading terminal reports that the automated system is not recognizing their access card. A support technician must troubleshoot remotely.",
-  "use_case": "Downstream",
-  "core_function": "Distribution & Retail",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the driver's account in the terminal automation system using their name or company.",
-      "expected_outcome": "The driver's account is located.",
-      "required_tools": [
-        "get_driver_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the driver's account in the terminal automation system using their name or company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver's account is located."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status of the driver's certifications (e.g., safety training) to ensure they are up to date.",
-      "expected_outcome": "The system shows the driver's safety certification expired yesterday.",
-      "required_tools": [
-        "check_driver_certifications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status of the driver's certifications (e.g., safety training) to ensure they are up to date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows the driver's safety certification expired yesterday."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the driver that their access is denied due to an expired certification and instruct them on how to renew it online.",
-      "expected_outcome": "The root cause is communicated clearly to the driver with instructions for resolution.",
-      "required_tools": [
-        "send_notification_to_driver"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the driver that their access is denied due to an expired certification and instruct them on how to renew it online.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The root cause is communicated clearly to the driver with instructions for resolution."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

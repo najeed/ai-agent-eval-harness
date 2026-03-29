@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ports-go-12920",
-  "title": "Handle a Damaged Container at the Gate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Damaged Container at the Gate",
+    "compliance_level": "Standard"
+  },
   "description": "A truck arrives to drop off an export container, but the gate inspection camera identifies significant damage.",
-  "use_case": "Gate & Landside Operations",
-  "core_function": "Gate Processing & Appointments",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The gate system flags the container with a 'Damage Exception' based on the OCR/camera inspection.",
-      "expected_outcome": "Clerk receives an alert with photos showing a large hole in the container wall.",
-      "required_tools": [
-        "get_gate_inspection_photos"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The gate system flags the container with a 'Damage Exception' based on the OCR/camera inspection.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Clerk receives an alert with photos showing a large hole in the container wall."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Deny entry to the container and inform the driver of the damage.",
-      "expected_outcome": "The clerk explains that the container cannot be accepted in its current condition.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Deny entry to the container and inform the driver of the damage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The clerk explains that the container cannot be accepted in its current condition."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the incident and instruct the driver to move to a holding area to await instructions from the cargo owner.",
-      "expected_outcome": "The event is logged, and the driver is directed out of the main traffic flow.",
-      "required_tools": [
-        "log_gate_exception"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the incident and instruct the driver to move to a holding area to await instructions from the cargo owner.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The event is logged, and the driver is directed out of the main traffic flow."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

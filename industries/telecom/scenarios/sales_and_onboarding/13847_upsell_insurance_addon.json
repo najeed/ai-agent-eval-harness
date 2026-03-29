@@ -1,83 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13847",
-  "title": "Upsell - Device Insurance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Upsell - Device Insurance",
+    "compliance_level": "Standard"
+  },
   "description": "After selling a customer a new high-end smartphone, the agent should attempt to sell them device insurance.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Upselling and Cross-selling",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Following a new phone order, present the device insurance options.",
-      "expected_outcome": "Agent pivots to an insurance offer.",
-      "required_tools": [
-        "get_insurance_options"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Following a new phone order, present the device insurance options.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pivots to an insurance offer."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the coverage details (e.g., theft, accidental damage) and the monthly cost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains what the insurance covers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the coverage details (e.g., theft, accidental damage) and the monthly cost.",
-      "expected_outcome": "Agent clearly explains what the insurance covers.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the selected insurance plan to the customer's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the insurance feature."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the selected insurance plan to the customer's account.",
-      "expected_outcome": "Agent successfully adds the insurance feature.",
-      "required_tools": [
-        "add_plan_addon"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

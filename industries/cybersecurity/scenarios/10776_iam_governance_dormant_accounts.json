@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-iam-10776",
-  "title": "Dormant Account Review",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dormant Account Review",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must run a quarterly report to find accounts that have not been used for over 90 days and disable them.",
-  "use_case": "Identity & Access Management (IAM)",
-  "core_function": "Identity Governance & Attestation",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query Active Directory logs to find all accounts with a 'lastLogonTimestamp' older than 90 days.",
-      "expected_outcome": "Analyst generates an accurate list of all dormant accounts.",
-      "required_tools": [
-        "query_ad_for_dormant_accounts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query Active Directory logs to find all accounts with a 'lastLogonTimestamp' older than 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst generates an accurate list of all dormant accounts."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the list with business unit managers to confirm the accounts are no longer needed.",
-      "expected_outcome": "Analyst verifies that the accounts can be safely disabled.",
-      "required_tools": [
-        "confirm_with_manager"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the list with business unit managers to confirm the accounts are no longer needed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst verifies that the accounts can be safely disabled."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Disable all confirmed dormant accounts.",
-      "expected_outcome": "Analyst successfully disables the accounts, reducing the organization's attack surface.",
-      "required_tools": [
-        "disable_ad_user_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "remediation_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Disable all confirmed dormant accounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully disables the accounts, reducing the organization's attack surface."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

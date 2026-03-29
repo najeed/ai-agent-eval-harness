@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-pm-10617",
-  "title": "Reallocate Crew Due to Material Delay",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reallocate Crew Due to Material Delay",
+    "compliance_level": "Standard"
+  },
   "description": "The delivery of structural steel is delayed by a week. The project manager must reallocate the steel erection crew to another task.",
-  "use_case": "Project Management",
-  "core_function": "Resource Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify that the 'Steel Erection Crew' is scheduled for a task that is now blocked.",
-      "expected_outcome": "Agent confirms the crew's current task is blocked by the material delay.",
-      "required_tools": [
-        "get_resource_schedule",
-        "get_task_dependencies"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify that the 'Steel Erection Crew' is scheduled for a task that is now blocked.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the crew's current task is blocked by the material delay."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Find an available, non-dependent task that the crew can perform, such as 'Site Safety Improvements'.",
-      "expected_outcome": "Agent identifies a suitable task that can be started immediately.",
-      "required_tools": [
-        "find_available_tasks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Find an available, non-dependent task that the crew can perform, such as 'Site Safety Improvements'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a suitable task that can be started immediately."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reassign the 'Steel Erection Crew' to the 'Site Safety Improvements' task for the next 5 days.",
-      "expected_outcome": "The crew's schedule is updated in the project plan.",
-      "required_tools": [
-        "assign_resource_to_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reassign the 'Steel Erection Crew' to the 'Site Safety Improvements' task for the next 5 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew's schedule is updated in the project plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

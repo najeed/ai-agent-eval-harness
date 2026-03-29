@@ -1,87 +1,61 @@
 {
-  "scenario_id": "hc-cc-11321",
-  "title": "Respond to a Drug-Interaction Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a Drug-Interaction Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A physician is ordering a new medication, and the Clinical Decision Support system fires an alert for a potential major drug-drug interaction.",
-  "use_case": "Clinical Care",
-  "core_function": "Clinical Decision Support",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the alert that has appeared on the screen during order entry.",
-      "expected_outcome": "Physician sees and acknowledges the critical alert.",
-      "required_tools": [
-        "acknowledge_cds_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the alert that has appeared on the screen during order entry.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician sees and acknowledges the critical alert."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the details of the interacting medications and the potential adverse effect.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician understands the clinical risk presented by the alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the details of the interacting medications and the potential adverse effect.",
-      "expected_outcome": "Physician understands the clinical risk presented by the alert.",
-      "required_tools": [
-        "review_alert_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cancel the new medication order and select an alternative medication that does not have the interaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician makes a different, safer clinical choice based on the CDS alert."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cancel the new medication order and select an alternative medication that does not have the interaction.",
-      "expected_outcome": "Physician makes a different, safer clinical choice based on the CDS alert.",
-      "required_tools": [
-        "cancel_order",
-        "search_medication_database",
-        "sign_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

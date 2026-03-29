@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-ar-34",
-  "title": "Onboard a New Customer and Set Credit Limit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Onboard a New Customer and Set Credit Limit",
+    "compliance_level": "Standard"
+  },
   "description": "A salesperson has signed a new customer. The credit team needs to set them up in the system and establish an initial credit limit.",
-  "use_case": "Accounts Receivable",
-  "core_function": "Credit Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the new customer information, including their legal name and address.",
-      "expected_outcome": "Agent gets the customer details.",
-      "required_tools": [
-        "get_new_customer_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the new customer information, including their legal name and address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the customer details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a credit report on the new customer.",
-      "expected_outcome": "Agent retrieves the customer's credit score.",
-      "required_tools": [
-        "run_credit_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a credit report on the new customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the customer's credit score."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on the credit score and company policy, determine an appropriate initial credit limit.",
-      "expected_outcome": "Agent sets an initial credit limit of $25,000.",
-      "required_tools": [
-        "determine_credit_limit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on the credit score and company policy, determine an appropriate initial credit limit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets an initial credit limit of $25,000."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create the new customer master record in the ERP system with the assigned credit limit.",
-      "expected_outcome": "Agent successfully creates the new customer record.",
-      "required_tools": [
-        "create_customer_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create the new customer master record in the ERP system with the assigned credit limit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the new customer record."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

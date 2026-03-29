@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-cs-13094",
-  "title": "Apply for a Marriage License",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply for a Marriage License",
+    "compliance_level": "Standard"
+  },
   "description": "A couple needs to apply for a marriage license at the county clerk's office.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Licensing & Permitting",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather personal information and proof of identity and age from both applicants.",
-      "expected_outcome": "The clerk collects and verifies the required documents from the couple.",
-      "required_tools": [
-        "verify_citizen_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather personal information and proof of identity and age from both applicants.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The clerk collects and verifies the required documents from the couple."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Complete the marriage license application form.",
-      "expected_outcome": "The clerk accurately fills out the application with the couple's information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Complete the marriage license application form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The clerk accurately fills out the application with the couple's information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the application fee and issue the marriage license.",
-      "expected_outcome": "The clerk takes payment and provides the couple with their official marriage license.",
-      "required_tools": [
-        "process_payment",
-        "issue_license"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the application fee and issue the marriage license.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The clerk takes payment and provides the couple with their official marriage license."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

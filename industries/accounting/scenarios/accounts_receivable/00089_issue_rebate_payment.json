@@ -1,65 +1,72 @@
 {
-  "scenario_id": "ac-ar-89",
-  "title": "Issue a Customer Rebate Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue a Customer Rebate Payment",
+    "compliance_level": "Standard"
+  },
   "description": "Based on their annual purchase volume, a customer has earned a rebate. Accounting needs to process this rebate.",
-  "use_case": "Accounts Receivable",
-  "core_function": "Billing & Invoicing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Calculate the total purchases for the customer for the year.",
-      "expected_outcome": "Agent retrieves the customer's total sales volume.",
-      "required_tools": [
-        "get_customer_sales_volume"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Calculate the total purchases for the customer for the year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the customer's total sales volume."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the rebate amount based on the tiered rebate program rules (e.g., 2% rebate on sales over $1M).",
-      "expected_outcome": "Agent correctly calculates the total rebate earned.",
-      "required_tools": [
-        "calculate_rebate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the rebate amount based on the tiered rebate program rules (e.g., 2% rebate on sales over $1M).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the total rebate earned."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a credit memo on the customer's account for the rebate amount.",
-      "expected_outcome": "Agent successfully generates the rebate credit memo.",
-      "required_tools": [
-        "create_credit_memo"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a credit memo on the customer's account for the rebate amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the rebate credit memo."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The customer can then either apply this credit to open invoices or request a cash payment.",
-      "expected_outcome": "Agent provides the customer with the options for their rebate.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "The customer can then either apply this credit to open invoices or request a cash payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the customer with the options for their rebate."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

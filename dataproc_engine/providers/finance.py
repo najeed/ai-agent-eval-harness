@@ -1,4 +1,4 @@
-﻿import aiohttp
+import aiohttp
 import asyncio
 import hashlib
 import json
@@ -52,10 +52,16 @@ class FinanceProvider(BaseProvider):
                     logger.error("wb_extraction_failed", indicator=indicator, error=str(e))
                 
                 if self.allow_simulation:
-                    simulated_wb = [
-                        {"country": {"value": "United States"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
-                        {"country": {"value": "China"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"}
-                    ]
+                    logger.warning("wb_api_failure_using_sim")
+                    mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "finance", "mock_worldbank.json")
+                    if os.path.exists(mock_path):
+                        with open(mock_path, "r") as f:
+                            simulated_wb = json.load(f)
+                    else:
+                        simulated_wb = [
+                            {"country": {"value": "United States"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
+                            {"country": {"value": "China"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"}
+                        ]
                     return [self.create_simulated_artifact(
                         id=f"WB-{indicator}",
                         content=simulated_wb,

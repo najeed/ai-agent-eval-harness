@@ -1,51 +1,59 @@
 {
-  "scenario_id": "energy-cs-11143",
-  "title": "Community Solar Program Subscription",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Community Solar Program Subscription",
+    "compliance_level": "Standard"
+  },
   "description": "A residential customer wants to sign up for a local community solar program to support renewable energy and receive bill credits.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Billing & Program Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Based on the customer's address, identify available community solar projects with open subscriptions.",
-      "expected_outcome": "Agent finds one local solar farm with 10 remaining subscription slots.",
-      "required_tools": [
-        "find_community_solar_projects"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Based on the customer's address, identify available community solar projects with open subscriptions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds one local solar farm with 10 remaining subscription slots."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the program's terms, including the subscription fee and the estimated monthly bill credit.",
-      "expected_outcome": "Agent clearly communicates the costs and benefits.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the program's terms, including the subscription fee and the estimated monthly bill credit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the costs and benefits."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the customer's subscription application and sign them up for a 5 kW share of the project.",
-      "expected_outcome": "Agent successfully enrolls the customer in the program.",
-      "required_tools": [
-        "process_solar_subscription"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the customer's subscription application and sign them up for a 5 kW share of the project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully enrolls the customer in the program."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

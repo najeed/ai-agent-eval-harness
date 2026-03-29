@@ -1,106 +1,71 @@
 {
-  "scenario_id": "lw-tm-12247",
-  "title": "Handle Proof of Delivery Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Proof of Delivery Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "A customer claims they only received 9 out of 10 pallets, but the carrier's POD is signed clean.",
-  "use_case": "Transportation Management",
-  "core_function": "Proof of Delivery & Settlement",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the signed POD for the shipment in question.",
-      "expected_outcome": "Agent pulls up the POD image, which shows no notes of shortage.",
-      "required_tools": [
-        "get_pod_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the signed POD for the shipment in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the POD image, which shows no notes of shortage."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the carrier and ask them to investigate the shortage with their driver.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent formally requests an investigation from the carrier."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the carrier and ask them to investigate the shortage with their driver.",
-      "expected_outcome": "Agent formally requests an investigation from the carrier.",
-      "required_tools": [
-        "send_carrier_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the warehouse's loading photos or videos for the shipment, if available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews security footage, which confirms all 10 pallets were loaded onto the truck."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Present the evidence to the carrier to support a freight claim for the missing pallet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses the evidence to file a successful claim."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the warehouse's loading photos or videos for the shipment, if available.",
-      "expected_outcome": "Agent reviews security footage, which confirms all 10 pallets were loaded onto the truck.",
-      "required_tools": [
-        "get_warehouse_loading_media"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Present the evidence to the carrier to support a freight claim for the missing pallet.",
-      "expected_outcome": "Agent uses the evidence to file a successful claim.",
-      "required_tools": [
-        "submit_carrier_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-fld-11460",
-  "title": "Manage a Large Concrete Pour",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Large Concrete Pour",
+    "compliance_level": "Standard"
+  },
   "description": "A supervisor is managing a large, continuous concrete pour for a building foundation and must track the trucks and volumes.",
-  "use_case": "Field Operations & Execution",
-  "core_function": "Construction & Assembly",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the daily schedule to see how many concrete trucks are expected.",
-      "expected_outcome": "The schedule shows 20 trucks are planned for the day.",
-      "required_tools": [
-        "get_daily_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the daily schedule to see how many concrete trucks are expected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The schedule shows 20 trucks are planned for the day."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "As each truck arrives, log its delivery ticket number and the volume of concrete it delivered.",
-      "expected_outcome": "The supervisor logs the arrival and volume for each truck.",
-      "required_tools": [
-        "log_material_delivery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "As each truck arrives, log its delivery ticket number and the volume of concrete it delivered.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The supervisor logs the arrival and volume for each truck."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Keep a running total of the volume poured and compare it to the total required for the foundation to ensure the pour is completed.",
-      "expected_outcome": "Agent maintains a running total and confirms when the total required volume has been reached.",
-      "required_tools": [
-        "calculate_running_total"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Keep a running total of the volume poured and compare it to the total required for the foundation to ensure the pour is completed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent maintains a running total and confirms when the total required volume has been reached."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

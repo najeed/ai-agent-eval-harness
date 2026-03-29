@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11774",
-  "title": "Handle Renewal with Price Increase",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Renewal with Price Increase",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is up for renewal, but the price for their plan has increased since last year. The Account Manager needs to communicate this and secure the renewal.",
-  "use_case": "Sales & Account Management",
-  "core_function": "Account Renewals & Upselling",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare for the call by documenting the new features and value added to the product over the past year.",
-      "expected_outcome": "Agent builds a justification for the price increase.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare for the call by documenting the new features and value added to the product over the past year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent builds a justification for the price increase."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the customer, communicate the new price, and explain the value that justifies it.",
-      "expected_outcome": "Agent proactively addresses the price change and reinforces the product's value.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the customer, communicate the new price, and explain the value that justifies it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proactively addresses the price change and reinforces the product's value."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the customer objects, offer a small, one-time discount to ease the transition to the new price.",
-      "expected_outcome": "Agent uses a discretionary discount to overcome the objection and secure the renewal.",
-      "required_tools": [
-        "apply_discount"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the customer objects, offer a small, one-time discount to ease the transition to the new price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses a discretionary discount to overcome the objection and secure the renewal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

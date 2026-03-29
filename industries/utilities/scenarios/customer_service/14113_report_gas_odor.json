@@ -1,48 +1,59 @@
 {
-  "scenario_id": "utils-cs-14113",
-  "title": "Report Natural Gas Odor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Natural Gas Odor",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls reporting the smell of natural gas (rotten eggs) inside their home. This is a critical safety scenario.",
-  "use_case": "Customer Service",
-  "core_function": "Service Orders",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Immediately advise the customer to evacuate the premises and not use any electronics or light switches.",
-      "expected_outcome": "Agent follows safety protocol and provides critical instructions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Immediately advise the customer to evacuate the premises and not use any electronics or light switches.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent follows safety protocol and provides critical instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "While the customer is evacuating, dispatch an emergency crew to the location with the highest priority.",
-      "expected_outcome": "Agent creates a Priority 1 emergency work order.",
-      "required_tools": [
-        "dispatch_emergency_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "While the customer is evacuating, dispatch an emergency crew to the location with the highest priority.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a Priority 1 emergency work order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the customer's location and a safe callback number once they are outside.",
-      "expected_outcome": "Agent verifies the address and contact details for the emergency crew.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the customer's location and a safe callback number once they are outside.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the address and contact details for the emergency crew."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

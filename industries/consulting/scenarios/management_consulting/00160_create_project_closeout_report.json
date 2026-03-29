@@ -1,66 +1,72 @@
 {
-  "scenario_id": "consulting-mc-160",
-  "title": "Create a Project Closeout Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Project Closeout Report",
+    "compliance_level": "Standard"
+  },
   "description": "At the end of a project, an agent must create a closeout report summarizing achievements, budget vs. actuals, and lessons learned.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the project's original scope, budget, and timeline from the SOW.",
-      "expected_outcome": "Agent gets the planned project parameters.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the project's original scope, budget, and timeline from the SOW.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the planned project parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the final project outcomes, actual costs, and actual completion date.",
-      "expected_outcome": "Agent gets the actual project results.",
-      "required_tools": [
-        "get_project_actuals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the final project outcomes, actual costs, and actual completion date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the actual project results."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the planned vs. actual data to highlight successes and variances.",
-      "expected_outcome": "Agent correctly calculates variances (e.g., 'completed 5% under budget').",
-      "required_tools": [
-        "calculate_variance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the planned vs. actual data to highlight successes and variances.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates variances (e.g., 'completed 5% under budget')."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Draft a 'Lessons Learned' section based on project team feedback notes.",
-      "expected_outcome": "Agent summarizes the key lessons from the project.",
-      "required_tools": [
-        "summarize_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "summarization_quality",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-4",
+        "task_description": "Draft a 'Lessons Learned' section based on project team feedback notes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent summarizes the key lessons from the project."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

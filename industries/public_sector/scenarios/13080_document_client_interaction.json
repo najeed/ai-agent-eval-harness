@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-cs-13080",
-  "title": "Document a Client Interaction",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document a Client Interaction",
+    "compliance_level": "Standard"
+  },
   "description": "A social worker needs to log a phone call with a client in the case management system.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Case Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the client's case file.",
-      "expected_outcome": "The worker locates the correct file.",
-      "required_tools": [
-        "get_case_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the client's case file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker locates the correct file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the 'Log Interaction' activity.",
-      "expected_outcome": "The worker initiates the correct process in the system.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the 'Log Interaction' activity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker initiates the correct process in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the details of the phone call, including the topics discussed and any follow-up actions, and save the note.",
-      "expected_outcome": "The worker successfully documents the interaction in the case file.",
-      "required_tools": [
-        "add_case_note"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the details of the phone call, including the topics discussed and any follow-up actions, and save the note.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker successfully documents the interaction in the case file."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

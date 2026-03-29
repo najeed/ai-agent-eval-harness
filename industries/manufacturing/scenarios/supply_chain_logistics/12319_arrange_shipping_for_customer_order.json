@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-sl-12319",
-  "title": "Arrange Shipping for a Customer Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Arrange Shipping for a Customer Order",
+    "compliance_level": "Standard"
+  },
   "description": "A logistics coordinator needs to arrange transportation for a completed customer order.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Outbound & Shipping",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer order that is ready for shipment.",
-      "expected_outcome": "Agent retrieves the sales order and confirms its status is 'Ready to Ship'.",
-      "required_tools": [
-        "get_sales_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer order that is ready for shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the sales order and confirms its status is 'Ready to Ship'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get freight quotes from approved carriers based on the shipment's weight, dimensions, and destination.",
-      "expected_outcome": "Agent receives quotes from three different freight carriers.",
-      "required_tools": [
-        "get_freight_quotes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get freight quotes from approved carriers based on the shipment's weight, dimensions, and destination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives quotes from three different freight carriers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the shipment with the most cost-effective carrier and generate the Bill of Lading (BOL).",
-      "expected_outcome": "Agent books the shipment and prints the BOL for the driver.",
-      "required_tools": [
-        "book_shipment",
-        "generate_bol"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the shipment with the most cost-effective carrier and generate the Bill of Lading (BOL).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent books the shipment and prints the BOL for the driver."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

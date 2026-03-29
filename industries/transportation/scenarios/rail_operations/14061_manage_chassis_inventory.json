@@ -1,65 +1,72 @@
 {
-  "scenario_id": "tr-ro-14061",
-  "title": "Manage Chassis Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Chassis Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "An intermodal terminal manager needs to ensure there are enough available chassis (the trailer frames that hold containers) for upcoming train arrivals.",
-  "use_case": "Rail Operations",
-  "core_function": "Intermodal Operations",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the number of inbound containers scheduled to arrive in the next 24 hours.",
-      "expected_outcome": "Manager sees that 200 containers are scheduled to arrive.",
-      "required_tools": [
-        "get_inbound_container_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the number of inbound containers scheduled to arrive in the next 24 hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager sees that 200 containers are scheduled to arrive."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the current on-hand inventory of available chassis at the terminal.",
-      "expected_outcome": "Manager sees there are only 150 available chassis.",
-      "required_tools": [
-        "get_chassis_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the current on-hand inventory of available chassis at the terminal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager sees there are only 150 available chassis."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify the deficit of 50 chassis.",
-      "expected_outcome": "The system highlights the upcoming shortage.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify the deficit of 50 chassis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system highlights the upcoming shortage."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Contact a chassis pool provider to order an additional 50 chassis to be delivered to the terminal.",
-      "expected_outcome": "More chassis are ordered to meet the anticipated demand, preventing delays.",
-      "required_tools": [
-        "order_chassis_from_pool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Contact a chassis pool provider to order an additional 50 chassis to be delivered to the terminal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "More chassis are ordered to meet the anticipated demand, preventing delays."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

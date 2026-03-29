@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-sc-12385",
-  "title": "Create a Quote for a Custom Product",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Quote for a Custom Product",
+    "compliance_level": "Standard"
+  },
   "description": "A sales rep is working with engineering to create a quote for a new, custom-configured product.",
-  "use_case": "Sales & Customer Management",
-  "core_function": "Quoting & Ordering",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use the product configurator tool to select the required features and options for the custom product.",
-      "expected_outcome": "Agent builds the custom product configuration.",
-      "required_tools": [
-        "use_product_configurator"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use the product configurator tool to select the required features and options for the custom product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent builds the custom product configuration."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a cost estimate based on the selected configuration.",
-      "expected_outcome": "The system calculates the total material and labor cost for the custom product.",
-      "required_tools": [
-        "get_configured_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a cost estimate based on the selected configuration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system calculates the total material and labor cost for the custom product."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a formal quote with the calculated price, the configuration details, and an estimated lead time.",
-      "expected_outcome": "Agent generates and sends the detailed quote for the custom item.",
-      "required_tools": [
-        "create_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a formal quote with the calculated price, the configuration details, and an estimated lead time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates and sends the detailed quote for the custom item."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-geo-12650",
-  "title": "Model Major Structural Faults",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Model Major Structural Faults",
+    "compliance_level": "Standard"
+  },
   "description": "A mine geologist models the major faults in a deposit, as they can control mineralization and impact rock stability.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Geotechnical Analysis",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Interpret and pick the fault locations on multiple cross-sections using drillhole and seismic data.",
-      "expected_outcome": "The fault traces are identified on 2D sections.",
-      "required_tools": [
-        "pick_faults_on_sections"
-      ],
-      "success_criteria": [
-        {
-          "metric": "geological_interpretation_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Interpret and pick the fault locations on multiple cross-sections using drillhole and seismic data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The fault traces are identified on 2D sections."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a 3D wireframe surface for each major fault by stitching together the 2D interpretations.",
-      "expected_outcome": "3D models of the fault surfaces are created.",
-      "required_tools": [
-        "create_3d_wireframe"
-      ],
-      "success_criteria": [
-        {
-          "metric": "model_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a 3D wireframe surface for each major fault by stitching together the 2D interpretations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "3D models of the fault surfaces are created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Incorporate the fault models into the main geological block model to constrain the resource estimate and inform the mine design.",
-      "expected_outcome": "The block model and mine plan are updated to honor the major structural controls.",
-      "required_tools": [
-        "update_block_model_with_faults"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Incorporate the fault models into the main geological block model to constrain the resource estimate and inform the mine design.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The block model and mine plan are updated to honor the major structural controls."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-to-14046",
-  "title": "Re-route a Truck Due to Road Closure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Re-route a Truck Due to Road Closure",
+    "compliance_level": "Standard"
+  },
   "description": "A dispatcher receives an alert about an unexpected highway closure on a driver's route. They must re-route the driver.",
-  "use_case": "Trucking & Freight Operations",
-  "core_function": "Dispatch & Load Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a traffic alert about a major accident and highway closure.",
-      "expected_outcome": "Dispatcher is aware of the road closure.",
-      "required_tools": [
-        "get_traffic_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a traffic alert about a major accident and highway closure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher is aware of the road closure."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify all trucks whose current routes are affected by the closure.",
-      "expected_outcome": "The system identifies one truck that is routed onto the closed highway.",
-      "required_tools": [
-        "find_trucks_by_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify all trucks whose current routes are affected by the closure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system identifies one truck that is routed onto the closed highway."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate an optimal detour route for the affected truck.",
-      "expected_outcome": "A new route is generated that bypasses the closure.",
-      "required_tools": [
-        "calculate_detour_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate an optimal detour route for the affected truck.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new route is generated that bypasses the closure."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Send the new route and instructions to the driver's in-cab navigation device.",
-      "expected_outcome": "The driver receives the updated route.",
-      "required_tools": [
-        "send_route_to_driver"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Send the new route and instructions to the driver's in-cab navigation device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver receives the updated route."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

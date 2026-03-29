@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-ast-11429",
-  "title": "Create New Asset in Maintenance System",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create New Asset in Maintenance System",
+    "compliance_level": "Standard"
+  },
   "description": "A new pump has been installed. It needs to be created as a new asset in the maintenance management system.",
-  "use_case": "Asset & Maintenance Management",
-  "core_function": "Maintenance Planning & Execution",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new asset record.",
-      "expected_outcome": "Agent initiates the creation of a new asset.",
-      "required_tools": [
-        "create_asset_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new asset record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates the creation of a new asset."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the asset's details, such as make, model, serial number, and location.",
-      "expected_outcome": "Agent correctly populates the asset's master data.",
-      "required_tools": [
-        "update_asset_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the asset's details, such as make, model, serial number, and location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly populates the asset's master data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the standard preventative maintenance plan for this type of pump to the new asset.",
-      "expected_outcome": "Agent links the correct PM plan to the new asset, which will automatically schedule future maintenance.",
-      "required_tools": [
-        "assign_maintenance_plan_to_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the standard preventative maintenance plan for this type of pump to the new asset.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent links the correct PM plan to the new asset, which will automatically schedule future maintenance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

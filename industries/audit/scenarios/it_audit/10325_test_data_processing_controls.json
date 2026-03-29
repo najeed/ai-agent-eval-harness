@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-it-10325",
-  "title": "Test Application Data Processing Controls",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Test Application Data Processing Controls",
+    "compliance_level": "Standard"
+  },
   "description": "An IT auditor tests a financial application to ensure it correctly calculates sales commissions.",
-  "use_case": "IT Audit",
-  "core_function": "Application Controls Testing",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the commission calculation logic and policy from the business.",
-      "expected_outcome": "Auditor understands the rules for how commissions should be calculated.",
-      "required_tools": [
-        "get_business_requirements_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the commission calculation logic and policy from the business.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor understands the rules for how commissions should be calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a test dataset with various sales scenarios (e.g., different products, discount levels).",
-      "expected_outcome": "A comprehensive test deck is created.",
-      "required_tools": [
-        "create_test_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a test dataset with various sales scenarios (e.g., different products, discount levels).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive test deck is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the test data through the application and compare the system's output to a manually calculated result.",
-      "expected_outcome": "Auditor confirms the application calculates commissions correctly in all test scenarios.",
-      "required_tools": [
-        "perform_application_test",
-        "recalculate_manually"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the test data through the application and compare the system's output to a manually calculated result.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor confirms the application calculates commissions correctly in all test scenarios."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

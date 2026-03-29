@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-mp-10834",
-  "title": "ISR Asset Resource Planning",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "ISR Asset Resource Planning",
+    "compliance_level": "Standard"
+  },
   "description": "A planner must select the best ISR asset to find a mobile surface-to-air missile (SAM) launcher hidden in a forested area.",
-  "use_case": "Mission Planning & Execution",
-  "core_function": "Resource & Ordnance Planning",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the intelligence on the target type and the terrain (dense forest).",
-      "expected_outcome": "Planner understands the difficulty of finding a mobile, hidden target in foliage.",
-      "required_tools": [
-        "get_target_intelligence",
-        "get_terrain_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the intelligence on the target type and the terrain (dense forest).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner understands the difficulty of finding a mobile, hidden target in foliage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query available ISR assets and their sensor capabilities (e.g., standard video, thermal, synthetic aperture radar).",
-      "expected_outcome": "Planner gets a list of available assets and their sensor payloads.",
-      "required_tools": [
-        "get_isr_asset_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query available ISR assets and their sensor capabilities (e.g., standard video, thermal, synthetic aperture radar).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner gets a list of available assets and their sensor payloads."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select a drone equipped with synthetic aperture radar (SAR), which can penetrate foliage, as the optimal asset for the mission.",
-      "expected_outcome": "Planner makes the correct technical decision to use a SAR-equipped platform.",
-      "required_tools": [
-        "select_optimal_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select a drone equipped with synthetic aperture radar (SAR), which can penetrate foliage, as the optimal asset for the mission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner makes the correct technical decision to use a SAR-equipped platform."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

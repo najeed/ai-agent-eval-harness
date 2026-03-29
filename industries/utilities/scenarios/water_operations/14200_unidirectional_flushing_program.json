@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-wo-14200",
-  "title": "Plan Unidirectional Flushing Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Unidirectional Flushing Program",
+    "compliance_level": "Standard"
+  },
   "description": "A water quality engineer is planning a unidirectional flushing program to clean water mains and improve water quality in a specific neighborhood.",
-  "use_case": "Water & Wastewater Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Using a hydraulic model, design a flushing sequence (which valves and hydrants to open/close) that will achieve the necessary scouring velocity in the pipes.",
-      "expected_outcome": "System generates an optimized, step-by-step flushing plan.",
-      "required_tools": [
-        "generate_flushing_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "plan_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Using a hydraulic model, design a flushing sequence (which valves and hydrants to open/close) that will achieve the necessary scouring velocity in the pipes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates an optimized, step-by-step flushing plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create work orders for the field crews based on the flushing plan.",
-      "expected_outcome": "System creates a series of linked work orders for the crews.",
-      "required_tools": [
-        "create_batch_work_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create work orders for the field crews based on the flushing plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a series of linked work orders for the crews."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate notifications for the affected customers, letting them know about the potential for temporary discolored water.",
-      "expected_outcome": "System creates a customer notification list and message.",
-      "required_tools": [
-        "generate_customer_notifications"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate notifications for the affected customers, letting them know about the potential for temporary discolored water.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a customer notification list and message."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

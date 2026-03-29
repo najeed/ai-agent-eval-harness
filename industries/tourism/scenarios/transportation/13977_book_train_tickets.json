@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13977",
-  "title": "Book Train Tickets",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book Train Tickets",
+    "compliance_level": "Standard"
+  },
   "description": "A traveler wants to book two first-class train tickets from Paris to Amsterdam.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Itinerary Planning & Booking",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search for available trains from Paris to Amsterdam on the desired date.",
-      "expected_outcome": "Agent finds several train options with first-class availability.",
-      "required_tools": [
-        "search_trains"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search for available trains from Paris to Amsterdam on the desired date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds several train options with first-class availability."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the desired train and provide the total price for two first-class tickets.",
-      "expected_outcome": "Agent confirms the selection and total cost.",
-      "required_tools": [
-        "calculate_train_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the desired train and provide the total price for two first-class tickets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the selection and total cost."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the train tickets and issue them to the traveler.",
-      "expected_outcome": "Agent successfully books the tickets and provides a booking reference.",
-      "required_tools": [
-        "book_train"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the train tickets and issue them to the traveler.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books the tickets and provides a booking reference."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

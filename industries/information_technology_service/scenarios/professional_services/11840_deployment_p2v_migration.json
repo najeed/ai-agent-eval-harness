@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11840",
-  "title": "Deployment - Physical-to-Virtual Migration",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Deployment - Physical-to-Virtual Migration",
+    "compliance_level": "Standard"
+  },
   "description": "A project requires migrating an aging physical server to a virtual machine (P2V) on a new hypervisor.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Technology Deployment & Migration",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Install a P2V conversion tool on the source physical server.",
-      "expected_outcome": "The tool is successfully installed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Install a P2V conversion tool on the source physical server.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool is successfully installed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run the conversion tool to create a virtual machine image of the physical server.",
-      "expected_outcome": "A VMDK or VHDX file is successfully created.",
-      "required_tools": [
-        "run_p2v_conversion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run the conversion tool to create a virtual machine image of the physical server.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A VMDK or VHDX file is successfully created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Import the VM image into the new hypervisor, boot it up, and test for functionality.",
-      "expected_outcome": "The new VM is online and operational, and the old physical server can be decommissioned.",
-      "required_tools": [
-        "import_vm_image"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Import the VM image into the new hypervisor, boot it up, and test for functionality.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new VM is online and operational, and the old physical server can be decommissioned."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

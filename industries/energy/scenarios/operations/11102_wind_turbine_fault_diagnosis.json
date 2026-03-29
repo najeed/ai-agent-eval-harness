@@ -1,68 +1,72 @@
 {
-  "scenario_id": "energy-op-11102",
-  "title": "Wind Turbine Performance Fault Diagnosis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Wind Turbine Performance Fault Diagnosis",
+    "compliance_level": "Standard"
+  },
   "description": "An operations manager receives an alert for a wind turbine producing 15% less power than expected given current wind speeds. The agent must diagnose the potential cause.",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Asset Performance Monitoring",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the turbine's real-time operational data (RPM, blade pitch, generator temperature, yaw error).",
-      "expected_outcome": "Agent fetches the current sensor readings from the SCADA system.",
-      "required_tools": [
-        "get_scada_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the turbine's real-time operational data (RPM, blade pitch, generator temperature, yaw error).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fetches the current sensor readings from the SCADA system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the turbine's power curve to its historical performance and the manufacturer's specification.",
-      "expected_outcome": "Agent identifies a deviation from the expected power curve.",
-      "required_tools": [
-        "get_power_curve_data",
-        "analyze_performance_deviation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the turbine's power curve to its historical performance and the manufacturer's specification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a deviation from the expected power curve."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check for recent maintenance logs or active error codes for the turbine.",
-      "expected_outcome": "Agent finds no recent error codes but notes the last maintenance was 6 months ago.",
-      "required_tools": [
-        "get_maintenance_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check for recent maintenance logs or active error codes for the turbine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds no recent error codes but notes the last maintenance was 6 months ago."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Based on the data, suggest the most likely causes (e.g., blade icing, yaw misalignment, sensor drift) and recommend dispatching a technician.",
-      "expected_outcome": "Agent provides a prioritized list of potential issues and creates a work order.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Based on the data, suggest the most likely causes (e.g., blade icing, yaw misalignment, sensor drift) and recommend dispatching a technician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a prioritized list of potential issues and creates a work order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

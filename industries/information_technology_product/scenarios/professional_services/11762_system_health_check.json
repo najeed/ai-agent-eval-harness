@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11762",
-  "title": "Post-Implementation Health Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Post-Implementation Health Check",
+    "compliance_level": "Standard"
+  },
   "description": "One month after a project go-live, a consultant performs a health check to ensure the system is being used effectively.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Implementation & Configuration",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the customer's usage analytics since go-live.",
-      "expected_outcome": "Consultant finds that user adoption is high, but a key feature is being ignored.",
-      "required_tools": [
-        "view_customer_usage_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the customer's usage analytics since go-live.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant finds that user adoption is high, but a key feature is being ignored."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the system configuration for any potential optimizations.",
-      "expected_outcome": "Consultant identifies a workflow that could be simplified.",
-      "required_tools": [
-        "review_workflow_configuration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the system configuration for any potential optimizations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant identifies a workflow that could be simplified."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare a health check report for the customer with recommendations for improving adoption and optimizing their configuration.",
-      "expected_outcome": "Consultant provides a valuable, proactive report to the customer.",
-      "required_tools": [
-        "generate_status_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare a health check report for the customer with recommendations for improving adoption and optimizing their configuration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant provides a valuable, proactive report to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

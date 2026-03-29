@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-cp-12541",
-  "title": "Archive a Completed Film Production",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Archive a Completed Film Production",
+    "compliance_level": "Standard"
+  },
   "description": "A film production has wrapped, and all its digital assets must be archived for long-term storage.",
-  "use_case": "Content Production & Management",
-  "core_function": "Asset Management & Logistics",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all digital assets associated with the completed film project.",
-      "expected_outcome": "Agent generates a complete list of all video, audio, and project files.",
-      "required_tools": [
-        "get_all_project_assets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all digital assets associated with the completed film project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a complete list of all video, audio, and project files."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a data integrity check (e.g., checksum) on all files to ensure they are not corrupt.",
-      "expected_outcome": "Agent verifies the integrity of all files before archiving.",
-      "required_tools": [
-        "run_data_integrity_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a data integrity check (e.g., checksum) on all files to ensure they are not corrupt.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the integrity of all files before archiving."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Transfer all verified assets to the long-term archival storage system (e.g., LTO tape library).",
-      "expected_outcome": "Agent successfully initiates and completes the transfer to archival storage.",
-      "required_tools": [
-        "transfer_to_archive"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Transfer all verified assets to the long-term archival storage system (e.g., LTO tape library).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully initiates and completes the transfer to archival storage."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-wo-12230",
-  "title": "Receive a Shipment Without a PO",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Receive a Shipment Without a PO",
+    "compliance_level": "Standard"
+  },
   "description": "A truck arrives with a shipment that is not linked to a purchase order in the system. The operator must handle this exception.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Inbound & Receiving",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Attempt to scan the shipment's paperwork, but the system finds no matching purchase order.",
-      "expected_outcome": "The system correctly identifies that there is no PO for this shipment.",
-      "required_tools": [
-        "get_po_by_bol"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Attempt to scan the shipment's paperwork, but the system finds no matching purchase order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system correctly identifies that there is no PO for this shipment."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create an 'unidentified receipt' record, capturing the carrier name and BOL number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a record for the mystery shipment."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create an 'unidentified receipt' record, capturing the carrier name and BOL number.",
-      "expected_outcome": "Agent creates a record for the mystery shipment.",
-      "required_tools": [
-        "create_unidentified_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Move the shipment to a designated holding area for exceptions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The shipment is moved to a safe place pending investigation."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The system sends an alert to the purchasing department to investigate the unidentified receipt.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct department is notified to resolve the PO issue."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Move the shipment to a designated holding area for exceptions.",
-      "expected_outcome": "The shipment is moved to a safe place pending investigation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "The system sends an alert to the purchasing department to investigate the unidentified receipt.",
-      "expected_outcome": "The correct department is notified to resolve the PO issue.",
-      "required_tools": [
-        "send_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-geo-12615",
-  "title": "Monitor Open Pit Slope Stability",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor Open Pit Slope Stability",
+    "compliance_level": "Standard"
+  },
   "description": "A geotechnical engineer analyzes data from a slope monitoring radar to detect any movement in the pit walls that could indicate a potential failure.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Geotechnical Analysis",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the real-time displacement data from the slope stability radar.",
-      "expected_outcome": "A heatmap showing wall movement is displayed.",
-      "required_tools": [
-        "get_radar_displacement_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the real-time displacement data from the slope stability radar.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A heatmap showing wall movement is displayed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to identify any areas with accelerating movement, which is a precursor to failure.",
-      "expected_outcome": "The analysis identifies a small area where the rate of movement is increasing.",
-      "required_tools": [
-        "analyze_displacement_trend"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to identify any areas with accelerating movement, which is a precursor to failure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis identifies a small area where the rate of movement is increasing."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set an alarm threshold for that area and notify mine operations to restrict access below that section of the pit wall as a precaution.",
-      "expected_outcome": "A new alarm is set, and a safety exclusion zone is communicated to operations.",
-      "required_tools": [
-        "set_alarm_threshold",
-        "notify_operations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_management_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set an alarm threshold for that area and notify mine operations to restrict access below that section of the pit wall as a precaution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new alarm is set, and a safety exclusion zone is communicated to operations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

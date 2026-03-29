@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-mr-12357",
-  "title": "Schedule Preventive Maintenance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Preventive Maintenance",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance planner needs to schedule the quarterly preventive maintenance (PM) for a critical CNC machine.",
-  "use_case": "Maintenance & Repair",
-  "core_function": "Preventive Maintenance",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the PM schedule for the specified CNC machine.",
-      "expected_outcome": "Agent finds the quarterly PM task and sees it is due next month.",
-      "required_tools": [
-        "get_asset_pm_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the PM schedule for the specified CNC machine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the quarterly PM task and sees it is due next month."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Coordinate with production to find a downtime window to perform the maintenance.",
-      "expected_outcome": "Agent finds an available 4-hour window on a Saturday.",
-      "required_tools": [
-        "get_production_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Coordinate with production to find a downtime window to perform the maintenance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an available 4-hour window on a Saturday."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a maintenance work order for the PM, assign a technician, and schedule it for the agreed-upon time.",
-      "expected_outcome": "Agent successfully creates and schedules the PM work order.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a maintenance work order for the PM, assign a technician, and schedule it for the agreed-upon time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates and schedules the PM work order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-em-11650",
-  "title": "Change 401(k) Contribution Rate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Change 401(k) Contribution Rate",
+    "compliance_level": "Standard"
+  },
   "description": "An employee wants to increase their 401(k) contribution percentage.",
-  "use_case": "Employee Management",
-  "core_function": "Benefits Administration",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the employee.",
-      "expected_outcome": "Agent confirms the employee's identity.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the employee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the employee's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Direct the employee to the 401(k) provider's website to make the change.",
-      "expected_outcome": "Agent explains that contribution changes must be made directly with the vendor.",
-      "required_tools": [
-        "get_benefit_vendor_contacts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Direct the employee to the 401(k) provider's website to make the change.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent explains that contribution changes must be made directly with the vendor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain that the change will be reflected in the next 1-2 pay cycles after the provider notifies the company's payroll system.",
-      "expected_outcome": "Agent sets correct expectations about the timing of the change.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain that the change will be reflected in the next 1-2 pay cycles after the provider notifies the company's payroll system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets correct expectations about the timing of the change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

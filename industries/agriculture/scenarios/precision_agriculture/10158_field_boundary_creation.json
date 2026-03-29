@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-pa-10158",
-  "title": "Create a Field Boundary from Drone Imagery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Field Boundary from Drone Imagery",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer has a new field and has flown a drone over it. They need the agent to create an accurate field boundary from the image.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Data Collection & Sensing",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process the drone image of the new field.",
-      "expected_outcome": "Agent displays the georeferenced image.",
-      "required_tools": [
-        "stitch_drone_images"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_processing_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process the drone image of the new field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent displays the georeferenced image."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use image analysis to automatically detect the edges of the cultivated area.",
-      "expected_outcome": "Agent's model draws a polygon around the edge of the field.",
-      "required_tools": [
-        "image_analysis_boundary_detection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "prediction_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use image analysis to automatically detect the edges of the cultivated area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent's model draws a polygon around the edge of the field."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Save the new polygon as a field boundary in the farm management system.",
-      "expected_outcome": "Agent successfully saves the new boundary.",
-      "required_tools": [
-        "save_field_boundary"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Save the new polygon as a field boundary in the farm management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully saves the new boundary."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

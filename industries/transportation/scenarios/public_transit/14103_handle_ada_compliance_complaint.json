@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-pt-14103",
-  "title": "Handle an ADA Compliance Complaint",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an ADA Compliance Complaint",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger in a wheelchair reports that a bus driver refused to let them board because the driver claimed they were taking too long. A manager must investigate this serious complaint.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Safety & Compliance",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a high-priority ADA complaint.",
-      "expected_outcome": "A new complaint case is opened and flagged as high-priority.",
-      "required_tools": [
-        "log_customer_complaint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a high-priority ADA complaint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new complaint case is opened and flagged as high-priority."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the driver and review the on-board video footage of the incident.",
-      "expected_outcome": "The video is retrieved for review.",
-      "required_tools": [
-        "get_driver_assignment_history",
-        "get_onboard_video_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the driver and review the on-board video footage of the incident.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The video is retrieved for review."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The video confirms the passenger's account. The driver violated ADA policy.",
-      "expected_outcome": "The complaint is substantiated by evidence.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The video confirms the passenger's account. The driver violated ADA policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The complaint is substantiated by evidence."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The driver is immediately removed from service pending a disciplinary hearing and mandatory ADA retraining.",
-      "expected_outcome": "Immediate and appropriate action is taken in response to the serious violation.",
-      "required_tools": [
-        "update_driver_status",
-        "schedule_employee_training"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The driver is immediately removed from service pending a disciplinary hearing and mandatory ADA retraining.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Immediate and appropriate action is taken in response to the serious violation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

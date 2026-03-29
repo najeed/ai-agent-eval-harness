@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-qc-12356",
-  "title": "Track Serialized Components",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Serialized Components",
+    "compliance_level": "Standard"
+  },
   "description": "An assembly requires several critical, serialized components. An operator needs to scan and associate each component's serial number with the main assembly's serial number.",
-  "use_case": "Quality Assurance & Control",
-  "core_function": "Traceability & Genealogy",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the serial number of the main assembly unit.",
-      "expected_outcome": "Agent initiates the 'as-built' record for the main unit.",
-      "required_tools": [
-        "start_assembly_genealogy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the serial number of the main assembly unit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates the 'as-built' record for the main unit."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the serial number of each critical component as it is installed.",
-      "expected_outcome": "Agent scans three different component serial numbers.",
-      "required_tools": [
-        "associate_component_serial_number"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the serial number of each critical component as it is installed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent scans three different component serial numbers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Finalize the genealogy record, confirming that all required serialized components have been associated.",
-      "expected_outcome": "Agent saves the completed record, creating a full traceability link between the main unit and its components.",
-      "required_tools": [
-        "finalize_genealogy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Finalize the genealogy record, confirming that all required serialized components have been associated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent saves the completed record, creating a full traceability link between the main unit and its components."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

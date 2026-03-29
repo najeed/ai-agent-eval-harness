@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13911",
-  "title": "Cancel a Hotel Reservation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cancel a Hotel Reservation",
+    "compliance_level": "Standard"
+  },
   "description": "A customer needs to cancel their upcoming hotel reservation.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Booking & Reservation Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's reservation using their confirmation number.",
-      "expected_outcome": "Agent correctly locates the specified reservation.",
-      "required_tools": [
-        "get_reservation_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's reservation using their confirmation number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly locates the specified reservation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the cancellation policy to determine if a refund is applicable.",
-      "expected_outcome": "Agent confirms the reservation is within the free cancellation window.",
-      "required_tools": [
-        "check_cancellation_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the cancellation policy to determine if a refund is applicable.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the reservation is within the free cancellation window."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the cancellation and inform the customer about the refund process.",
-      "expected_outcome": "Agent successfully cancels the booking and provides a cancellation number.",
-      "required_tools": [
-        "cancel_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the cancellation and inform the customer about the refund process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully cancels the booking and provides a cancellation number."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

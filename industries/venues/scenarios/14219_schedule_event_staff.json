@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-vo-14219",
-  "title": "Schedule Staff for an Event",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Staff for an Event",
+    "compliance_level": "Standard"
+  },
   "description": "An operations manager needs to schedule ushers, ticket takers, and security for an upcoming concert.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Staffing & Scheduling",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Determine the required staffing levels based on the event's expected attendance.",
-      "expected_outcome": "Agent determines that 40 ushers, 20 ticket takers, and 30 security guards are needed.",
-      "required_tools": [
-        "get_staffing_level_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Determine the required staffing levels based on the event's expected attendance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines that 40 ushers, 20 ticket takers, and 30 security guards are needed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create shifts in the scheduling system for each role.",
-      "expected_outcome": "Agent creates the required shifts with correct start and end times.",
-      "required_tools": [
-        "create_staff_shifts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create shifts in the scheduling system for each role.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the required shifts with correct start and end times."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a notification to all qualified staff members about the available shifts.",
-      "expected_outcome": "Agent broadcasts the shift availability to the staff pool.",
-      "required_tools": [
-        "notify_staff_of_shifts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a notification to all qualified staff members about the available shifts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent broadcasts the shift availability to the staff pool."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Monitor the shift sign-ups and manually assign staff if needed to fill all roles.",
-      "expected_outcome": "Agent ensures all shifts are filled before the day of the event.",
-      "required_tools": [
-        "monitor_shift_coverage",
-        "assign_staff_to_shift"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Monitor the shift sign-ups and manually assign staff if needed to fill all roles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ensures all shifts are filled before the day of the event."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

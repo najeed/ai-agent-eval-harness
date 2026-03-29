@@ -1,54 +1,59 @@
 {
-  "scenario_id": "auto-sf-10402",
-  "title": "New Car Configuration Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Car Configuration Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A potential customer wants to configure a new SUV and get a price quote.",
-  "use_case": "Vehicle Sales & Financing",
-  "core_function": "Sales Consultation & Configuration",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's desired model and primary feature interests (e.g., safety, performance).",
-      "expected_outcome": "Agent identifies the 'Explorer XLT' model and notes interest in 'Advanced Safety Suite'.",
-      "required_tools": [
-        "get_vehicle_models",
-        "get_feature_packages"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's desired model and primary feature interests (e.g., safety, performance).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the 'Explorer XLT' model and notes interest in 'Advanced Safety Suite'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the customer through available trim levels, color options, and accessory packages.",
-      "expected_outcome": "Agent helps customer select 'XLT Lux Trim', 'Rapid Red' color, and 'Towing Package'.",
-      "required_tools": [
-        "configure_vehicle"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the customer through available trim levels, color options, and accessory packages.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent helps customer select 'XLT Lux Trim', 'Rapid Red' color, and 'Towing Package'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a final configuration summary with an MSRP quote and offer to schedule a test drive.",
-      "expected_outcome": "Agent provides an accurate price quote and successfully schedules a test drive.",
-      "required_tools": [
-        "generate_price_quote",
-        "schedule_test_drive"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a final configuration summary with an MSRP quote and offer to schedule a test drive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an accurate price quote and successfully schedules a test drive."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-co-11096",
-  "title": "Request a Campus Tour",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request a Campus Tour",
+    "compliance_level": "Standard"
+  },
   "description": "A prospective student and their family want to schedule a campus tour.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Event & Facilities Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Guide the user to the admissions website's tour scheduling page.",
-      "expected_outcome": "Agent provides the correct URL.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Guide the user to the admissions website's tour scheduling page.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct URL."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the different tour options available (e.g., general campus tour, engineering department tour).",
-      "expected_outcome": "Agent clearly communicates the available choices.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the different tour options available (e.g., general campus tour, engineering department tour).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the available choices."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assist the user in selecting a date and time and completing the registration form.",
-      "expected_outcome": "Agent helps the family successfully book their tour.",
-      "required_tools": [
-        "register_for_campus_tour"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assist the user in selecting a date and time and completing the registration form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent helps the family successfully book their tour."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ports-hs-12912",
-  "title": "Manage Hazardous Cargo Arrival",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Hazardous Cargo Arrival",
+    "compliance_level": "Standard"
+  },
   "description": "A container with hazardous materials (HAZMAT) is scheduled to arrive. The HSSE officer must ensure it's handled correctly.",
-  "use_case": "Health, Safety, Security & Environment (HSSE)",
-  "core_function": "Environmental Compliance",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the dangerous goods declaration (DGD) for the container and verify its IMO class.",
-      "expected_outcome": "Officer confirms the container holds Class 3 flammable liquids.",
-      "required_tools": [
-        "get_dangerous_goods_declaration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the dangerous goods declaration (DGD) for the container and verify its IMO class.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer confirms the container holds Class 3 flammable liquids."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ensure the container is assigned to be stacked in the designated HAZMAT segregation zone in the yard.",
-      "expected_outcome": "Officer verifies the yard plan places the container away from other incompatible goods.",
-      "required_tools": [
-        "check_yard_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ensure the container is assigned to be stacked in the designated HAZMAT segregation zone in the yard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer verifies the yard plan places the container away from other incompatible goods."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the terminal operations team of the container's arrival and handling requirements.",
-      "expected_outcome": "An alert is sent to the operations team to ensure special care is taken during its movement.",
-      "required_tools": [
-        "send_internal_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the terminal operations team of the container's arrival and handling requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An alert is sent to the operations team to ensure special care is taken during its movement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

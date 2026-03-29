@@ -1,54 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13357",
-  "title": "Manage Delinquent Rent Collections",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Delinquent Rent Collections",
+    "compliance_level": "Standard"
+  },
   "description": "A property manager must follow a collections process for a tenant who is 30 days late on rent.",
-  "use_case": "Property Management",
-  "core_function": "Rent Collection & Financials",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Send a formal 'Demand for Payment' letter to the delinquent tenant.",
-      "expected_outcome": "A formal demand letter is sent and documented.",
-      "required_tools": [
-        "generate_demand_letter"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Send a formal 'Demand for Payment' letter to the delinquent tenant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal demand letter is sent and documented."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to contact the tenant by phone to discuss a payment plan.",
-      "expected_outcome": "Agent makes and logs attempts to reach the tenant.",
-      "required_tools": [
-        "contact_tenant",
-        "log_call_outcome"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to contact the tenant by phone to discuss a payment plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes and logs attempts to reach the tenant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If no payment is received, escalate the account to a collections agency or an attorney to begin formal eviction proceedings.",
-      "expected_outcome": "The account is forwarded to the appropriate third party for further action.",
-      "required_tools": [
-        "escalate_to_collections"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If no payment is received, escalate the account to a collections agency or an attorney to begin formal eviction proceedings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account is forwarded to the appropriate third party for further action."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

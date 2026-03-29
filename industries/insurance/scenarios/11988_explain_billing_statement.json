@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11988",
-  "title": "Explain a Billing Statement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Explain a Billing Statement",
+    "compliance_level": "Standard"
+  },
   "description": "A customer does not understand the charges on their most recent bill, which includes a policy change prorated amount.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Billing & Collections",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and retrieve their latest billing statement.",
-      "expected_outcome": "Agent pulls up the statement in question.",
-      "required_tools": [
-        "get_billing_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and retrieve their latest billing statement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the statement in question."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the statement and the customer's recent policy changes.",
-      "expected_outcome": "Agent sees the customer recently added a new car, which triggered a prorated premium charge.",
-      "required_tools": [
-        "get_policy_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the statement and the customer's recent policy changes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees the customer recently added a new car, which triggered a prorated premium charge."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Clearly walk the customer through the statement, explaining each line item and how the prorated charge was calculated.",
-      "expected_outcome": "Agent successfully explains the bill to the customer's satisfaction.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Clearly walk the customer through the statement, explaining each line item and how the prorated charge was calculated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully explains the bill to the customer's satisfaction."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

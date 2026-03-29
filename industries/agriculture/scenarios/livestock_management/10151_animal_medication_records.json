@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-lm-10151",
-  "title": "Record Animal Medication Treatment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Record Animal Medication Treatment",
+    "compliance_level": "Standard"
+  },
   "description": "A veterinarian has treated a sick animal and needs to record the medication administered to maintain compliance and track withdrawal times.",
-  "use_case": "Livestock Management",
-  "core_function": "Health & Welfare",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific animal that was treated.",
-      "expected_outcome": "Agent selects the correct animal from the herd database.",
-      "required_tools": [
-        "get_animal_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific animal that was treated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the correct animal from the herd database."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Record the details of the treatment: medication name, dosage, date, and administering veterinarian.",
-      "expected_outcome": "Agent correctly enters all treatment details into the animal's health record.",
-      "required_tools": [
-        "record_medication_treatment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Record the details of the treatment: medication name, dosage, date, and administering veterinarian.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly enters all treatment details into the animal's health record."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Automatically calculate and record the meat and/or milk withdrawal period based on the medication's label.",
-      "expected_outcome": "Agent calculates the correct withdrawal date and flags the animal in the system.",
-      "required_tools": [
-        "calculate_withdrawal_period"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Automatically calculate and record the meat and/or milk withdrawal period based on the medication's label.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the correct withdrawal date and flags the animal in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

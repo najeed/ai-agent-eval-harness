@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12461",
-  "title": "Set Up Geotargeting for a Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set Up Geotargeting for a Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "A manager for a local business wants to run ads that only target users within a 10-mile radius of their store.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Paid Search (SEM)",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the campaign to be updated.",
-      "expected_outcome": "Agent selects the correct campaign.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the campaign to be updated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the correct campaign."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "In the location targeting settings, select 'radius targeting'.",
-      "expected_outcome": "Agent navigates to the correct setting.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "In the location targeting settings, select 'radius targeting'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent navigates to the correct setting."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the store's address and set the radius to 10 miles.",
-      "expected_outcome": "Agent successfully defines the geographic target area.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the store's address and set the radius to 10 miles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully defines the geographic target area."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

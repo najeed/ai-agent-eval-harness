@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13880",
-  "title": "Cross-sell - Add a Tablet Line",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cross-sell - Add a Tablet Line",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with a mobile phone plan wants to add a new line for their tablet.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Upselling and Cross-selling",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and present the available data-only plans for tablets.",
-      "expected_outcome": "Agent clearly explains the tablet plan options.",
-      "required_tools": [
-        "get_customer_details",
-        "get_data_only_plans"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and present the available data-only plans for tablets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the tablet plan options."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain how the tablet line will be billed alongside their existing phone plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clarifies the billing impact."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain how the tablet line will be billed alongside their existing phone plan.",
-      "expected_outcome": "Agent clarifies the billing impact.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the order to add the tablet line to the customer's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the new service line."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the order to add the tablet line to the customer's account.",
-      "expected_outcome": "Agent successfully adds the new service line.",
-      "required_tools": [
-        "add_service_line"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-cp-13132",
-  "title": "Handle Fair Housing Complaint Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Fair Housing Complaint Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "An applicant who was denied housing calls, claiming discrimination. The manager must handle the call according to policy.",
-  "use_case": "Property Management",
-  "core_function": "Compliance & Legal",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Listen to the complaint without admitting fault and express empathy.",
-      "expected_outcome": "Agent maintains a professional and calm demeanor while acknowledging the caller's frustration.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Listen to the complaint without admitting fault and express empathy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent maintains a professional and calm demeanor while acknowledging the caller's frustration."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the applicant's file and the documented, non-discriminatory reason for their denial (e.g., poor credit score).",
-      "expected_outcome": "Agent pulls up the application file and confirms the denial was based on standard rental criteria.",
-      "required_tools": [
-        "get_application_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the applicant's file and the documented, non-discriminatory reason for their denial (e.g., poor credit score).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the application file and confirms the denial was based on standard rental criteria."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Escalate the call to the brokerage's legal counsel or senior manager and document the incident.",
-      "expected_outcome": "The agent does not attempt to resolve the legal complaint themselves but escalates it to the proper channel and creates a detailed incident report.",
-      "required_tools": [
-        "create_incident_report",
-        "escalate_to_legal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Escalate the call to the brokerage's legal counsel or senior manager and document the incident.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent does not attempt to resolve the legal complaint themselves but escalates it to the proper channel and creates a detailed incident report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

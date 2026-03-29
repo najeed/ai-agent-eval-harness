@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-po-12298",
-  "title": "Create a New Work Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a New Work Order",
+    "compliance_level": "Standard"
+  },
   "description": "A production planner needs to create a new work order for a custom product.",
-  "use_case": "Production & Operations",
-  "core_function": "Work Order Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the Bill of Materials (BOM) and routing information for the specified product.",
-      "expected_outcome": "Agent correctly pulls the complete BOM and routing from the ERP system.",
-      "required_tools": [
-        "get_bom",
-        "get_routing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the Bill of Materials (BOM) and routing information for the specified product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly pulls the complete BOM and routing from the ERP system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new work order, specifying the quantity, due date, and associated BOM/routing.",
-      "expected_outcome": "Agent successfully creates the work order with all required details.",
-      "required_tools": [
-        "create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new work order, specifying the quantity, due date, and associated BOM/routing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the work order with all required details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Release the work order to the production floor.",
-      "expected_outcome": "Agent changes the work order status to 'Released'.",
-      "required_tools": [
-        "release_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Release the work order to the production floor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent changes the work order status to 'Released'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

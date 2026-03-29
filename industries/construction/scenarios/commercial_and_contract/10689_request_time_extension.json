@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-cc-10689",
-  "title": "Request a Time Extension",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request a Time Extension",
+    "compliance_level": "Standard"
+  },
   "description": "Due to a client-caused delay, a PM needs to submit a formal request for a contract time extension.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Contract Administration",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Document the client-caused delay, including its start date, end date, and impact on the critical path.",
-      "expected_outcome": "The delay is fully documented.",
-      "required_tools": [
-        "log_project_delay"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Document the client-caused delay, including its start date, end date, and impact on the critical path.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The delay is fully documented."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a formal contract modification request for a time extension, citing the relevant contract clauses.",
-      "expected_outcome": "A formal request is drafted.",
-      "required_tools": [
-        "draft_contract_modification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a formal contract modification request for a time extension, citing the relevant contract clauses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal request is drafted."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the request to the client for their approval.",
-      "expected_outcome": "The time extension request is sent to the client.",
-      "required_tools": [
-        "send_client_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the request to the client for their approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The time extension request is sent to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,104 +1,71 @@
 {
-  "scenario_id": "lw-wo-12234",
-  "title": "Manage a Dock Appointment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Dock Appointment",
+    "compliance_level": "Standard"
+  },
   "description": "A carrier calls to reschedule their delivery appointment for a later time.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Inbound & Receiving",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the carrier's existing appointment using their PO number.",
-      "expected_outcome": "Agent locates the current appointment scheduled for 10 AM.",
-      "required_tools": [
-        "find_dock_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the carrier's existing appointment using their PO number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the current appointment scheduled for 10 AM."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cancel the existing appointment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully cancels the 10 AM appointment, freeing up the slot."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cancel the existing appointment.",
-      "expected_outcome": "Agent successfully cancels the 10 AM appointment, freeing up the slot.",
-      "required_tools": [
-        "cancel_dock_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "View the dock schedule and find a new available time slot for the carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an open slot at 2 PM."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Book the new appointment for the carrier at 2 PM and send a confirmation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reschedules the appointment and confirms with the carrier."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "View the dock schedule and find a new available time slot for the carrier.",
-      "expected_outcome": "Agent finds an open slot at 2 PM.",
-      "required_tools": [
-        "view_dock_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Book the new appointment for the carrier at 2 PM and send a confirmation.",
-      "expected_outcome": "Agent successfully reschedules the appointment and confirms with the carrier.",
-      "required_tools": [
-        "book_dock_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

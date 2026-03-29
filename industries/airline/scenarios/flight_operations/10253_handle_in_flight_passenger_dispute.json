@@ -1,56 +1,59 @@
 {
-  "scenario_id": "airline-fo-10253",
-  "title": "Handle an In-Flight Passenger Dispute",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an In-Flight Passenger Dispute",
+    "compliance_level": "Standard"
+  },
   "description": "Two passengers are arguing over a reclined seat. The cabin crew must intervene to de-escalate the situation.",
-  "use_case": "Flight Operations",
-  "core_function": "In-Flight Services & Safety",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Approach the passengers and calmly ask them to explain the situation.",
-      "expected_outcome": "Crew member intervenes professionally.",
-      "required_tools": [
-        "deescalate_situation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Approach the passengers and calmly ask them to explain the situation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Crew member intervenes professionally."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to find a mutually agreeable solution.",
-      "expected_outcome": "Crew member mediates the dispute.",
-      "required_tools": [
-        "mediate_dispute"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to find a mutually agreeable solution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Crew member mediates the dispute."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If a solution cannot be found, offer to reseat one of the passengers in a comparable or better seat if one is available.",
-      "expected_outcome": "Crew member successfully resolves the conflict by moving one of the passengers.",
-      "required_tools": [
-        "find_available_seat",
-        "reseat_passenger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "If a solution cannot be found, offer to reseat one of the passengers in a comparable or better seat if one is available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Crew member successfully resolves the conflict by moving one of the passengers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

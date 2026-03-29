@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-rc-13001",
-  "title": "Request a Building Inspection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request a Building Inspection",
+    "compliance_level": "Standard"
+  },
   "description": "A construction contractor needs to schedule a framing inspection for a new home build.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Inspections & Enforcement",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the contractor and the building permit number for the property.",
-      "expected_outcome": "Agent correctly identifies the active building permit.",
-      "required_tools": [
-        "get_permit_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the contractor and the building permit number for the property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the active building permit."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the available time slots for a building inspector.",
-      "expected_outcome": "Agent retrieves the inspector's schedule.",
-      "required_tools": [
-        "get_inspector_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the available time slots for a building inspector.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the inspector's schedule."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the framing inspection for the requested date and time.",
-      "expected_outcome": "Agent successfully books the inspection and provides a confirmation.",
-      "required_tools": [
-        "schedule_inspection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the framing inspection for the requested date and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books the inspection and provides a confirmation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

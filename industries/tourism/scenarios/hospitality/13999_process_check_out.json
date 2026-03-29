@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13999",
-  "title": "Process a Standard Guest Check-out",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Standard Guest Check-out",
+    "compliance_level": "Standard"
+  },
   "description": "A guest is at the front desk and wishes to check out of their room.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Billing & Folio Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the guest's folio using their room number.",
-      "expected_outcome": "Agent locates the guest's bill.",
-      "required_tools": [
-        "get_guest_folio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the guest's folio using their room number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the guest's bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the charges with the guest and confirm the total balance.",
-      "expected_outcome": "Agent clearly presents the final bill to the guest.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the charges with the guest and confirm the total balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly presents the final bill to the guest."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the final payment using the credit card on file and provide the guest with a printed receipt.",
-      "expected_outcome": "Agent successfully closes the folio, processes payment, and provides a receipt.",
-      "required_tools": [
-        "process_payment",
-        "generate_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the final payment using the credit card on file and provide the guest with a printed receipt.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully closes the folio, processes payment, and provides a receipt."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

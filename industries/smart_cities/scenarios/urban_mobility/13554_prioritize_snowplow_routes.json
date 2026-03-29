@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-um-13554",
-  "title": "Prioritize Snowplow Routes",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prioritize Snowplow Routes",
+    "compliance_level": "Standard"
+  },
   "description": "After a heavy snowfall, an operator must prioritize snowplow routes, starting with major roads and bus routes.",
-  "use_case": "Urban Mobility & Transport",
-  "core_function": "Traffic Management",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all 'Priority 1' routes from the city's snow removal plan (major arterials, hospital routes).",
-      "expected_outcome": "Agent retrieves the list of critical roads.",
-      "required_tools": [
-        "get_snow_removal_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all 'Priority 1' routes from the city's snow removal plan (major arterials, hospital routes).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the list of critical roads."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the real-time location of all available snowplows.",
-      "expected_outcome": "Agent gets the current location of the entire plow fleet.",
-      "required_tools": [
-        "get_vehicle_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the real-time location of all available snowplows.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the current location of the entire plow fleet."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the nearest plows to begin clearing the Priority 1 routes.",
-      "expected_outcome": "Agent dispatches the plows with their assigned routes.",
-      "required_tools": [
-        "assign_snowplow_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the nearest plows to begin clearing the Priority 1 routes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches the plows with their assigned routes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

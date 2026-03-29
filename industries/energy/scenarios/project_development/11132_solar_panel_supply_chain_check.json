@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-pd-11132",
-  "title": "Solar Panel Supply Chain Traceability Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Solar Panel Supply Chain Traceability Check",
+    "compliance_level": "Standard"
+  },
   "description": "A compliance manager must verify that a shipment of solar panels does not use materials from regions with forced labor concerns, as per company policy.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Supply Chain & Procurement",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the bill of materials and list of sub-suppliers for the given solar panel model from the manufacturer.",
-      "expected_outcome": "Agent obtains the complete supply chain documentation.",
-      "required_tools": [
-        "get_supplier_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the bill of materials and list of sub-suppliers for the given solar panel model from the manufacturer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains the complete supply chain documentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cross-reference the list of sub-suppliers and material origins against a database of prohibited entities and regions.",
-      "expected_outcome": "Agent finds no matches with the prohibited list.",
-      "required_tools": [
-        "check_compliance_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cross-reference the list of sub-suppliers and material origins against a database of prohibited entities and regions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds no matches with the prohibited list."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a compliance certificate confirming the supply chain has been vetted and approved.",
-      "expected_outcome": "Agent produces a formal compliance document for internal records.",
-      "required_tools": [
-        "generate_compliance_certificate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a compliance certificate confirming the supply chain has been vetted and approved.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a formal compliance document for internal records."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

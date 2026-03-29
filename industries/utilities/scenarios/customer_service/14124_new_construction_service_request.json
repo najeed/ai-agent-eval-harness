@@ -1,49 +1,59 @@
 {
-  "scenario_id": "utils-cs-14124",
-  "title": "New Construction Service Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Construction Service Request",
+    "compliance_level": "Standard"
+  },
   "description": "A building contractor needs to arrange for new electric and water service connections for a home under construction.",
-  "use_case": "Customer Service",
-  "core_function": "Service Orders",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Collect the project details, including the address, site plans, and required service capacity.",
-      "expected_outcome": "Agent gathers all necessary information and documentation from the contractor.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Collect the project details, including the address, site plans, and required service capacity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all necessary information and documentation from the contractor."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new project in the engineering department's work management system.",
-      "expected_outcome": "Agent successfully initiates a new construction project ticket.",
-      "required_tools": [
-        "create_new_construction_project"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new project in the engineering department's work management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully initiates a new construction project ticket."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the process, timeline, and any fees or contributions-in-aid-of-construction required.",
-      "expected_outcome": "Agent clearly outlines the next steps and costs for the contractor.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the process, timeline, and any fees or contributions-in-aid-of-construction required.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly outlines the next steps and costs for the contractor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

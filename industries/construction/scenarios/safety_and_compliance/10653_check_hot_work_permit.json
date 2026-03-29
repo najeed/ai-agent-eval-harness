@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-sc-10653",
-  "title": "Check for Hot Work Permit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check for Hot Work Permit",
+    "compliance_level": "Standard"
+  },
   "description": "A foreman sees a welder preparing to work and must first ensure a hot work permit has been issued for the area.",
-  "use_case": "Safety & Compliance",
-  "core_function": "Compliance & Permitting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the daily permit log for an active 'Hot Work Permit' for the specified location (e.g., 'Sector C, 2nd Floor').",
-      "expected_outcome": "Agent confirms an active hot work permit is on file for the location and time.",
-      "required_tools": [
-        "get_permit_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the daily permit log for an active 'Hot Work Permit' for the specified location (e.g., 'Sector C, 2nd Floor').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms an active hot work permit is on file for the location and time."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that a fire watch has been assigned as required by the permit.",
-      "expected_outcome": "Agent confirms in the permit details that a specific worker is assigned as the fire watch.",
-      "required_tools": [
-        "get_permit_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that a fire watch has been assigned as required by the permit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms in the permit details that a specific worker is assigned as the fire watch."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

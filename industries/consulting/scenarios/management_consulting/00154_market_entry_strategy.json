@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-154",
-  "title": "Develop a Market Entry Strategy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop a Market Entry Strategy",
+    "compliance_level": "Standard"
+  },
   "description": "For a client wanting to enter a new country, an agent must recommend a market entry strategy.",
-  "use_case": "Management Consulting",
-  "core_function": "Strategy & Recommendation",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Research the target country's regulations, competition, and consumer behavior.",
-      "expected_outcome": "Agent gathers relevant data on the new market.",
-      "required_tools": [
-        "web_search"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Research the target country's regulations, competition, and consumer behavior.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers relevant data on the new market."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze different market entry modes (e.g., 'Exporting', 'Joint Venture', 'Direct Investment').",
-      "expected_outcome": "Agent lists the pros and cons of each entry mode in the context of the target country.",
-      "required_tools": [
-        "analyze_market_entry_modes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.85
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze different market entry modes (e.g., 'Exporting', 'Joint Venture', 'Direct Investment').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists the pros and cons of each entry mode in the context of the target country."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend the most suitable entry strategy based on the research and analysis.",
-      "expected_outcome": "Agent provides a clear recommendation (e.g., 'A joint venture is recommended to navigate local regulations').",
-      "required_tools": [
-        "make_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend the most suitable entry strategy based on the research and analysis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear recommendation (e.g., 'A joint venture is recommended to navigate local regulations')."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

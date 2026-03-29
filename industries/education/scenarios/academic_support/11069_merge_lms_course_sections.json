@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-as-11069",
-  "title": "Merge LMS Course Sections",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Merge LMS Course Sections",
+    "compliance_level": "Standard"
+  },
   "description": "A professor is teaching multiple sections of the same course and wants to merge them into a single LMS shell to simplify content management.",
-  "use_case": "Academic Support",
-  "core_function": "Learning Management System (LMS) Support",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the faculty member and the course sections to be merged.",
-      "expected_outcome": "Agent confirms the professor teaches sections 001, 002, and 003 of 'HIST101'.",
-      "required_tools": [
-        "get_faculty_teaching_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the faculty member and the course sections to be merged.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the professor teaches sections 001, 002, and 003 of 'HIST101'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the implications of merging, such as how the gradebook will appear.",
-      "expected_outcome": "Agent clearly communicates the features of a merged course shell.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the implications of merging, such as how the gradebook will appear.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the features of a merged course shell."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the course merge request in the LMS admin tools.",
-      "expected_outcome": "Agent successfully merges the sections into a single LMS course.",
-      "required_tools": [
-        "merge_lms_courses"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the course merge request in the LMS admin tools.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully merges the sections into a single LMS course."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

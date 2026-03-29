@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12165",
-  "title": "Prepare for a 'Meet and Confer'",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare for a 'Meet and Confer'",
+    "compliance_level": "Standard"
+  },
   "description": "Before filing a motion to compel, attorneys are required to 'meet and confer' to resolve a discovery dispute. An associate needs to prepare for this meeting.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Discovery & E-Discovery",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the discovery requests that are in dispute.",
-      "expected_outcome": "Agent has a clear list of the disputed items.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the discovery requests that are in dispute.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a clear list of the disputed items."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the opposing party's objections and responses.",
-      "expected_outcome": "Agent understands the other side's position.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the opposing party's objections and responses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the other side's position."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft a letter or outline with talking points for the meet and confer, proposing a compromise on the disputed issues.",
-      "expected_outcome": "Agent prepares a structured plan for the negotiation.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft a letter or outline with talking points for the meet and confer, proposing a compromise on the disputed issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares a structured plan for the negotiation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

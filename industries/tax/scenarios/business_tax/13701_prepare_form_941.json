@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tax-bus-13701",
-  "title": "Prepare Form 941, Employer's Quarterly Federal Tax Return",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Form 941, Employer's Quarterly Federal Tax Return",
+    "compliance_level": "Standard"
+  },
   "description": "A small business with 3 employees needs to file its quarterly payroll tax return, Form 941.",
-  "use_case": "Business Tax Services",
-  "core_function": "Payroll & Employment Tax",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Import the quarterly payroll data, including total wages paid and federal income tax withheld.",
-      "expected_outcome": "Agent successfully imports all relevant payroll figures for the quarter.",
-      "required_tools": [
-        "import_payroll_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Import the quarterly payroll data, including total wages paid and federal income tax withheld.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully imports all relevant payroll figures for the quarter."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the employer and employee portions of Social Security and Medicare taxes.",
-      "expected_outcome": "Agent accurately calculates the FICA taxes.",
-      "required_tools": [
-        "calculate_fica_taxes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the employer and employee portions of Social Security and Medicare taxes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the FICA taxes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete Form 941 and reconcile the total taxes with the total payroll tax deposits made during the quarter.",
-      "expected_outcome": "Agent prepares an accurate Form 941 that reconciles with deposits.",
-      "required_tools": [
-        "prepare_form_941"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete Form 941 and reconcile the total taxes with the total payroll tax deposits made during the quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares an accurate Form 941 that reconciles with deposits."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

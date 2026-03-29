@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-ta-11645",
-  "title": "Close a Filled Job Requisition",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Close a Filled Job Requisition",
+    "compliance_level": "Standard"
+  },
   "description": "A candidate has been hired for a role, and the recruiter needs to close the job requisition in the ATS.",
-  "use_case": "Talent Acquisition",
-  "core_function": "Requisition Management",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the job requisition that has been filled.",
-      "expected_outcome": "Recruiter locates the correct requisition.",
-      "required_tools": [
-        "get_job_requisition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the job requisition that has been filled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter locates the correct requisition."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the requisition status to 'Filled/Closed'.",
-      "expected_outcome": "Recruiter successfully updates the status.",
-      "required_tools": [
-        "update_requisition_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the requisition status to 'Filled/Closed'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter successfully updates the status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Ensure all other candidates for the role have been dispositioned correctly (e.g., rejected).",
-      "expected_outcome": "Recruiter verifies that no candidates are left in an active state for the closed req.",
-      "required_tools": [
-        "get_candidates_by_requisition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Ensure all other candidates for the role have been dispositioned correctly (e.g., rejected).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter verifies that no candidates are left in an active state for the closed req."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

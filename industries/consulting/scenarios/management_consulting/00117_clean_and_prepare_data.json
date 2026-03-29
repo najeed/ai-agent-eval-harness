@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-117",
-  "title": "Clean and Prepare Client Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Clean and Prepare Client Data",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must clean a raw client dataset (CSV) by handling missing values and removing duplicates before analysis.",
-  "use_case": "Management Consulting",
-  "core_function": "Data Collection & Research",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load the raw CSV data and generate a data quality report, identifying columns with missing values and the number of duplicate rows.",
-      "expected_outcome": "Agent produces a report stating there are 50 duplicate rows and missing values in the 'Region' column.",
-      "required_tools": [
-        "load_csv",
-        "generate_data_quality_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load the raw CSV data and generate a data quality report, identifying columns with missing values and the number of duplicate rows.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a report stating there are 50 duplicate rows and missing values in the 'Region' column."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Remove all duplicate rows from the dataset.",
-      "expected_outcome": "Agent correctly removes the duplicate entries.",
-      "required_tools": [
-        "remove_duplicates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Remove all duplicate rows from the dataset.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly removes the duplicate entries."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For the column with missing values, fill them with the mode (most frequent value).",
-      "expected_outcome": "Agent correctly imputes the missing data.",
-      "required_tools": [
-        "fill_missing_values"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For the column with missing values, fill them with the mode (most frequent value).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly imputes the missing data."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

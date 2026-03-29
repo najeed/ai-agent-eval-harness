@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_product-po-11778",
-  "title": "Investigate Memory Leak",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Memory Leak",
+    "compliance_level": "Standard"
+  },
   "description": "A microservice is showing a sawtooth pattern for memory usage, and is being restarted frequently by the orchestrator.",
-  "use_case": "Product Operations & Reliability (SRE)",
-  "core_function": "Incident & Outage Management",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the service's memory usage graph and logs to confirm the pattern of a memory leak.",
-      "expected_outcome": "Agent confirms the memory usage steadily grows until the service crashes and restarts.",
-      "required_tools": [
-        "view_performance_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the service's memory usage graph and logs to confirm the pattern of a memory leak.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the memory usage steadily grows until the service crashes and restarts."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take a memory dump of the problematic service for offline analysis.",
-      "expected_outcome": "Agent successfully captures a heap dump.",
-      "required_tools": [
-        "capture_memory_dump"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take a memory dump of the problematic service for offline analysis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully captures a heap dump."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-priority ticket for the engineering team, attaching the memory dump and performance graphs.",
-      "expected_outcome": "Agent provides developers with the necessary artifacts to debug the leak.",
-      "required_tools": [
-        "create_engineering_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-priority ticket for the engineering team, attaching the memory dump and performance graphs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides developers with the necessary artifacts to debug the leak."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

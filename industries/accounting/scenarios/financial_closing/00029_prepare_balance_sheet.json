@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-fc-29",
-  "title": "Prepare a Monthly Balance Sheet",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare a Monthly Balance Sheet",
+    "compliance_level": "Standard"
+  },
   "description": "The controller needs a draft of the monthly balance sheet for the board package.",
-  "use_case": "Financial Closing & Reporting",
-  "core_function": "Financial Reporting",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the final month-end balances for all asset, liability, and equity accounts from the trial balance.",
-      "expected_outcome": "Agent successfully retrieves the required GL balances.",
-      "required_tools": [
-        "get_trial_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the final month-end balances for all asset, liability, and equity accounts from the trial balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the required GL balances."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the balance sheet, ensuring that total assets equal total liabilities plus equity.",
-      "expected_outcome": "Agent produces a formatted and balanced balance sheet.",
-      "required_tools": [
-        "generate_financial_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the balance sheet, ensuring that total assets equal total liabilities plus equity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a formatted and balanced balance sheet."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a comparative balance sheet that shows the current month's balances against the prior month's balances.",
-      "expected_outcome": "Agent creates the comparative report and calculates the variance.",
-      "required_tools": [
-        "generate_comparative_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a comparative balance sheet that shows the current month's balances against the prior month's balances.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the comparative report and calculates the variance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

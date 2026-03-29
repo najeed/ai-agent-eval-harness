@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-os-11643",
-  "title": "Track the Learning & Development Budget",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track the Learning & Development Budget",
+    "compliance_level": "Standard"
+  },
   "description": "The L&D manager needs to check the department's training spend against the budget for the quarter.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Learning & Development",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the L&D department's budget for the current fiscal year.",
-      "expected_outcome": "Manager pulls up the approved budget.",
-      "required_tools": [
-        "get_department_budget"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the L&D department's budget for the current fiscal year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager pulls up the approved budget."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a report of all training-related expenditures for the quarter.",
-      "expected_outcome": "Manager generates a spend report from the financial system.",
-      "required_tools": [
-        "run_financial_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a report of all training-related expenditures for the quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager generates a spend report from the financial system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the actual spend to the prorated quarterly budget to determine if they are on track.",
-      "expected_outcome": "Manager calculates the variance and confirms they are currently under budget.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the actual spend to the prorated quarterly budget to determine if they are on track.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager calculates the variance and confirms they are currently under budget."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

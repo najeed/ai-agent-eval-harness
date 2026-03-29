@@ -1,50 +1,59 @@
 {
-  "scenario_id": "chemicals-scl-10562",
-  "title": "Analyze Bulk vs. Packaged Logistics Cost",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Bulk vs. Packaged Logistics Cost",
+    "compliance_level": "Standard"
+  },
   "description": "A planner needs to decide whether it's more cost-effective to ship a large order as a full bulk tanker or as packaged drums.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Logistics & Distribution",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get a freight quote for a full bulk tanker shipment to the customer's location.",
-      "expected_outcome": "Agent obtains a quote of $3,000 for a bulk shipment.",
-      "required_tools": [
-        "get_bulk_freight_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get a freight quote for a full bulk tanker shipment to the customer's location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains a quote of $3,000 for a bulk shipment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total cost for a packaged shipment, including the cost of drums, palletizing labor, and less-than-truckload (LTL) freight.",
-      "expected_outcome": "Agent calculates the total packaged cost to be $4,500.",
-      "required_tools": [
-        "calculate_packaged_shipping_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total cost for a packaged shipment, including the cost of drums, palletizing labor, and less-than-truckload (LTL) freight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the total packaged cost to be $4,500."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the costs and recommend the more economical bulk shipping option.",
-      "expected_outcome": "Agent correctly identifies the bulk option as cheaper and makes the recommendation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the costs and recommend the more economical bulk shipping option.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the bulk option as cheaper and makes the recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

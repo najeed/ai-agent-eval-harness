@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pa-13084",
-  "title": "Transfer Budget Funds",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Transfer Budget Funds",
+    "compliance_level": "Standard"
+  },
   "description": "A department head needs to transfer funds from one budget line item (e.g., travel) to another (e.g., office supplies) within their department's budget.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Budget & Financial Reporting",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the source and destination budget line items and the amount to be transferred.",
-      "expected_outcome": "The manager specifies the details of the transfer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the source and destination budget line items and the amount to be transferred.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager specifies the details of the transfer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the department head is authorized to make such a transfer and that sufficient funds are available.",
-      "expected_outcome": "The system confirms the user's permissions and the available balance.",
-      "required_tools": [
-        "check_user_permissions",
-        "check_department_budget"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the department head is authorized to make such a transfer and that sufficient funds are available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms the user's permissions and the available balance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the budget transfer in the financial system.",
-      "expected_outcome": "The system successfully moves the funds between the two budget lines.",
-      "required_tools": [
-        "process_budget_transfer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the budget transfer in the financial system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system successfully moves the funds between the two budget lines."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

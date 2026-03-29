@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-res-10206",
-  "title": "Handle a Flight Cancellation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Flight Cancellation",
+    "compliance_level": "Standard"
+  },
   "description": "Due to a maintenance issue, a flight has been cancelled. An agent must contact affected passengers and rebook them.",
-  "use_case": "Reservations & Customer Service",
-  "core_function": "Disruption Management (Customer Facing)",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all passengers booked on the cancelled flight.",
-      "expected_outcome": "Agent retrieves the passenger manifest for the flight.",
-      "required_tools": [
-        "get_passenger_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all passengers booked on the cancelled flight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the passenger manifest for the flight."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each passenger, find the next available flight to their destination.",
-      "expected_outcome": "Agent identifies the best alternative flight for each passenger.",
-      "required_tools": [
-        "search_flights"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each passenger, find the next available flight to their destination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the best alternative flight for each passenger."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Proactively rebook the passengers onto the new flight and send them a notification with their updated itinerary.",
-      "expected_outcome": "Agent successfully rebooks all passengers and sends out notifications.",
-      "required_tools": [
-        "rebook_passenger",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Proactively rebook the passengers onto the new flight and send them a notification with their updated itinerary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully rebooks all passengers and sends out notifications."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

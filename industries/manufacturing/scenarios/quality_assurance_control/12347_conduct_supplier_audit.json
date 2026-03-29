@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-qc-12347",
-  "title": "Conduct a Supplier Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct a Supplier Audit",
+    "compliance_level": "Standard"
+  },
   "description": "A supplier quality engineer is conducting an on-site audit at a supplier's facility and needs to log their findings.",
-  "use_case": "Quality Assurance & Control",
-  "core_function": "Compliance & Auditing",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the supplier audit checklist for the specific supplier.",
-      "expected_outcome": "Agent opens the pre-defined audit checklist in the system.",
-      "required_tools": [
-        "get_supplier_audit_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the supplier audit checklist for the specific supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent opens the pre-defined audit checklist in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each item on the checklist, record the finding as 'Conforming', 'Needs Improvement', or 'Non-Conforming'.",
-      "expected_outcome": "Agent goes through the checklist, recording findings for each point.",
-      "required_tools": [
-        "record_audit_finding"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each item on the checklist, record the finding as 'Conforming', 'Needs Improvement', or 'Non-Conforming'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent goes through the checklist, recording findings for each point."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For any non-conforming findings, create a Supplier Corrective Action Request (SCAR) and assign it to the supplier.",
-      "expected_outcome": "Agent generates a SCAR for two non-conforming items found during the audit.",
-      "required_tools": [
-        "create_scar"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For any non-conforming findings, create a Supplier Corrective Action Request (SCAR) and assign it to the supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a SCAR for two non-conforming items found during the audit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

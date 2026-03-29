@@ -1,81 +1,58 @@
 {
-  "scenario_id": "lw-tm-12251",
-  "title": "Select Cheapest LTL Carrier",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Select Cheapest LTL Carrier",
+    "compliance_level": "Standard"
+  },
   "description": "A planner needs to ship three pallets and must select the most cost-effective Less-Than-Truckload (LTL) carrier.",
-  "use_case": "Transportation Management",
-  "core_function": "Shipment Planning & Execution",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Enter the shipment details: origin, destination, pallet count, dimensions, weight, and freight class.",
-      "expected_outcome": "Agent accurately enters all required LTL rating data.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Enter the shipment details: origin, destination, pallet count, dimensions, weight, and freight class.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately enters all required LTL rating data."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request rates from all contracted LTL carriers via a rating API.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system retrieves quotes from five different LTL carriers."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request rates from all contracted LTL carriers via a rating API.",
-      "expected_outcome": "The system retrieves quotes from five different LTL carriers.",
-      "required_tools": [
-        "get_ltl_rates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the quotes and select the carrier with the lowest price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the cheapest carrier and books the shipment."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the quotes and select the carrier with the lowest price.",
-      "expected_outcome": "Agent selects the cheapest carrier and books the shipment.",
-      "required_tools": [
-        "book_ltl_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

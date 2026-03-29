@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13543",
-  "title": "Check Status of a Bridge De-icing System",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Status of a Bridge De-icing System",
+    "compliance_level": "Standard"
+  },
   "description": "With freezing temperatures forecasted, an operator must ensure the heating elements on a critical bridge are operational.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Structural Health Monitoring",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a 'Freezing Temperatures Expected' weather alert.",
-      "expected_outcome": "Agent acknowledges the weather forecast.",
-      "required_tools": [
-        "get_weather_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a 'Freezing Temperatures Expected' weather alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the weather forecast."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a remote diagnostic on the 'Central Bridge' de-icing system.",
-      "expected_outcome": "Agent initiates the system test.",
-      "required_tools": [
-        "run_deicing_system_diagnostic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a remote diagnostic on the 'Central Bridge' de-icing system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates the system test."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the diagnostic report, which confirms all heating elements are functional and ready.",
-      "expected_outcome": "Agent verifies the system is ready for the cold weather.",
-      "required_tools": [
-        "analyze_diagnostic_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the diagnostic report, which confirms all heating elements are functional and ready.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the system is ready for the cold weather."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

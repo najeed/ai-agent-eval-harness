@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tax-rep-13718",
-  "title": "Interpret IRS Math Error Notice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Interpret IRS Math Error Notice",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer receives a notice from the IRS (e.g., CP11) indicating a math error was found on their return.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Notice & Correspondence Management",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the IRS notice to identify the specific line item that was corrected.",
-      "expected_outcome": "Agent determines the IRS corrected a simple addition error in calculating total income.",
-      "required_tools": [
-        "analyze_irs_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the IRS notice to identify the specific line item that was corrected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the IRS corrected a simple addition error in calculating total income."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the original tax return to confirm the math error.",
-      "expected_outcome": "Agent verifies that the math error did occur as the IRS stated.",
-      "required_tools": [
-        "review_tax_return"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the original tax return to confirm the math error.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that the math error did occur as the IRS stated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the taxpayer to pay the additional tax due, as the correction is accurate.",
-      "expected_outcome": "Agent provides clear advice to the taxpayer on how to resolve the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the taxpayer to pay the additional tax due, as the correction is accurate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear advice to the taxpayer on how to resolve the issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

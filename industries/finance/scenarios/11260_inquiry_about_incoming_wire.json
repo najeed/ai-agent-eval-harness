@@ -1,83 +1,61 @@
 {
-  "scenario_id": "finance-rb-11260",
-  "title": "Inquiry About an Incoming Wire Transfer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquiry About an Incoming Wire Transfer",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is expecting an incoming wire transfer and wants to know if it has arrived.",
-  "use_case": "Retail Banking",
-  "core_function": "Payments & Transfers",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their account.",
-      "expected_outcome": "Agent correctly identifies the customer.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for recent incoming wire transfers to the customer's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent searches the system but finds no matching incoming wire transfer yet."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for recent incoming wire transfers to the customer's account.",
-      "expected_outcome": "Agent searches the system but finds no matching incoming wire transfer yet.",
-      "required_tools": [
-        "search_for_incoming_wire"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer that the wire has not yet been received and explain typical processing times.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates that the funds are not yet available and provides an estimated timeframe."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer that the wire has not yet been received and explain typical processing times.",
-      "expected_outcome": "Agent clearly communicates that the funds are not yet available and provides an estimated timeframe.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

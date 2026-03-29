@@ -1,52 +1,59 @@
 {
-  "scenario_id": "construction-sc-10644",
-  "title": "Respond to Neighborhood Noise Complaint",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to Neighborhood Noise Complaint",
+    "compliance_level": "Standard"
+  },
   "description": "The project receives a noise complaint from a neighbor. The site manager must verify compliance with local noise ordinances.",
-  "use_case": "Safety & Compliance",
-  "core_function": "Compliance & Permitting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the local noise ordinance regulations for construction sites.",
-      "expected_outcome": "Agent retrieves the document specifying that work is only allowed between 7 AM and 6 PM.",
-      "required_tools": [
-        "get_local_ordinances"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the local noise ordinance regulations for construction sites.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the document specifying that work is only allowed between 7 AM and 6 PM."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the daily logs to confirm that all work has been conducted within the allowed hours.",
-      "expected_outcome": "The logs confirm that work has not occurred outside the permitted times.",
-      "required_tools": [
-        "get_daily_logs_by_date"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the daily logs to confirm that all work has been conducted within the allowed hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The logs confirm that work has not occurred outside the permitted times."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the complaint and the compliance verification in the project's communication log.",
-      "expected_outcome": "The complaint and the finding of compliance are formally documented.",
-      "required_tools": [
-        "create_communication_log_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the complaint and the compliance verification in the project's communication log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The complaint and the finding of compliance are formally documented."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

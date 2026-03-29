@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13152",
-  "title": "Coordinate 'For Sale' Sign Installation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate 'For Sale' Sign Installation",
+    "compliance_level": "Standard"
+  },
   "description": "A new listing is about to go live. The agent needs to have the 'For Sale' sign installed at the property.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Property Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the property address for the new listing.",
-      "expected_outcome": "Agent has the correct property address.",
-      "required_tools": [
-        "get_listing_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the property address for the new listing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the correct property address."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the preferred sign installation vendor.",
-      "expected_outcome": "Agent looks up the contact info for 'Speedy Signs'.",
-      "required_tools": [
-        "get_vendor_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the preferred sign installation vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent looks up the contact info for 'Speedy Signs'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place an order with the vendor to install the sign and a flyer box at the property address.",
-      "expected_outcome": "A work order is successfully created with the sign vendor for the installation.",
-      "required_tools": [
-        "place_vendor_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place an order with the vendor to install the sign and a flyer box at the property address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A work order is successfully created with the sign vendor for the installation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

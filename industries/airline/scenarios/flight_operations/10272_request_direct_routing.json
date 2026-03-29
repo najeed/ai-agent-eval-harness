@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-fo-10272",
-  "title": "Request Direct Routing from ATC",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Direct Routing from ATC",
+    "compliance_level": "Standard"
+  },
   "description": "During a flight, a pilot notices favorable conditions and wants to request a more direct routing from Air Traffic Control to save time and fuel.",
-  "use_case": "Flight Operations",
-  "core_function": "In-Flight Services & Safety",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a potential shortcut or more direct route to the destination.",
-      "expected_outcome": "Pilot finds a more efficient route.",
-      "required_tools": [
-        "analyze_flight_path"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a potential shortcut or more direct route to the destination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pilot finds a more efficient route."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact ATC and formally request the direct routing.",
-      "expected_outcome": "Pilot makes the request to ATC.",
-      "required_tools": [
-        "contact_atc"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact ATC and formally request the direct routing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pilot makes the request to ATC."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "ATC approves the request. The pilot updates the Flight Management System (FMS) with the new route.",
-      "expected_outcome": "Pilot receives approval and reprograms the FMS.",
-      "required_tools": [
-        "update_fms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "ATC approves the request. The pilot updates the Flight Management System (FMS) with the new route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pilot receives approval and reprograms the FMS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

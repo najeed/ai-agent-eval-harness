@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-pm-10668",
-  "title": "Update Budget with Committed Costs",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Budget with Committed Costs",
+    "compliance_level": "Standard"
+  },
   "description": "A purchase order for steel has been issued. The PM must update the budget to reflect this 'committed cost'.",
-  "use_case": "Project Management",
-  "core_function": "Budgeting & Cost Control",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the value of the newly issued purchase order for structural steel.",
-      "expected_outcome": "Agent retrieves the PO value of $150,000.",
-      "required_tools": [
-        "get_purchase_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the value of the newly issued purchase order for structural steel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the PO value of $150,000."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the 'Structural Steel' budget line item by moving $150,000 from 'budgeted' to 'committed cost'.",
-      "expected_outcome": "The budget is updated to accurately reflect that the funds are now committed.",
-      "required_tools": [
-        "update_project_budget"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the 'Structural Steel' budget line item by moving $150,000 from 'budgeted' to 'committed cost'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The budget is updated to accurately reflect that the funds are now committed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

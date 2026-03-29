@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-plan-12647",
-  "title": "Evaluate Cut-off Grade Strategy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Evaluate Cut-off Grade Strategy",
+    "compliance_level": "Standard"
+  },
   "description": "A planning engineer evaluates the optimal cut-off grade (the grade that separates ore from waste) to maximize the project's economic value.",
-  "use_case": "Mine Planning & Engineering",
-  "core_function": "Long-Term Planning & Feasibility",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the project's economic parameters, including commodity price, mining costs, and processing costs.",
-      "expected_outcome": "All economic inputs are collected.",
-      "required_tools": [
-        "get_economic_parameters"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the project's economic parameters, including commodity price, mining costs, and processing costs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All economic inputs are collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the break-even cut-off grade, where the revenue from the metal equals the cost of processing it.",
-      "expected_outcome": "The break-even grade is calculated.",
-      "required_tools": [
-        "calculate_breakeven_cutoff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the break-even cut-off grade, where the revenue from the metal equals the cost of processing it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The break-even grade is calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run a simulation using different cut-off grades to see how each one impacts the project's total tonnage, mine life, and overall NPV.",
-      "expected_outcome": "The analysis identifies the optimal cut-off grade that maximizes the project's NPV.",
-      "required_tools": [
-        "run_cutoff_grade_optimization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run a simulation using different cut-off grades to see how each one impacts the project's total tonnage, mine life, and overall NPV.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis identifies the optimal cut-off grade that maximizes the project's NPV."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

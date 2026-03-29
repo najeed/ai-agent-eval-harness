@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-hk-11563",
-  "title": "Schedule Preventive Maintenance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Preventive Maintenance",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer needs to perform scheduled preventive maintenance (e.g., cleaning the filter) on a room's HVAC unit.",
-  "use_case": "Housekeeping & Maintenance",
-  "core_function": "Maintenance Requests",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of rooms where HVAC maintenance is due this month.",
-      "expected_outcome": "The system generates a list of rooms needing service.",
-      "required_tools": [
-        "mms_generate_pm_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of rooms where HVAC maintenance is due this month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a list of rooms needing service."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each room, block it from being sold on a day when it is vacant to perform the maintenance.",
-      "expected_outcome": "Rooms are put 'Out of Order' in the PMS for the maintenance day.",
-      "required_tools": [
-        "pms_block_room"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each room, block it from being sold on a day when it is vacant to perform the maintenance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Rooms are put 'Out of Order' in the PMS for the maintenance day."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create work orders for the technician to perform the maintenance on the scheduled days.",
-      "expected_outcome": "Work orders are created for all required rooms.",
-      "required_tools": [
-        "mms_create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create work orders for the technician to perform the maintenance on the scheduled days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Work orders are created for all required rooms."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

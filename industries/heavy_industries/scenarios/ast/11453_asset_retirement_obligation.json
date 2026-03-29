@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-ast-11453",
-  "title": "Calculate Asset Retirement Obligation (ARO)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Asset Retirement Obligation (ARO)",
+    "compliance_level": "Standard"
+  },
   "description": "An accountant needs to calculate the Asset Retirement Obligation (ARO) for a large piece of mining equipment, which is the estimated future cost to dismantle and dispose of it.",
-  "use_case": "Asset & Maintenance Management",
-  "core_function": "Asset Commissioning",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Estimate the future cost to dismantle and dispose of the equipment in today's dollars.",
-      "expected_outcome": "The accountant estimates a future cost of $200,000.",
-      "required_tools": [
-        "estimate_decommissioning_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Estimate the future cost to dismantle and dispose of the equipment in today's dollars.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The accountant estimates a future cost of $200,000."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Estimate the useful life of the asset and select an appropriate discount rate.",
-      "expected_outcome": "The useful life is determined to be 20 years with a discount rate of 5%.",
-      "required_tools": [
-        "get_asset_useful_life"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Estimate the useful life of the asset and select an appropriate discount rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The useful life is determined to be 20 years with a discount rate of 5%."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the present value of the future disposal cost, which is the ARO to be recorded on the balance sheet.",
-      "expected_outcome": "Agent calculates the ARO and records the corresponding journal entry.",
-      "required_tools": [
-        "calculate_present_value",
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the present value of the future disposal cost, which is the ARO to be recorded on the balance sheet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the ARO and records the corresponding journal entry."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

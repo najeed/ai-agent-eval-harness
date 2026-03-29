@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tr-pt-14011",
-  "title": "Update Real-Time Arrival Information",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Real-Time Arrival Information",
+    "compliance_level": "Standard"
+  },
   "description": "A bus is delayed due to unexpected traffic. A control center agent must update the real-time passenger information systems.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Passenger Information Systems",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an automated alert that a specific bus is running 15 minutes behind schedule.",
-      "expected_outcome": "Agent acknowledges the delay alert.",
-      "required_tools": [
-        "get_service_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an automated alert that a specific bus is running 15 minutes behind schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the delay alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the estimated time of arrival (ETA) for all subsequent stops on the bus's route.",
-      "expected_outcome": "The system recalculates and pushes updated ETAs to station signs and the mobile app.",
-      "required_tools": [
-        "update_trip_etas"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the estimated time of arrival (ETA) for all subsequent stops on the bus's route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system recalculates and pushes updated ETAs to station signs and the mobile app."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Post a general service alert message explaining the delay (e.g., 'Route 5 experiencing delays due to heavy traffic').",
-      "expected_outcome": "A public-facing alert is successfully published.",
-      "required_tools": [
-        "publish_service_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Post a general service alert message explaining the delay (e.g., 'Route 5 experiencing delays due to heavy traffic').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A public-facing alert is successfully published."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

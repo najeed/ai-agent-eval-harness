@@ -1,54 +1,59 @@
 {
-  "scenario_id": "sports-vo-13608",
-  "title": "Manage VIP Suite Catering Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage VIP Suite Catering Order",
+    "compliance_level": "Standard"
+  },
   "description": "A corporate partner who has a VIP suite for a game wants to pre-order catering.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Hospitality & VIP Services",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the corporate partner and their suite number.",
-      "expected_outcome": "Agent retrieves the partner's booking details.",
-      "required_tools": [
-        "get_vip_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the corporate partner and their suite number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the partner's booking details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the partner with the suite catering menu and take their order.",
-      "expected_outcome": "Agent sends the menu and records the partner's food and beverage selections.",
-      "required_tools": [
-        "get_catering_menu",
-        "create_catering_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the partner with the suite catering menu and take their order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the menu and records the partner's food and beverage selections."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the payment for the catering order and send the order to the kitchen.",
-      "expected_outcome": "Agent successfully processes the payment and confirms the order with the catering team.",
-      "required_tools": [
-        "process_payment",
-        "send_order_to_kitchen"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the payment for the catering order and send the order to the kitchen.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the payment and confirms the order with the catering team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

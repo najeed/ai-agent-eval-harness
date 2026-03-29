@@ -1,7 +1,7 @@
-# eval_runner/adapters/ollama.py
 import aiohttp
 from typing import Any, Dict
 from ..plugins import BaseEvalPlugin
+from .. import config
 
 
 class OllamaAdapterPlugin(BaseEvalPlugin):
@@ -20,7 +20,7 @@ class OllamaAdapterPlugin(BaseEvalPlugin):
         Executes a query against a local Ollama instance.
         Expects payload to contain 'model' and 'task' (or 'messages').
         """
-        base_url = url or payload.get("ollama_url") or "http://localhost:11434/api/chat"
+        base_url = url or payload.get("ollama_url") or config.OLLAMA_API_URL
         model = payload.get("model", "llama3")
 
         # Translate harness task into Ollama chat format

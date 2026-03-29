@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13228",
-  "title": "Pay a Property-Related Bill",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Pay a Property-Related Bill",
+    "compliance_level": "Standard"
+  },
   "description": "The monthly HOA bill for a managed property has arrived. The agent needs to process the payment from the property's funds.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive and scan the HOA bill, extracting the amount due and due date.",
-      "expected_outcome": "Agent correctly digitizes the bill and extracts key information.",
-      "required_tools": [
-        "scan_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive and scan the HOA bill, extracting the amount due and due date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly digitizes the bill and extracts key information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the property's operating account has sufficient funds to cover the payment.",
-      "expected_outcome": "Agent confirms the account balance is adequate.",
-      "required_tools": [
-        "check_bank_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the property's operating account has sufficient funds to cover the payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the account balance is adequate."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the payment through the accounts payable system to be sent before the due date.",
-      "expected_outcome": "Agent successfully schedules the bill payment.",
-      "required_tools": [
-        "schedule_bill_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the payment through the accounts payable system to be sent before the due date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules the bill payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

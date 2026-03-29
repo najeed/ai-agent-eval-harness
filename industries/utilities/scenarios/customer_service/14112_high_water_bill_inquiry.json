@@ -1,54 +1,59 @@
 {
-  "scenario_id": "utils-cs-14112",
-  "title": "High Water Bill Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "High Water Bill Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is calling because their water bill is significantly higher than usual and they suspect a leak.",
-  "use_case": "Customer Service",
-  "core_function": "Billing & Account Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's billing and usage history for the past 12 months.",
-      "expected_outcome": "Agent pulls the historical data and confirms the recent bill is an anomaly.",
-      "required_tools": [
-        "get_billing_history",
-        "get_usage_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's billing and usage history for the past 12 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls the historical data and confirms the recent bill is an anomaly."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze smart meter data to check for continuous flow, which indicates a potential leak.",
-      "expected_outcome": "Agent analyzes interval data and identifies constant water flow over a 24-hour period.",
-      "required_tools": [
-        "analyze_smart_meter_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze smart meter data to check for continuous flow, which indicates a potential leak.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent analyzes interval data and identifies constant water flow over a 24-hour period."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the customer on how to check for common leaks (e.g., toilets, faucets) and offer to schedule a meter check.",
-      "expected_outcome": "Agent provides helpful advice and schedules a service order to inspect the meter.",
-      "required_tools": [
-        "schedule_service_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the customer on how to check for common leaks (e.g., toilets, faucets) and offer to schedule a meter check.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides helpful advice and schedules a service order to inspect the meter."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

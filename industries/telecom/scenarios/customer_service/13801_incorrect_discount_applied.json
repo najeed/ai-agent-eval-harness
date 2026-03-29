@@ -1,87 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13801",
-  "title": "Billing Dispute - Incorrect Discount",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Billing Dispute - Incorrect Discount",
+    "compliance_level": "Standard"
+  },
   "description": "A customer claims their promotional 'loyalty' discount was not applied to their latest bill.",
-  "use_case": "Customer Service",
-  "core_function": "Billing and Payments",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve customer account and the bill in question.",
-      "expected_outcome": "Agent correctly identifies the customer and the bill.",
-      "required_tools": [
-        "get_customer_details",
-        "get_billing_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve customer account and the bill in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the customer and the bill."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the account's active promotions and their terms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms a 12-month loyalty discount should be active."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the account's active promotions and their terms.",
-      "expected_outcome": "Agent confirms a 12-month loyalty discount should be active.",
-      "required_tools": [
-        "get_account_promotions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply a manual credit for the missing discount amount and ensure the promotion is fixed for future bills.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent credits the current bill and re-applies the promotion code to the account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply a manual credit for the missing discount amount and ensure the promotion is fixed for future bills.",
-      "expected_outcome": "Agent credits the current bill and re-applies the promotion code to the account.",
-      "required_tools": [
-        "apply_manual_credit",
-        "reapply_promotion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

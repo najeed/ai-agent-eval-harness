@@ -1,54 +1,59 @@
 {
-  "scenario_id": "education-sa-11068",
-  "title": "Dispute a Late Payment Fee",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dispute a Late Payment Fee",
+    "compliance_level": "Standard"
+  },
   "description": "A student was charged a late fee on their tuition bill but claims they paid on time.",
-  "use_case": "Student Administration",
-  "core_function": "Financial Aid & Billing",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and the late fee in question.",
-      "expected_outcome": "Agent locates the charge on the student's account.",
-      "required_tools": [
-        "get_student_record",
-        "get_student_bill_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and the late fee in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the charge on the student's account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the student's payment history, including the timestamp of the last payment.",
-      "expected_outcome": "Agent finds the payment was posted one day after the due date.",
-      "required_tools": [
-        "get_payment_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the student's payment history, including the timestamp of the last payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the payment was posted one day after the due date."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the student's record for any prior late payments. Finding none, offer a one-time courtesy waiver of the fee.",
-      "expected_outcome": "As a goodwill gesture for a first-time issue, the agent waives the fee.",
-      "required_tools": [
-        "waive_student_fee"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the student's record for any prior late payments. Finding none, offer a one-time courtesy waiver of the fee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "As a goodwill gesture for a first-time issue, the agent waives the fee."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

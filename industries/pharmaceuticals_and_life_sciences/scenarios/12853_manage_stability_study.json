@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12853",
-  "title": "Manage a Product Stability Study",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Product Stability Study",
+    "compliance_level": "Standard"
+  },
   "description": "A QC specialist must manage a stability study for a drug product, pulling samples at specified time points and submitting them for testing.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Quality Control & Assurance",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the stability study protocol, which defines the storage conditions and pull schedule.",
-      "expected_outcome": "Agent finds the protocol, noting that samples need to be pulled at 3, 6, and 9 months.",
-      "required_tools": [
-        "get_stability_protocol"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the stability study protocol, which defines the storage conditions and pull schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the protocol, noting that samples need to be pulled at 3, 6, and 9 months."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Receive an alert that the 6-month time point is due.",
-      "expected_outcome": "Agent acknowledges the system-generated alert.",
-      "required_tools": [
-        "monitor_stability_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Receive an alert that the 6-month time point is due.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the system-generated alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Pull the required number of samples from the stability chamber.",
-      "expected_outcome": "Agent physically pulls the samples and documents the activity.",
-      "required_tools": [
-        "log_sample_pull"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Pull the required number of samples from the stability chamber.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent physically pulls the samples and documents the activity."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the samples to the lab for testing via the LIMS.",
-      "expected_outcome": "Agent successfully creates a test request in the LIMS for the stability samples.",
-      "required_tools": [
-        "request_qc_testing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the samples to the lab for testing via the LIMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a test request in the LIMS for the stability samples."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

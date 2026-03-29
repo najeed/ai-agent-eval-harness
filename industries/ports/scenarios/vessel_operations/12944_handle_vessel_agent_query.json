@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ports-vo-12944",
-  "title": "Handle a Vessel Agent Query about Port Charges",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Vessel Agent Query about Port Charges",
+    "compliance_level": "Standard"
+  },
   "description": "A vessel agent calls to get an estimate of port charges for an upcoming vessel call.",
-  "use_case": "Vessel Operations",
-  "core_function": "Berth & Pilotage Management",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the vessel's details (GT, LOA) and planned activities (number of container moves) from the agent.",
-      "expected_outcome": "Operator gathers all necessary information for the estimate.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the vessel's details (GT, LOA) and planned activities (number of container moves) from the agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator gathers all necessary information for the estimate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the port tariff document to look up the rates for wharfage, pilotage, and stevedoring.",
-      "expected_outcome": "Operator finds the correct rates based on the vessel's size and cargo volume.",
-      "required_tools": [
-        "get_port_tariff_rates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the port tariff document to look up the rates for wharfage, pilotage, and stevedoring.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator finds the correct rates based on the vessel's size and cargo volume."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the estimated total cost and provide it to the agent, stating that it is a non-binding estimate.",
-      "expected_outcome": "A pro-forma invoice is generated and communicated to the agent with a disclaimer.",
-      "required_tools": [
-        "calculate_proforma_charges"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the estimated total cost and provide it to the agent, stating that it is a non-binding estimate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A pro-forma invoice is generated and communicated to the agent with a disclaimer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

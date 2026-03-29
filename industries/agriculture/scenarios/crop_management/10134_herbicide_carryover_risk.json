@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ag-cm-10134",
-  "title": "Check Herbicide Carryover Risk",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Herbicide Carryover Risk",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer wants to plant soybeans in a field where they applied a corn herbicide last year and needs to check for carryover risk.",
-  "use_case": "Crop Management",
-  "core_function": "Planting & Seeding",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the application history for the field to identify the specific herbicide used last year and the date it was applied.",
-      "expected_outcome": "Agent finds that Atrazine was applied last May.",
-      "required_tools": [
-        "get_application_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the application history for the field to identify the specific herbicide used last year and the date it was applied.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that Atrazine was applied last May."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the herbicide label for plant-back restrictions for soybeans.",
-      "expected_outcome": "Agent finds the label specifies a 12-month waiting period before planting soybeans.",
-      "required_tools": [
-        "get_pesticide_label_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the herbicide label for plant-back restrictions for soybeans.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the label specifies a 12-month waiting period before planting soybeans."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the farmer that planting soybeans is not recommended due to the high risk of crop injury from herbicide carryover.",
-      "expected_outcome": "Agent provides a clear and correct recommendation based on the label.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the farmer that planting soybeans is not recommended due to the high risk of crop injury from herbicide carryover.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear and correct recommendation based on the label."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

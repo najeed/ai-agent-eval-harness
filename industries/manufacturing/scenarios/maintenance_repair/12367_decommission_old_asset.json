@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-mr-12367",
-  "title": "Decommission an Old Asset",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Decommission an Old Asset",
+    "compliance_level": "Standard"
+  },
   "description": "A piece of equipment is being replaced and needs to be formally decommissioned in the asset management system.",
-  "use_case": "Maintenance & Repair",
-  "core_function": "Asset & Spares Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the asset record in the CMMS.",
-      "expected_outcome": "Agent locates the record for the machine to be decommissioned.",
-      "required_tools": [
-        "find_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the asset record in the CMMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the record for the machine to be decommissioned."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cancel all future scheduled PMs for the asset.",
-      "expected_outcome": "Agent successfully removes all pending PM work orders for the asset.",
-      "required_tools": [
-        "cancel_asset_pms"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cancel all future scheduled PMs for the asset.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully removes all pending PM work orders for the asset."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Change the asset's status to 'Decommissioned' or 'Retired'.",
-      "expected_outcome": "Agent updates the status, removing it from the active asset list.",
-      "required_tools": [
-        "update_asset_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Change the asset's status to 'Decommissioned' or 'Retired'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the status, removing it from the active asset list."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

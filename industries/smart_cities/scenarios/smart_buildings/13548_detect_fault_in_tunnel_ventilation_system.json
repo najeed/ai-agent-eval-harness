@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13548",
-  "title": "Detect Fault in Tunnel Ventilation System",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Detect Fault in Tunnel Ventilation System",
+    "compliance_level": "Standard"
+  },
   "description": "A sensor in a traffic tunnel's ventilation system reports a fan malfunction.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Structural Health Monitoring",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a 'Fan Failure' alert from the 'Downtown Tunnel' monitoring system.",
-      "expected_outcome": "Agent acknowledges the critical infrastructure alert.",
-      "required_tools": [
-        "get_structural_health_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a 'Fan Failure' alert from the 'Downtown Tunnel' monitoring system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the critical infrastructure alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the air quality sensors within the tunnel to ensure CO levels are still safe.",
-      "expected_outcome": "Agent confirms that air quality is still within acceptable limits due to redundant fans.",
-      "required_tools": [
-        "get_environmental_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the air quality sensors within the tunnel to ensure CO levels are still safe.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that air quality is still within acceptable limits due to redundant fans."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-priority work order for an engineering team to repair the faulty fan.",
-      "expected_outcome": "Agent dispatches a repair crew.",
-      "required_tools": [
-        "create_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-priority work order for an engineering team to repair the faulty fan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches a repair crew."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

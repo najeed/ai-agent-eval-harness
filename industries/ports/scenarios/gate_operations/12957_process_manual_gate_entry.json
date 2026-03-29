@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ports-go-12957",
-  "title": "Process a Manual Gate Entry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Manual Gate Entry",
+    "compliance_level": "Standard"
+  },
   "description": "The gate's OCR camera system fails. The clerk must process a truck's entry manually.",
-  "use_case": "Gate & Landside Operations",
-  "core_function": "Gate Processing & Appointments",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the system failure and switch to manual processing mode.",
-      "expected_outcome": "Clerk is aware of the failure and prepared to handle manual entry.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "adaptability",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the system failure and switch to manual processing mode.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Clerk is aware of the failure and prepared to handle manual entry."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ask the driver for the container number and truck license plate and manually enter them into the system.",
-      "expected_outcome": "The clerk accurately types the required information into the gate system.",
-      "required_tools": [
-        "manual_enter_gate_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ask the driver for the container number and truck license plate and manually enter them into the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The clerk accurately types the required information into the gate system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform all standard checks (appointment, customs) and issue the ticket.",
-      "expected_outcome": "Despite the system failure, the truck is processed correctly and allowed to enter.",
-      "required_tools": [
-        "check_vbs_appointment",
-        "check_container_customs_status",
-        "issue_gate_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform all standard checks (appointment, customs) and issue the ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Despite the system failure, the truck is processed correctly and allowed to enter."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

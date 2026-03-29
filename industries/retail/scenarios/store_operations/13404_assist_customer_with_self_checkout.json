@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ret-so-13404",
-  "title": "Assist Customer at Self-Checkout",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assist Customer at Self-Checkout",
+    "compliance_level": "Standard"
+  },
   "description": "A customer at a self-checkout kiosk needs help because an item won't scan.",
-  "use_case": "Store Operations",
-  "core_function": "In-Store Customer Assistance",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the alert from the self-checkout kiosk.",
-      "expected_outcome": "The associate is notified that a customer needs assistance.",
-      "required_tools": [
-        "acknowledge_sco_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the alert from the self-checkout kiosk.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate is notified that a customer needs assistance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to scan the item. If it fails, look up the item manually by name or department.",
-      "expected_outcome": "The associate finds the item in the system.",
-      "required_tools": [
-        "lookup_product"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to scan the item. If it fails, look up the item manually by name or department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate finds the item in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the item to the customer's transaction manually and clear the error so the customer can continue.",
-      "expected_outcome": "The item is added, and the customer is able to complete their purchase.",
-      "required_tools": [
-        "add_item_manually",
-        "clear_sco_error"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the item to the customer's transaction manually and clear the error so the customer can continue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The item is added, and the customer is able to complete their purchase."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,39 +1,46 @@
 {
-  "scenario_id": "construction-os-10642",
-  "title": "Coordinate a Critical Crane Lift",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate a Critical Crane Lift",
+    "compliance_level": "Standard"
+  },
   "description": "A site manager must coordinate a critical lift of a large HVAC unit onto the roof, which requires temporarily closing a section of the site.",
-  "use_case": "On-Site Operations",
-  "core_function": "Task Execution & Coordination",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a lift plan, specifying the crane position, load weight, and exclusion zone.",
-      "expected_outcome": "A formal lift plan document is created.",
-      "required_tools": [
-        "create_lift_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a lift plan, specifying the crane position, load weight, and exclusion zone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal lift plan document is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Notify all site personnel of the time and area of the upcoming crane lift and exclusion zone.",
-      "expected_outcome": "A site-wide safety notification is sent out.",
-      "required_tools": [
-        "send_site_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Notify all site personnel of the time and area of the upcoming crane lift and exclusion zone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A site-wide safety notification is sent out."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

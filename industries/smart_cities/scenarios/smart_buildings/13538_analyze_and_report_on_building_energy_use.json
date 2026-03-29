@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13538",
-  "title": "Analyze and Report on Building Energy Use",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze and Report on Building Energy Use",
+    "compliance_level": "Standard"
+  },
   "description": "A sustainability officer requests a report on the energy consumption of all city-owned buildings for the last year.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Building Automation & Control",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve historical energy consumption data for all city-owned buildings from their respective BMS.",
-      "expected_outcome": "Agent successfully queries and aggregates the energy data.",
-      "required_tools": [
-        "get_historical_energy_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve historical energy consumption data for all city-owned buildings from their respective BMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully queries and aggregates the energy data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to rank the buildings from most to least energy-efficient per square foot.",
-      "expected_outcome": "Agent generates a ranked list identifying the least efficient buildings.",
-      "required_tools": [
-        "analyze_energy_efficiency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to rank the buildings from most to least energy-efficient per square foot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a ranked list identifying the least efficient buildings."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a summary report with visualizations to be sent to the sustainability officer.",
-      "expected_outcome": "Agent creates a comprehensive report with charts and key findings.",
-      "required_tools": [
-        "generate_sustainability_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a summary report with visualizations to be sent to the sustainability officer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a comprehensive report with charts and key findings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

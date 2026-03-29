@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-c2-10846",
-  "title": "Coordinated Fires Asset Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinated Fires Asset Management",
+    "compliance_level": "Standard"
+  },
   "description": "A fires officer must deconflict and synchronize artillery, naval gunfire, and close air support to suppress enemy defenses.",
-  "use_case": "Command & Control (C2)",
-  "core_function": "Asset & Task Management",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a list of targets and desired effects from the ground force commander.",
-      "expected_outcome": "Officer correctly processes the fire support request.",
-      "required_tools": [
-        "process_fire_support_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_processing_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a list of targets and desired effects from the ground force commander.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer correctly processes the fire support request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign the most suitable fire support asset to each target (e.g., naval guns for coastal targets, precision air strikes for point targets).",
-      "expected_outcome": "Officer makes optimal pairings of assets to targets.",
-      "required_tools": [
-        "assign_target_to_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "resource_optimization_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign the most suitable fire support asset to each target (e.g., naval guns for coastal targets, precision air strikes for point targets).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer makes optimal pairings of assets to targets."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a synchronized firing schedule that ensures all ordnance impacts the targets simultaneously.",
-      "expected_outcome": "Officer creates a valid and deconflicted fire plan.",
-      "required_tools": [
-        "create_synchronized_fire_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "plan_validity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a synchronized firing schedule that ensures all ordnance impacts the targets simultaneously.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer creates a valid and deconflicted fire plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

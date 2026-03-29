@@ -1,81 +1,61 @@
 {
-  "scenario_id": "finance-wm-11205",
-  "title": "Create a Retirement Financial Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Retirement Financial Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to create a financial plan to see if they are on track for retirement at age 65.",
-  "use_case": "Wealth Management",
-  "core_function": "Financial Planning",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather client's financial data: age, income, current savings, monthly contributions, and retirement spending goals.",
-      "expected_outcome": "Agent accurately collects all necessary data points for the financial plan.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather client's financial data: age, income, current savings, monthly contributions, and retirement spending goals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately collects all necessary data points for the financial plan."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a financial planning tool to project the client's portfolio growth and retirement readiness.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the projection and finds a potential shortfall."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a financial planning tool to project the client's portfolio growth and retirement readiness.",
-      "expected_outcome": "Agent runs the projection and finds a potential shortfall.",
-      "required_tools": [
-        "run_financial_plan_projection"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present the results to the client and suggest increasing monthly contributions to meet their goal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the projection and provides an actionable recommendation."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present the results to the client and suggest increasing monthly contributions to meet their goal.",
-      "expected_outcome": "Agent clearly explains the projection and provides an actionable recommendation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10076",
-  "title": "Handle a Space Debris Conjunction Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Space Debris Conjunction Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A satellite operator receives an alert that their satellite has a high probability of colliding with a piece of space debris. They must decide whether to perform a collision avoidance maneuver.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Satellite Operations & Control",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the conjunction data message (CDM) to determine the probability of collision, miss distance, and time of closest approach.",
-      "expected_outcome": "Agent determines the probability of collision is high (1 in 1,000).",
-      "required_tools": [
-        "analyze_conjunction_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the conjunction data message (CDM) to determine the probability of collision, miss distance, and time of closest approach.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the probability of collision is high (1 in 1,000)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Plan a collision avoidance maneuver (a small thruster burn) to move the satellite out of the path of the debris.",
-      "expected_outcome": "Agent designs a maneuver that increases the miss distance to a safe level.",
-      "required_tools": [
-        "plan_avoidance_maneuver"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 0.98,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Plan a collision avoidance maneuver (a small thruster burn) to move the satellite out of the path of the debris.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent designs a maneuver that increases the miss distance to a safe level."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute the maneuver and verify the satellite is on its new, safer trajectory.",
-      "expected_outcome": "Agent sends the command for the burn and confirms the satellite's new orbit.",
-      "required_tools": [
-        "send_spacecraft_command",
-        "check_satellite_orbit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute the maneuver and verify the satellite is on its new, safer trajectory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the command for the burn and confirms the satellite's new orbit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

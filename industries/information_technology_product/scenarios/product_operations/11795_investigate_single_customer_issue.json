@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_product-po-11795",
-  "title": "Investigate Single-Customer Performance Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Single-Customer Performance Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A single, high-value customer reports that the application is slow only for them, while other customers are unaffected.",
-  "use_case": "Product Operations & Reliability (SRE)",
-  "core_function": "Incident & Outage Management",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search the application logs specifically for the affected customer's account ID.",
-      "expected_outcome": "Agent isolates the logs for the specific customer.",
-      "required_tools": [
-        "search_app_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search the application logs specifically for the affected customer's account ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent isolates the logs for the specific customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the logs and discover the customer has an unusually large amount of data (e.g., millions of records), which is causing database queries to be slow only for them.",
-      "expected_outcome": "Agent correctly identifies the 'noisy neighbor' problem.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the logs and discover the customer has an unusually large amount of data (e.g., millions of records), which is causing database queries to be slow only for them.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the 'noisy neighbor' problem."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Escalate the issue to engineering to explore performance optimizations for large accounts, such as creating dedicated database indexes or moving them to a different database shard.",
-      "expected_outcome": "Agent provides a detailed analysis to engineering for a long-term fix.",
-      "required_tools": [
-        "create_engineering_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Escalate the issue to engineering to explore performance optimizations for large accounts, such as creating dedicated database indexes or moving them to a different database shard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a detailed analysis to engineering for a long-term fix."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

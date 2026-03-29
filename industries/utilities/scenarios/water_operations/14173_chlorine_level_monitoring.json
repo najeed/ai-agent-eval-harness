@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-wo-14173",
-  "title": "Chlorine Residual Monitoring",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Chlorine Residual Monitoring",
+    "compliance_level": "Standard"
+  },
   "description": "An operator monitors the chlorine residual levels in the water distribution system to ensure disinfection is maintained.",
-  "use_case": "Water & Wastewater Operations",
-  "core_function": "Treatment & Quality",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve real-time chlorine residual readings from sensors throughout the network.",
-      "expected_outcome": "System displays a map with live chlorine level data.",
-      "required_tools": [
-        "get_chlorine_residual_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_visualization_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve real-time chlorine residual readings from sensors throughout the network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System displays a map with live chlorine level data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system alerts the operator that the chlorine level in a specific zone is dropping below the minimum required level.",
-      "expected_outcome": "System generates a low-chlorine alarm.",
-      "required_tools": [
-        "monitor_chlorine_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system alerts the operator that the chlorine level in a specific zone is dropping below the minimum required level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a low-chlorine alarm."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a technician to the area to take a manual sample and flush the main if necessary.",
-      "expected_outcome": "System creates a work order for a water quality technician.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a technician to the area to take a manual sample and flush the main if necessary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a work order for a water quality technician."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

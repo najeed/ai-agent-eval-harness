@@ -1,49 +1,59 @@
 {
-  "scenario_id": "ps-pw-13023",
-  "title": "Check Park Pavilion Availability",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Park Pavilion Availability",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen wants to reserve a park pavilion for a birthday party and needs to check availability.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Asset Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the park and pavilion the citizen is interested in.",
-      "expected_outcome": "Agent gets the details of the desired location.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the park and pavilion the citizen is interested in.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the details of the desired location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the reservation calendar for the requested date.",
-      "expected_outcome": "Agent checks the calendar and finds that the pavilion is available on that date.",
-      "required_tools": [
-        "check_asset_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the reservation calendar for the requested date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the calendar and finds that the pavilion is available on that date."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the citizen of the availability and provide instructions on how to officially reserve and pay for it.",
-      "expected_outcome": "Agent provides a clear answer and guides the citizen to the next step.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the citizen of the availability and provide instructions on how to officially reserve and pay for it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear answer and guides the citizen to the next step."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

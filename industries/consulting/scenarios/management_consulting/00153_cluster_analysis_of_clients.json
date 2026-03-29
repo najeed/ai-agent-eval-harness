@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-153",
-  "title": "Cluster Analysis of Clients",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cluster Analysis of Clients",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must use k-means clustering to group clients based on their industry and revenue.",
-  "use_case": "Management Consulting",
-  "core_function": "Analysis & Modeling",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load a dataset of clients with their industry and annual revenue.",
-      "expected_outcome": "Agent successfully loads the data.",
-      "required_tools": [
-        "load_csv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load a dataset of clients with their industry and annual revenue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully loads the data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform k-means clustering to group the clients into 4 clusters.",
-      "expected_outcome": "Agent successfully runs the clustering algorithm.",
-      "required_tools": [
-        "perform_k_means_clustering"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform k-means clustering to group the clients into 4 clusters.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs the clustering algorithm."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the resulting clusters and give each one a descriptive name (e.g., 'Large Tech Companies', 'Small Retail Businesses').",
-      "expected_outcome": "Agent provides meaningful labels for each identified client cluster.",
-      "required_tools": [
-        "analyze_clusters"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the resulting clusters and give each one a descriptive name (e.g., 'Large Tech Companies', 'Small Retail Businesses').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides meaningful labels for each identified client cluster."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

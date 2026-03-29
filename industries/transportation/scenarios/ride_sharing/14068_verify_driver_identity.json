@@ -1,60 +1,72 @@
 {
-  "scenario_id": "tr-rs-14068",
-  "title": "Verify Driver Identity with Selfie Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify Driver Identity with Selfie Check",
+    "compliance_level": "Standard"
+  },
   "description": "To prevent account sharing, a driver is randomly prompted to take a selfie to verify it matches their profile picture before they can go online.",
-  "use_case": "Ride-Sharing & On-Demand Mobility",
-  "core_function": "Safety & Incident Response",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "When a driver attempts to go online, the system randomly triggers an identity check.",
-      "expected_outcome": "The driver is prompted to take a selfie.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "When a driver attempts to go online, the system randomly triggers an identity check.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver is prompted to take a selfie."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The driver takes a selfie using the app.",
-      "expected_outcome": "The image is captured.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The driver takes a selfie using the app.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The image is captured."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system uses facial recognition to compare the selfie with the driver's stored profile photo.",
-      "expected_outcome": "The system calculates a match score.",
-      "required_tools": [
-        "compare_facial_images"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system uses facial recognition to compare the selfie with the driver's stored profile photo.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system calculates a match score."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The match score is high, the identity is verified, and the driver is allowed to go online.",
-      "expected_outcome": "The driver successfully passes the check and can start working.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-4",
+        "task_description": "The match score is high, the identity is verified, and the driver is allowed to go online.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver successfully passes the check and can start working."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

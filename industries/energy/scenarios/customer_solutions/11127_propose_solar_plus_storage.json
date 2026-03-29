@@ -1,67 +1,72 @@
 {
-  "scenario_id": "energy-cs-11127",
-  "title": "Propose Solar Plus Storage Solution",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Propose Solar Plus Storage Solution",
+    "compliance_level": "Standard"
+  },
   "description": "A sales agent is creating a proposal for a commercial customer for a rooftop solar and battery storage system.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Energy Efficiency & Audits",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the customer's interval meter data to understand their load profile and identify peak demand charges.",
-      "expected_outcome": "Agent determines the customer has high demand charges in the afternoon.",
-      "required_tools": [
-        "get_historical_consumption_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the customer's interval meter data to understand their load profile and identify peak demand charges.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the customer has high demand charges in the afternoon."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Size an optimal solar and storage system to maximize self-consumption and perform peak shaving.",
-      "expected_outcome": "Agent recommends a 250 kW solar array and a 100 kW/200 kWh battery system.",
-      "required_tools": [
-        "optimize_der_system_size"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Size an optimal solar and storage system to maximize self-consumption and perform peak shaving.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recommends a 250 kW solar array and a 100 kW/200 kWh battery system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the estimated annual bill savings, project IRR, and payback period for the proposed system.",
-      "expected_outcome": "Agent provides a clear financial summary for the customer.",
-      "required_tools": [
-        "calculate_project_financials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the estimated annual bill savings, project IRR, and payback period for the proposed system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear financial summary for the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate a formal proposal document including the technical and financial details.",
-      "expected_outcome": "Agent produces a professional, customer-facing proposal.",
-      "required_tools": [
-        "generate_sales_proposal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate a formal proposal document including the technical and financial details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a professional, customer-facing proposal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

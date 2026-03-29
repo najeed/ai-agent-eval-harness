@@ -1,50 +1,59 @@
 {
-  "scenario_id": "media-bo-12587",
-  "title": "Update On-Screen Graphics During Live Broadcast",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update On-Screen Graphics During Live Broadcast",
+    "compliance_level": "Standard"
+  },
   "description": "During a live sports broadcast, the score is incorrect on the on-screen graphic. An agent must correct it immediately.",
-  "use_case": "Broadcasting & Streaming Operations",
-  "core_function": "Live Event Broadcasting",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the correct score from the official source (e.g., the stats keeper).",
-      "expected_outcome": "Agent has the correct, verified score.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the correct score from the official source (e.g., the stats keeper).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the correct, verified score."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the graphics control system.",
-      "expected_outcome": "Agent successfully connects to the graphics generator.",
-      "required_tools": [
-        "connect_to_graphics_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the graphics control system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully connects to the graphics generator."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the score field in the graphics template and push the change to air.",
-      "expected_outcome": "Agent successfully updates the on-screen graphic, and the correct score is now displayed.",
-      "required_tools": [
-        "update_on_screen_graphic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the score field in the graphics template and push the change to air.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the on-screen graphic, and the correct score is now displayed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

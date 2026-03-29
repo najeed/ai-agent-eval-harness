@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13369",
-  "title": "Comply with Local Rental Regulations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Comply with Local Rental Regulations",
+    "compliance_level": "Standard"
+  },
   "description": "A city passes a new ordinance requiring all rental properties to be registered. A property manager must comply for their entire portfolio.",
-  "use_case": "Property Management",
-  "core_function": "Leasing & Tenant Screening",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the new city ordinance to understand the registration requirements and deadline.",
-      "expected_outcome": "Agent is fully aware of the new legal requirements.",
-      "required_tools": [
-        "review_legal_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the new city ordinance to understand the registration requirements and deadline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is fully aware of the new legal requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compile a list of all managed properties within that city.",
-      "expected_outcome": "A complete list of affected properties is generated.",
-      "required_tools": [
-        "query_property_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compile a list of all managed properties within that city.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete list of affected properties is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete and submit the registration form and fee for each property before the deadline.",
-      "expected_outcome": "All properties are successfully registered with the city.",
-      "required_tools": [
-        "submit_online_form",
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete and submit the registration form and fee for each property before the deadline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All properties are successfully registered with the city."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

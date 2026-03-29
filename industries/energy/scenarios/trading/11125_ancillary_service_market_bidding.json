@@ -1,53 +1,59 @@
 {
-  "scenario_id": "energy-tr-11125",
-  "title": "Ancillary Service Market Bidding",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Ancillary Service Market Bidding",
+    "compliance_level": "Standard"
+  },
   "description": "A battery storage asset operator needs to submit bids into the day-ahead market for ancillary services (frequency regulation).",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Portfolio Optimization",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze historical clearing prices for frequency regulation services in the target market.",
-      "expected_outcome": "Agent identifies price patterns, such as higher prices during morning and evening ramps.",
-      "required_tools": [
-        "get_historical_ancillary_prices"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze historical clearing prices for frequency regulation services in the target market.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies price patterns, such as higher prices during morning and evening ramps."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Determine the battery's available capacity for regulation up/down, considering its current state of charge and any energy arbitrage commitments.",
-      "expected_outcome": "Agent calculates the MW capacity available for bidding in each hour.",
-      "required_tools": [
-        "get_bess_status",
-        "calculate_available_capacity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Determine the battery's available capacity for regulation up/down, considering its current state of charge and any energy arbitrage commitments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the MW capacity available for bidding in each hour."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Formulate and submit hourly bids into the ancillary service market based on price forecasts and opportunity cost.",
-      "expected_outcome": "Agent successfully submits a set of competitive bids.",
-      "required_tools": [
-        "submit_ancillary_service_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Formulate and submit hourly bids into the ancillary service market based on price forecasts and opportunity cost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits a set of competitive bids."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

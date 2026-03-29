@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13273",
-  "title": "Handle a Tenant's Sublet Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Tenant's Sublet Request",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant wants to sublet their apartment for the summer. The agent must handle the request according to the lease and company policy.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the tenant's lease to see if subletting is permitted and under what conditions.",
-      "expected_outcome": "Agent finds the lease allows subletting with landlord's written consent.",
-      "required_tools": [
-        "get_lease_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the tenant's lease to see if subletting is permitted and under what conditions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the lease allows subletting with landlord's written consent."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the tenant of the required procedure, which includes the prospective sublessee submitting a full rental application.",
-      "expected_outcome": "Agent clearly communicates the required steps to the tenant.",
-      "required_tools": [
-        "send_tenant_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the tenant of the required procedure, which includes the prospective sublessee submitting a full rental application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the required steps to the tenant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the sublessee's application, including screening, and if approved, draft a formal sublet agreement.",
-      "expected_outcome": "Agent follows the standard application and leasing process for the sublessee.",
-      "required_tools": [
-        "run_tenant_screening",
-        "generate_sublet_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the sublessee's application, including screening, and if approved, draft a formal sublet agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent follows the standard application and leasing process for the sublessee."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

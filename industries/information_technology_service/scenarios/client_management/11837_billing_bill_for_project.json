@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-cm-11837",
-  "title": "Billing - Bill for Project Work",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Billing - Bill for Project Work",
+    "compliance_level": "Standard"
+  },
   "description": "A fixed-fee project has been completed, and the finance team needs to create the final invoice.",
-  "use_case": "Client & Contract Management",
-  "core_function": "Billing & Invoicing",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the client has signed off on the project completion document.",
-      "expected_outcome": "The account manager confirms the project is officially closed.",
-      "required_tools": [
-        "get_project_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the client has signed off on the project completion document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account manager confirms the project is officially closed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a one-time invoice in the PSA for the total fixed-fee amount of the project.",
-      "expected_outcome": "An invoice for the project work is generated.",
-      "required_tools": [
-        "create_one_time_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a one-time invoice in the PSA for the total fixed-fee amount of the project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An invoice for the project work is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the invoice to the client.",
-      "expected_outcome": "The client receives the final bill for the project.",
-      "required_tools": [
-        "email_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the invoice to the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client receives the final bill for the project."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "consulting-mc-171",
-  "title": "Identify Relevant Internal Case Studies",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Relevant Internal Case Studies",
+    "compliance_level": "Standard"
+  },
   "description": "For a new proposal in the 'pharmaceutical' industry, an agent must find relevant past case studies from the company's internal knowledge base.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search the internal knowledge base for case studies tagged with 'pharmaceutical' and 'supply chain'.",
-      "expected_outcome": "Agent executes the search with the correct tags.",
-      "required_tools": [
-        "search_knowledge_base"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search the internal knowledge base for case studies tagged with 'pharmaceutical' and 'supply chain'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent executes the search with the correct tags."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the top 3 most relevant case studies.",
-      "expected_outcome": "Agent provides a list of the 3 best matches.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the top 3 most relevant case studies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a list of the 3 best matches."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each of the 3 case studies, generate a one-paragraph summary to be included in the new proposal.",
-      "expected_outcome": "Agent creates concise summaries suitable for a proposal.",
-      "required_tools": [
-        "summarize_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "summarization_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each of the 3 case studies, generate a one-paragraph summary to be included in the new proposal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates concise summaries suitable for a proposal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

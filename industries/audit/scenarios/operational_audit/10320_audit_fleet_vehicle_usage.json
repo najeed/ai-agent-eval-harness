@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-op-10320",
-  "title": "Audit Fleet Vehicle Usage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Fleet Vehicle Usage",
+    "compliance_level": "Standard"
+  },
   "description": "An operational auditor reviews the usage of the company's fleet of service vehicles to identify potential misuse or inefficiency.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Process Efficiency Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain and analyze GPS tracking data and fuel card usage data for all fleet vehicles for the past 3 months.",
-      "expected_outcome": "Auditor has the complete dataset for analysis.",
-      "required_tools": [
-        "get_gps_tracking_data",
-        "get_fuel_card_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain and analyze GPS tracking data and fuel card usage data for all fleet vehicles for the past 3 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has the complete dataset for analysis."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to identify vehicles with excessive idle times, off-hours usage, or significant deviations from their service routes.",
-      "expected_outcome": "The analysis flags 5 vehicles with significant weekend usage.",
-      "required_tools": [
-        "analyze_fleet_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to identify vehicles with excessive idle times, off-hours usage, or significant deviations from their service routes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis flags 5 vehicles with significant weekend usage."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend stronger controls over vehicle usage, such as a clearer policy on personal use and geofencing alerts.",
-      "expected_outcome": "The auditor proposes specific recommendations to reduce misuse.",
-      "required_tools": [
-        "draft_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "strategic_advice_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend stronger controls over vehicle usage, such as a clearer policy on personal use and geofencing alerts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor proposes specific recommendations to reduce misuse."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

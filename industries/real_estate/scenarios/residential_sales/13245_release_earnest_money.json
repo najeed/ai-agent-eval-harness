@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13245",
-  "title": "Handle Earnest Money Release",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Earnest Money Release",
+    "compliance_level": "Standard"
+  },
   "description": "A transaction has been cancelled. The agent must facilitate the release of the earnest money deposit based on the cancellation agreement.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Post-Sale",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the fully signed cancellation agreement, noting which party is to receive the earnest money.",
-      "expected_outcome": "Agent confirms the buyer is entitled to the refund.",
-      "required_tools": [
-        "get_transaction_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the fully signed cancellation agreement, noting which party is to receive the earnest money.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the buyer is entitled to the refund."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the earnest money release instructions for the escrow holder.",
-      "expected_outcome": "Agent creates the formal release instructions.",
-      "required_tools": [
-        "draft_escrow_instructions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the earnest money release instructions for the escrow holder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the formal release instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the release instructions to both the buyer and seller for signature, then forward to escrow.",
-      "expected_outcome": "Agent coordinates the signing and delivery of the release instructions.",
-      "required_tools": [
-        "send_for_e_signature",
-        "send_email_to_escrow"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the release instructions to both the buyer and seller for signature, then forward to escrow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent coordinates the signing and delivery of the release instructions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

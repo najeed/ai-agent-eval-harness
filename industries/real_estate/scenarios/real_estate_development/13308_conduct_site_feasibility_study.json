@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-dev-13308",
-  "title": "Conduct Site Feasibility Study",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Site Feasibility Study",
+    "compliance_level": "Standard"
+  },
   "description": "A developer is considering purchasing a parcel of land for a new apartment complex and needs a feasibility study.",
-  "use_case": "Real Estate Development",
-  "core_function": "Site Acquisition & Feasibility",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze local zoning codes to determine the maximum number of units and building height allowed on the parcel.",
-      "expected_outcome": "Agent determines the development potential based on zoning.",
-      "required_tools": [
-        "get_zoning_regulations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze local zoning codes to determine the maximum number of units and building height allowed on the parcel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the development potential based on zoning."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Research local market rents and vacancy rates for similar apartment complexes.",
-      "expected_outcome": "Agent gathers data to project potential income.",
-      "required_tools": [
-        "get_market_rent_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Research local market rents and vacancy rates for similar apartment complexes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers data to project potential income."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a pro-forma financial model estimating development costs, potential income, and return on investment.",
-      "expected_outcome": "Agent produces a detailed financial projection to guide the purchase decision.",
-      "required_tools": [
-        "generate_pro_forma_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a pro-forma financial model estimating development costs, potential income, and return on investment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a detailed financial projection to guide the purchase decision."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

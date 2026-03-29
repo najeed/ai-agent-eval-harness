@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13965",
-  "title": "Rent a Car",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Rent a Car",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to rent a mid-size SUV for 3 days from an airport location.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Itinerary Planning & Booking",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search for available mid-size SUVs at the specified airport location for the given dates.",
-      "expected_outcome": "Agent finds several mid-size SUVs available.",
-      "required_tools": [
-        "search_rental_cars"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search for available mid-size SUVs at the specified airport location for the given dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds several mid-size SUVs available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Present the options and their prices, including any insurance add-ons.",
-      "expected_outcome": "Agent clearly communicates the vehicle options and total costs.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Present the options and their prices, including any insurance add-ons.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the vehicle options and total costs."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the selected vehicle and provide the customer with a reservation number.",
-      "expected_outcome": "Agent successfully completes the car rental booking.",
-      "required_tools": [
-        "book_rental_car"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the selected vehicle and provide the customer with a reservation number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the car rental booking."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

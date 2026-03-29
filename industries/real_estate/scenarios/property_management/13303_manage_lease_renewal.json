@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13303",
-  "title": "Manage a Lease Renewal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Lease Renewal",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant's lease is expiring soon. The property manager must manage the renewal process.",
-  "use_case": "Property Management",
-  "core_function": "Tenant Relations & Renewals",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify that a tenant's lease is expiring in 90 days.",
-      "expected_outcome": "Agent is alerted by the CRM about the upcoming lease expiration.",
-      "required_tools": [
-        "get_lease_expirations_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify that a tenant's lease is expiring in 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is alerted by the CRM about the upcoming lease expiration."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a lease renewal offer to the tenant, including any proposed rent increase.",
-      "expected_outcome": "A formal renewal offer is sent to the tenant.",
-      "required_tools": [
-        "generate_lease_renewal_offer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a lease renewal offer to the tenant, including any proposed rent increase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal renewal offer is sent to the tenant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the tenant accepts, generate the new lease agreement and send it for signature. If they decline, begin the move-out process.",
-      "expected_outcome": "The lease is renewed or the move-out process is initiated.",
-      "required_tools": [
-        "generate_lease_agreement",
-        "initiate_move_out_workflow"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the tenant accepts, generate the new lease agreement and send it for signature. If they decline, begin the move-out process.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The lease is renewed or the move-out process is initiated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

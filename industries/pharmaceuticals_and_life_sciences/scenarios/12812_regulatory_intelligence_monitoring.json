@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12812",
-  "title": "Monitor for Regulatory Intelligence Updates",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor for Regulatory Intelligence Updates",
+    "compliance_level": "Standard"
+  },
   "description": "A regulatory intelligence specialist must monitor global health authority websites for new draft guidances that could impact the company's products.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Regulatory Intelligence",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the websites of the FDA, EMA, and PMDA for new documents published in the last 24 hours.",
-      "expected_outcome": "Agent successfully scrapes the websites for new publications.",
-      "required_tools": [
-        "scan_regulatory_websites"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the websites of the FDA, EMA, and PMDA for new documents published in the last 24 hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully scrapes the websites for new publications."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Filter the results for keywords relevant to the company's therapeutic areas (e.g., 'oncology', 'gene therapy').",
-      "expected_outcome": "Agent filters the list and identifies a new draft guidance on gene therapy from the FDA.",
-      "required_tools": [
-        "filter_documents_by_keyword"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Filter the results for keywords relevant to the company's therapeutic areas (e.g., 'oncology', 'gene therapy').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent filters the list and identifies a new draft guidance on gene therapy from the FDA."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform an initial impact assessment of the new draft guidance.",
-      "expected_outcome": "Agent provides a summary of the guidance and notes that it will affect one of the company's pipeline products.",
-      "required_tools": [
-        "perform_impact_assessment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform an initial impact assessment of the new draft guidance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a summary of the guidance and notes that it will affect one of the company's pipeline products."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Distribute an alert with the summary and a link to the guidance document to the relevant internal teams.",
-      "expected_outcome": "Agent successfully sends a notification to the gene therapy development team.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Distribute an alert with the summary and a link to the guidance document to the relevant internal teams.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends a notification to the gene therapy development team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

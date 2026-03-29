@@ -1,66 +1,72 @@
 {
-  "scenario_id": "legal-ldr-12146",
-  "title": "Check Local Court Rules",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Local Court Rules",
+    "compliance_level": "Standard"
+  },
   "description": "Before filing a motion, a paralegal must check the local court rules and the specific judge's rules for any special formatting or filing requirements.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Pleadings & Motions Practice",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the court and judge assigned to the case.",
-      "expected_outcome": "Agent has the correct court and judge information.",
-      "required_tools": [
-        "case_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the court and judge assigned to the case.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the correct court and judge information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Navigate to the court's official website and locate the 'Local Rules' section.",
-      "expected_outcome": "Agent finds the general rules for the court.",
-      "required_tools": [
-        "web_browser"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Navigate to the court's official website and locate the 'Local Rules' section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the general rules for the court."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Navigate to the specific judge's page on the court website to find their individual practices or standing orders.",
-      "expected_outcome": "Agent finds the judge's specific rules.",
-      "required_tools": [
-        "web_browser"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Navigate to the specific judge's page on the court website to find their individual practices or standing orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the judge's specific rules."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Summarize any specific requirements (e.g., 'font must be Times New Roman size 13', 'courtesy copy must be delivered to chambers').",
-      "expected_outcome": "Agent creates a checklist to ensure the filing is compliant.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Summarize any specific requirements (e.g., 'font must be Times New Roman size 13', 'courtesy copy must be delivered to chambers').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a checklist to ensure the filing is compliant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "media-go-12512",
-  "title": "Game Server Capacity Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Game Server Capacity Management",
+    "compliance_level": "Standard"
+  },
   "description": "Following the launch of a new game expansion, player concurrency is higher than expected, causing login queues.",
-  "use_case": "Gaming Operations",
-  "core_function": "Server Operations & Matchmaking",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify which game servers are experiencing high player load and long login queues.",
-      "expected_outcome": "Agent identifies that the EU and US-East servers are at 100% capacity.",
-      "required_tools": [
-        "get_server_load_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify which game servers are experiencing high player load and long login queues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that the EU and US-East servers are at 100% capacity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provision and deploy new temporary game server instances in the affected regions from the cloud provider.",
-      "expected_outcome": "Agent successfully spins up 10 new server instances for the EU region.",
-      "required_tools": [
-        "provision_new_server_instance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provision and deploy new temporary game server instances in the affected regions from the cloud provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully spins up 10 new server instances for the EU region."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the new instances to the matchmaking pool to alleviate player load.",
-      "expected_outcome": "Agent updates the server pool configuration, and login queues begin to decrease.",
-      "required_tools": [
-        "update_matchmaking_config"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the new instances to the matchmaking pool to alleviate player load.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the server pool configuration, and login queues begin to decrease."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

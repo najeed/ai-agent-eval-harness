@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12883",
-  "title": "Manage Return and Destruction of Clinical Supplies",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Return and Destruction of Clinical Supplies",
+    "compliance_level": "Standard"
+  },
   "description": "At the end of a clinical trial, a supply manager must arrange for unused investigational product to be returned from all sites and destroyed.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Supply Chain & Traceability",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Perform a final reconciliation of all investigational product shipped, dispensed, and remaining at each site.",
-      "expected_outcome": "Agent generates a final accountability log for each clinical site.",
-      "required_tools": [
-        "perform_drug_accountability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Perform a final reconciliation of all investigational product shipped, dispensed, and remaining at each site.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a final accountability log for each clinical site."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Arrange for the return shipment of all unused product from the sites to a central depot.",
-      "expected_outcome": "Agent coordinates with a logistics vendor to schedule the return shipments.",
-      "required_tools": [
-        "schedule_return_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Arrange for the return shipment of all unused product from the sites to a central depot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent coordinates with a logistics vendor to schedule the return shipments."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once received, verify the returned quantities against the accountability logs.",
-      "expected_outcome": "Agent confirms that all unused product has been returned.",
-      "required_tools": [
-        "verify_returned_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once received, verify the returned quantities against the accountability logs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that all unused product has been returned."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Arrange for the final destruction of the product and obtain a certificate of destruction.",
-      "expected_outcome": "Agent schedules the destruction with a certified vendor and files the certificate of destruction in the TMF.",
-      "required_tools": [
-        "schedule_product_destruction",
-        "upload_to_etmf"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Arrange for the final destruction of the product and obtain a certificate of destruction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent schedules the destruction with a certified vendor and files the certificate of destruction in the TMF."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

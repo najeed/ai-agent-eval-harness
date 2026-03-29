@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-mfg-10518",
-  "title": "Handle Critical Equipment Breakdown",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Critical Equipment Breakdown",
+    "compliance_level": "Standard"
+  },
   "description": "A main circulation pump has failed, halting production. A maintenance technician must respond to the emergency work order.",
-  "use_case": "Manufacturing & Operations",
-  "core_function": "Maintenance Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the high-priority work order for the pump failure.",
-      "expected_outcome": "Agent accepts the work order, changing its status to 'In Progress'.",
-      "required_tools": [
-        "get_maintenance_work_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the high-priority work order for the pump failure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accepts the work order, changing its status to 'In Progress'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the spare parts inventory to see if a replacement pump or motor is in stock.",
-      "expected_outcome": "Agent finds a complete replacement pump assembly is available in the warehouse.",
-      "required_tools": [
-        "check_spare_parts_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the spare parts inventory to see if a replacement pump or motor is in stock.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a complete replacement pump assembly is available in the warehouse."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the cause of failure and the parts used, and close the work order upon completion of the replacement.",
-      "expected_outcome": "Agent updates the work order with failure analysis, confirms the repair, and formally closes it.",
-      "required_tools": [
-        "update_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the cause of failure and the parts used, and close the work order upon completion of the replacement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the work order with failure analysis, confirms the repair, and formally closes it."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

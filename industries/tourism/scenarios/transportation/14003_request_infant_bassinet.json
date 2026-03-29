@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tourism-tr-14003",
-  "title": "Request an Infant Bassinet on a Flight",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request an Infant Bassinet on a Flight",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger traveling with an infant on a long-haul flight wants to request a bassinet.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Ticketing & Documentation",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the passenger's booking and verify the infant is on the reservation.",
-      "expected_outcome": "Agent confirms the booking includes an infant.",
-      "required_tools": [
-        "get_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the passenger's booking and verify the infant is on the reservation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the booking includes an infant."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check if the aircraft has bassinet positions and if one is available.",
-      "expected_outcome": "Agent finds an available bassinet seat at a bulkhead.",
-      "required_tools": [
-        "check_bassinet_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check if the aircraft has bassinet positions and if one is available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an available bassinet seat at a bulkhead."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the bassinet request to the booking and assign the passenger to the appropriate seat.",
-      "expected_outcome": "Agent successfully adds the special request and changes the seat assignment.",
-      "required_tools": [
-        "add_special_request",
-        "change_seat_assignment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the bassinet request to the booking and assign the passenger to the appropriate seat.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the special request and changes the seat assignment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

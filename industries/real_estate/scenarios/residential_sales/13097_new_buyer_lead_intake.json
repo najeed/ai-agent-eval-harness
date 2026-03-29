@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13097",
-  "title": "New Buyer Lead Intake",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Buyer Lead Intake",
+    "compliance_level": "Standard"
+  },
   "description": "A potential home buyer submits a web form. The agent must create a new client profile, document their needs, and schedule an initial consultation.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Lead & Client Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Parse the new lead information from the web form submission.",
-      "expected_outcome": "Agent correctly extracts the potential buyer's name, contact info, and initial search criteria.",
-      "required_tools": [
-        "get_new_lead_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Parse the new lead information from the web form submission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly extracts the potential buyer's name, contact info, and initial search criteria."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new contact record in the CRM.",
-      "expected_outcome": "A new client profile is successfully created in the CRM with the extracted information.",
-      "required_tools": [
-        "create_crm_contact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new contact record in the CRM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new client profile is successfully created in the CRM with the extracted information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule a 30-minute 'New Buyer Consultation' on the agent's calendar.",
-      "expected_outcome": "An appointment is correctly scheduled and an invitation is sent to the buyer.",
-      "required_tools": [
-        "schedule_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule a 30-minute 'New Buyer Consultation' on the agent's calendar.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An appointment is correctly scheduled and an invitation is sent to the buyer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

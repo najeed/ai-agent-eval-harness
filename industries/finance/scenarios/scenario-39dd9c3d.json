@@ -1,25 +1,32 @@
 {
-  "scenario_id": "scenario-39dd9c3d",
-  "version": "2.0.0",
-  "title": "Financial Audit Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Financial Audit Request",
+    "compliance_level": "Standard"
+  },
   "description": "Evaluation of AI agent's ability to handle complex financial audit inquiries and data retrieval.",
-  "tasks": [
-    {
-      "task_id": "audit_task_1",
-      "description": "Verify audit trail for transaction ID-998273.",
-      "expected_outcome": "Agent retrieves correct audit timestamps and logs.",
-      "required_tools": [
-        "db_shim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "generic_accuracy",
-          "threshold": 0.8
+  "industry": "finance",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "audit_task_1",
+        "task_description": "Verify audit trail for transaction ID-998273.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves correct audit timestamps and logs."
         }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
-  "industry": "finance",
-  "use_case": "General Support",
-  "core_function": "Inquiry Handling"
+  }
 }

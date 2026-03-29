@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12859",
-  "title": "Handle a Shipping Temperature Excursion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Shipping Temperature Excursion",
+    "compliance_level": "Standard"
+  },
   "description": "A shipment of a refrigerated product arrives at a pharmacy, and the temperature monitor shows it went above the required 8\u00b0C for 4 hours.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Inventory & Cold Chain Logistics",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the temperature excursion event in the quality system, including the duration and peak temperature.",
-      "expected_outcome": "Agent creates a new quality event record with all the details of the excursion.",
-      "required_tools": [
-        "create_quality_event"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the temperature excursion event in the quality system, including the duration and peak temperature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new quality event record with all the details of the excursion."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Consult the product's stability data to determine if the excursion impacts product quality.",
-      "expected_outcome": "Agent checks the stability profile and finds that the product is stable for up to 6 hours at the recorded temperature.",
-      "required_tools": [
-        "get_product_stability_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Consult the product's stability data to determine if the excursion impacts product quality.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the stability profile and finds that the product is stable for up to 6 hours at the recorded temperature."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Make a disposition decision for the product.",
-      "expected_outcome": "Based on the stability data, the agent makes the decision that the product is still usable and can be released.",
-      "required_tools": [
-        "make_product_disposition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Make a disposition decision for the product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Based on the stability data, the agent makes the decision that the product is still usable and can be released."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Document the investigation and disposition decision, and close the quality event.",
-      "expected_outcome": "Agent writes a summary report of the investigation and closes the event record.",
-      "required_tools": [
-        "generate_investigation_report",
-        "update_quality_event_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Document the investigation and disposition decision, and close the quality event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a summary report of the investigation and closes the event record."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

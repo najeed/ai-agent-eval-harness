@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-fc-10",
-  "title": "Prepare a Monthly Income Statement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare a Monthly Income Statement",
+    "compliance_level": "Standard"
+  },
   "description": "The controller needs a draft of the monthly income statement for management review.",
-  "use_case": "Financial Closing & Reporting",
-  "core_function": "Financial Reporting",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the trial balance from the general ledger after all closing entries have been posted.",
-      "expected_outcome": "Agent successfully retrieves the final trial balance for the month.",
-      "required_tools": [
-        "get_trial_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the trial balance from the general ledger after all closing entries have been posted.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the final trial balance for the month."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Map the general ledger accounts to the lines of the income statement (e.g., Revenue, COGS, SG&A).",
-      "expected_outcome": "Agent correctly maps all P&L accounts.",
-      "required_tools": [
-        "map_accounts_to_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Map the general ledger accounts to the lines of the income statement (e.g., Revenue, COGS, SG&A).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly maps all P&L accounts."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the income statement, showing current month actuals, budget, and variance.",
-      "expected_outcome": "Agent produces a formatted income statement with all required columns.",
-      "required_tools": [
-        "generate_financial_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the income statement, showing current month actuals, budget, and variance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a formatted income statement with all required columns."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10912",
-  "title": "Create Personalized Product Recommendations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Personalized Product Recommendations",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is browsing a product page. The system should display personalized recommendations for related products.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Personalization & Recommendations",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the product the customer is currently viewing.",
-      "expected_outcome": "System identifies the current product SKU.",
-      "required_tools": [
-        "get_current_product"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the product the customer is currently viewing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System identifies the current product SKU."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the customer's browsing history and past purchases.",
-      "expected_outcome": "System retrieves the customer's activity data.",
-      "required_tools": [
-        "get_customer_activity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the customer's browsing history and past purchases.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System retrieves the customer's activity data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a list of recommended products based on collaborative filtering ('customers who bought this also bought...').",
-      "expected_outcome": "System generates a relevant list of 3-5 product recommendations.",
-      "required_tools": [
-        "get_product_recommendations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.8,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a list of recommended products based on collaborative filtering ('customers who bought this also bought...').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a relevant list of 3-5 product recommendations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

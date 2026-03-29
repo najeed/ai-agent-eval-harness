@@ -1,55 +1,59 @@
 {
-  "scenario_id": "media-cp-12545",
-  "title": "Check Talent Contract Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Talent Contract Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to verify that a recently edited TV commercial complies with the lead actor's contract, which specifies their screen time and logo placement.",
-  "use_case": "Content Production & Management",
-  "core_function": "Rights & Royalties",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the actor's contract and the final cut of the commercial.",
-      "expected_outcome": "Agent accesses both the legal document and the video file.",
-      "required_tools": [
-        "get_contract_details",
-        "get_video_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the actor's contract and the final cut of the commercial.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses both the legal document and the video file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the video to measure the actor's total screen time and check for logo proximity.",
-      "expected_outcome": "The analysis shows the actor's screen time is compliant, but a brand logo appears too close to their face.",
-      "required_tools": [
-        "analyze_video_content"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the video to measure the actor's total screen time and check for logo proximity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis shows the actor's screen time is compliant, but a brand logo appears too close to their face."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Flag the commercial for re-edit and notify the post-production team of the specific compliance issue.",
-      "expected_outcome": "Agent creates a revision request with a clear explanation of the required change.",
-      "required_tools": [
-        "create_revision_request",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Flag the commercial for re-edit and notify the post-production team of the specific compliance issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a revision request with a clear explanation of the required change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

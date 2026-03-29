@@ -1,64 +1,72 @@
 {
-  "scenario_id": "energy-cs-11163",
-  "title": "Microgrid Resilience Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Microgrid Resilience Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A hospital facility manager wants to assess how long their new microgrid (solar + battery + diesel generator) can power their critical loads during a grid outage.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Energy Efficiency & Audits",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the hospital's critical loads and their total power demand in kW.",
-      "expected_outcome": "Agent determines the critical load is 500 kW.",
-      "required_tools": [
-        "get_critical_load_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the hospital's critical loads and their total power demand in kW.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the critical load is 500 kW."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the current status of the microgrid assets: battery state of charge, solar generation forecast, and diesel fuel level.",
-      "expected_outcome": "Agent compiles the real-time status of all microgrid components.",
-      "required_tools": [
-        "get_microgrid_asset_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the current status of the microgrid assets: battery state of charge, solar generation forecast, and diesel fuel level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles the real-time status of all microgrid components."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Simulate the microgrid's operation during an outage, dispatching assets in order of cost (solar, battery, then diesel).",
-      "expected_outcome": "Agent runs a simulation of the microgrid under islanded mode.",
-      "required_tools": [
-        "simulate_microgrid_operation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Simulate the microgrid's operation during an outage, dispatching assets in order of cost (solar, battery, then diesel).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs a simulation of the microgrid under islanded mode."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Calculate the total number of hours the microgrid can sustain the critical load.",
-      "expected_outcome": "Agent reports that the microgrid can power critical loads for 72 hours.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-4",
+        "task_description": "Calculate the total number of hours the microgrid can sustain the critical load.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reports that the microgrid can power critical loads for 72 hours."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

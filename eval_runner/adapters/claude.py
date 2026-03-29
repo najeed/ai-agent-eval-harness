@@ -1,8 +1,7 @@
-# eval_runner/adapters/claude.py
 import aiohttp
-import os
 from typing import Any, Dict
 from ..plugins import BaseEvalPlugin
+from .. import config
 
 
 class ClaudeAdapterPlugin(BaseEvalPlugin):
@@ -20,12 +19,12 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
         """
         Executes a query against the Anthropic Claude Messages API.
         """
-        api_key = payload.get("api_key") or os.getenv("ANTHROPIC_API_KEY")
-        model = payload.get("model", "claude-3-5-sonnet-20240620")
-        url = url or "https://api.anthropic.com/v1/messages"
+        api_key = payload.get("api_key") or config.ANTHROPIC_API_KEY
+        model = payload.get("model", config.ANTHROPIC_MODEL)
+        url = url or config.ANTHROPIC_BASE_URL
 
         headers = {
-            "x-api-key": api_key,
+            "x-api-key": str(api_key or "missing"),
             "anthropic-version": "2023-06-01",
             "content-type": "application/json",
         }
@@ -43,6 +42,8 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
         }
         if system_prompt:
             claude_payload["system"] = system_prompt
+        if payload.get("force_error"):
+            claude_payload["force_error"] = True
 
         try:
             async with aiohttp.ClientSession() as session:

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11708",
-  "title": "Create New Knowledge Base Article",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create New Knowledge Base Article",
+    "compliance_level": "Standard"
+  },
   "description": "After handling a recurring question multiple times, a support agent decides to create a knowledge base article to enable self-service.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Knowledge & Self-Service",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a common, recurring customer question that is not yet documented.",
-      "expected_outcome": "Agent identifies that many users ask how to set up two-factor authentication.",
-      "required_tools": [
-        "view_ticket_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a common, recurring customer question that is not yet documented.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that many users ask how to set up two-factor authentication."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write a clear, step-by-step guide with screenshots explaining how to set up 2FA.",
-      "expected_outcome": "Agent drafts a high-quality help article.",
-      "required_tools": [
-        "kb_editor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write a clear, step-by-step guide with screenshots explaining how to set up 2FA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a high-quality help article."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Publish the article to the public knowledge base and add relevant keywords for searchability.",
-      "expected_outcome": "Agent successfully publishes the article, making it available to all users.",
-      "required_tools": [
-        "publish_kb_article"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Publish the article to the public knowledge base and add relevant keywords for searchability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully publishes the article, making it available to all users."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

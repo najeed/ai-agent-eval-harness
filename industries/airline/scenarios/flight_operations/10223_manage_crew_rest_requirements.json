@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-fo-10223",
-  "title": "Manage Crew Rest Requirements",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Crew Rest Requirements",
+    "compliance_level": "Standard"
+  },
   "description": "A flight has been delayed, and a crew scheduler must check if the delay will cause the flight crew to exceed their maximum duty day limits.",
-  "use_case": "Flight Operations",
-  "core_function": "Crew Management",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the original and new estimated departure and arrival times for the flight.",
-      "expected_outcome": "Agent identifies the length of the delay.",
-      "required_tools": [
-        "get_flight_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the original and new estimated departure and arrival times for the flight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the length of the delay."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the crew's new total duty period based on the delay.",
-      "expected_outcome": "Agent accurately calculates the new duty time.",
-      "required_tools": [
-        "calculate_duty_period"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the crew's new total duty period based on the delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the new duty time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the new duty period to the legal limits. If it exceeds the limit, find a replacement crew.",
-      "expected_outcome": "Agent determines the crew will exceed their legal duty time and initiates a search for a reserve crew.",
-      "required_tools": [
-        "check_crew_legality",
-        "get_reserve_crew_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the new duty period to the legal limits. If it exceeds the limit, find a replacement crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the crew will exceed their legal duty time and initiates a search for a reserve crew."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

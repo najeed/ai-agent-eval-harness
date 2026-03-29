@@ -1,54 +1,59 @@
 {
-  "scenario_id": "airline-res-10297",
-  "title": "Find a Lost Item",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find a Lost Item",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger who deplaned an hour ago calls to report they left their tablet on the aircraft.",
-  "use_case": "Reservations & Customer Service",
-  "core_function": "Customer Support",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather details from the passenger: flight number, seat number, and a description of the item.",
-      "expected_outcome": "Agent collects all relevant information.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather details from the passenger: flight number, seat number, and a description of the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all relevant information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the cleaning crew or gate agent at the arrival airport for the flight.",
-      "expected_outcome": "Agent successfully contacts the ground staff.",
-      "required_tools": [
-        "contact_ground_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the cleaning crew or gate agent at the arrival airport for the flight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully contacts the ground staff."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The cleaning crew finds the tablet. The agent coordinates with the passenger on how they can retrieve their item from the airport's lost and found office.",
-      "expected_outcome": "The item is found and the agent provides the passenger with clear instructions for retrieval.",
-      "required_tools": [
-        "coordinate_item_retrieval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "The cleaning crew finds the tablet. The agent coordinates with the passenger on how they can retrieve their item from the airport's lost and found office.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The item is found and the agent provides the passenger with clear instructions for retrieval."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

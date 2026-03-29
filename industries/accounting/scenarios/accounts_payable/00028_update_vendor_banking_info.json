@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-ap-28",
-  "title": "Update Vendor Banking Information",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Vendor Banking Information",
+    "compliance_level": "Standard"
+  },
   "description": "A vendor has sent a notification that they have changed banks and their payment details need to be updated.",
-  "use_case": "Accounts Payable",
-  "core_function": "Vendor Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the notification of the change in banking details from the vendor.",
-      "expected_outcome": "Agent receives the new banking information.",
-      "required_tools": [
-        "get_vendor_change_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the notification of the change in banking details from the vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the new banking information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a callback to a known contact at the vendor to verbally confirm the change request and prevent payment fraud.",
-      "expected_outcome": "Agent successfully contacts the vendor and confirms the change is legitimate.",
-      "required_tools": [
-        "perform_vendor_callback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a callback to a known contact at the vendor to verbally confirm the change request and prevent payment fraud.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully contacts the vendor and confirms the change is legitimate."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the banking information in the vendor master file.",
-      "expected_outcome": "Agent successfully updates the vendor's payment details.",
-      "required_tools": [
-        "update_vendor_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the banking information in the vendor master file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the vendor's payment details."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

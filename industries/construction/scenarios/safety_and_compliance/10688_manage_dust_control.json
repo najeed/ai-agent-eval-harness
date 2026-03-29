@@ -1,50 +1,59 @@
 {
-  "scenario_id": "construction-sc-10688",
-  "title": "Manage Site Dust Control",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Site Dust Control",
+    "compliance_level": "Standard"
+  },
   "description": "On a windy day, the site is generating a lot of dust. The superintendent must implement dust control measures to comply with environmental regulations.",
-  "use_case": "Safety & Compliance",
-  "core_function": "Compliance & Permitting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the need for dust control due to high winds.",
-      "expected_outcome": "The superintendent recognizes the compliance risk.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the need for dust control due to high winds.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The superintendent recognizes the compliance risk."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch the water truck to spray down all haul roads and exposed soil areas on the site.",
-      "expected_outcome": "The water truck is deployed to mitigate the dust.",
-      "required_tools": [
-        "dispatch_equipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch the water truck to spray down all haul roads and exposed soil areas on the site.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The water truck is deployed to mitigate the dust."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the dust control measures taken in the daily site log.",
-      "expected_outcome": "The proactive compliance measure is documented.",
-      "required_tools": [
-        "create_daily_log_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the dust control measures taken in the daily site log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The proactive compliance measure is documented."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14132",
-  "title": "Conservation Voltage Reduction (CVR)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conservation Voltage Reduction (CVR)",
+    "compliance_level": "Standard"
+  },
   "description": "A distribution management system (DMS) needs to optimize feeder voltage levels to reduce energy consumption while keeping voltage within acceptable limits.",
-  "use_case": "Grid Operations",
-  "core_function": "Distribution Automation",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Continuously monitor real-time voltage data from sensors across the feeder.",
-      "expected_outcome": "System gathers live voltage readings.",
-      "required_tools": [
-        "get_real_time_voltage_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Continuously monitor real-time voltage data from sensors across the feeder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System gathers live voltage readings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the optimal voltage setpoint at the substation that lowers overall voltage without causing a low-voltage violation for any customer.",
-      "expected_outcome": "System determines the target voltage can be lowered by 2%.",
-      "required_tools": [
-        "optimize_voltage_setpoint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "optimization_effectiveness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the optimal voltage setpoint at the substation that lowers overall voltage without causing a low-voltage violation for any customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System determines the target voltage can be lowered by 2%."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send commands to the substation's load tap changer and downstream voltage regulators to implement the new setpoint.",
-      "expected_outcome": "System successfully adjusts the field devices to the new voltage profile.",
-      "required_tools": [
-        "execute_voltage_control_commands"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send commands to the substation's load tap changer and downstream voltage regulators to implement the new setpoint.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully adjusts the field devices to the new voltage profile."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

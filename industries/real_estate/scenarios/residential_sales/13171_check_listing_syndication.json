@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13171",
-  "title": "Check Listing Syndication Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Listing Syndication Status",
+    "compliance_level": "Standard"
+  },
   "description": "A seller calls, worried that their new listing is not showing up on Zillow. The agent needs to investigate.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Property Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Confirm the listing is active in the MLS.",
-      "expected_outcome": "Agent verifies the listing status is 'Active'.",
-      "required_tools": [
-        "get_mls_listing_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Confirm the listing is active in the MLS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the listing status is 'Active'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the MLS's syndication settings to ensure feeds to third-party sites like Zillow are enabled.",
-      "expected_outcome": "Agent confirms that syndication to Zillow is active for the brokerage.",
-      "required_tools": [
-        "check_mls_syndication_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the MLS's syndication settings to ensure feeds to third-party sites like Zillow are enabled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that syndication to Zillow is active for the brokerage."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the seller that syndication can sometimes take 24-48 hours to update and that you will re-check tomorrow.",
-      "expected_outcome": "Agent provides a clear explanation and sets a follow-up task for themselves.",
-      "required_tools": [
-        "create_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the seller that syndication can sometimes take 24-48 hours to update and that you will re-check tomorrow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear explanation and sets a follow-up task for themselves."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

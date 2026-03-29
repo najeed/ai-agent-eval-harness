@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tax-plan-13763",
-  "title": "Plan for R&D Tax Credit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan for R&D Tax Credit",
+    "compliance_level": "Standard"
+  },
   "description": "A tech startup wants to ensure it is properly documenting its expenses to qualify for the Research and Development (R&D) tax credit.",
-  "use_case": "Tax Planning & Advisory",
-  "core_function": "Business Tax Strategy",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the four-part test the IRS uses to define qualifying research activities.",
-      "expected_outcome": "Agent clearly communicates the eligibility criteria.",
-      "required_tools": [
-        "get_rd_credit_rules"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the four-part test the IRS uses to define qualifying research activities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the eligibility criteria."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the company's projects to identify which activities likely qualify.",
-      "expected_outcome": "Agent helps the company identify its qualifying research projects.",
-      "required_tools": [
-        "analyze_business_projects"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the company's projects to identify which activities likely qualify.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent helps the company identify its qualifying research projects."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the company on how to track and document qualifying research expenses (e.g., employee wages, supplies, contract research).",
-      "expected_outcome": "Agent provides a clear action plan for documentation to support a future credit claim.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the company on how to track and document qualifying research expenses (e.g., employee wages, supplies, contract research).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear action plan for documentation to support a future credit claim."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

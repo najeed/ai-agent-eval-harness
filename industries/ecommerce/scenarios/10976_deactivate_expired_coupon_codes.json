@@ -1,38 +1,46 @@
 {
-  "scenario_id": "ecommerce-osm-10976",
-  "title": "Deactivate Expired Coupon Codes",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Deactivate Expired Coupon Codes",
+    "compliance_level": "Standard"
+  },
   "description": "An automated job runs daily to find and deactivate any coupon codes that have passed their expiration date.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Pricing & Promotions",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query the system for all active coupon codes whose expiration date is in the past.",
-      "expected_outcome": "System generates a list of expired codes.",
-      "required_tools": [
-        "get_expired_coupons"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query the system for all active coupon codes whose expiration date is in the past.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a list of expired codes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each expired code, change its status to 'Inactive'.",
-      "expected_outcome": "System successfully deactivates all the identified coupon codes.",
-      "required_tools": [
-        "update_coupon_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each expired code, change its status to 'Inactive'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully deactivates all the identified coupon codes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

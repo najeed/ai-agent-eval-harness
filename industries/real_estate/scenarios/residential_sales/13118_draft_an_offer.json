@@ -1,50 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13118",
-  "title": "Draft a Purchase Offer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft a Purchase Offer",
+    "compliance_level": "Standard"
+  },
   "description": "A buyer client wants to make an offer on a property. The agent needs to draft the purchase agreement.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Transaction Coordination",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Confirm the offer terms with the buyer (price, financing, contingencies, closing date).",
-      "expected_outcome": "Agent has a clear, documented list of all offer terms provided by the buyer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Confirm the offer terms with the buyer (price, financing, contingencies, closing date).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a clear, documented list of all offer terms provided by the buyer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Fill out the state-approved purchase agreement form with all the offer terms.",
-      "expected_outcome": "The purchase agreement is accurately filled out with all buyer and offer details.",
-      "required_tools": [
-        "draft_purchase_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Fill out the state-approved purchase agreement form with all the offer terms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The purchase agreement is accurately filled out with all buyer and offer details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the completed offer to the buyer for their signature using an e-signature service.",
-      "expected_outcome": "The offer document is sent to the buyer via an e-signature platform.",
-      "required_tools": [
-        "send_document_for_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the completed offer to the buyer for their signature using an e-signature service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The offer document is sent to the buyer via an e-signature platform."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

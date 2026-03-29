@@ -1,85 +1,61 @@
 {
-  "scenario_id": "finance-wm-11253",
-  "title": "Close Wealth Management Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Close Wealth Management Account",
+    "compliance_level": "Standard"
+  },
   "description": "A client is transferring their assets to another institution and wants to close their account.",
-  "use_case": "Wealth Management",
-  "core_function": "Client Onboarding & KYC",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the ACATS transfer request from the other institution.",
-      "expected_outcome": "Agent receives and validates the Automated Customer Account Transfer Service request.",
-      "required_tools": [
-        "validate_acats_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the ACATS transfer request from the other institution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives and validates the Automated Customer Account Transfer Service request."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Liquidate any non-transferable assets as per client instructions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sells a proprietary mutual fund and sweeps the cash."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Liquidate any non-transferable assets as per client instructions.",
-      "expected_outcome": "Agent sells a proprietary mutual fund and sweeps the cash.",
-      "required_tools": [
-        "execute_trade"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Transfer all assets and close the account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the ACATS transfer, leaving a zero balance, and closes the account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Transfer all assets and close the account.",
-      "expected_outcome": "Agent successfully completes the ACATS transfer, leaving a zero balance, and closes the account.",
-      "required_tools": [
-        "process_acats_transfer",
-        "close_investment_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -91,6 +91,7 @@ logs/
 
 # Local developer TODO tracker
 .todo.md
+.harden_state
 
 # Sphinx build artifacts
 docs/_build/
@@ -117,3 +118,9 @@ desktop.ini
 
 # --- Sample output ---
 sample_agent/output/
+
+# --- Generated index ---
+scenarios/index.json
+
+# --- Generated internal tasks ---
+tasks/

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-cy-10805",
-  "title": "Network Intrusion Detection and Response",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Network Intrusion Detection and Response",
+    "compliance_level": "Standard"
+  },
   "description": "A cybersecurity analyst must respond to an alert indicating a potential advanced persistent threat (APT) actor on a classified network.",
-  "use_case": "Cybersecurity & Information Warfare",
-  "core_function": "Network Threat Detection & Response",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the alert and analyze the associated network traffic data to confirm malicious activity.",
-      "expected_outcome": "Analyst confirms the presence of anomalous traffic patterns consistent with an APT.",
-      "required_tools": [
-        "analyze_network_traffic_pcap"
-      ],
-      "success_criteria": [
-        {
-          "metric": "threat_confirmation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the alert and analyze the associated network traffic data to confirm malicious activity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst confirms the presence of anomalous traffic patterns consistent with an APT."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the compromised host and quarantine it from the rest of the network to prevent lateral movement.",
-      "expected_outcome": "Analyst successfully isolates the correct machine.",
-      "required_tools": [
-        "identify_compromised_host",
-        "quarantine_network_device"
-      ],
-      "success_criteria": [
-        {
-          "metric": "containment_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the compromised host and quarantine it from the rest of the network to prevent lateral movement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully isolates the correct machine."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Initiate a forensic analysis of the quarantined host to identify the attacker's tools and techniques.",
-      "expected_outcome": "Analyst begins the forensic process to understand the scope of the breach.",
-      "required_tools": [
-        "initiate_forensic_scan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Initiate a forensic analysis of the quarantined host to identify the attacker's tools and techniques.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst begins the forensic process to understand the scope of the breach."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

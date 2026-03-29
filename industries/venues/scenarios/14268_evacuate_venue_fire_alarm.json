@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-vo-14268",
-  "title": "Evacuate Venue for Fire Alarm",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Evacuate Venue for Fire Alarm",
+    "compliance_level": "Standard"
+  },
   "description": "A fire alarm is triggered during an event, requiring a full venue evacuation.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Security & Emergency Response",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the fire alarm and confirm it is not a false alarm.",
-      "expected_outcome": "Agent confirms a legitimate alarm via CCTV or staff report.",
-      "required_tools": [
-        "get_system_alerts",
-        "monitor_cctv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the fire alarm and confirm it is not a false alarm.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms a legitimate alarm via CCTV or staff report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Activate the emergency announcement system, instructing guests to evacuate calmly.",
-      "expected_outcome": "Agent plays the pre-recorded evacuation message over the PA system.",
-      "required_tools": [
-        "activate_pa_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Activate the emergency announcement system, instructing guests to evacuate calmly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent plays the pre-recorded evacuation message over the PA system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch all staff to their assigned evacuation posts to direct guests.",
-      "expected_outcome": "Agent issues a command for all staff to proceed to their emergency positions.",
-      "required_tools": [
-        "dispatch_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch all staff to their assigned evacuation posts to direct guests.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent issues a command for all staff to proceed to their emergency positions."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Contact the local fire department and provide them with necessary information.",
-      "expected_outcome": "Agent calls 911 and informs the fire department of the alarm and the venue's status.",
-      "required_tools": [
-        "contact_emergency_services"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Contact the local fire department and provide them with necessary information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calls 911 and informs the fire department of the alarm and the venue's status."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-cf-11269",
-  "title": "Reconcile Bank Statement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reconcile Bank Statement",
+    "compliance_level": "Standard"
+  },
   "description": "An accountant needs to perform the monthly bank reconciliation, matching transactions in the general ledger to the bank statement.",
-  "use_case": "Corporate Finance",
-  "core_function": "Audit & Reporting",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Import the monthly bank statement into the accounting software.",
-      "expected_outcome": "Agent successfully imports the bank transaction data.",
-      "required_tools": [
-        "import_bank_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Import the monthly bank statement into the accounting software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully imports the bank transaction data."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run the automated matching process to reconcile transactions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system automatically matches 95% of the transactions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run the automated matching process to reconcile transactions.",
-      "expected_outcome": "The system automatically matches 95% of the transactions.",
-      "required_tools": [
-        "run_bank_reconciliation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify and investigate any outstanding, unmatched items.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies three unmatched items that require manual investigation (e.g., a bank fee, an unrecorded debit)."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify and investigate any outstanding, unmatched items.",
-      "expected_outcome": "Agent identifies three unmatched items that require manual investigation (e.g., a bank fee, an unrecorded debit).",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

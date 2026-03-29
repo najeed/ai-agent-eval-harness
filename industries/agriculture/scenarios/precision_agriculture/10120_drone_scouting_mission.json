@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-pa-10120",
-  "title": "Plan a Drone Scouting Mission",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan a Drone Scouting Mission",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer wants to create a flight plan for a drone to scout a 160-acre field for signs of nitrogen stress.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Data Collection & Sensing",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the boundary map for the specified 160-acre field.",
-      "expected_outcome": "Agent successfully retrieves the field boundary.",
-      "required_tools": [
-        "get_field_boundary"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the boundary map for the specified 160-acre field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the field boundary."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate an optimized flight path for complete coverage of the field at a specified altitude and camera overlap.",
-      "expected_outcome": "Agent creates an efficient grid pattern flight plan.",
-      "required_tools": [
-        "generate_drone_mission_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate an optimized flight path for complete coverage of the field at a specified altitude and camera overlap.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates an efficient grid pattern flight plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Estimate the total flight time and number of batteries required for the mission.",
-      "expected_outcome": "Agent provides an accurate estimate of time and battery needs.",
-      "required_tools": [
-        "estimate_drone_mission_duration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Estimate the total flight time and number of batteries required for the mission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an accurate estimate of time and battery needs."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

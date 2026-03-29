@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ac-ap-40",
-  "title": "Handle a Suspected Duplicate Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Suspected Duplicate Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "An invoice is entered into the system, which flags it as a potential duplicate of an invoice already processed.",
-  "use_case": "Accounts Payable",
-  "core_function": "Invoice Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the duplicate invoice alert from the system.",
-      "expected_outcome": "Agent notes the system has flagged an invoice based on having the same vendor and invoice number.",
-      "required_tools": [
-        "get_system_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the duplicate invoice alert from the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent notes the system has flagged an invoice based on having the same vendor and invoice number."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve and compare the details of the newly submitted invoice and the one already in the system.",
-      "expected_outcome": "Agent confirms that both the invoice number and amount are identical.",
-      "required_tools": [
-        "get_invoice_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve and compare the details of the newly submitted invoice and the one already in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that both the invoice number and amount are identical."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reject the new invoice as a duplicate and notify the person who submitted it.",
-      "expected_outcome": "Agent cancels the processing of the duplicate invoice and sends a notification.",
-      "required_tools": [
-        "reject_invoice",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reject the new invoice as a duplicate and notify the person who submitted it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent cancels the processing of the duplicate invoice and sends a notification."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

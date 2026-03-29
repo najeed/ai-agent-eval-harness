@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10073",
-  "title": "Plan Payload Operations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Payload Operations",
+    "compliance_level": "Standard"
+  },
   "description": "A scientist needs to plan the weekly operations for a science instrument on an orbiting satellite.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Mission Design & Analysis",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the scientific targets for the upcoming week.",
-      "expected_outcome": "Agent lists the desired observation targets.",
-      "required_tools": [
-        "get_scientific_objectives"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the scientific targets for the upcoming week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists the desired observation targets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the satellite's orbital track to determine when it will be over the desired targets.",
-      "expected_outcome": "Agent generates a list of observation opportunities.",
-      "required_tools": [
-        "get_pass_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the satellite's orbital track to determine when it will be over the desired targets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of observation opportunities."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a command sequence to power on the instrument, point it at the target, and collect data during the scheduled opportunities.",
-      "expected_outcome": "Agent creates a detailed command plan for the week's scientific operations.",
-      "required_tools": [
-        "generate_command_sequence"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 0.98,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a command sequence to power on the instrument, point it at the target, and collect data during the scheduled opportunities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed command plan for the week's scientific operations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

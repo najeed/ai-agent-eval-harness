@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-os-11659",
-  "title": "Create a New Training Course in LMS",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a New Training Course in LMS",
+    "compliance_level": "Standard"
+  },
   "description": "The L&D team is launching a new 'Project Management' workshop and needs to add it to the LMS.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Learning & Development",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the course details: title, description, learning objectives, instructor, schedule.",
-      "expected_outcome": "Specialist collects all necessary information for the new course.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the course details: title, description, learning objectives, instructor, schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist collects all necessary information for the new course."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new course and session in the LMS.",
-      "expected_outcome": "Specialist successfully builds the new course shell in the system.",
-      "required_tools": [
-        "create_lms_course"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new course and session in the LMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist successfully builds the new course shell in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Publish the course to the LMS catalog so that employees can enroll.",
-      "expected_outcome": "Specialist makes the course visible and available for enrollment.",
-      "required_tools": [
-        "publish_lms_course"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Publish the course to the LMS catalog so that employees can enroll.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist makes the course visible and available for enrollment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

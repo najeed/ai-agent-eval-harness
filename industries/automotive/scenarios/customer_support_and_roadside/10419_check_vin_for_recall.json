@@ -1,50 +1,59 @@
 {
-  "scenario_id": "auto-csra-10419",
-  "title": "Check if Vehicle is Affected by a Recall",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check if Vehicle is Affected by a Recall",
+    "compliance_level": "Standard"
+  },
   "description": "A customer heard about a recall on the news and wants to check if their specific vehicle is affected.",
-  "use_case": "Customer Support & Roadside Assistance",
-  "core_function": "Recall Management",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ask the customer for their Vehicle Identification Number (VIN).",
-      "expected_outcome": "Agent correctly collects the 17-digit VIN.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ask the customer for their Vehicle Identification Number (VIN).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly collects the 17-digit VIN."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the VIN against the national recall database and the manufacturer's internal records.",
-      "expected_outcome": "Agent finds an open recall for 'Takata Airbag Inflator Replacement' for this VIN.",
-      "required_tools": [
-        "check_vin_for_recalls"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the VIN against the national recall database and the manufacturer's internal records.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an open recall for 'Takata Airbag Inflator Replacement' for this VIN."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer about the recall, explain that the repair is free, and help them schedule the service at their nearest dealership.",
-      "expected_outcome": "Agent clearly explains the recall and successfully books the required service.",
-      "required_tools": [
-        "schedule_service_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer about the recall, explain that the repair is free, and help them schedule the service at their nearest dealership.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the recall and successfully books the required service."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

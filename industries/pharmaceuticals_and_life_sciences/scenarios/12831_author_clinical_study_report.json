@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12831",
-  "title": "Author a Clinical Study Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Author a Clinical Study Report",
+    "compliance_level": "Standard"
+  },
   "description": "A medical writer must author a clinical study report (CSR) following the analysis of a completed trial.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Medical Information & Inquiries",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a CSR shell document using an ICH E3 compliant template.",
-      "expected_outcome": "Agent creates a new CSR document with all the required sections and headings.",
-      "required_tools": [
-        "generate_document_from_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a CSR shell document using an ICH E3 compliant template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new CSR document with all the required sections and headings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Import the final tables, listings, and figures (TLFs) from the biostatistics department.",
-      "expected_outcome": "Agent successfully embeds the statistical outputs into the CSR.",
-      "required_tools": [
-        "import_statistical_outputs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_import_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Import the final tables, listings, and figures (TLFs) from the biostatistics department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully embeds the statistical outputs into the CSR."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Write the narrative sections of the report, interpreting the results and summarizing the study's conclusions.",
-      "expected_outcome": "Agent writes a clear and accurate interpretation of the study data.",
-      "required_tools": [
-        "draft_report_narrative"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Write the narrative sections of the report, interpreting the results and summarizing the study's conclusions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a clear and accurate interpretation of the study data."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Route the draft CSR for review by the cross-functional study team.",
-      "expected_outcome": "Agent circulates the draft for review and comment.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Route the draft CSR for review by the cross-functional study team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent circulates the draft for review and comment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-bm-13692",
-  "title": "Archive a Game Broadcast",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Archive a Game Broadcast",
+    "compliance_level": "Standard"
+  },
   "description": "After a game broadcast is complete, the full recording must be archived for future use.",
-  "use_case": "Broadcasting & Media",
-  "core_function": "Media Rights & Distribution",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the high-resolution recording of the full game broadcast.",
-      "expected_outcome": "Agent has the master video file.",
-      "required_tools": [
-        "get_game_recording"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the high-resolution recording of the full game broadcast.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the master video file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add metadata to the file, including the date, teams, and key players.",
-      "expected_outcome": "Agent successfully tags the file with relevant metadata.",
-      "required_tools": [
-        "add_video_metadata"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add metadata to the file, including the date, teams, and key players.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully tags the file with relevant metadata."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Transfer the file to the long-term video archive.",
-      "expected_outcome": "Agent successfully archives the broadcast.",
-      "required_tools": [
-        "transfer_to_archive"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Transfer the file to the long-term video archive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully archives the broadcast."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ag-cm-10180",
-  "title": "Detect Crop Water Stress from Thermal Imagery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Detect Crop Water Stress from Thermal Imagery",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer uses a thermal camera on a drone to detect water stress in a potato field before it's visible to the naked eye.",
-  "use_case": "Crop Management",
-  "core_function": "Irrigation Management",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process the thermal imagery from the drone.",
-      "expected_outcome": "Agent creates a temperature map of the crop canopy.",
-      "required_tools": [
-        "process_thermal_imagery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_processing_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process the thermal imagery from the drone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a temperature map of the crop canopy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify areas where the crop canopy temperature is significantly higher than the ambient air temperature, indicating water stress.",
-      "expected_outcome": "Agent highlights specific zones in the field where plants are running hot.",
-      "required_tools": [
-        "identify_canopy_temperature_stress"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.97
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify areas where the crop canopy temperature is significantly higher than the ambient air temperature, indicating water stress.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent highlights specific zones in the field where plants are running hot."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend targeted irrigation for the stressed zones to prevent yield loss.",
-      "expected_outcome": "Agent suggests a variable rate irrigation plan.",
-      "required_tools": [
-        "generate_irrigation_prescription"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend targeted irrigation for the stressed zones to prevent yield loss.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent suggests a variable rate irrigation plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

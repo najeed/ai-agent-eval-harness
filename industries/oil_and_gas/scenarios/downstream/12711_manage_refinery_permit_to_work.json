@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-down-12711",
-  "title": "Issue Permit for Hot Work",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue Permit for Hot Work",
+    "compliance_level": "Standard"
+  },
   "description": "An operations supervisor needs to issue a permit to work for a maintenance crew performing welding (hot work) inside a process unit.",
-  "use_case": "Downstream",
-  "core_function": "Health, Safety & Environment (HSE)",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new permit to work request, specifying the location, work type (hot work), and duration.",
-      "expected_outcome": "A draft permit is created in the system.",
-      "required_tools": [
-        "create_permit_to_work"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new permit to work request, specifying the location, work type (hot work), and duration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A draft permit is created in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that all safety prerequisites are met, such as gas testing, fire watch assignment, and equipment isolation.",
-      "expected_outcome": "The system confirms all safety checks on the checklist are complete.",
-      "required_tools": [
-        "verify_safety_prerequisites"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that all safety prerequisites are met, such as gas testing, fire watch assignment, and equipment isolation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms all safety checks on the checklist are complete."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Approve and issue the electronic permit, making it active for the specified shift.",
-      "expected_outcome": "The permit is officially issued and visible to the work crew and control room.",
-      "required_tools": [
-        "issue_permit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Approve and issue the electronic permit, making it active for the specified shift.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The permit is officially issued and visible to the work crew and control room."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

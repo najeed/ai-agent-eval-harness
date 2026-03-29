@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-pm-12144",
-  "title": "Handle a New Client Intake Call",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a New Client Intake Call",
+    "compliance_level": "Standard"
+  },
   "description": "A potential client calls the firm for the first time. The intake specialist needs to gather initial information.",
-  "use_case": "Law Practice Management",
-  "core_function": "Case Management & Intake",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather basic information from the caller: name, contact information, and a brief description of their legal issue.",
-      "expected_outcome": "Agent completes the initial intake form.",
-      "required_tools": [
-        "crm_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather basic information from the caller: name, contact information, and a brief description of their legal issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes the initial intake form."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the names of all other parties involved in the potential matter for a conflicts check.",
-      "expected_outcome": "Agent collects the names of all adverse parties.",
-      "required_tools": [
-        "crm_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the names of all other parties involved in the potential matter for a conflicts check.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the names of all adverse parties."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Determine which practice area the matter falls into and schedule a consultation with an appropriate attorney.",
-      "expected_outcome": "Agent correctly routes the potential client and schedules a meeting.",
-      "required_tools": [
-        "calendar_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Determine which practice area the matter falls into and schedule a consultation with an appropriate attorney.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly routes the potential client and schedules a meeting."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

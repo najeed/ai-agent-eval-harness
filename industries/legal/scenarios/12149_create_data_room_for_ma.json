@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ct-12149",
-  "title": "Create a Virtual Data Room for M&A",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Virtual Data Room for M&A",
+    "compliance_level": "Standard"
+  },
   "description": "In an M&A deal, the seller's counsel needs to set up a virtual data room (VDR) for the buyer to conduct due diligence.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Mergers & Acquisitions (M&A)",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new VDR and set up a folder structure based on a standard due diligence checklist (e.g., 'Corporate Records', 'Material Contracts', 'IP').",
-      "expected_outcome": "Agent creates an organized VDR.",
-      "required_tools": [
-        "virtual_data_room_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new VDR and set up a folder structure based on a standard due diligence checklist (e.g., 'Corporate Records', 'Material Contracts', 'IP').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates an organized VDR."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Upload all the relevant company documents into the appropriate folders.",
-      "expected_outcome": "Agent populates the VDR with the diligence materials.",
-      "required_tools": [
-        "virtual_data_room_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Upload all the relevant company documents into the appropriate folders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent populates the VDR with the diligence materials."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set up user accounts for the buyer's legal team and grant them 'view only' access to the documents.",
-      "expected_outcome": "Agent manages user permissions to securely share the documents.",
-      "required_tools": [
-        "virtual_data_room_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set up user accounts for the buyer's legal team and grant them 'view only' access to the documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent manages user permissions to securely share the documents."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12436",
-  "title": "Write Social Media Posts for a Week",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write Social Media Posts for a Week",
+    "compliance_level": "Standard"
+  },
   "description": "A social media manager needs to write and schedule a week's worth of posts for a client's Instagram account.",
-  "use_case": "Content & Creative Development",
-  "core_function": "Copywriting & Content Creation",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the content calendar for the week's themes.",
-      "expected_outcome": "Agent identifies the topics for each day.",
-      "required_tools": [
-        "content_calendar_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the content calendar for the week's themes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the topics for each day."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write engaging captions for five posts, including relevant hashtags and user tags.",
-      "expected_outcome": "Agent produces five on-brand and engaging pieces of copy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "copywriting_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write engaging captions for five posts, including relevant hashtags and user tags.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces five on-brand and engaging pieces of copy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule each post for its designated day and time in the social media scheduling tool.",
-      "expected_outcome": "Agent successfully schedules all content for the week.",
-      "required_tools": [
-        "social_media_scheduler_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule each post for its designated day and time in the social media scheduling tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules all content for the week."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

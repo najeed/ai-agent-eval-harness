@@ -1,49 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12405",
-  "title": "Research Audience Interests",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Research Audience Interests",
+    "compliance_level": "Standard"
+  },
   "description": "A media planner needs to identify key interests for a target audience to use for ad targeting on social media.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Market & Audience Research",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the core target audience based on demographics (e.g., women aged 25-34 in the US).",
-      "expected_outcome": "Agent has a clear definition of the target persona.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the core target audience based on demographics (e.g., women aged 25-34 in the US).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a clear definition of the target persona."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a tool like Facebook Audience Insights or a third-party analytics tool to find the top interests, hobbies, and followed pages for this demographic.",
-      "expected_outcome": "Agent generates a list of relevant interests (e.g., 'yoga', 'healthy eating', 'skincare').",
-      "required_tools": [
-        "audience_insights_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a tool like Facebook Audience Insights or a third-party analytics tool to find the top interests, hobbies, and followed pages for this demographic.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of relevant interests (e.g., 'yoga', 'healthy eating', 'skincare')."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Group the interests into logical themes to be used for creating different ad sets.",
-      "expected_outcome": "Agent creates 3-5 distinct interest-based audience themes.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Group the interests into logical themes to be used for creating different ad sets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates 3-5 distinct interest-based audience themes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -11,9 +11,7 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
     """
     expected_set = set(expected_tools)
     actual_set = set(actual_tools)
-    is_match = expected_set == actual_set
-    print(f"[Metrics] Comparing expected tools {expected_set} vs. actual {actual_set}. Match: {is_match}")
-    return 1.0 if is_match else 0.0
+    return 1.0 if expected_set == actual_set else 0.0
 
 
 @MetricRegistry.register("generic_accuracy")
@@ -54,20 +52,14 @@ def calculate_state_correctness(expected_changes: list, actual_state: dict) -> f
     if not expected_changes:
         return 1.0
 
-    print(f"      [Metrics] Verifying {len(expected_changes)} expected state changes.")
-
     correct_count = 0
     for change in expected_changes:
         path = change.get("path")
         expected_val = change.get("value")
-        # Use dot-notation for nested lookup
         actual_val = get_nested_value(actual_state, path) if "." in path else actual_state.get(path)
 
         if actual_val == expected_val:
-            print(f"         [Metrics] State '{path}' matches expected value: {expected_val}")
             correct_count += 1
-        else:
-            print(f"         [Metrics] State '{path}' mismatch. Expected: {expected_val}, Actual: {actual_val}")
 
     return correct_count / len(expected_changes)
 
@@ -86,7 +78,6 @@ def calculate_policy_compliance(conversation_history: list) -> float:
         return False
 
     if has_violation(conversation_history):
-        print("      [Metrics] Policy violation detected in history.")
         return 0.0
 
     return 1.0

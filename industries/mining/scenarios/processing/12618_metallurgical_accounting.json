@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-proc-12618",
-  "title": "Daily Metallurgical Accounting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Daily Metallurgical Accounting",
+    "compliance_level": "Standard"
+  },
   "description": "A plant metallurgist performs the daily metal accounting to reconcile the amount of metal that entered the plant versus the amount that was recovered in the final product.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Metallurgical Accounting",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Collect all the data for the day: tons fed to the plant, feed grade, concentrate tons, concentrate grade, and tailings grade.",
-      "expected_outcome": "All required data for the reconciliation is gathered.",
-      "required_tools": [
-        "get_plant_feed_data",
-        "get_lab_assay_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Collect all the data for the day: tons fed to the plant, feed grade, concentrate tons, concentrate grade, and tailings grade.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All required data for the reconciliation is gathered."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total metal fed to the plant and the total metal recovered in the concentrate.",
-      "expected_outcome": "The contained metal in each stream is calculated.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total metal fed to the plant and the total metal recovered in the concentrate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The contained metal in each stream is calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the plant's recovery for the day and compare it to the target. Investigate any significant variance.",
-      "expected_outcome": "The daily recovery is calculated at 91%, which is on target. The daily report is generated.",
-      "required_tools": [
-        "calculate_plant_recovery",
-        "generate_metallurgical_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the plant's recovery for the day and compare it to the target. Investigate any significant variance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The daily recovery is calculated at 91%, which is on target. The daily report is generated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

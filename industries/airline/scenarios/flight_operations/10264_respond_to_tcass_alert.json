@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-fo-10264",
-  "title": "Respond to a TCAS Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a TCAS Alert",
+    "compliance_level": "Standard"
+  },
   "description": "While in-flight, the Traffic Collision Avoidance System (TCAS) issues a 'Climb, Climb' resolution advisory (RA) to the flight crew.",
-  "use_case": "Flight Operations",
-  "core_function": "Operations Control (OCC)",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The pilot flying immediately and manually disconnects the autopilot.",
-      "expected_outcome": "Pilot takes manual control of the aircraft.",
-      "required_tools": [
-        "disconnect_autopilot"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The pilot flying immediately and manually disconnects the autopilot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pilot takes manual control of the aircraft."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The pilot follows the TCAS RA by initiating a climb at the required rate, even if it conflicts with ATC instructions.",
-      "expected_outcome": "Pilot prioritizes the TCAS command over ATC instructions to avoid a collision.",
-      "required_tools": [
-        "perform_evasive_maneuver"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The pilot follows the TCAS RA by initiating a climb at the required rate, even if it conflicts with ATC instructions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pilot prioritizes the TCAS command over ATC instructions to avoid a collision."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the conflict is resolved and the TCAS announces 'Clear of conflict', the pilot informs ATC of the deviation and returns to their assigned altitude.",
-      "expected_outcome": "The crew safely manages the conflict and communicates with ATC.",
-      "required_tools": [
-        "contact_atc"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the conflict is resolved and the TCAS announces 'Clear of conflict', the pilot informs ATC of the deviation and returns to their assigned altitude.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The crew safely manages the conflict and communicates with ATC."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

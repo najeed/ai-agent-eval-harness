@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-ta-11602",
-  "title": "Initiate a Background Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Initiate a Background Check",
+    "compliance_level": "Standard"
+  },
   "description": "After a candidate accepts a contingent offer, HR must initiate a pre-employment background check.",
-  "use_case": "Talent Acquisition",
-  "core_function": "Interview & Selection",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the candidate who has accepted the offer.",
-      "expected_outcome": "Agent confirms the candidate's status is 'Offer Accepted'.",
-      "required_tools": [
-        "get_candidate_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the candidate who has accepted the offer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the candidate's status is 'Offer Accepted'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the candidate the consent form and link to the background check vendor's portal.",
-      "expected_outcome": "Agent successfully sends the required forms and links to the candidate.",
-      "required_tools": [
-        "send_background_check_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the candidate the consent form and link to the background check vendor's portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends the required forms and links to the candidate."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the vendor's portal for the completion of the background check.",
-      "expected_outcome": "Agent checks the portal and sees the status is 'In Progress'.",
-      "required_tools": [
-        "check_background_check_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the vendor's portal for the completion of the background check.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the portal and sees the status is 'In Progress'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

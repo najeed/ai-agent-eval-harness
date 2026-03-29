@@ -1,66 +1,72 @@
 {
-  "scenario_id": "energy-tr-11153",
-  "title": "Inter-Market Arbitrage Opportunity Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inter-Market Arbitrage Opportunity Alert",
+    "compliance_level": "Standard"
+  },
   "description": "An agent continuously monitors prices between two adjacent electricity markets and identifies a significant price separation, creating an arbitrage opportunity.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Portfolio Optimization",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor real-time LMPs in Market A and Market B.",
-      "expected_outcome": "Agent detects that the price in Market B is $50/MWh higher than in Market A.",
-      "required_tools": [
-        "get_real_time_lmp"
-      ],
-      "success_criteria": [
-        {
-          "metric": "monitoring_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor real-time LMPs in Market A and Market B.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent detects that the price in Market B is $50/MWh higher than in Market A."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the available transmission capacity on the tie-line connecting the two markets.",
-      "expected_outcome": "Agent confirms there is 100 MW of available transmission capacity.",
-      "required_tools": [
-        "get_transmission_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the available transmission capacity on the tie-line connecting the two markets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there is 100 MW of available transmission capacity."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the potential profit from buying power in Market A and selling it in Market B, after accounting for transmission fees.",
-      "expected_outcome": "Agent calculates a potential profit.",
-      "required_tools": [
-        "calculate_arbitrage_profit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the potential profit from buying power in Market A and selling it in Market B, after accounting for transmission fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates a potential profit."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Execute the simultaneous buy and sell trades to capture the arbitrage.",
-      "expected_outcome": "Agent successfully executes both trades.",
-      "required_tools": [
-        "execute_market_trade"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Execute the simultaneous buy and sell trades to capture the arbitrage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully executes both trades."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

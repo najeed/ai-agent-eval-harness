@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13957",
-  "title": "Reschedule an Activity Booking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reschedule an Activity Booking",
+    "compliance_level": "Standard"
+  },
   "description": "A customer needs to reschedule their ziplining tour from Saturday to Sunday.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Activity Booking & Scheduling",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's original booking for the ziplining tour.",
-      "expected_outcome": "Agent locates the correct booking.",
-      "required_tools": [
-        "get_activity_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's original booking for the ziplining tour.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct booking."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for availability on the tour for the new date (Sunday).",
-      "expected_outcome": "Agent confirms there are open spots on Sunday.",
-      "required_tools": [
-        "check_tour_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for availability on the tour for the new date (Sunday).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there are open spots on Sunday."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Modify the booking to the new date and send an updated confirmation to the customer.",
-      "expected_outcome": "Agent successfully reschedules the tour and provides a new confirmation.",
-      "required_tools": [
-        "modify_activity_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Modify the booking to the new date and send an updated confirmation to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reschedules the tour and provides a new confirmation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

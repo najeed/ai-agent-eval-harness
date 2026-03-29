@@ -1,67 +1,72 @@
 {
-  "scenario_id": "energy-tr-11113",
-  "title": "Trade Settlement Dispute",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Trade Settlement Dispute",
+    "compliance_level": "Standard"
+  },
   "description": "The settlements team has found a discrepancy between their records and a counterparty's invoice for a block of energy traded last month.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Settlement & Reconciliation",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the original trade ticket details from the Energy Trade and Risk Management (ETRM) system.",
-      "expected_outcome": "Agent fetches the trade ID, volume, price, time, and counterparty.",
-      "required_tools": [
-        "get_etrm_trade_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the original trade ticket details from the Energy Trade and Risk Management (ETRM) system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent fetches the trade ID, volume, price, time, and counterparty."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Pull the corresponding metered generation data from the asset for the specified time period.",
-      "expected_outcome": "Agent retrieves the 5-minute interval generation data.",
-      "required_tools": [
-        "get_meter_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Pull the corresponding metered generation data from the asset for the specified time period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the 5-minute interval generation data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the trade ticket, metered data, and the counterparty's invoice to pinpoint the discrepancy.",
-      "expected_outcome": "Agent identifies the invoice incorrectly used a peak price for an off-peak hour.",
-      "required_tools": [
-        "reconcile_trade_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the trade ticket, metered data, and the counterparty's invoice to pinpoint the discrepancy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the invoice incorrectly used a peak price for an off-peak hour."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Draft a dispute notification to the counterparty with all supporting evidence attached.",
-      "expected_outcome": "Agent generates a formal dispute email with the correct data.",
-      "required_tools": [
-        "draft_dispute_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Draft a dispute notification to the counterparty with all supporting evidence attached.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a formal dispute email with the correct data."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

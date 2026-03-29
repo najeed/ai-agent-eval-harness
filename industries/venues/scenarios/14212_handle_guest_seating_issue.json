@@ -1,53 +1,59 @@
 {
-  "scenario_id": "venues-gs-14212",
-  "title": "Resolve Guest Seating Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Guest Seating Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A guest at a basketball game reports that someone else is sitting in their assigned seats.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Issue Resolution & Complaints",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ask the guest to see their ticket to verify their correct seat location.",
-      "expected_outcome": "Agent confirms the guest is in the correct section and has a valid ticket for the seats in question.",
-      "required_tools": [
-        "verify_ticket_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ask the guest to see their ticket to verify their correct seat location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the guest is in the correct section and has a valid ticket for the seats in question."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch an usher or guest services staff member to the location.",
-      "expected_outcome": "Agent successfully dispatches the nearest staff member to the guest's location.",
-      "required_tools": [
-        "dispatch_staff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch an usher or guest services staff member to the location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully dispatches the nearest staff member to the guest's location."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the staff member to check the tickets of the other party and resolve the dispute or re-seat the original ticket holder if necessary.",
-      "expected_outcome": "The staff member resolves the issue on-site, and the agent logs the incident as resolved.",
-      "required_tools": [
-        "log_incident_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the staff member to check the tickets of the other party and resolve the dispute or re-seat the original ticket holder if necessary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The staff member resolves the issue on-site, and the agent logs the incident as resolved."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

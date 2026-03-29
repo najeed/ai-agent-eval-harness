@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ct-12186",
-  "title": "Handle a Data Breach Response",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Data Breach Response",
+    "compliance_level": "Standard"
+  },
   "description": "A company has experienced a data breach. In-house counsel must coordinate the legal response.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Corporate Governance & Compliance",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the relevant state data breach notification laws to understand the company's obligations.",
-      "expected_outcome": "Agent identifies the legal requirements for notification, including timing and content.",
-      "required_tools": [
-        "legal_research_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the relevant state data breach notification laws to understand the company's obligations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the legal requirements for notification, including timing and content."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Work with the IT department to understand the scope of the breach: what data was taken and how many individuals were affected.",
-      "expected_outcome": "Agent gathers the key facts of the incident.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Work with the IT department to understand the scope of the breach: what data was taken and how many individuals were affected.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the key facts of the incident."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft the required notification letters to be sent to affected individuals and the state attorney general.",
-      "expected_outcome": "Agent prepares the legally required notifications.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft the required notification letters to be sent to affected individuals and the state attorney general.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares the legally required notifications."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

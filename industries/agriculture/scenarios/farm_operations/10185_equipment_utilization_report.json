@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-fo-10185",
-  "title": "Generate Equipment Utilization Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Equipment Utilization Report",
+    "compliance_level": "Standard"
+  },
   "description": "A large farm wants to analyze how its equipment was utilized during the planting season to identify inefficiencies.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Equipment Management & Maintenance",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve telematics data for all planters and tractors for the duration of the planting season.",
-      "expected_outcome": "Agent gets data on engine hours, working time, idle time, and travel time.",
-      "required_tools": [
-        "get_equipment_telemetry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve telematics data for all planters and tractors for the duration of the planting season.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets data on engine hours, working time, idle time, and travel time."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to calculate the percentage of time each machine spent working, idling, and traveling.",
-      "expected_outcome": "Agent calculates the utilization metrics for each machine.",
-      "required_tools": [
-        "analyze_equipment_utilization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to calculate the percentage of time each machine spent working, idling, and traveling.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the utilization metrics for each machine."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report that highlights machines with high idle times, suggesting opportunities for better logistics planning or operator training.",
-      "expected_outcome": "Agent's report identifies two tractors with over 40% idle time, indicating a bottleneck in seed tendering.",
-      "required_tools": [
-        "generate_utilization_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report that highlights machines with high idle times, suggesting opportunities for better logistics planning or operator training.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent's report identifies two tractors with over 40% idle time, indicating a bottleneck in seed tendering."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

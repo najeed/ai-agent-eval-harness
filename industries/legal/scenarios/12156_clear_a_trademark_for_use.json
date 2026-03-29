@@ -1,66 +1,72 @@
 {
-  "scenario_id": "legal-ct-12156",
-  "title": "Clear a Trademark for Use",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Clear a Trademark for Use",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to use a new name for a product. An IP attorney needs to conduct a full trademark search to assess the risk of infringement.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Intellectual Property (IP) Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search the USPTO database for identical and phonetically similar marks.",
-      "expected_outcome": "Agent performs a federal trademark search.",
-      "required_tools": [
-        "uspto_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search the USPTO database for identical and phonetically similar marks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent performs a federal trademark search."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search state trademark databases and common law sources (e.g., web search, business directories) for unregistered uses of the mark.",
-      "expected_outcome": "Agent performs a more comprehensive search for other uses.",
-      "required_tools": [
-        "web_search",
-        "state_database_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search state trademark databases and common law sources (e.g., web search, business directories) for unregistered uses of the mark.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent performs a more comprehensive search for other uses."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the search results to determine the likelihood of confusion with any existing marks.",
-      "expected_outcome": "Agent assesses the risk of a potential infringement claim.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the search results to determine the likelihood of confusion with any existing marks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assesses the risk of a potential infringement claim."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Draft an opinion letter to the client summarizing the search results and providing a risk assessment.",
-      "expected_outcome": "Agent provides clear legal advice on whether it is safe to use the proposed name.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Draft an opinion letter to the client summarizing the search results and providing a risk assessment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear legal advice on whether it is safe to use the proposed name."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,4 +1,4 @@
-# Guide: Agent Eval Specification (AES) v1.1
+# Guide: Agent Eval Specification (AES) v1.2
 
 AES is the foundational standard for shareable, deterministic agent benchmarks.
 
@@ -6,83 +6,41 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 - **Human Readable**: YAML-based for easy editing.
 - **Framework Agnostic**: Works with LangGraph, CrewAI, or custom agents.
 - **CI Ready**: Validatable via JSON Schema.
+- **Deterministic DAGs**: Support for non-linear workflow execution with dependency gating.
 
-## 2. CLI Usage
+## 2. Core Components (v1.2)
 
-### Validating an AES file
-```bash
-multiagent-eval aes validate --path path/to/benchmark.aes.yaml
-```
+### DAG-Based Execution
+Scenarios define a directed acyclic graph of `nodes` and `edges`, enabling complex branching and state-dependent transitions.
 
-### Scaffolding a new benchmark
-```bash
-multiagent-eval aes scaffold --output path/to/new_benchmark.aes.yaml
-```
-
-## 3. Core Components
-
-### Metadata
-Defines the benchmark identity.
 ```yaml
-metadata:
-  name: billing_support_rigor
-  difficulty: high
-  industry: telecom
-  tags: ["fintech", "compliance"]
-  runtime: "python:3.11"
-  provenance: "curated"
+workflow:
+  nodes:
+    - id: "start"
+      task: "Initial inquiry"
+    - id: "branch_a"
+      task: "Processing for A"
+      requires: ["start"]
+  gating:
+    - node: "branch_a"
+      condition: "status == 'approved'"
 ```
 
-### Dataset Linkage
-Attach static datasets (like mock CRM records) to scenarios.
-```yaml
-dataset:
-  path: ../datasets/records.csv
-  format: csv
-```
+### Typed Outcomes
+Mandates adherence to industrial gold standards using typed result schemas.
 
-### Infrastructure Hooks
-Manage environment setup/teardown.
+### Pluralistic Judging (IJA)
+Implements Inter-Judge Agreement metrics. Critical evaluations require a "Judge Panel" consensus.
+
+### Externalized Mock Datasets
+High-fidelity sector labs (e.g., Bank, EHR/HL7) load mock data dynamically from the `industries/` directory.
+
+## 3. Infrastructure Hooks
 - `pre_eval`: Command run before evaluation starts.
 - `post_eval`: Command run after completion.
 
-### Strongly Typed Tools
-Define the interface the agent interacts with.
-```yaml
-agent:
-  tools:
-    - name: get_usage
-      description: Fetches GB data for a user.
-      parameters:
-        type: object
-        properties:
-          user_id: { type: string }
-```
-
-### Evaluation Success Criteria
-Define heuristics for "Success".
-- `tool_called`: Specified tool was executed.
-- `output_contains`: Specific text present in final answer.
-- `factual_reference`: Verification against a source.
-- `state_verification`: Parity check against sandbox state.
-
-#### Advanced Evaluation Options
-- **Dot-Notation**: Supports deep nested parity checks (e.g., `user.profile.balance`).
-- **Required Metrics**: Add `required: true` to any success criterion to treat failure (or judge misconfiguration) as a terminal error rather than a warning.
-- **Judge Overrides**: Specific scenarios can override global judge settings via `judge_config`.
-
----
-
 ## 4. World Shim Configuration (`enabled_shims`)
-Scenarios can declare which World Shims (environment simulators) they require. The harness mounts only those shims for the duration of the evaluation run.
-
-```json
-{
-  "scenario_id": "loan_approval_v1",
-  "enabled_shims": ["database", "stripe", "security", "slack"],
-  "tasks": [...]
-}
-```
+Scenarios can declare which World Shims (environment simulators) they require.
 
 - If `enabled_shims` is **omitted**, all 20 built-in shims are available by default.
 - Shim keys correspond to the registry keys defined in `eval_runner/simulators.py`.

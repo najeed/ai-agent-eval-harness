@@ -1,54 +1,59 @@
 {
-  "scenario_id": "education-sa-11020",
-  "title": "Set Up a Tuition Payment Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set Up a Tuition Payment Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A student cannot pay their tuition in full and wants to enroll in a monthly payment plan.",
-  "use_case": "Student Administration",
-  "core_function": "Financial Aid & Billing",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and their outstanding tuition balance.",
-      "expected_outcome": "Agent confirms the student's identity and the amount due.",
-      "required_tools": [
-        "get_student_record",
-        "get_student_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and their outstanding tuition balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's identity and the amount due."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the available payment plan options, including the number of installments and any service fees.",
-      "expected_outcome": "Agent clearly presents the payment plan terms.",
-      "required_tools": [
-        "get_payment_plan_options"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the available payment plan options, including the number of installments and any service fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly presents the payment plan terms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enroll the student in their chosen payment plan.",
-      "expected_outcome": "Agent successfully enrolls the student in the 4-month payment plan.",
-      "required_tools": [
-        "enroll_in_payment_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enroll the student in their chosen payment plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully enrolls the student in the 4-month payment plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

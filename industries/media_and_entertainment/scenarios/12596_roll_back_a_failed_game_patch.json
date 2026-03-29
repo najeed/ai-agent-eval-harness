@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-go-12596",
-  "title": "Roll Back a Failed Game Patch",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Roll Back a Failed Game Patch",
+    "compliance_level": "Standard"
+  },
   "description": "A new game patch has introduced a critical bug causing widespread crashes. The patch must be rolled back immediately.",
-  "use_case": "Gaming Operations",
-  "core_function": "In-Game Event Management",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the high volume of crash reports following the new patch deployment.",
-      "expected_outcome": "Agent identifies the correlation between the new patch and the crash reports.",
-      "required_tools": [
-        "get_crash_report_volume"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the high volume of crash reports following the new patch deployment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the correlation between the new patch and the crash reports."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the previous stable version of the game server software.",
-      "expected_outcome": "Agent finds the version number of the last stable build.",
-      "required_tools": [
-        "get_software_build_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the previous stable version of the game server software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the version number of the last stable build."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute a script to revert all game servers to the previous stable version.",
-      "expected_outcome": "Agent successfully runs the rollback script, and servers begin to stabilize.",
-      "required_tools": [
-        "run_server_rollback_script"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute a script to revert all game servers to the previous stable version.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs the rollback script, and servers begin to stabilize."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

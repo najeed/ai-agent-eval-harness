@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-mr-12370",
-  "title": "Request an External Contractor for a Repair",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request an External Contractor for a Repair",
+    "compliance_level": "Standard"
+  },
   "description": "A specialized piece of equipment has broken down and requires a certified technician from the OEM to repair it.",
-  "use_case": "Maintenance & Repair",
-  "core_function": "Corrective Maintenance & Repair",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the approved service provider for the specific piece of equipment.",
-      "expected_outcome": "Agent finds the OEM's service contact information in the supplier database.",
-      "required_tools": [
-        "get_supplier_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the approved service provider for the specific piece of equipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the OEM's service contact information in the supplier database."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a service request detailing the issue and the asset that needs repair.",
-      "expected_outcome": "Agent drafts a formal service request.",
-      "required_tools": [
-        "create_service_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a service request detailing the issue and the asset that needs repair.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a formal service request."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the service request to the external contractor and await a proposed appointment time.",
-      "expected_outcome": "Agent successfully dispatches the service request.",
-      "required_tools": [
-        "send_service_request_to_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the service request to the external contractor and await a proposed appointment time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully dispatches the service request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

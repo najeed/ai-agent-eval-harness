@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12449",
-  "title": "Create a Lookalike Audience",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Lookalike Audience",
+    "compliance_level": "Standard"
+  },
   "description": "A media buyer wants to find new customers by creating a lookalike audience based on their existing customer list.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Paid Social & Display",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Upload a list of existing customer emails to the ad platform to create a custom audience.",
-      "expected_outcome": "Agent successfully creates the source custom audience.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Upload a list of existing customer emails to the ad platform to create a custom audience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the source custom audience."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the custom audience as a seed to create a 1% lookalike audience in a specific country.",
-      "expected_outcome": "The ad platform generates a new, larger audience of users who are similar to the existing customers.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the custom audience as a seed to create a 1% lookalike audience in a specific country.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The ad platform generates a new, larger audience of users who are similar to the existing customers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Target the new lookalike audience in a prospecting campaign.",
-      "expected_outcome": "Agent launches a campaign to reach potential new customers.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Target the new lookalike audience in a prospecting campaign.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent launches a campaign to reach potential new customers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

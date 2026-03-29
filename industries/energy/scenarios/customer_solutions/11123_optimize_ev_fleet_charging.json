@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-cs-11123",
-  "title": "Optimize EV Fleet Charging Schedule",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Optimize EV Fleet Charging Schedule",
+    "compliance_level": "Standard"
+  },
   "description": "A fleet manager needs to create a charging schedule for 50 electric delivery vans to minimize electricity costs while ensuring all vehicles are fully charged by 6 AM.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "EV Charging Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the electricity tariff for the depot, which has cheaper rates between 11 PM and 5 AM.",
-      "expected_outcome": "Agent correctly identifies the off-peak and peak charging rates.",
-      "required_tools": [
-        "get_electricity_rate_tariff"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the electricity tariff for the depot, which has cheaper rates between 11 PM and 5 AM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the off-peak and peak charging rates."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the current state of charge (SoC) and required departure time for each of the 50 vehicles.",
-      "expected_outcome": "Agent compiles a list of all vehicles and their charging needs.",
-      "required_tools": [
-        "get_fleet_vehicle_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the current state of charge (SoC) and required departure time for each of the 50 vehicles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a list of all vehicles and their charging needs."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate an optimized, staggered charging schedule that prioritizes charging during off-peak hours.",
-      "expected_outcome": "Agent produces a schedule that ensures all vehicles are ready on time at the lowest possible cost.",
-      "required_tools": [
-        "optimize_fleet_charging_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "optimization_effectiveness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate an optimized, staggered charging schedule that prioritizes charging during off-peak hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a schedule that ensures all vehicles are ready on time at the lowest possible cost."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

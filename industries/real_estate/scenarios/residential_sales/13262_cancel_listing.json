@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13262",
-  "title": "Process a Listing Cancellation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Listing Cancellation",
+    "compliance_level": "Standard"
+  },
   "description": "A seller has decided not to sell their home and wants to cancel the listing agreement.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Post-Sale",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the seller's request and review the cancellation clause in the signed listing agreement.",
-      "expected_outcome": "Agent reviews the contract for any terms related to early cancellation.",
-      "required_tools": [
-        "get_listing_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the seller's request and review the cancellation clause in the signed listing agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the contract for any terms related to early cancellation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the official listing cancellation form.",
-      "expected_outcome": "Agent creates the correct legal form for cancellation.",
-      "required_tools": [
-        "generate_legal_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the official listing cancellation form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the correct legal form for cancellation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the cancellation form to the seller for signature and then update the listing status in the MLS to 'Cancelled'.",
-      "expected_outcome": "Agent completes the cancellation process and updates the MLS.",
-      "required_tools": [
-        "send_for_e_signature",
-        "update_mls_listing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the cancellation form to the seller for signature and then update the listing status in the MLS to 'Cancelled'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes the cancellation process and updates the MLS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

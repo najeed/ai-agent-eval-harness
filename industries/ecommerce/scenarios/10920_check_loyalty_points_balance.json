@@ -1,39 +1,46 @@
 {
-  "scenario_id": "ecommerce-mce-10920",
-  "title": "Check Loyalty Points Balance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Loyalty Points Balance",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to know how many loyalty points they have and what they can be redeemed for.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Loyalty Programs",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's loyalty program balance.",
-      "expected_outcome": "Agent finds the customer has 1,500 points.",
-      "required_tools": [
-        "get_loyalty_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's loyalty program balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the customer has 1,500 points."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the redemption options (e.g., 500 points = $5 discount).",
-      "expected_outcome": "Agent clearly communicates how the points can be used.",
-      "required_tools": [
-        "get_loyalty_program_rules"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the redemption options (e.g., 500 points = $5 discount).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates how the points can be used."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

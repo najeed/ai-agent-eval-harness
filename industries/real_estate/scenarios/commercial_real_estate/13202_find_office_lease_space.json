@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-com-13202",
-  "title": "Find Office Lease Space for Client",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find Office Lease Space for Client",
+    "compliance_level": "Standard"
+  },
   "description": "A tech startup needs to find a 5,000 sqft office space for lease. The agent must search for suitable properties.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Leasing & Tenant Representation",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the client's requirements: 5,000 sqft, Class A/B office, specific submarket, budget of $50/sqft/year.",
-      "expected_outcome": "Agent correctly logs all client requirements.",
-      "required_tools": [
-        "get_client_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the client's requirements: 5,000 sqft, Class A/B office, specific submarket, budget of $50/sqft/year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly logs all client requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search commercial listing services (e.g., CoStar, LoopNet) for available properties matching the criteria.",
-      "expected_outcome": "Agent generates a list of at least 5 matching properties.",
-      "required_tools": [
-        "search_commercial_listings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search commercial listing services (e.g., CoStar, LoopNet) for available properties matching the criteria.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of at least 5 matching properties."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile the search results into a report for the client, including property photos, floor plans, and leasing contact info.",
-      "expected_outcome": "Agent creates a professional, easy-to-read report for the client.",
-      "required_tools": [
-        "generate_property_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile the search results into a report for the client, including property photos, floor plans, and leasing contact info.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a professional, easy-to-read report for the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

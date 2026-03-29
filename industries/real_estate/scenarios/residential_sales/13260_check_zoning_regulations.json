@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-res-13260",
-  "title": "Check Zoning Regulations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Zoning Regulations",
+    "compliance_level": "Standard"
+  },
   "description": "A buyer wants to know if they can build an Accessory Dwelling Unit (ADU) on a property they are considering.",
-  "use_case": "Residential Sales",
-  "core_function": "Buyer & Seller Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the property's address.",
-      "expected_outcome": "Agent correctly identifies the subject property.",
-      "required_tools": [
-        "get_property_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the property's address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the subject property."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the city or county planning department's website to find the zoning map and regulations for that address.",
-      "expected_outcome": "Agent successfully finds the property's zoning designation (e.g., R1).",
-      "required_tools": [
-        "search_public_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the city or county planning department's website to find the zoning map and regulations for that address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully finds the property's zoning designation (e.g., R1)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the ADU regulations for that zoning designation and provide a summary to the buyer, advising them to verify with the city.",
-      "expected_outcome": "Agent provides an accurate summary of the rules while including a disclaimer.",
-      "required_tools": [
-        "summarize_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "summary_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the ADU regulations for that zoning designation and provide a summary to the buyer, advising them to verify with the city.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an accurate summary of the rules while including a disclaimer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

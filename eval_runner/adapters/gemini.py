@@ -1,8 +1,8 @@
-# eval_runner/adapters/gemini.py
 import aiohttp
 import os
 from typing import Any, Dict
 from ..plugins import BaseEvalPlugin
+from .. import config
 
 
 class GeminiAdapterPlugin(BaseEvalPlugin):
@@ -20,12 +20,12 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
         """
         Executes a query against the Google Gemini API.
         """
-        api_key = payload.get("api_key") or os.getenv("GEMINI_API_KEY")
-        model = payload.get("model", "gemini-1.5-pro")
+        api_key = payload.get("api_key") or config.GOOGLE_API_KEY
+        model = payload.get("model", config.GEMINI_MODEL)
         # Google Generative AI endpoint
-        url = url or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        url = url or f"{config.GEMINI_BASE_URL}/{model}:generateContent?key={api_key}"
 
-        prompt = payload.get("task") or ""
+        prompt = payload.get("task_description") or ""
         if "messages" in payload:
             # Simple translation of chat messages to Gemini parts
             contents = []

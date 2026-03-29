@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-bo-11557",
-  "title": "Guest Stuck in Elevator",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Guest Stuck in Elevator",
+    "compliance_level": "Standard"
+  },
   "description": "A guest uses the emergency phone in an elevator to report they are stuck.",
-  "use_case": "Back Office & Administration",
-  "core_function": "Security & Emergency Response",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Answer the emergency call, reassure the guest, and confirm which elevator they are in.",
-      "expected_outcome": "The agent calmly communicates with the guest and identifies their location.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Answer the emergency call, reassure the guest, and confirm which elevator they are in.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent calmly communicates with the guest and identifies their location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Immediately contact the hotel's on-call elevator maintenance company.",
-      "expected_outcome": "The agent successfully contacts the maintenance vendor and reports the issue.",
-      "required_tools": [
-        "contact_external_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Immediately contact the hotel's on-call elevator maintenance company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent successfully contacts the maintenance vendor and reports the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a hotel engineer to the elevator to maintain communication with the guest until help arrives.",
-      "expected_outcome": "A staff member is sent to the scene to provide support.",
-      "required_tools": [
-        "dispatch_engineer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a hotel engineer to the elevator to maintain communication with the guest until help arrives.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A staff member is sent to the scene to provide support."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

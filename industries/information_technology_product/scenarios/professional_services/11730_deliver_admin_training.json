@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11730",
-  "title": "Deliver Custom Admin Training",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Deliver Custom Admin Training",
+    "compliance_level": "Standard"
+  },
   "description": "A consultant needs to deliver a training session specifically for the customer's new system administrators.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Custom Training Delivery",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare a custom training curriculum focused on admin-level tasks like user management, security settings, and billing.",
-      "expected_outcome": "Consultant creates a tailored training agenda and slide deck.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare a custom training curriculum focused on admin-level tasks like user management, security settings, and billing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant creates a tailored training agenda and slide deck."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Conduct the live, remote training session for the customer's administrators.",
-      "expected_outcome": "Consultant effectively delivers the training material and answers questions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Conduct the live, remote training session for the customer's administrators.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant effectively delivers the training material and answers questions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Follow up after the session with a recording of the training and links to relevant documentation.",
-      "expected_outcome": "Consultant provides valuable post-training resources.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Follow up after the session with a recording of the training and links to relevant documentation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant provides valuable post-training resources."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

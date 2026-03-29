@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-os-11642",
-  "title": "Generate a Diversity Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a Diversity Report",
+    "compliance_level": "Standard"
+  },
   "description": "The Chief Diversity Officer needs a report on the company's workforce demographics (gender, ethnicity) by job level.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "Reporting & Analytics",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the reporting tools in the HRIS.",
-      "expected_outcome": "Analyst navigates to the correct reporting module.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the reporting tools in the HRIS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst navigates to the correct reporting module."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a report that includes employee demographic data and their current job level.",
-      "expected_outcome": "Analyst generates the raw data from the system.",
-      "required_tools": [
-        "run_hris_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a report that includes employee demographic data and their current job level.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst generates the raw data from the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create pivot tables and charts to visualize the demographic breakdown at each level of the organization.",
-      "expected_outcome": "Analyst creates a clear, visual presentation of the company's diversity metrics.",
-      "required_tools": [
-        "create_presentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create pivot tables and charts to visualize the demographic breakdown at each level of the organization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst creates a clear, visual presentation of the company's diversity metrics."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

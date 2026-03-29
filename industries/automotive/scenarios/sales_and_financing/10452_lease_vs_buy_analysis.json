@@ -1,50 +1,59 @@
 {
-  "scenario_id": "auto-sf-10452",
-  "title": "Lease vs. Buy Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Lease vs. Buy Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is undecided between leasing or financing a new car and wants to understand the financial differences.",
-  "use_case": "Vehicle Sales & Financing",
-  "core_function": "Financing & Leasing",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather information on the customer's expected annual mileage and how long they typically keep a car.",
-      "expected_outcome": "Agent learns the customer drives ~12,000 miles/year and likes a new car every 3 years.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather information on the customer's expected annual mileage and how long they typically keep a car.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent learns the customer drives ~12,000 miles/year and likes a new car every 3 years."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a sample monthly payment for a 36-month lease and a 60-month finance contract for the same vehicle.",
-      "expected_outcome": "Agent generates two clear payment scenarios.",
-      "required_tools": [
-        "calculate_lease_payment",
-        "calculate_finance_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a sample monthly payment for a 36-month lease and a 60-month finance contract for the same vehicle.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates two clear payment scenarios."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the pros and cons of each option based on the customer's habits (e.g., lower payments and no long-term commitment with leasing vs. building equity with financing).",
-      "expected_outcome": "Agent provides a clear, unbiased comparison to help the customer make an informed decision.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the pros and cons of each option based on the customer's habits (e.g., lower payments and no long-term commitment with leasing vs. building equity with financing).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear, unbiased comparison to help the customer make an informed decision."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "chemicals-mfg-10573",
-  "title": "Conduct Shift Handover",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Shift Handover",
+    "compliance_level": "Standard"
+  },
   "description": "At the end of a shift, a plant operator must formally hand over control of the process to the operator on the next shift.",
-  "use_case": "Manufacturing & Operations",
-  "core_function": "Plant Operations",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a shift summary report from the control system.",
-      "expected_outcome": "Agent obtains a report detailing all alarms, operator actions, and batch statuses from their shift.",
-      "required_tools": [
-        "generate_shift_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a shift summary report from the control system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains a report detailing all alarms, operator actions, and batch statuses from their shift."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the report with the incoming operator, highlighting any ongoing issues or upcoming critical steps.",
-      "expected_outcome": "The outgoing operator effectively communicates the state of the plant.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the report with the incoming operator, highlighting any ongoing issues or upcoming critical steps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The outgoing operator effectively communicates the state of the plant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Both operators apply an electronic signature to the shift log to confirm the handover was completed.",
-      "expected_outcome": "Agent and their replacement both sign the log, formally transferring responsibility.",
-      "required_tools": [
-        "apply_electronic_signature_to_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Both operators apply an electronic signature to the shift log to confirm the handover was completed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent and their replacement both sign the log, formally transferring responsibility."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

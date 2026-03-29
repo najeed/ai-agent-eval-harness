@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hosp-sm-11511",
-  "title": "Loyalty Program Signup",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Loyalty Program Signup",
+    "compliance_level": "Standard"
+  },
   "description": "During check-in, a front desk agent offers to sign up a guest for the hotel's loyalty program.",
-  "use_case": "Sales & Marketing",
-  "core_function": "Loyalty Program Management",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the benefits of the loyalty program (e.g., points, free Wi-Fi, late check-out).",
-      "expected_outcome": "Agent clearly communicates the value proposition of the program.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the benefits of the loyalty program (e.g., points, free Wi-Fi, late check-out).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the value proposition of the program."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the guest's information to create a loyalty program account.",
-      "expected_outcome": "Agent gathers the necessary details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the guest's information to create a loyalty program account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the necessary details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create the new loyalty account and link it to the guest's current reservation to ensure they earn points for their stay.",
-      "expected_outcome": "Agent successfully creates the account and links it to the current stay.",
-      "required_tools": [
-        "lms_create_account",
-        "pms_update_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create the new loyalty account and link it to the guest's current reservation to ensure they earn points for their stay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the account and links it to the current stay."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

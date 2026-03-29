@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10947",
-  "title": "Add Birthday Bonus to Loyalty Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add Birthday Bonus to Loyalty Account",
+    "compliance_level": "Standard"
+  },
   "description": "As part of the loyalty program, customers receive bonus points on their birthday. The system needs to automate this.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Loyalty Programs",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Each day, query the customer database for all customers whose birthday is today.",
-      "expected_outcome": "System generates a list of customers celebrating their birthday.",
-      "required_tools": [
-        "query_customer_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Each day, query the customer database for all customers whose birthday is today.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a list of customers celebrating their birthday."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each customer on the list, add 100 bonus points to their loyalty account.",
-      "expected_outcome": "System successfully updates the loyalty balance for all eligible customers.",
-      "required_tools": [
-        "update_loyalty_balance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each customer on the list, add 100 bonus points to their loyalty account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully updates the loyalty balance for all eligible customers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send each customer a 'Happy Birthday' email mentioning their bonus points.",
-      "expected_outcome": "System sends a personalized birthday email.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send each customer a 'Happy Birthday' email mentioning their bonus points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System sends a personalized birthday email."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

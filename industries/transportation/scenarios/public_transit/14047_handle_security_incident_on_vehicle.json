@@ -1,65 +1,72 @@
 {
-  "scenario_id": "tr-pt-14047",
-  "title": "Handle Security Incident on a Vehicle",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Security Incident on a Vehicle",
+    "compliance_level": "Standard"
+  },
   "description": "A train operator uses an emergency button to report a disruptive passenger. A controller must coordinate a response.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Real-time Operations & Control",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an emergency alert from a specific train.",
-      "expected_outcome": "The controller is immediately notified of the incident.",
-      "required_tools": [
-        "get_emergency_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an emergency alert from a specific train.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The controller is immediately notified of the incident."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Establish radio contact with the train operator to get details about the situation.",
-      "expected_outcome": "The controller understands the nature of the security threat.",
-      "required_tools": [
-        "contact_driver"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Establish radio contact with the train operator to get details about the situation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The controller understands the nature of the security threat."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the transit police and provide them with the train's location and direction of travel.",
-      "expected_outcome": "Law enforcement is notified and given accurate information.",
-      "required_tools": [
-        "contact_transit_police"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the transit police and provide them with the train's location and direction of travel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Law enforcement is notified and given accurate information."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Instruct the train operator to stop at the next station and wait for police to arrive.",
-      "expected_outcome": "The train is held at the station to allow police to board and handle the situation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Instruct the train operator to stop at the next station and wait for police to arrive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The train is held at the station to allow police to board and handle the situation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "ag-cm-10164",
-  "title": "Interpret Soil Test Results",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Interpret Soil Test Results",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer has received a soil test report and needs help interpreting the results and generating fertilizer recommendations.",
-  "use_case": "Crop Management",
-  "core_function": "Fertilization & Nutrition",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Parse the soil test report to extract the values for pH, phosphorus (P), and potassium (K).",
-      "expected_outcome": "Agent successfully extracts the key nutrient values.",
-      "required_tools": [
-        "parse_soil_test_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Parse the soil test report to extract the values for pH, phosphorus (P), and potassium (K).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully extracts the key nutrient values."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the target crop to be grown (e.g., corn) and its nutrient requirements.",
-      "expected_outcome": "Agent gets the nutrient uptake values for corn.",
-      "required_tools": [
-        "get_crop_nutrient_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the target crop to be grown (e.g., corn) and its nutrient requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the nutrient uptake values for corn."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a fertilizer recommendation for P and K based on the soil test results and the crop's needs.",
-      "expected_outcome": "Agent provides a recommendation in pounds per acre for P and K.",
-      "required_tools": [
-        "generate_fertilizer_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a fertilizer recommendation for P and K based on the soil test results and the crop's needs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a recommendation in pounds per acre for P and K."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "If the pH is low, recommend a lime application to correct the soil acidity.",
-      "expected_outcome": "Agent identifies a low pH and recommends applying 2 tons of lime per acre.",
-      "required_tools": [
-        "generate_lime_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "If the pH is low, recommend a lime application to correct the soil acidity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a low pH and recommends applying 2 tons of lime per acre."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

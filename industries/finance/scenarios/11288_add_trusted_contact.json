@@ -1,81 +1,61 @@
 {
-  "scenario_id": "finance-wm-11288",
-  "title": "Add a Trusted Contact Person",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add a Trusted Contact Person",
+    "compliance_level": "Standard"
+  },
   "description": "A senior client wants to add their adult child as a trusted contact on their account for added security.",
-  "use_case": "Wealth Management",
-  "core_function": "Client Onboarding & KYC",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the role of a trusted contact (i.e., they can be contacted about potential financial exploitation but cannot transact).",
-      "expected_outcome": "Agent clearly communicates the permissions and limitations of the role.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the role of a trusted contact (i.e., they can be contacted about potential financial exploitation but cannot transact).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the permissions and limitations of the role."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the trusted contact's name and contact information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records the information for the designated person."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the trusted contact's name and contact information.",
-      "expected_outcome": "Agent accurately records the information for the designated person.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the trusted contact to the client's account profile.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the client's record with the trusted contact information."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the trusted contact to the client's account profile.",
-      "expected_outcome": "Agent successfully updates the client's record with the trusted contact information.",
-      "required_tools": [
-        "add_trusted_contact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

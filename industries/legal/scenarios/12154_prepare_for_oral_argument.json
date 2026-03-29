@@ -1,64 +1,72 @@
 {
-  "scenario_id": "legal-ldr-12154",
-  "title": "Prepare for Oral Argument",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare for Oral Argument",
+    "compliance_level": "Standard"
+  },
   "description": "An attorney is preparing for an oral argument before an appellate court and needs to anticipate potential questions from the judges.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Legal Research & Writing",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review all the briefs filed by both sides in the appeal.",
-      "expected_outcome": "Agent has a deep understanding of all arguments.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review all the briefs filed by both sides in the appeal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a deep understanding of all arguments."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the weakest points in their own argument and the strongest points in the opponent's argument.",
-      "expected_outcome": "Agent pinpoints the most challenging aspects of the case.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the weakest points in their own argument and the strongest points in the opponent's argument.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pinpoints the most challenging aspects of the case."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Brainstorm a list of 10-15 difficult questions the judges are likely to ask, focusing on the identified weak points.",
-      "expected_outcome": "Agent generates a list of potential questions.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Brainstorm a list of 10-15 difficult questions the judges are likely to ask, focusing on the identified weak points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of potential questions."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Draft concise and persuasive answers to each potential question.",
-      "expected_outcome": "Agent creates a prep document to be used in a moot court session.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Draft concise and persuasive answers to each potential question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a prep document to be used in a moot court session."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

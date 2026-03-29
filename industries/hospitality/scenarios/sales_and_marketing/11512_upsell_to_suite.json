@@ -1,65 +1,72 @@
 {
-  "scenario_id": "hosp-sm-11512",
-  "title": "Upsell to a Suite",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Upsell to a Suite",
+    "compliance_level": "Standard"
+  },
   "description": "A guest with a standard room reservation is checking in. The agent sees that suites are available and attempts to upsell the guest.",
-  "use_case": "Sales & Marketing",
-  "core_function": "Promotions & Upselling",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "While checking the guest in, notice their anniversary is noted in the reservation.",
-      "expected_outcome": "Agent identifies a special occasion from the reservation notes.",
-      "required_tools": [
-        "pms_lookup_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "While checking the guest in, notice their anniversary is noted in the reservation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a special occasion from the reservation notes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for suite availability.",
-      "expected_outcome": "Agent confirms that a junior suite is available.",
-      "required_tools": [
-        "pms_check_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for suite availability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that a junior suite is available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Offer the guest a special, discounted rate to upgrade to the suite for their anniversary.",
-      "expected_outcome": "Agent makes a personalized upsell offer, which the guest accepts.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Offer the guest a special, discounted rate to upgrade to the suite for their anniversary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a personalized upsell offer, which the guest accepts."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the reservation to the new room type and rate.",
-      "expected_outcome": "Agent successfully modifies the booking to reflect the upgrade.",
-      "required_tools": [
-        "pms_update_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the reservation to the new room type and rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully modifies the booking to reflect the upgrade."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

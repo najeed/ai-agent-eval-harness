@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-ecom-13419",
-  "title": "Check Order Status Online",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Order Status Online",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to check the status of an order they placed yesterday.",
-  "use_case": "E-commerce & Order Management",
-  "core_function": "Order Fulfillment & Status",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into their account on the retail website.",
-      "expected_outcome": "The customer successfully logs in.",
-      "required_tools": [
-        "login_to_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into their account on the retail website.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer successfully logs in."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Navigate to the 'Order History' section.",
-      "expected_outcome": "The customer sees a list of their past and current orders.",
-      "required_tools": [
-        "view_order_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Navigate to the 'Order History' section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer sees a list of their past and current orders."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Click on the specific order to view its status, which is currently 'Processing'.",
-      "expected_outcome": "The customer is able to self-serve and find the current status of their order.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Click on the specific order to view its status, which is currently 'Processing'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer is able to self-serve and find the current status of their order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

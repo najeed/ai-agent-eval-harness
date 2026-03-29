@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-ar-12482",
-  "title": "Create a Word Cloud from Customer Reviews",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Word Cloud from Customer Reviews",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst wants to create a word cloud from customer reviews to quickly visualize the most frequently mentioned terms.",
-  "use_case": "Analytics & Reporting",
-  "core_function": "Dashboarding & Visualization",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all customer review text from the last quarter.",
-      "expected_outcome": "Agent has a single body of text containing all reviews.",
-      "required_tools": [
-        "get_customer_reviews"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all customer review text from the last quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a single body of text containing all reviews."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Input the text into a word cloud generation tool.",
-      "expected_outcome": "Agent uses the tool to process the text.",
-      "required_tools": [
-        "word_cloud_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Input the text into a word cloud generation tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses the tool to process the text."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the word cloud visualization.",
-      "expected_outcome": "The tool produces a visual where more frequent words like 'easy', 'fast', and 'support' appear larger.",
-      "required_tools": [
-        "word_cloud_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "visualization_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the word cloud visualization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool produces a visual where more frequent words like 'easy', 'fast', and 'support' appear larger."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

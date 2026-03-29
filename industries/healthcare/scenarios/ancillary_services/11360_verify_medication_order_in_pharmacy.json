@@ -1,85 +1,61 @@
 {
-  "scenario_id": "hc-as-11360",
-  "title": "Verify Medication Order in Pharmacy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify Medication Order in Pharmacy",
+    "compliance_level": "Standard"
+  },
   "description": "A pharmacist needs to verify a new medication order for an inpatient before it can be dispensed.",
-  "use_case": "Ancillary Services",
-  "core_function": "Pharmacy Operations",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the pharmacy queue and select a pending medication order for verification.",
-      "expected_outcome": "Pharmacist selects an order to review.",
-      "required_tools": [
-        "get_pharmacy_queue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the pharmacy queue and select a pending medication order for verification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pharmacist selects an order to review."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the order for appropriateness, checking the patient's allergies, other medications for interactions, and lab values.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Pharmacist performs a clinical check and determines the order is safe and appropriate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the order for appropriateness, checking the patient's allergies, other medications for interactions, and lab values.",
-      "expected_outcome": "Pharmacist performs a clinical check and determines the order is safe and appropriate.",
-      "required_tools": [
-        "review_patient_chart",
-        "check_drug_interactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Electronically verify the order, which releases it to be filled by a pharmacy technician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is successfully verified and moves to the next step in the pharmacy workflow."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Electronically verify the order, which releases it to be filled by a pharmacy technician.",
-      "expected_outcome": "The order is successfully verified and moves to the next step in the pharmacy workflow.",
-      "required_tools": [
-        "verify_pharmacy_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hosp-bo-11574",
-  "title": "Employee Calls in Sick",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Employee Calls in Sick",
+    "compliance_level": "Standard"
+  },
   "description": "A front desk agent calls in sick for their shift, and the manager needs to find a replacement.",
-  "use_case": "Back Office & Administration",
-  "core_function": "Staff Scheduling",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The manager logs the employee's absence in the scheduling system.",
-      "expected_outcome": "The absence is recorded.",
-      "required_tools": [
-        "ss_log_absence"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The manager logs the employee's absence in the scheduling system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The absence is recorded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The manager uses the system to find available employees who are not scheduled and can cover the shift.",
-      "expected_outcome": "The system generates a list of available staff.",
-      "required_tools": [
-        "ss_find_replacement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The manager uses the system to find available employees who are not scheduled and can cover the shift.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a list of available staff."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The manager contacts an available employee who agrees to take the shift, and updates the schedule.",
-      "expected_outcome": "The shift is covered, and the schedule is updated.",
-      "required_tools": [
-        "ss_update_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "The manager contacts an available employee who agrees to take the shift, and updates the schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The shift is covered, and the schedule is updated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

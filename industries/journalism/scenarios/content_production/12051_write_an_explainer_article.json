@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-cp-12051",
-  "title": "Write an Explainer Article",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write an Explainer Article",
+    "compliance_level": "Standard"
+  },
   "description": "A complex topic is in the news (e.g., a new piece of legislation). A reporter needs to write an 'explainer' article that breaks it down for a general audience.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Writing & Drafting",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Research the topic thoroughly to gain a deep understanding.",
-      "expected_outcome": "Agent becomes a temporary expert on the topic.",
-      "required_tools": [
-        "search_web",
-        "search_academic_databases"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehension_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Research the topic thoroughly to gain a deep understanding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent becomes a temporary expert on the topic."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Structure the article in a Q&A format or with clear subheadings to make it easy to digest.",
-      "expected_outcome": "An easy-to-follow structure is created.",
-      "required_tools": [
-        "outlining_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "structural_clarity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Structure the article in a Q&A format or with clear subheadings to make it easy to digest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An easy-to-follow structure is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft the article using simple, clear language and analogies to explain complex concepts.",
-      "expected_outcome": "A complex topic is made understandable to a layperson.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_clarity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft the article using simple, clear language and analogies to explain complex concepts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complex topic is made understandable to a layperson."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

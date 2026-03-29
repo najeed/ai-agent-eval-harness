@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13378",
-  "title": "Assist with a Zoning Variance Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assist with a Zoning Variance Application",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to open a restaurant in a space not zoned for it. The agent must assist them in applying for a zoning variance.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Due Diligence",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Research the local zoning code and the process for obtaining a variance.",
-      "expected_outcome": "Agent understands the specific requirements and steps for a variance application.",
-      "required_tools": [
-        "get_zoning_regulations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Research the local zoning code and the process for obtaining a variance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the specific requirements and steps for a variance application."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Refer the client to a specialized land-use attorney to handle the application.",
-      "expected_outcome": "The client is connected with a legal expert.",
-      "required_tools": [
-        "get_attorney_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Refer the client to a specialized land-use attorney to handle the application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client is connected with a legal expert."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide supporting documentation for the application, such as market data showing a need for a new restaurant in the area.",
-      "expected_outcome": "The agent provides data to help justify the variance request.",
-      "required_tools": [
-        "get_market_analysis_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide supporting documentation for the application, such as market data showing a need for a new restaurant in the area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent provides data to help justify the variance request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

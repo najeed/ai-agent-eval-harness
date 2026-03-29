@@ -136,7 +136,13 @@ const Sidebar = ({ activeTab, setActiveTab, navItems, systemInfo }) => (
 const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
     const [scenarios, setScenarios] = useState([]);
     const [query, setQuery] = useState('');
+    const [industryFilter, setIndustryFilter] = useState('all');
     const [loading, setLoading] = useState(true);
+    
+    const industries = useMemo(() => {
+         const set = new Set(scenarios.map(s => s.industry));
+         return ['all', ...Array.from(set)].sort();
+    }, [scenarios]);
 
     const fetchScenarios = () => {
         setLoading(true);
@@ -158,13 +164,16 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
         return () => clearTimeout(delayDebounceFn);
     }, [query]);
 
-    const filteredScenarios = searchQuery
-        ? scenarios.filter(s =>
-            s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.industry.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        : scenarios;
+    const filteredScenarios = scenarios.filter(s => {
+        const matchesQuery = !query || 
+            s.title.toLowerCase().includes(query.toLowerCase()) ||
+            s.id.toLowerCase().includes(query.toLowerCase()) ||
+            s.industry.toLowerCase().includes(query.toLowerCase());
+        
+        const matchesIndustry = industryFilter === 'all' || s.industry === industryFilter;
+        
+        return matchesQuery && matchesIndustry;
+    });
 
     const handleRunEval = (scenario) => {
         fetch('/api/evaluate', {
@@ -188,15 +197,26 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                     <h2 className="text-2xl font-bold text-white mb-2">Scenario Explorer</h2>
                     <p className="text-slate-500 text-sm">Browse, search, and execute evaluation scenarios from the catalog.</p>
                 </div>
-                <div className="relative">
-                    <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input
-                        type="text"
-                        placeholder="Search catalog by ID, title, or industry keywords..."
-                        className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                    />
+                <div className="flex gap-3">
+                    <div className="relative">
+                        <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                        <input
+                            type="text"
+                            placeholder="Search catalog..."
+                            className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
+                    </div>
+                    <select
+                        value={industryFilter}
+                        onChange={(e) => setIndustryFilter(e.target.value)}
+                        className="bg-slate-900 border border-slate-800 rounded-xl py-2 px-4 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all appearance-none cursor-pointer hover:bg-slate-800"
+                    >
+                        {industries.map(ind => (
+                            <option key={ind} value={ind}>{ind === 'all' ? 'All Industries' : ind.charAt(0).toUpperCase() + ind.slice(1)}</option>
+                        ))}
+                    </select>
                 </div>
             </div>
 
@@ -241,10 +261,13 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
 
 const ScenarioEditor = () => {
     const initialState = {
-        scenario_id: 'new_scenario',
-        title: 'New Scenario',
+        aes_version: 1.2,
+        metadata: { name: 'New Scenario', compliance_level: 'Standard' },
         industry: 'generic',
-        tasks: [{ id: '1', description: 'Agent should verify user identity' }]
+        workflow: {
+            nodes: [{ id: 'start_node', task_description: 'Agent should verify user identity' }],
+            edges: []
+        }
     };
 
     const [scenario, setScenario] = useState(initialState);
@@ -275,18 +298,20 @@ const ScenarioEditor = () => {
 
     const handleGenerate = () => {
         const aes = {
-            version: "1.0",
+            aes_version: 1.2,
             metadata: {
-                scenario_id: scenario.scenario_id,
-                title: scenario.title,
-                industry: scenario.industry,
-                created_at: new Date().toISOString()
+                name: scenario.metadata.name,
+                compliance_level: scenario.metadata.compliance_level
             },
-            evaluation_sequence: scenario.tasks.map((t, idx) => ({
-                step: idx + 1,
-                description: t.description,
-                required: true
-            }))
+            industry: scenario.industry,
+            workflow: scenario.workflow,
+            evaluation: {
+                consensus: {
+                    strategy: "Majority_Vote",
+                    min_judges: 1,
+                    judge_panel: ["Luna-1"]
+                }
+            }
         };
         setGeneratedJson(JSON.stringify(aes, null, 4));
     };

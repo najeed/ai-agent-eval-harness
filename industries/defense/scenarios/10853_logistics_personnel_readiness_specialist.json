@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-log-10853",
-  "title": "Critical Skill Specialist Readiness",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Critical Skill Specialist Readiness",
+    "compliance_level": "Standard"
+  },
   "description": "A joint task force commander needs to identify all available personnel with a critical skill (e.g., a specific foreign language) across all branches of service.",
-  "use_case": "Logistics & Sustainment",
-  "core_function": "Personnel & Readiness Management",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query the joint personnel database for all service members with the specified language skill code.",
-      "expected_outcome": "Commander retrieves a list of all personnel with the required skill.",
-      "required_tools": [
-        "query_joint_personnel_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query the joint personnel database for all service members with the specified language skill code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Commander retrieves a list of all personnel with the required skill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Filter the list to show only those who are currently deployable.",
-      "expected_outcome": "Commander narrows the list to only available personnel.",
-      "required_tools": [
-        "filter_non_deployable_personnel"
-      ],
-      "success_criteria": [
-        {
-          "metric": "filter_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Filter the list to show only those who are currently deployable.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Commander narrows the list to only available personnel."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report with the names, ranks, and current units of the available specialists.",
-      "expected_outcome": "Commander has an actionable list of specialists who can be tasked.",
-      "required_tools": [
-        "generate_personnel_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_utility",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report with the names, ranks, and current units of the available specialists.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Commander has an actionable list of specialists who can be tasked."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

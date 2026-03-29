@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-cm-10192",
-  "title": "Coordinate Harvest Crew Logistics",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate Harvest Crew Logistics",
+    "compliance_level": "Standard"
+  },
   "description": "A manager of a large hand-harvested fruit operation needs to coordinate crews, equipment, and transport across multiple ranches.",
-  "use_case": "Crop Management",
-  "core_function": "Harvesting & Logistics",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the daily harvest plan, including which crews are assigned to which fields.",
-      "expected_outcome": "Agent gets the daily schedule.",
-      "required_tools": [
-        "get_harvest_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the daily harvest plan, including which crews are assigned to which fields.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the daily schedule."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch buses to pick up harvest crews and transport them to the correct fields.",
-      "expected_outcome": "Agent sends dispatch orders to the transport provider.",
-      "required_tools": [
-        "dispatch_vehicle"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch buses to pick up harvest crews and transport them to the correct fields.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends dispatch orders to the transport provider."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Coordinate the delivery of empty bins to the fields and the pickup of full bins for transport to the packing house.",
-      "expected_outcome": "Agent manages the real-time logistics of bin movement.",
-      "required_tools": [
-        "manage_bin_logistics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Coordinate the delivery of empty bins to the fields and the pickup of full bins for transport to the packing house.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent manages the real-time logistics of bin movement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

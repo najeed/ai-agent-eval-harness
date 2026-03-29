@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_product-cs-11781",
-  "title": "Merge Duplicate User Accounts",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Merge Duplicate User Accounts",
+    "compliance_level": "Standard"
+  },
   "description": "A user accidentally signed up twice with two different email addresses and wants to merge their accounts.",
-  "use_case": "Customer Support & Success",
-  "core_function": "Account & Billing Support",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the two accounts the user wants to merge.",
-      "expected_outcome": "Agent locates both user accounts in the system.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the two accounts the user wants to merge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates both user accounts in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the merge process, including which email address will become the primary and that data will be combined.",
-      "expected_outcome": "Agent sets clear expectations for the merge process.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the merge process, including which email address will become the primary and that data will be combined.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets clear expectations for the merge process."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute the account merge tool, selecting one account as the primary and the other to be merged and deactivated.",
-      "expected_outcome": "Agent successfully merges the two accounts into one.",
-      "required_tools": [
-        "merge_accounts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute the account merge tool, selecting one account as the primary and the other to be merged and deactivated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully merges the two accounts into one."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

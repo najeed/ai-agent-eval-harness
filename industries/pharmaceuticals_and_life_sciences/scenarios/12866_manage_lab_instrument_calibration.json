@@ -1,53 +1,59 @@
 {
-  "scenario_id": "pharma-rd-12866",
-  "title": "Manage Lab Instrument Calibration",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Lab Instrument Calibration",
+    "compliance_level": "Standard"
+  },
   "description": "A lab technician must ensure a critical analytical balance is calibrated correctly before use.",
-  "use_case": "Research & Development",
-  "core_function": "Lab & Sample Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the calibration status of the analytical balance in the equipment log.",
-      "expected_outcome": "Agent confirms that the daily calibration check is due.",
-      "required_tools": [
-        "get_equipment_calibration_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the calibration status of the analytical balance in the equipment log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the daily calibration check is due."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform the calibration check using a set of certified weights.",
-      "expected_outcome": "Agent performs the check and finds the balance is reading outside of the acceptable tolerance.",
-      "required_tools": [
-        "perform_calibration_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform the calibration check using a set of certified weights.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent performs the check and finds the balance is reading outside of the acceptable tolerance."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place an 'Out of Service' tag on the balance and log the failure in the equipment management system.",
-      "expected_outcome": "Agent tags the equipment and creates a maintenance request.",
-      "required_tools": [
-        "update_equipment_status",
-        "create_maintenance_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place an 'Out of Service' tag on the balance and log the failure in the equipment management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent tags the equipment and creates a maintenance request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

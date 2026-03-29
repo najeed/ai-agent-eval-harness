@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-vo-13678",
-  "title": "Manage Pre-Game Pyrotechnics Display",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Pre-Game Pyrotechnics Display",
+    "compliance_level": "Standard"
+  },
   "description": "A team wants to have a pre-game pyrotechnics display. The event manager must ensure it is done safely.",
-  "use_case": "Venue & Event Operations",
-  "core_function": "Event Day Operations",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Hire a licensed pyrotechnics vendor.",
-      "expected_outcome": "Agent selects and contracts with an approved vendor.",
-      "required_tools": [
-        "hire_licensed_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Hire a licensed pyrotechnics vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects and contracts with an approved vendor."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Secure all necessary permits from the local fire department.",
-      "expected_outcome": "Agent successfully obtains the required permits.",
-      "required_tools": [
-        "apply_for_pyrotechnics_permit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Secure all necessary permits from the local fire department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully obtains the required permits."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "On game day, coordinate with the vendor and the fire department to ensure all safety protocols are followed.",
-      "expected_outcome": "Agent oversees the safe execution of the display.",
-      "required_tools": [
-        "coordinate_with_vendors"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "On game day, coordinate with the vendor and the fire department to ensure all safety protocols are followed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent oversees the safe execution of the display."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10040",
-  "title": "Build a Satellite Wiring Harness",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Build a Satellite Wiring Harness",
+    "compliance_level": "Standard"
+  },
   "description": "A technician needs to build a complex wiring harness that connects the satellite's main computer to its various subsystems.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Satellite Manufacturing & Integration",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Follow the wiring diagram to cut, strip, and crimp pins onto all the necessary wires.",
-      "expected_outcome": "Agent correctly prepares all wires according to the schematic.",
-      "required_tools": [
-        "get_wiring_diagram"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Follow the wiring diagram to cut, strip, and crimp pins onto all the necessary wires.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly prepares all wires according to the schematic."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Insert the pinned wires into the correct locations in the multi-pin connectors.",
-      "expected_outcome": "Agent populates the connectors with 100% accuracy.",
-      "required_tools": [
-        "populate_connector"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Insert the pinned wires into the correct locations in the multi-pin connectors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent populates the connectors with 100% accuracy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a continuity test on the completed harness to ensure there are no open circuits or short circuits.",
-      "expected_outcome": "Agent runs the test and confirms the harness passes all continuity checks.",
-      "required_tools": [
-        "run_continuity_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a continuity test on the completed harness to ensure there are no open circuits or short circuits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the test and confirms the harness passes all continuity checks."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

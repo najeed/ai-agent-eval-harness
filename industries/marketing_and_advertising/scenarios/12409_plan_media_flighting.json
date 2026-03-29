@@ -1,54 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12409",
-  "title": "Plan Campaign Media Flighting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan Campaign Media Flighting",
+    "compliance_level": "Standard"
+  },
   "description": "A media planner needs to create a flighting schedule for a campaign, concentrating ad spend during peak seasonal periods.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Media Planning",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze historical sales data to identify seasonal peaks.",
-      "expected_outcome": "Agent identifies that sales peak in June-July and November.",
-      "required_tools": [
-        "get_sales_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze historical sales data to identify seasonal peaks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that sales peak in June-July and November."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a flighting calendar that allocates a higher percentage of the media budget to the identified peak months.",
-      "expected_outcome": "Agent produces a calendar with increased spend during the peak seasons and lower spend during off-seasons.",
-      "required_tools": [
-        "calendar_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a flighting calendar that allocates a higher percentage of the media budget to the identified peak months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a calendar with increased spend during the peak seasons and lower spend during off-seasons."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Share the flighting plan with the campaign management team for implementation.",
-      "expected_outcome": "Agent communicates the plan to the execution team.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Share the flighting plan with the campaign management team for implementation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent communicates the plan to the execution team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

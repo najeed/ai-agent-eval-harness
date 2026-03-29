@@ -1,85 +1,61 @@
 {
-  "scenario_id": "finance-rb-11282",
-  "title": "Waive Monthly Account Fee",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Waive Monthly Account Fee",
+    "compliance_level": "Standard"
+  },
   "description": "A long-time customer requests to have their monthly maintenance fee waived after their balance temporarily dropped below the minimum.",
-  "use_case": "Retail Banking",
-  "core_function": "Account Management",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and the monthly fee charge on their statement.",
-      "expected_outcome": "Agent locates the $15 monthly fee.",
-      "required_tools": [
-        "get_customer_details",
-        "get_billing_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and the monthly fee charge on their statement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the $15 monthly fee."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the customer's account history and tenure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer has been with the bank for 10 years with no prior fee waivers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the customer's account history and tenure.",
-      "expected_outcome": "Agent confirms the customer has been with the bank for 10 years with no prior fee waivers.",
-      "required_tools": [
-        "get_payment_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Waive the fee for the current month as a one-time courtesy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies a credit for the fee amount."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Waive the fee for the current month as a one-time courtesy.",
-      "expected_outcome": "Agent successfully applies a credit for the fee amount.",
-      "required_tools": [
-        "apply_manual_credit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

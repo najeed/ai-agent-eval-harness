@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12705",
-  "title": "Refinery Crude Slate Optimization",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Refinery Crude Slate Optimization",
+    "compliance_level": "Standard"
+  },
   "description": "A refinery economist uses an LP model to decide the optimal blend of crude oils to purchase for next month to maximize gasoline production.",
-  "use_case": "Downstream",
-  "core_function": "Refinery Operations & Optimization",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather current market prices for available crude oils (e.g., WTI, Brent, Mars).",
-      "expected_outcome": "A list of crudes and their current spot prices is compiled.",
-      "required_tools": [
-        "get_crude_market_prices"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather current market prices for available crude oils (e.g., WTI, Brent, Mars).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of crudes and their current spot prices is compiled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Input the crude prices and their assay data into the refinery's Linear Programming (LP) model.",
-      "expected_outcome": "The LP model is correctly populated with the latest data.",
-      "required_tools": [
-        "update_lp_model_inputs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Input the crude prices and their assay data into the refinery's Linear Programming (LP) model.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The LP model is correctly populated with the latest data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the LP model to determine the most profitable crude slate and generate a purchase recommendation.",
-      "expected_outcome": "The model outputs a recommended blend of crudes that maximizes the refinery's gross margin.",
-      "required_tools": [
-        "run_lp_optimization"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the LP model to determine the most profitable crude slate and generate a purchase recommendation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The model outputs a recommended blend of crudes that maximizes the refinery's gross margin."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

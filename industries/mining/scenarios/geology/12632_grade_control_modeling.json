@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-geo-12632",
-  "title": "Perform Grade Control Modeling",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Grade Control Modeling",
+    "compliance_level": "Standard"
+  },
   "description": "A grade control geologist uses data from blast drillholes to create a short-term grade model to guide mining.",
-  "use_case": "Geology & Exploration",
-  "core_function": "Resource Modeling",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Import the assay data from the samples taken from the blast drillholes.",
-      "expected_outcome": "The blast hole sample data is loaded and validated.",
-      "required_tools": [
-        "import_drillhole_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Import the assay data from the samples taken from the blast drillholes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The blast hole sample data is loaded and validated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a high-resolution grade control model of the bench to be mined.",
-      "expected_outcome": "A detailed model showing the location of high-grade and low-grade ore is created.",
-      "required_tools": [
-        "run_grade_estimation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "geostatistical_model_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a high-resolution grade control model of the bench to be mined.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A detailed model showing the location of high-grade and low-grade ore is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Digitize the ore-waste boundaries on the model and provide this 'ore mark-out' map to the surveyors and operators.",
-      "expected_outcome": "A map is created that will be used in the pit to visually separate ore from waste during loading.",
-      "required_tools": [
-        "digitize_ore_blocks",
-        "generate_ore_markup_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Digitize the ore-waste boundaries on the model and provide this 'ore mark-out' map to the surveyors and operators.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A map is created that will be used in the pit to visually separate ore from waste during loading."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

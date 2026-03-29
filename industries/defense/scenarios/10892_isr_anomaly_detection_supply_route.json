@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-isr-10892",
-  "title": "Supply Route Anomaly Detection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Supply Route Anomaly Detection",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must monitor traffic patterns on a main supply route to detect behavior indicative of a planned ambush, like the absence of normal traffic.",
-  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
-  "core_function": "Pattern & Anomaly Detection",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use historical data to establish the normal pattern of life for the supply route, including typical traffic density by time of day.",
-      "expected_outcome": "Analyst successfully models the normal traffic patterns.",
-      "required_tools": [
-        "analyze_historical_traffic_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "baseline_model_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use historical data to establish the normal pattern of life for the supply route, including typical traffic density by time of day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully models the normal traffic patterns."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Monitor the live traffic feed from a persistent surveillance drone.",
-      "expected_outcome": "Analyst actively monitors the route.",
-      "required_tools": [
-        "view_live_fmv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "monitoring_diligence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Monitor the live traffic feed from a persistent surveillance drone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst actively monitors the route."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Flag a sudden and complete lack of civilian traffic on the route as a critical anomaly, suggesting insurgents have blocked the road to set up an ambush.",
-      "expected_outcome": "Analyst correctly identifies the 'negative space' anomaly and issues a warning to upcoming convoys.",
-      "required_tools": [
-        "flag_anomaly",
-        "issue_intelligence_warning"
-      ],
-      "success_criteria": [
-        {
-          "metric": "anomaly_detection_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Flag a sudden and complete lack of civilian traffic on the route as a critical anomaly, suggesting insurgents have blocked the road to set up an ambush.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies the 'negative space' anomaly and issues a warning to upcoming convoys."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

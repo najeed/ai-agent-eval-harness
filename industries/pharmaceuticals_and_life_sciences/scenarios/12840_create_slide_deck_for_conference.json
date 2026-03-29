@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12840",
-  "title": "Create Slide Deck for Medical Conference",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Slide Deck for Medical Conference",
+    "compliance_level": "Standard"
+  },
   "description": "An MSL needs to create a slide presentation summarizing recent clinical trial data for an upcoming medical conference.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Key Opinion Leader (KOL) Engagement",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the final clinical study report and statistical analysis plan.",
-      "expected_outcome": "Agent successfully gathers the source documents for the presentation.",
-      "required_tools": [
-        "search_document_management_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the final clinical study report and statistical analysis plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully gathers the source documents for the presentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Extract the key efficacy and safety data points to be presented.",
-      "expected_outcome": "Agent identifies the primary endpoint results and key secondary endpoints to highlight.",
-      "required_tools": [
-        "extract_key_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Extract the key efficacy and safety data points to be presented.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the primary endpoint results and key secondary endpoints to highlight."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a slide deck using a corporate template, including graphs and tables of the key data.",
-      "expected_outcome": "Agent populates the slide deck, ensuring all data is accurately represented and properly sourced.",
-      "required_tools": [
-        "create_presentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a slide deck using a corporate template, including graphs and tables of the key data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent populates the slide deck, ensuring all data is accurately represented and properly sourced."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the slide deck for internal promotional review to ensure compliance.",
-      "expected_outcome": "Agent submits the deck to the promotional review committee.",
-      "required_tools": [
-        "upload_document_for_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the slide deck for internal promotional review to ensure compliance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits the deck to the promotional review committee."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

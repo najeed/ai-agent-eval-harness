@@ -1,38 +1,46 @@
 {
-  "scenario_id": "information_technology_product-sl-11738",
-  "title": "Handle Expired Trial Follow-up",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Expired Trial Follow-up",
+    "compliance_level": "Standard"
+  },
   "description": "An automated email is sent to a user whose trial has expired, asking for feedback.",
-  "use_case": "Sales & Account Management",
-  "core_function": "Trial & Proof of Concept (PoC) Management",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a trial account that expired yesterday and had high engagement.",
-      "expected_outcome": "System automatically identifies a suitable candidate for follow-up.",
-      "required_tools": [
-        "get_expired_trials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a trial account that expired yesterday and had high engagement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System automatically identifies a suitable candidate for follow-up."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a templated follow-up email asking about their experience and if they have any questions.",
-      "expected_outcome": "System sends a polite, automated follow-up email.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a templated follow-up email asking about their experience and if they have any questions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System sends a polite, automated follow-up email."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

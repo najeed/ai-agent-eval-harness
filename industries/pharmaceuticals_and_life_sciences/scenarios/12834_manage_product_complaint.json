@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12834",
-  "title": "Manage a Product Quality Complaint",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Product Quality Complaint",
+    "compliance_level": "Standard"
+  },
   "description": "A pharmacist calls to complain that a batch of tablets appears discolored. A quality specialist must handle the complaint.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Quality Control & Assurance",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the product complaint in the quality management system, capturing all details.",
-      "expected_outcome": "Agent creates a new complaint record with the product name, lot number, and description of the issue.",
-      "required_tools": [
-        "log_product_complaint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the product complaint in the quality management system, capturing all details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new complaint record with the product name, lot number, and description of the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Arrange for the complaint sample to be returned from the pharmacy for investigation.",
-      "expected_outcome": "Agent generates a return shipping label and instructions for the pharmacist.",
-      "required_tools": [
-        "arrange_sample_return"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Arrange for the complaint sample to be returned from the pharmacy for investigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a return shipping label and instructions for the pharmacist."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the retention samples for the same batch to check for the discoloration issue.",
-      "expected_outcome": "Agent checks the retained samples and confirms that the discoloration is also present.",
-      "required_tools": [
-        "inspect_retention_samples"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the retention samples for the same batch to check for the discoloration issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the retained samples and confirms that the discoloration is also present."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Initiate a formal quality investigation to determine the root cause of the discoloration.",
-      "expected_outcome": "Agent opens a new investigation record and links it to the product complaint.",
-      "required_tools": [
-        "create_quality_investigation_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Initiate a formal quality investigation to determine the root cause of the discoloration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent opens a new investigation record and links it to the product complaint."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

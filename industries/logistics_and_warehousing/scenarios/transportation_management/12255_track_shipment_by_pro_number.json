@@ -1,81 +1,58 @@
 {
-  "scenario_id": "lw-tm-12255",
-  "title": "Track Shipment by PRO Number",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Shipment by PRO Number",
+    "compliance_level": "Standard"
+  },
   "description": "A clerk needs to find the status of an LTL shipment using the carrier's progressive (PRO) number.",
-  "use_case": "Transportation Management",
-  "core_function": "Real-time Tracking & Visibility",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Enter the carrier's PRO number into the tracking system.",
-      "expected_outcome": "Agent correctly inputs the PRO number.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Enter the carrier's PRO number into the tracking system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly inputs the PRO number."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system identifies the carrier associated with the PRO number format.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system correctly determines the PRO number belongs to 'XPO Logistics'."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system identifies the carrier associated with the PRO number format.",
-      "expected_outcome": "The system correctly determines the PRO number belongs to 'XPO Logistics'.",
-      "required_tools": [
-        "identify_carrier_by_pro"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Query the identified carrier's API for tracking information using the PRO number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system retrieves the latest tracking status, 'In Transit to Destination Terminal'."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Query the identified carrier's API for tracking information using the PRO number.",
-      "expected_outcome": "The system retrieves the latest tracking status, 'In Transit to Destination Terminal'.",
-      "required_tools": [
-        "get_carrier_tracking_by_pro"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,83 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13886",
-  "title": "Request for Service Records (Legal)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request for Service Records (Legal)",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is requesting their complete call and data usage history for legal purposes.",
-  "use_case": "Customer Service",
-  "core_function": "Account Administration",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the customer's identity with a high level of scrutiny.",
-      "expected_outcome": "Agent follows enhanced verification procedures.",
-      "required_tools": [
-        "verify_customer_identity_enhanced"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the customer's identity with a high level of scrutiny.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent follows enhanced verification procedures."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the process for requesting official records and any associated fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the formal process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the process for requesting official records and any associated fees.",
-      "expected_outcome": "Agent clearly communicates the formal process.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a formal service record request ticket and escalate it to the legal compliance team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates and escalates the ticket correctly."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a formal service record request ticket and escalate it to the legal compliance team.",
-      "expected_outcome": "Agent creates and escalates the ticket correctly.",
-      "required_tools": [
-        "create_legal_request_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

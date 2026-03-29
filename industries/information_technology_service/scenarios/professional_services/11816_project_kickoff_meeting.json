@@ -1,49 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11816",
-  "title": "Project Management - Kickoff Meeting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Management - Kickoff Meeting",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager leads the official kickoff meeting for a new firewall deployment project.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Project Execution & Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare and distribute a kickoff meeting agenda, including project goals, scope, timeline, roles, and responsibilities.",
-      "expected_outcome": "All attendees receive a clear agenda before the meeting.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare and distribute a kickoff meeting agenda, including project goals, scope, timeline, roles, and responsibilities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All attendees receive a clear agenda before the meeting."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Lead the meeting, present the project plan, and establish communication protocols and meeting cadences.",
-      "expected_outcome": "The project manager successfully aligns all stakeholders and sets clear expectations.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Lead the meeting, present the project plan, and establish communication protocols and meeting cadences.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project manager successfully aligns all stakeholders and sets clear expectations."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Follow up the meeting with documented minutes and action items assigned to both the client and internal team.",
-      "expected_outcome": "The meeting outcomes and next steps are clearly documented and distributed.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Follow up the meeting with documented minutes and action items assigned to both the client and internal team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The meeting outcomes and next steps are clearly documented and distributed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

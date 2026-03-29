@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13161",
-  "title": "Manage Tenant Utility Bill-Back",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Tenant Utility Bill-Back",
+    "compliance_level": "Standard"
+  },
   "description": "In a multi-unit property with a shared water meter, the PM must bill back each tenant for their share of the water bill.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management & Reporting",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the monthly water bill for the entire property.",
-      "expected_outcome": "Agent logs the total amount of the water bill.",
-      "required_tools": [
-        "log_utility_bill"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the monthly water bill for the entire property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the total amount of the water bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate each tenant's share based on the formula in their lease (e.g., per occupant or per sqft).",
-      "expected_outcome": "The system correctly calculates the prorated water charge for each tenant.",
-      "required_tools": [
-        "calculate_utility_billback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate each tenant's share based on the formula in their lease (e.g., per occupant or per sqft).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system correctly calculates the prorated water charge for each tenant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Post the utility charge to each tenant's ledger.",
-      "expected_outcome": "The calculated water charge is added as a line item to each tenant's upcoming rent statement.",
-      "required_tools": [
-        "post_tenant_charge"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Post the utility charge to each tenant's ledger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The calculated water charge is added as a line item to each tenant's upcoming rent statement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

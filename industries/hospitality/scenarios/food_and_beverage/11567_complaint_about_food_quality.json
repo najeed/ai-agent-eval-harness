@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-fb-11567",
-  "title": "Complaint About Food Quality",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Complaint About Food Quality",
+    "compliance_level": "Standard"
+  },
   "description": "A guest complains to their server that their steak is overcooked.",
-  "use_case": "Food & Beverage (F&B)",
-  "core_function": "Order Taking & Service",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Apologize to the guest and offer to have a new steak prepared immediately.",
-      "expected_outcome": "The server immediately offers to fix the problem.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Apologize to the guest and offer to have a new steak prepared immediately.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The server immediately offers to fix the problem."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take the overcooked steak and place a new, 'rush' order with the kitchen for the same item, cooked to the correct temperature.",
-      "expected_outcome": "A new order is fired to the kitchen with high priority.",
-      "required_tools": [
-        "pos_create_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take the overcooked steak and place a new, 'rush' order with the kitchen for the same item, cooked to the correct temperature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new order is fired to the kitchen with high priority."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The manager visits the table to apologize and offers to 'comp' (provide for free) the steak or a round of desserts as a goodwill gesture.",
-      "expected_outcome": "The manager performs service recovery, and the item is comped in the POS.",
-      "required_tools": [
-        "pos_comp_item"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The manager visits the table to apologize and offers to 'comp' (provide for free) the steak or a round of desserts as a goodwill gesture.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager performs service recovery, and the item is comped in the POS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

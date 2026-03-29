@@ -1,83 +1,61 @@
 {
-  "scenario_id": "telecom-mx-13875",
-  "title": "Sales Call Uncovers Technical Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Sales Call Uncovers Technical Issue",
+    "compliance_level": "Standard"
+  },
   "description": "During a sales call to upgrade a customer's phone, the customer mentions their current phone has poor battery life.",
-  "use_case": "Mixed",
-  "core_function": "Upselling and Cross-selling",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "While presenting new phones, acknowledge the battery issue and perform a quick remote diagnostic on the customer's current device.",
-      "expected_outcome": "Agent runs a diagnostic and finds the battery health is critically low.",
-      "required_tools": [
-        "run_device_diagnostic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "While presenting new phones, acknowledge the battery issue and perform a quick remote diagnostic on the customer's current device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs a diagnostic and finds the battery health is critically low."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the diagnostic result to strengthen the case for upgrading to a new phone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent effectively uses the technical data to support the sales pitch."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the diagnostic result to strengthen the case for upgrading to a new phone.",
-      "expected_outcome": "Agent effectively uses the technical data to support the sales pitch.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the order for the new phone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes the sale."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the order for the new phone.",
-      "expected_outcome": "Agent completes the sale.",
-      "required_tools": [
-        "process_new_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-sa-11065",
-  "title": "Defer Admission",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Defer Admission",
+    "compliance_level": "Standard"
+  },
   "description": "An accepted student wishes to defer their enrollment for one year.",
-  "use_case": "Student Administration",
-  "core_function": "Admissions & Enrollment",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and confirm their accepted status.",
-      "expected_outcome": "Agent confirms the student is eligible to defer.",
-      "required_tools": [
-        "get_applicant_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and confirm their accepted status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student is eligible to defer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the university's deferral policy, including any deadlines or deposits required.",
-      "expected_outcome": "Agent clearly communicates the policy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the university's deferral policy, including any deadlines or deposits required.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the student's status to 'Deferred' in the SIS for the next academic year.",
-      "expected_outcome": "Agent successfully processes the deferral request.",
-      "required_tools": [
-        "update_application_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the student's status to 'Deferred' in the SIS for the next academic year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the deferral request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

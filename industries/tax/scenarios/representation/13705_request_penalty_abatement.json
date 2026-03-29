@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tax-rep-13705",
-  "title": "Request Penalty Abatement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Penalty Abatement",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer was assessed a failure-to-file penalty but had a reasonable cause (e.g., serious illness).",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Collections & Appeals",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the taxpayer's situation to confirm they meet the criteria for reasonable cause.",
-      "expected_outcome": "Agent determines the taxpayer's circumstances qualify for penalty relief.",
-      "required_tools": [
-        "check_penalty_abatement_criteria"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the taxpayer's situation to confirm they meet the criteria for reasonable cause.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the taxpayer's circumstances qualify for penalty relief."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather supporting documentation, such as a doctor's note.",
-      "expected_outcome": "Agent obtains the necessary evidence.",
-      "required_tools": [
-        "request_client_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather supporting documentation, such as a doctor's note.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains the necessary evidence."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft a letter to the IRS requesting penalty abatement and attach the supporting documents.",
-      "expected_outcome": "Agent prepares and sends a compelling request for relief.",
-      "required_tools": [
-        "draft_penalty_abatement_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft a letter to the IRS requesting penalty abatement and attach the supporting documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares and sends a compelling request for relief."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

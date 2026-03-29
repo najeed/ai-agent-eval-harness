@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10761",
-  "title": "Cloud Security Policy Creation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cloud Security Policy Creation",
+    "compliance_level": "Standard"
+  },
   "description": "As the company moves to the cloud, a GRC analyst must create a new Cloud Security Policy from scratch.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Security Policy Management",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Research industry best practices and frameworks for cloud security (e.g., CSA Cloud Controls Matrix).",
-      "expected_outcome": "Analyst gathers relevant best practice information.",
-      "required_tools": [
-        "research_security_frameworks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "research_completeness",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Research industry best practices and frameworks for cloud security (e.g., CSA Cloud Controls Matrix).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst gathers relevant best practice information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a new policy that covers key cloud security topics like identity management, data protection, and infrastructure configuration.",
-      "expected_outcome": "Analyst drafts a comprehensive and well-structured policy.",
-      "required_tools": [
-        "draft_policy_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a new policy that covers key cloud security topics like identity management, data protection, and infrastructure configuration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst drafts a comprehensive and well-structured policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Circulate the draft policy to key stakeholders (e.g., cloud engineering, legal) for review and feedback before seeking final approval.",
-      "expected_outcome": "Analyst effectively manages the stakeholder review process.",
-      "required_tools": [
-        "submit_for_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Circulate the draft policy to key stakeholders (e.g., cloud engineering, legal) for review and feedback before seeking final approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst effectively manages the stakeholder review process."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

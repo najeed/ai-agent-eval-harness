@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-wo-12258",
-  "title": "Wave Planning for Picking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Wave Planning for Picking",
+    "compliance_level": "Standard"
+  },
   "description": "A shift manager needs to create a picking wave to release a batch of orders to the floor for fulfillment.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Outbound & Shipping",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Filter all pending orders to select a group for the next wave (e.g., all 'Expedited Shipping' orders).",
-      "expected_outcome": "Agent successfully selects a batch of high-priority orders.",
-      "required_tools": [
-        "find_pending_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Filter all pending orders to select a group for the next wave (e.g., all 'Expedited Shipping' orders).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully selects a batch of high-priority orders."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the wave planning tool to create a new wave from the selected orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new wave is created in the system."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the wave planning tool to create a new wave from the selected orders.",
-      "expected_outcome": "A new wave is created in the system.",
-      "required_tools": [
-        "create_picking_wave"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system automatically breaks the wave down into individual picking tasks, optimized by pick path.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates efficient picking assignments for multiple operators."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Release the wave, making the picking tasks available to operators on the floor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The picking tasks appear on the operators' handheld scanners."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system automatically breaks the wave down into individual picking tasks, optimized by pick path.",
-      "expected_outcome": "The system generates efficient picking assignments for multiple operators.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Release the wave, making the picking tasks available to operators on the floor.",
-      "expected_outcome": "The picking tasks appear on the operators' handheld scanners.",
-      "required_tools": [
-        "release_picking_wave"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

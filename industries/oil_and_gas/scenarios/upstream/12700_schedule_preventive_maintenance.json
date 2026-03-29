@@ -1,54 +1,59 @@
 {
-  "scenario_id": "og-up-12700",
-  "title": "Schedule Preventive Maintenance for Wellhead",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Preventive Maintenance for Wellhead",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance planner schedules a preventive maintenance job for a critical wellhead based on runtime hours and manufacturer recommendations.",
-  "use_case": "Upstream",
-  "core_function": "Asset & Maintenance Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the maintenance history and total operating hours for wellhead WH-101.",
-      "expected_outcome": "The asset's full maintenance history and runtime are retrieved.",
-      "required_tools": [
-        "get_asset_maintenance_history",
-        "get_asset_runtime"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the maintenance history and total operating hours for wellhead WH-101.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The asset's full maintenance history and runtime are retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Based on the data, determine the required maintenance tasks and create a work order in the CMMS.",
-      "expected_outcome": "A detailed work order is created with all necessary tasks listed.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Based on the data, determine the required maintenance tasks and create a work order in the CMMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A detailed work order is created with all necessary tasks listed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the work order to a qualified technician team and schedule it for next week.",
-      "expected_outcome": "The work order is scheduled and assigned in the system.",
-      "required_tools": [
-        "assign_work_order",
-        "schedule_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the work order to a qualified technician team and schedule it for next week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The work order is scheduled and assigned in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

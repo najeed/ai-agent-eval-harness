@@ -1,54 +1,59 @@
 {
-  "scenario_id": "construction-cc-10631",
-  "title": "Architect Responds to RFI",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Architect Responds to RFI",
+    "compliance_level": "Standard"
+  },
   "description": "An architect needs to respond to an RFI about a wall dimension discrepancy.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Submittals & RFIs",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the pending RFI regarding the wall dimension in Room 101.",
-      "expected_outcome": "The correct RFI is opened.",
-      "required_tools": [
-        "get_rfi_by_id"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the pending RFI regarding the wall dimension in Room 101.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct RFI is opened."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the official answer: 'The correct dimension for the west wall of Room 101 is 12.5 feet as shown on the structural drawings (S-5). Please disregard the dimension on A-2.'",
-      "expected_outcome": "A clear and definitive answer is provided for the RFI.",
-      "required_tools": [
-        "respond_to_rfi"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the official answer: 'The correct dimension for the west wall of Room 101 is 12.5 feet as shown on the structural drawings (S-5). Please disregard the dimension on A-2.'",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear and definitive answer is provided for the RFI."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the RFI status to 'Closed' and notify the project team.",
-      "expected_outcome": "The RFI is closed and the project team is notified of the clarification.",
-      "required_tools": [
-        "update_rfi_status",
-        "send_stakeholder_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the RFI status to 'Closed' and notify the project team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The RFI is closed and the project team is notified of the clarification."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

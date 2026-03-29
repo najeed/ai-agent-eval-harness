@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13343",
-  "title": "Onboard a New Property for Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Onboard a New Property for Management",
+    "compliance_level": "Standard"
+  },
   "description": "A property management company is taking over management of a new apartment building.",
-  "use_case": "Property Management",
-  "core_function": "Leasing & Tenant Screening",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Collect all necessary documents from the property owner, including existing leases, tenant contact information, and vendor contracts.",
-      "expected_outcome": "All required property and tenant data is collected.",
-      "required_tools": [
-        "document_collection_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Collect all necessary documents from the property owner, including existing leases, tenant contact information, and vendor contracts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All required property and tenant data is collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Set up the new property, units, and tenants in the property management software.",
-      "expected_outcome": "The property is fully and accurately set up in the system.",
-      "required_tools": [
-        "setup_new_property_in_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Set up the new property, units, and tenants in the property management software.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The property is fully and accurately set up in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send an introductory letter to all existing tenants informing them of the change in management and new procedures for paying rent and requesting maintenance.",
-      "expected_outcome": "All tenants are successfully notified of the management change.",
-      "required_tools": [
-        "send_bulk_tenant_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send an introductory letter to all existing tenants informing them of the change in management and new procedures for paying rent and requesting maintenance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All tenants are successfully notified of the management change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

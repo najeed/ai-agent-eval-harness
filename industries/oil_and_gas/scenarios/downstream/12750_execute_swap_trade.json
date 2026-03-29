@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12750",
-  "title": "Execute a Financial Swap Trade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Execute a Financial Swap Trade",
+    "compliance_level": "Standard"
+  },
   "description": "A trader needs to hedge their exposure to floating gasoline prices. They decide to enter into a fixed-for-floating price swap.",
-  "use_case": "Downstream",
-  "core_function": "Supply & Trading",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the current market quotes for a gasoline price swap for the desired volume and time period.",
-      "expected_outcome": "A list of current bid/ask prices for the swap is retrieved from brokers.",
-      "required_tools": [
-        "get_swap_market_quotes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the current market quotes for a gasoline price swap for the desired volume and time period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of current bid/ask prices for the swap is retrieved from brokers."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a pre-trade credit check on the proposed counterparty.",
-      "expected_outcome": "The system confirms the counterparty has sufficient credit available for the trade.",
-      "required_tools": [
-        "check_counterparty_credit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a pre-trade credit check on the proposed counterparty.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms the counterparty has sufficient credit available for the trade."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute the swap trade with the chosen counterparty and book the deal in the trade capture system.",
-      "expected_outcome": "The trade is executed and accurately recorded in the system of record.",
-      "required_tools": [
-        "execute_swap_trade",
-        "book_trade"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute the swap trade with the chosen counterparty and book the deal in the trade capture system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The trade is executed and accurately recorded in the system of record."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

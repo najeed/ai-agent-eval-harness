@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11805",
-  "title": "Backup - Restore Deleted File",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Backup - Restore Deleted File",
+    "compliance_level": "Standard"
+  },
   "description": "An end-user accidentally deleted an important file from a shared network drive and needs it restored from last night's backup.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Backup & Disaster Recovery",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the file server and the exact path and name of the file that needs to be restored.",
-      "expected_outcome": "The technician has the full path of the deleted file.",
-      "required_tools": [
-        "get_ticket_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the file server and the exact path and name of the file that needs to be restored.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician has the full path of the deleted file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the backup system, browse the previous night's backup set for the file server, and locate the file.",
-      "expected_outcome": "The technician successfully finds the file in the backup archive.",
-      "required_tools": [
-        "browse_backup_archive"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the backup system, browse the previous night's backup set for the file server, and locate the file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician successfully finds the file in the backup archive."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Restore the file to its original location and notify the user that it is available.",
-      "expected_outcome": "The file is successfully restored, and the user's issue is resolved.",
-      "required_tools": [
-        "restore_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Restore the file to its original location and notify the user that it is available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The file is successfully restored, and the user's issue is resolved."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

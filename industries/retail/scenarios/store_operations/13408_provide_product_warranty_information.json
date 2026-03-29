@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ret-so-13408",
-  "title": "Provide Product Warranty Information",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Product Warranty Information",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is asking about the warranty for an electronic item they are about to purchase.",
-  "use_case": "Store Operations",
-  "core_function": "In-Store Customer Assistance",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the product in the store's information system.",
-      "expected_outcome": "The associate finds the product's detail page.",
-      "required_tools": [
-        "lookup_product"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the product in the store's information system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate finds the product's detail page."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Navigate to the warranty information section.",
-      "expected_outcome": "The system displays the manufacturer's warranty details.",
-      "required_tools": [
-        "get_product_warranty_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Navigate to the warranty information section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system displays the manufacturer's warranty details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Clearly explain the warranty terms (e.g., '1-year limited warranty') to the customer.",
-      "expected_outcome": "The customer understands the warranty coverage for the product.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Clearly explain the warranty terms (e.g., '1-year limited warranty') to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer understands the warranty coverage for the product."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

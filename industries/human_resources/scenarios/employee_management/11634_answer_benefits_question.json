@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hr-em-11634",
-  "title": "Answer a Benefits Question",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Answer a Benefits Question",
+    "compliance_level": "Standard"
+  },
   "description": "An employee wants to know how much money is currently in their 401(k) retirement account.",
-  "use_case": "Employee Management",
-  "core_function": "Benefits Administration",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the employee.",
-      "expected_outcome": "Agent confirms the employee's identity.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the employee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the employee's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain that for security and privacy reasons, the company does not have access to their 401(k) balance.",
-      "expected_outcome": "Agent clearly communicates the privacy policy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain that for security and privacy reasons, the company does not have access to their 401(k) balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the privacy policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the employee with the website and contact information for the 401(k) provider (e.g., Fidelity, Vanguard).",
-      "expected_outcome": "Agent provides the correct contact information for the benefits vendor.",
-      "required_tools": [
-        "get_benefit_vendor_contacts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the employee with the website and contact information for the 401(k) provider (e.g., Fidelity, Vanguard).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct contact information for the benefits vendor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

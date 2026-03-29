@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-c2-10836",
-  "title": "Resolving Conflicting COP Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolving Conflicting COP Data",
+    "compliance_level": "Standard"
+  },
   "description": "A friendly aircraft's IFF system is malfunctioning, causing it to appear as an 'unidentified' track on the COP, dangerously close to an air defense zone.",
-  "use_case": "Command & Control (C2)",
-  "core_function": "Common Operating Picture (COP) Management",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the unidentified track and note its conflict with a friendly air defense zone.",
-      "expected_outcome": "Operator detects the potential blue-on-blue engagement scenario.",
-      "required_tools": [
-        "monitor_cop"
-      ],
-      "success_criteria": [
-        {
-          "metric": "threat_detection_speed",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the unidentified track and note its conflict with a friendly air defense zone.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator detects the potential blue-on-blue engagement scenario."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the track's flight path against all scheduled friendly flight plans.",
-      "expected_outcome": "Operator finds a match between the track's path and a scheduled friendly flight.",
-      "required_tools": [
-        "check_flight_plans"
-      ],
-      "success_criteria": [
-        {
-          "metric": "correlation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the track's flight path against all scheduled friendly flight plans.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator finds a match between the track's path and a scheduled friendly flight."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Manually override the track's classification to 'assumed friend' and notify the air defense commander of the IFF malfunction.",
-      "expected_outcome": "Operator successfully deconflicts the situation and prevents a potential friendly fire incident.",
-      "required_tools": [
-        "update_track_classification",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "conflict_resolution_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Manually override the track's classification to 'assumed friend' and notify the air defense commander of the IFF malfunction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator successfully deconflicts the situation and prevents a potential friendly fire incident."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

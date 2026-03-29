@@ -1,52 +1,59 @@
 {
-  "scenario_id": "venues-em-14246",
-  "title": "Set up A/V for a Meeting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set up A/V for a Meeting",
+    "compliance_level": "Standard"
+  },
   "description": "An event coordinator needs to ensure the audio/visual equipment is set up correctly for a small corporate meeting.",
-  "use_case": "Event Management & Booking",
-  "core_function": "Event Planning & Coordination",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the event booking order to see the client's A/V requirements (projector, screen, two microphones).",
-      "expected_outcome": "Agent confirms the required equipment list.",
-      "required_tools": [
-        "get_booking_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the event booking order to see the client's A/V requirements (projector, screen, two microphones).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the required equipment list."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a work order for the in-house A/V technical team.",
-      "expected_outcome": "Agent creates a ticket specifying the room, time, and required equipment.",
-      "required_tools": [
-        "create_av_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a work order for the in-house A/V technical team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a ticket specifying the room, time, and required equipment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign the work order to an available A/V technician.",
-      "expected_outcome": "Agent assigns the task to a specific technician.",
-      "required_tools": [
-        "assign_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign the work order to an available A/V technician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assigns the task to a specific technician."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13869",
-  "title": "Audit Firewall Rules",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Firewall Rules",
+    "compliance_level": "Standard"
+  },
   "description": "As part of a security audit, an agent must find and flag any firewall rules that are overly permissive (e.g., 'allow any any').",
-  "use_case": "Network Operations",
-  "core_function": "Security Operations",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all firewall rules from the main corporate firewall.",
-      "expected_outcome": "Agent successfully downloads the firewall rule set.",
-      "required_tools": [
-        "get_firewall_rules"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all firewall rules from the main corporate firewall.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully downloads the firewall rule set."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the rules to identify any with 'any' in both the source and destination fields.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies three overly permissive rules."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the rules to identify any with 'any' in both the source and destination fields.",
-      "expected_outcome": "Agent identifies three overly permissive rules.",
-      "required_tools": [
-        "analyze_firewall_rules"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a report listing the problematic rules and assign it to the security team for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a clear report for the security team."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a report listing the problematic rules and assign it to the security team for review.",
-      "expected_outcome": "Agent generates a clear report for the security team.",
-      "required_tools": [
-        "generate_security_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

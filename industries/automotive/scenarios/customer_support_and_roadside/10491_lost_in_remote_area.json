@@ -1,53 +1,59 @@
 {
-  "scenario_id": "auto-csra-10491",
-  "title": "Customer Lost in Remote Area with No Cell Service",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Lost in Remote Area with No Cell Service",
+    "compliance_level": "Standard"
+  },
   "description": "A customer in an area with no cell service uses the car's satellite-based emergency button to ask for directions.",
-  "use_case": "Customer Support & Roadside Assistance",
-  "core_function": "Emergency & Roadside Assistance",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the satellite emergency alert, including the vehicle's GPS coordinates.",
-      "expected_outcome": "Agent receives the alert and location.",
-      "required_tools": [
-        "get_telematics_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the satellite emergency alert, including the vehicle's GPS coordinates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the alert and location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Establish a voice call with the driver via the satellite link.",
-      "expected_outcome": "Agent successfully connects to the driver.",
-      "required_tools": [
-        "initiate_in_vehicle_call"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Establish a voice call with the driver via the satellite link.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully connects to the driver."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Using the vehicle's location and the driver's destination, provide turn-by-turn directions to get them back to a main road.",
-      "expected_outcome": "Agent acts as a human GPS to guide the driver to safety.",
-      "required_tools": [
-        "get_map_routing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Using the vehicle's location and the driver's destination, provide turn-by-turn directions to get them back to a main road.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acts as a human GPS to guide the driver to safety."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

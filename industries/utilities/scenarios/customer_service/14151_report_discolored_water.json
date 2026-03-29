@@ -1,51 +1,59 @@
 {
-  "scenario_id": "utils-cs-14151",
-  "title": "Report Discolored Water",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Discolored Water",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to report that their tap water is brown.",
-  "use_case": "Customer Service",
-  "core_function": "Service Orders",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's location and ask if their neighbors are experiencing the same issue.",
-      "expected_outcome": "Agent gathers location and scope information.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's location and ask if their neighbors are experiencing the same issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers location and scope information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for any recent operational activities in the area, such as water main flushing or repairs, that could stir up sediment.",
-      "expected_outcome": "Agent finds that a nearby water main was flushed earlier in the day.",
-      "required_tools": [
-        "get_operational_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for any recent operational activities in the area, such as water main flushing or repairs, that could stir up sediment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that a nearby water main was flushed earlier in the day."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the customer that the discoloration is temporary due to the flushing and to run their cold water taps for a few minutes until it clears.",
-      "expected_outcome": "Agent provides a clear explanation and instructions to resolve the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the customer that the discoloration is temporary due to the flushing and to run their cold water taps for a few minutes until it clears.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear explanation and instructions to resolve the issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

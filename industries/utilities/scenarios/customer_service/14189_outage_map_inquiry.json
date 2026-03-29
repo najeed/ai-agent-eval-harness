@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-cs-14189",
-  "title": "Outage Map Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Outage Map Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is looking at the utility's public outage map and wants to know why their specific house isn't showing inside the outage polygon.",
-  "use_case": "Customer Service",
-  "core_function": "Outage Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain that the outage map polygons are estimates and individual addresses may not be perfectly represented.",
-      "expected_outcome": "Agent clearly communicates how the map works.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain that the outage map polygons are estimates and individual addresses may not be perfectly represented.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates how the map works."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Look up the customer's address in the internal outage management system.",
-      "expected_outcome": "Agent uses the OMS to confirm the customer's address is officially part of the outage event.",
-      "required_tools": [
-        "check_outage_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Look up the customer's address in the internal outage management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses the OMS to confirm the customer's address is officially part of the outage event."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reassure the customer that crews are aware of their outage and provide the ETR.",
-      "expected_outcome": "Agent successfully reassures the customer and provides the necessary information.",
-      "required_tools": [
-        "get_outage_etr"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reassure the customer that crews are aware of their outage and provide the ETR.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reassures the customer and provides the necessary information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

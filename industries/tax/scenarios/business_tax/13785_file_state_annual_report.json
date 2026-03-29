@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tax-bus-13785",
-  "title": "File State Annual Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File State Annual Report",
+    "compliance_level": "Standard"
+  },
   "description": "An LLC needs to file its required annual report with the state's Secretary of State to remain in good standing.",
-  "use_case": "Business Tax Services",
-  "core_function": "Specialized & Excise Tax",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the due date and filing fee for the annual report in the specific state.",
-      "expected_outcome": "Agent finds the correct deadline and fee.",
-      "required_tools": [
-        "get_state_annual_report_rules"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the due date and filing fee for the annual report in the specific state.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct deadline and fee."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update any required information, such as the company's registered agent or principal address.",
-      "expected_outcome": "Agent ensures all company information is current.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update any required information, such as the company's registered agent or principal address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ensures all company information is current."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare and file the annual report with the state and pay the fee.",
-      "expected_outcome": "Agent successfully completes the compliance filing.",
-      "required_tools": [
-        "file_state_annual_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare and file the annual report with the state and pay the fee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the compliance filing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

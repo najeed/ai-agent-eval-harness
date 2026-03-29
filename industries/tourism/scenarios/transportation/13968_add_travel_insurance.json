@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13968",
-  "title": "Add Travel Insurance to Booking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Add Travel Insurance to Booking",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who booked a vacation package wants to add travel insurance.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Ancillary Services & Upgrades",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's package booking.",
-      "expected_outcome": "Agent locates the correct booking.",
-      "required_tools": [
-        "get_package_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's package booking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct booking."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Present the available travel insurance options and their coverage details.",
-      "expected_outcome": "Agent clearly explains the different insurance plans.",
-      "required_tools": [
-        "get_insurance_options"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Present the available travel insurance options and their coverage details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the different insurance plans."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the selected insurance policy to the booking and process the payment.",
-      "expected_outcome": "Agent successfully adds the insurance and provides the policy documents to the customer.",
-      "required_tools": [
-        "add_insurance_to_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the selected insurance policy to the booking and process the payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the insurance and provides the policy documents to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

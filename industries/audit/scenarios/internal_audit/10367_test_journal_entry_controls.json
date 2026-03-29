@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-ia-10367",
-  "title": "Test Journal Entry Controls",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Test Journal Entry Controls",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor tests manual journal entries to ensure they are appropriate and properly approved.",
-  "use_case": "Internal Audit",
-  "core_function": "Testing & Analysis",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain a log of all manual journal entries posted in the last quarter.",
-      "expected_outcome": "The auditor has the complete dataset of journal entries.",
-      "required_tools": [
-        "get_journal_entry_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain a log of all manual journal entries posted in the last quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor has the complete dataset of journal entries."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use data analytics to identify high-risk entries, such as those made on weekends, by unusual users, or with round dollar amounts.",
-      "expected_outcome": "The analysis flags a sample of high-risk entries for investigation.",
-      "required_tools": [
-        "run_data_analytics_script"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use data analytics to identify high-risk entries, such as those made on weekends, by unusual users, or with round dollar amounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis flags a sample of high-risk entries for investigation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For the sampled high-risk entries, review supporting documentation and verify they had independent review and approval from a manager.",
-      "expected_outcome": "The auditor finds one large entry posted by a senior manager that had no independent review, documenting it as a finding.",
-      "required_tools": [
-        "get_supporting_documentation",
-        "review_approval_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For the sampled high-risk entries, review supporting documentation and verify they had independent review and approval from a manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor finds one large entry posted by a senior manager that had no independent review, documenting it as a finding."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

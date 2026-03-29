@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13858",
-  "title": "Diagnose Cell Tower Failure - Backhaul",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Diagnose Cell Tower Failure - Backhaul",
+    "compliance_level": "Standard"
+  },
   "description": "A cell tower is online but not passing traffic. The agent suspects a backhaul link failure.",
-  "use_case": "Network Operations",
-  "core_function": "Fault Management",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ping the cell tower's management interface to confirm it is responsive.",
-      "expected_outcome": "The ping is successful, indicating the tower has power and is running.",
-      "required_tools": [
-        "ping_network_element"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ping the cell tower's management interface to confirm it is responsive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The ping is successful, indicating the tower has power and is running."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status of the fiber backhaul link connected to the tower.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the backhaul link status is 'Down'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status of the fiber backhaul link connected to the tower.",
-      "expected_outcome": "Agent finds the backhaul link status is 'Down'.",
-      "required_tools": [
-        "get_backhaul_link_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a ticket for the fiber optics team to investigate the physical link.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed ticket for the correct team."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a ticket for the fiber optics team to investigate the physical link.",
-      "expected_outcome": "Agent creates a detailed ticket for the correct team.",
-      "required_tools": [
-        "create_trouble_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

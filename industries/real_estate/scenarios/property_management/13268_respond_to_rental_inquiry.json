@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13268",
-  "title": "Respond to a Rental Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a Rental Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A prospective tenant has inquired about a vacant unit via a rental website. The agent must respond and encourage them to apply.",
-  "use_case": "Property Management",
-  "core_function": "Leasing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the inquiry, noting the prospect's name and the property they are interested in.",
-      "expected_outcome": "Agent correctly identifies the prospect and property.",
-      "required_tools": [
-        "get_lead_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the inquiry, noting the prospect's name and the property they are interested in.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the prospect and property."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the availability of the unit.",
-      "expected_outcome": "Agent confirms the unit is still available.",
-      "required_tools": [
-        "check_unit_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the availability of the unit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the unit is still available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a templated response that answers any questions, provides a link to the online application, and invites them to schedule a showing.",
-      "expected_outcome": "Agent sends a prompt, informative, and helpful response.",
-      "required_tools": [
-        "send_email_to_prospect"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a templated response that answers any questions, provides a link to the online application, and invites them to schedule a showing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a prompt, informative, and helpful response."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

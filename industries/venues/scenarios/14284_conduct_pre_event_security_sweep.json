@@ -1,66 +1,72 @@
 {
-  "scenario_id": "venues-vo-14284",
-  "title": "Conduct Pre-Event Security Sweep",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct Pre-Event Security Sweep",
+    "compliance_level": "Standard"
+  },
   "description": "Before opening the doors for a high-profile event, the security team must conduct a full sweep of the venue.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Security & Emergency Response",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a work order for the pre-event security sweep.",
-      "expected_outcome": "Agent creates the task in the system.",
-      "required_tools": [
-        "create_security_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a work order for the pre-event security sweep.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the task in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign security teams to sweep different zones of the venue (e.g., seating bowl, concourses, backstage).",
-      "expected_outcome": "Agent divides the venue into zones and assigns teams to each.",
-      "required_tools": [
-        "assign_staff_to_zone"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_relevance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign security teams to sweep different zones of the venue (e.g., seating bowl, concourses, backstage).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent divides the venue into zones and assigns teams to each."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the progress of each team as they report their zones are 'clear'.",
-      "expected_outcome": "Agent tracks the completion of each zone sweep.",
-      "required_tools": [
-        "monitor_task_progress"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the progress of each team as they report their zones are 'clear'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent tracks the completion of each zone sweep."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Once all zones are clear, give the 'all clear' to open the doors to the public.",
-      "expected_outcome": "Agent gives the final authorization to begin guest ingress.",
-      "required_tools": [
-        "authorize_door_opening"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Once all zones are clear, give the 'all clear' to open the doors to the public.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gives the final authorization to begin guest ingress."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

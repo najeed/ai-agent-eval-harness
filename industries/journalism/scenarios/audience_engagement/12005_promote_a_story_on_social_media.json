@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12005",
-  "title": "Promote a Story on Social Media",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Promote a Story on Social Media",
+    "compliance_level": "Standard"
+  },
   "description": "A social media editor needs to promote a newly published investigative report across Twitter, Facebook, and Instagram.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Social Media & Distribution",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the most compelling quote or statistic from the report to use as a hook.",
-      "expected_outcome": "Agent identifies a powerful, shareable piece of information from the article.",
-      "required_tools": [
-        "document_viewer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "hook_effectiveness",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the most compelling quote or statistic from the report to use as a hook.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a powerful, shareable piece of information from the article."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a unique post for each platform, tailoring the language and format (e.g., a Twitter thread, a Facebook post, an Instagram story).",
-      "expected_outcome": "Agent creates three distinct, platform-appropriate posts.",
-      "required_tools": [
-        "social_media_scheduler"
-      ],
-      "success_criteria": [
-        {
-          "metric": "platform_appropriateness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a unique post for each platform, tailoring the language and format (e.g., a Twitter thread, a Facebook post, an Instagram story).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates three distinct, platform-appropriate posts."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Schedule the posts to be published at optimal engagement times.",
-      "expected_outcome": "The posts are scheduled for publication.",
-      "required_tools": [
-        "social_media_scheduler"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Schedule the posts to be published at optimal engagement times.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The posts are scheduled for publication."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

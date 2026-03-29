@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-ast-11497",
-  "title": "Perform Asset Condition Monitoring",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Asset Condition Monitoring",
+    "compliance_level": "Standard"
+  },
   "description": "A technician is performing a routine condition monitoring route, collecting data from various assets.",
-  "use_case": "Asset & Maintenance Management",
-  "core_function": "Reliability Engineering",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Download the day's inspection route to a handheld data collector.",
-      "expected_outcome": "The technician gets the list of assets and the required readings for the day.",
-      "required_tools": [
-        "download_inspection_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Download the day's inspection route to a handheld data collector.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician gets the list of assets and the required readings for the day."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Go to the first asset on the route and collect the required data (e.g., temperature reading, vibration data).",
-      "expected_outcome": "The technician collects the data using the handheld device.",
-      "required_tools": [
-        "collect_condition_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Go to the first asset on the route and collect the required data (e.g., temperature reading, vibration data).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician collects the data using the handheld device."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upload the collected data to the maintenance system. The system automatically flags any readings that are outside normal operating limits.",
-      "expected_outcome": "The technician uploads the data, and the system generates an alert for one asset with a high temperature reading.",
-      "required_tools": [
-        "upload_condition_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upload the collected data to the maintenance system. The system automatically flags any readings that are outside normal operating limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician uploads the data, and the system generates an alert for one asset with a high temperature reading."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

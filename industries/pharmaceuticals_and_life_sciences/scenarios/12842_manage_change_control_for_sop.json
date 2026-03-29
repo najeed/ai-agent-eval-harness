@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12842",
-  "title": "Manage Change Control for an SOP",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Change Control for an SOP",
+    "compliance_level": "Standard"
+  },
   "description": "A process owner needs to update a Standard Operating Procedure (SOP) and must manage the change through a formal change control process.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Quality Audits & Inspections",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Initiate a new change control record in the quality management system.",
-      "expected_outcome": "Agent creates a new change control record, describing the reason for the change.",
-      "required_tools": [
-        "create_change_control_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Initiate a new change control record in the quality management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new change control record, describing the reason for the change."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attach the redlined version of the SOP to the change control record.",
-      "expected_outcome": "Agent successfully uploads the revised SOP.",
-      "required_tools": [
-        "attach_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attach the redlined version of the SOP to the change control record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the revised SOP."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Route the change control record for review and approval by the required stakeholders (e.g., department head, QA).",
-      "expected_outcome": "Agent routes the record for electronic signature.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Route the change control record for review and approval by the required stakeholders (e.g., department head, QA).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent routes the record for electronic signature."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Once approved, make the new version of the SOP effective and obsolete the old version.",
-      "expected_outcome": "Agent updates the SOP status in the document management system and triggers retraining notifications.",
-      "required_tools": [
-        "update_document_status",
-        "trigger_training_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Once approved, make the new version of the SOP effective and obsolete the old version.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the SOP status in the document management system and triggers retraining notifications."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

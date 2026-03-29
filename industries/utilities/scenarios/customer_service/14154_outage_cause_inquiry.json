@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-cs-14154",
-  "title": "Inquiry About Outage Cause",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquiry About Outage Cause",
+    "compliance_level": "Standard"
+  },
   "description": "After a power outage has been restored, a customer calls to ask what caused it.",
-  "use_case": "Customer Service",
-  "core_function": "Outage Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and the recent outage event that affected them.",
-      "expected_outcome": "Agent finds the record of the outage that occurred yesterday.",
-      "required_tools": [
-        "get_customer_details",
-        "get_outage_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and the recent outage event that affected them.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the record of the outage that occurred yesterday."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the cause code and notes from the closed work order in the outage management system.",
-      "expected_outcome": "Agent finds the cause was 'Animal Contact' and the crew notes mention a squirrel on a transformer.",
-      "required_tools": [
-        "get_work_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the cause code and notes from the closed work order in the outage management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the cause was 'Animal Contact' and the crew notes mention a squirrel on a transformer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Communicate the cause of the outage to the customer in clear, non-technical language.",
-      "expected_outcome": "Agent explains that the outage was caused by an animal interfering with the equipment.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Communicate the cause of the outage to the customer in clear, non-technical language.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent explains that the outage was caused by an animal interfering with the equipment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "utils-go-14174",
-  "title": "Gas Pipeline Right-of-Way Patrol",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Gas Pipeline Right-of-Way Patrol",
+    "compliance_level": "Standard"
+  },
   "description": "A technician is patrolling a gas pipeline right-of-way and observes unauthorized construction activity near the pipeline.",
-  "use_case": "Gas Operations",
-  "core_function": "Leak Detection & Repair",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The technician immediately approaches the construction crew to inform them of the pipeline's presence and order them to stop work.",
-      "expected_outcome": "Technician follows safety protocol to prevent a potential line strike.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The technician immediately approaches the construction crew to inform them of the pipeline's presence and order them to stop work.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician follows safety protocol to prevent a potential line strike."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The technician logs the incident, including the location, name of the construction company, and photos of the activity.",
-      "expected_outcome": "Technician documents the incident in the compliance system.",
-      "required_tools": [
-        "log_field_observation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "The technician logs the incident, including the location, name of the construction company, and photos of the activity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician documents the incident in the compliance system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system automatically generates a formal notification to the construction company regarding the encroachment.",
-      "expected_outcome": "System sends a formal warning and stop-work notice.",
-      "required_tools": [
-        "send_compliance_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system automatically generates a formal notification to the construction company regarding the encroachment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System sends a formal warning and stop-work notice."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

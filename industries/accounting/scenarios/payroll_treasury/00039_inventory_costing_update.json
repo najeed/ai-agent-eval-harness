@@ -1,68 +1,72 @@
 {
-  "scenario_id": "ac-pt-39",
-  "title": "Perform Standard Cost Update for Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Standard Cost Update for Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "At the beginning of the year, a cost accountant needs to update the standard costs for all manufactured products based on new raw material prices and labor rates.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Compliance & Cost Accounting",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the bill of materials (BOM) and routing (labor steps) for each product.",
-      "expected_outcome": "Agent gets the manufacturing specifications.",
-      "required_tools": [
-        "get_bill_of_materials",
-        "get_manufacturing_routing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the bill of materials (BOM) and routing (labor steps) for each product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the manufacturing specifications."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the new standard prices for all raw materials and the new standard labor rates.",
-      "expected_outcome": "Agent gets the updated cost data.",
-      "required_tools": [
-        "get_material_prices",
-        "get_labor_rates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the new standard prices for all raw materials and the new standard labor rates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the updated cost data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform a cost roll-up to calculate the new standard cost for each finished product.",
-      "expected_outcome": "Agent successfully calculates the new standard costs.",
-      "required_tools": [
-        "run_cost_roll_up"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform a cost roll-up to calculate the new standard cost for each finished product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully calculates the new standard costs."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the item master file with the new standard costs.",
-      "expected_outcome": "Agent successfully updates the inventory costing data in the ERP system.",
-      "required_tools": [
-        "update_standard_costs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the item master file with the new standard costs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the inventory costing data in the ERP system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

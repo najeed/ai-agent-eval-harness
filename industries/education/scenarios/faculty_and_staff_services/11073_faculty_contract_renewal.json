@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-fs-11073",
-  "title": "Faculty Contract Renewal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Faculty Contract Renewal",
+    "compliance_level": "Standard"
+  },
   "description": "A department chair needs to initiate the contract renewal process for a non-tenured faculty member.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "HR & Onboarding",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the faculty member whose contract is up for renewal.",
-      "expected_outcome": "Agent locates the faculty member's record and confirms their contract end date.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the faculty member whose contract is up for renewal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the faculty member's record and confirms their contract end date."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the standard contract renewal packet in the HR system.",
-      "expected_outcome": "Agent successfully generates the required forms and documents.",
-      "required_tools": [
-        "generate_contract_renewal_packet"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the standard contract renewal packet in the HR system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the required forms and documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Route the packet to the department chair for review and recommendation.",
-      "expected_outcome": "Agent initiates the approval workflow in the HR system.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Route the packet to the department chair for review and recommendation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates the approval workflow in the HR system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

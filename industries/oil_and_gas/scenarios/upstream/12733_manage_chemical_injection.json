@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-up-12733",
-  "title": "Manage Production Chemical Injection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Production Chemical Injection",
+    "compliance_level": "Standard"
+  },
   "description": "A production technician manages the injection of corrosion inhibitor into a subsea pipeline.",
-  "use_case": "Upstream",
-  "core_function": "Production Operations",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the current inventory level of the corrosion inhibitor in the topside chemical tank.",
-      "expected_outcome": "The system reports the tank level is at 25%, nearing the reorder point.",
-      "required_tools": [
-        "get_chemical_tank_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the current inventory level of the corrosion inhibitor in the topside chemical tank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system reports the tank level is at 25%, nearing the reorder point."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the chemical injection pump is operating correctly and at the desired rate.",
-      "expected_outcome": "The pump's status and injection rate are confirmed to be normal.",
-      "required_tools": [
-        "get_pump_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the chemical injection pump is operating correctly and at the desired rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The pump's status and injection rate are confirmed to be normal."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a purchase requisition for a new supply of corrosion inhibitor.",
-      "expected_outcome": "A purchase request is submitted to the procurement system.",
-      "required_tools": [
-        "create_purchase_requisition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a purchase requisition for a new supply of corrosion inhibitor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A purchase request is submitted to the procurement system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

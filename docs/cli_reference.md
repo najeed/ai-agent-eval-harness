@@ -9,33 +9,36 @@ Run evaluations on one or more scenarios.
 ```bash
 multiagent-eval evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
-- `--path`: Path to a single Scenario JSON file, a directory containing scenarios, or a Benchmark URI (e.g., `gaia://2023`). Supports Path Decoupling: If a scenario is located outside the standard `/industries` directory, the harness automatically resolves relative dataset paths and tags the scenario as `local`/`unclassified`.
-- `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
-- `--limit`: Max number of scenarios to run.
-- `--agent-name`: Human-readable name for the agent (for reports and leaderboards). Priority: CLI Flag > Zero-Touch Discovery > Endpoint URL.
+- `--agent`: Unified agent target. Can be a URL (for `http`, `autogen`, `langgraph`), a shell command (for `local`), or an address (for `socket`).
+- `--protocol`: Agent protocol (e.g., `http`, `local`, `socket`, `autogen`, `langgraph`, etc.). **Note:** Core protocols are always available; ecosystem adapters are discovery-driven.
+- `--agent-cmd`: Shell command to start the agent (required for `local` protocol).
+- `--agent-socket`: Socket address (required for `socket` protocol).
+- `--agent-name`: Human-readable name for the agent (for reports and leaderboards). Priority: CLI Flag > Zero-Touch Identity > Endpoint URL.
+- `--format`: Dataset format (`jsonl` or `csv`).
 
-**Environment Variables:**
+**Environment Variables (.env Priority):**
 | Variable | Default | Description |
 |---|---|---|
 | `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint for `http` protocol |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+| `MAX_ENGINE_ATTEMPTS` | `50` | Global engine retry limit |
+| `RUN_LOG_DIR` | `runs` | Directory for execution traces |
+| `RUN_LOG_PER_RUN` | `true` | Save individual trace files per scenario |
+| `RUN_LOG_MASTER` | `true` | Consolidated trace log |
 | `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `anthropic`, `gemini`, `ollama`, `grok`) |
-| `JUDGE_MODEL` | - | Specific model for the judge (e.g., `gpt-4o`, `claude-3-5-sonnet`) |
+| `JUDGE_MODEL` | - | Specific model for the judge (e.g., `llama4`) |
 | `LUNA_JUDGE_TEMPERATURE`| `0.0` | Temperature for judge generation |
-| `OLLAMA_HOST` | `http://localhost:11434` | Ollama service endpoint |
-| `OPENAI_API_KEY` | - | API key for OpenAI provider |
-| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | Base URL for OpenAI-compatible APIs |
-| `ANTHROPIC_API_KEY`| - | API key for Anthropic/Claude provider |
-| `GOOGLE_API_KEY` | - | API key for Google/Gemini provider |
-| `XAI_API_KEY` | - | API key for xAI/Grok provider |
-| `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` | Endpoint for `autogen` protocol |
 | `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
+| `DEFAULT_LLM_TIMEOUT` | `10` | Timeout for LLM provider calls |
+| `PLUGIN_TIMEOUT` | `5.0` | Execution timeout for eval plugins |
+| `OLLAMA_API_URL` | `.../api/chat` | Ollama model service endpoint |
+| `AUTOGEN_API_URL` | `...` | Endpoint for AutoGen protocol |
+| `OPENAI_API_KEY` | - | API key for OpenAI provider |
+| `ANTHROPIC_API_KEY`| - | API key for Anthropic provider |
+| `GOOGLE_API_KEY` | - | API key for Gemini provider |
+| `XAI_API_KEY` | - | API key for xAI/Grok provider |
+| `ENABLE_DEMO` | `true` | Enable internal UI demo features |
 
-- `--protocol`: Agent protocol (e.g., `http`, `local`, `socket`, `autogen`, `langgraph`, etc.). **Note:** All ecosystem adapters are discovery-driven; the CLI dynamically populates these choices from available plugins.
-- `--agent`: Unified agent target. Can be a URL (for `http`, `autogen`, `langgraph`), a shell command (for `local`), or an address (for `socket`).
-- `--agent-cmd`: (Legacy) Shell command for `local` protocol.
-- `--agent-socket`: (Legacy) Socket address for `socket` protocol.
-- `--format`: Dataset format (`jsonl` or `csv`).
 
 **Research Summary Output:**
 When `--attempts` > 1, the harness generates:
@@ -45,17 +48,27 @@ When `--attempts` > 1, the harness generates:
 ### `run`
 Execute a single scenario file or a Benchmark URI.
 ```bash
-multiagent-eval run --scenario <path_or_uri>
+multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent-name <name>] [--verbose] [--output <path>]
 ```
-**Example (Benchmark):** `multiagent-eval run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
+- `--attempts`: Number of attempts for the single scenario.
+- `--agent-name`: Human-readable name for reporting.
+- `--verbose`: Enable detailed logging.
+- `--output`: Save results to a specific JSON file.
+- **Example (Benchmark):** `multiagent-eval run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
 
 ### `list`
 Search the scenario catalog with keyword and faceted filtering.
 ```bash
-multiagent-eval list [--search <query>]
+multiagent-eval list [--search <query>] [--refresh]
 ```
 - `--search`: Search scenarios by title, industry, or tags.
 - `--refresh`: Rebuild the scenario index from source.
+
+### `catalog-search`
+Deep search across indexed scenario metadata.
+```bash
+multiagent-eval catalog-search --query <term>
+```
 
 ### `lint`
 Verify scenario quality and AES specification compliance.
@@ -68,7 +81,7 @@ multiagent-eval lint --path <path_to_scenario_or_dir>
 ### `init`
 Scaffold a new benchmark directory with starter scenarios for a specific industry. Automatically links the scenario to realistic synthetic CSV datasets.
 ```bash
-multiagent-eval init --dir <directory_name> --industry <industry_name>
+multiagent-eval init --dir <directory_name> --industry <industry_name> [--protocol <p>] [--agent-cmd <cmd>]
 ```
 
 ### `install`
@@ -95,12 +108,17 @@ multiagent-eval aes validate --path <path>
 - Performs deep structure checking using `jsonschema`.
 - Ensures all mandatory benchmark fields are present.
 
-### `aes scaffold`
-Automatically generate a template Agent Eval Specification (.aes.yaml) file.
+### `inspect`
+Show formatted metadata for a specific scenario file.
 ```bash
-multiagent-eval aes scaffold --output <path>
+multiagent-eval inspect --scenario-path <path>
 ```
-- Creates a baseline YAML structure compliant with the latest benchmark standards.
+
+### `verify`
+Verify the integrity of a run trace against an optional manifest.
+```bash
+multiagent-eval verify --path <run.jsonl> [--manifest <manifest.json>]
+```
 
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
@@ -150,7 +168,7 @@ Query the global Failure Corpus to retrieve known failing edge cases for specifi
 ```bash
 multiagent-eval failures search <query>
 ```
-**Example:** `multiagent-eval failures search "pii leaks"` discovers and imports 5 realistic failing scenarios from the corpus.
+**Example:** `multiagent-eval failures search "pii leaks"` discovers and imports realistic failing scenarios from the corpus.
 
 ## Debugging & Exploration
 
@@ -180,13 +198,13 @@ multiagent-eval calibrate --path <path/to/run.jsonl>
 ### `playground`
 Launch an interactive REPL to talk to an agent directly in the terminal.
 ```bash
-multiagent-eval playground [--agent <url>]
+multiagent-eval playground [--agent <url>] [--protocol <p>] [--agent-cmd <cmd>] [--agent-name <name>] [--verbose]
 ```
 
 ### `record`
 Record a live interaction with an agent and save it as a structured trace.
 ```bash
-multiagent-eval record [--agent <url>]
+multiagent-eval record [--agent <url>] [--protocol <p>] [--agent-cmd <cmd>] [--agent-name <name>] [--verbose]
 ```
 
 ## Utilities
@@ -237,5 +255,4 @@ Execute plugin-specific subcommands. Plugins register their own commands under a
 multiagent-eval plugin <plugin_name> <command> [options]
 ```
 
-> **Security Note:** All plugin commands are namespaced under `multiagent-eval plugin <name>` to prevent command hijacking. The legacy `extend_cli` hook has been removed.
-
+> **Security Note:** All plugin commands are namespaced under `multiagent-eval plugin <name>` to prevent command hijacking. 

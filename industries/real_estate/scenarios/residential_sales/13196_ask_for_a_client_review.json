@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13196",
-  "title": "Ask for a Client Review After Closing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Ask for a Client Review After Closing",
+    "compliance_level": "Standard"
+  },
   "description": "A transaction has successfully closed. The agent needs to ask the happy client for an online review.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Lead & Client Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Wait for a few days after closing to contact the client.",
-      "expected_outcome": "A task is created to send the email 3 days after the closing date.",
-      "required_tools": [
-        "create_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Wait for a few days after closing to contact the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A task is created to send the email 3 days after the closing date."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a personalized email thanking the client for their business and asking them to share their experience.",
-      "expected_outcome": "A friendly, non-pushy email is written.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a personalized email thanking the client for their business and asking them to share their experience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A friendly, non-pushy email is written."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Include direct links to the agent's review profiles (e.g., Zillow, Google Business Profile) in the email.",
-      "expected_outcome": "The email includes clickable links to make it easy for the client to leave a review.",
-      "required_tools": [
-        "get_review_links",
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Include direct links to the agent's review profiles (e.g., Zillow, Google Business Profile) in the email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The email includes clickable links to make it easy for the client to leave a review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

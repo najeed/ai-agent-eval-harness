@@ -1,54 +1,59 @@
 {
-  "scenario_id": "media-cp-12565",
-  "title": "Process Actor Residual Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Actor Residual Payment",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to process a residual payment for an actor whose TV show is now in syndication.",
-  "use_case": "Content Production & Management",
-  "core_function": "Rights & Royalties",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the actor's contract and the syndication agreement for the TV show.",
-      "expected_outcome": "Agent gets the actor's residual payment terms.",
-      "required_tools": [
-        "get_contract_details",
-        "get_syndication_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the actor's contract and the syndication agreement for the TV show.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the actor's residual payment terms."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the residual payment owed based on the terms and the recent syndication revenue.",
-      "expected_outcome": "Agent calculates the correct payment amount.",
-      "required_tools": [
-        "calculate_residual_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the residual payment owed based on the terms and the recent syndication revenue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the correct payment amount."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a payment statement and schedule the payment to the actor's agent.",
-      "expected_outcome": "Agent creates the statement and queues the payment.",
-      "required_tools": [
-        "generate_royalty_statement",
-        "schedule_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a payment statement and schedule the payment to the actor's agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the statement and queues the payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

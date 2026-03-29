@@ -1,81 +1,61 @@
 {
-  "scenario_id": "finance-wm-11264",
-  "title": "Open a Custodial Account (UTMA/UGMA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Open a Custodial Account (UTMA/UGMA)",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to open an investment account for their minor child.",
-  "use_case": "Wealth Management",
-  "core_function": "Client Onboarding & KYC",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the features and rules of a custodial account to the client.",
-      "expected_outcome": "Agent clearly explains that the gift is irrevocable and the child gets control at the age of majority.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the features and rules of a custodial account to the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains that the gift is irrevocable and the child gets control at the age of majority."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the required information for both the custodian (the client) and the minor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures all personal details for both individuals."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the required information for both the custodian (the client) and the minor.",
-      "expected_outcome": "Agent accurately captures all personal details for both individuals.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create the new custodial account in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully opens the new UTMA account."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create the new custodial account in the system.",
-      "expected_outcome": "Agent successfully opens the new UTMA account.",
-      "required_tools": [
-        "create_custodial_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

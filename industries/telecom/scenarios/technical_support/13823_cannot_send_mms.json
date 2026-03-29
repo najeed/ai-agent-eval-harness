@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13823",
-  "title": "Mobile Troubleshooting - Cannot Send MMS",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Mobile Troubleshooting - Cannot Send MMS",
+    "compliance_level": "Standard"
+  },
   "description": "A customer can send SMS texts but cannot send or receive MMS (picture messages).",
-  "use_case": "Technical Support",
-  "core_function": "Mobile Device Troubleshooting",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the customer's device model and that their plan supports MMS.",
-      "expected_outcome": "Agent confirms the customer has a compatible device and plan.",
-      "required_tools": [
-        "get_customer_details",
-        "get_plan_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the customer's device model and that their plan supports MMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer has a compatible device and plan."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the APN (Access Point Name) settings on the customer's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that the APN settings are outdated for the customer's device type."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the APN (Access Point Name) settings on the customer's account.",
-      "expected_outcome": "Agent finds that the APN settings are outdated for the customer's device type.",
-      "required_tools": [
-        "get_apn_settings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send an SMS with the correct APN configuration settings to the customer's device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses the tool to push the correct settings to the device."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send an SMS with the correct APN configuration settings to the customer's device.",
-      "expected_outcome": "Agent uses the tool to push the correct settings to the device.",
-      "required_tools": [
-        "push_apn_configuration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

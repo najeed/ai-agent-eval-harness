@@ -1,50 +1,59 @@
 {
-  "scenario_id": "heavy-industries-pmc-11450",
-  "title": "Approve a Contractor Submittal",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Approve a Contractor Submittal",
+    "compliance_level": "Standard"
+  },
   "description": "A contractor has submitted a document for approval (e.g., a safety plan or a technical procedure). A project engineer must review and approve it.",
-  "use_case": "Project Management & Controls",
-  "core_function": "Contract & Procurement Management",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the submittal from the 'Pending Review' queue.",
-      "expected_outcome": "Agent retrieves the contractor's submitted document.",
-      "required_tools": [
-        "get_pending_submittals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the submittal from the 'Pending Review' queue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the contractor's submitted document."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the document to ensure it meets all project requirements.",
-      "expected_outcome": "The engineer confirms the submitted safety plan is compliant.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the document to ensure it meets all project requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The engineer confirms the submitted safety plan is compliant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Mark the submittal as 'Approved' in the system, which notifies the contractor.",
-      "expected_outcome": "Agent approves the document, and the contractor is notified that they can proceed.",
-      "required_tools": [
-        "approve_submittal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Mark the submittal as 'Approved' in the system, which notifies the contractor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent approves the document, and the contractor is notified that they can proceed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

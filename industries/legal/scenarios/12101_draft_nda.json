@@ -1,67 +1,72 @@
 {
-  "scenario_id": "legal-ct-12101",
-  "title": "Draft a Standard Non-Disclosure Agreement (NDA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft a Standard Non-Disclosure Agreement (NDA)",
+    "compliance_level": "Standard"
+  },
   "description": "A corporate attorney needs to draft a standard, one-way NDA for a potential business partnership.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Contract Lifecycle Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the firm's standard one-way NDA template.",
-      "expected_outcome": "Agent retrieves the correct template.",
-      "required_tools": [
-        "get_document_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the firm's standard one-way NDA template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate the template with the names and addresses of the disclosing and receiving parties.",
-      "expected_outcome": "Agent correctly fills in the party information.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate the template with the names and addresses of the disclosing and receiving parties.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly fills in the party information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Define the 'Confidential Information' to be protected and set the term of the agreement.",
-      "expected_outcome": "Agent customizes the key terms of the NDA.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Define the 'Confidential Information' to be protected and set the term of the agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent customizes the key terms of the NDA."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Prepare the draft NDA for attorney review and sending to the other party.",
-      "expected_outcome": "A complete draft NDA is generated.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Prepare the draft NDA for attorney review and sending to the other party.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete draft NDA is generated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

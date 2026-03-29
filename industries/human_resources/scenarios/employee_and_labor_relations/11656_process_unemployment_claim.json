@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-er-11656",
-  "title": "Process an Unemployment Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an Unemployment Claim",
+    "compliance_level": "Standard"
+  },
   "description": "The company has received a request for information from a state unemployment agency regarding a former employee.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Offboarding",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the former employee in the HRIS.",
-      "expected_outcome": "HR specialist locates the terminated employee's record.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the former employee in the HRIS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR specialist locates the terminated employee's record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the employee's employment dates and reason for separation.",
-      "expected_outcome": "Specialist confirms the employee was laid off due to a reduction in force.",
-      "required_tools": [
-        "get_separation_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the employee's employment dates and reason for separation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist confirms the employee was laid off due to a reduction in force."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete and return the state agency's request for information form.",
-      "expected_outcome": "Specialist accurately completes the form and submits it to the state agency.",
-      "required_tools": [
-        "complete_unemployment_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete and return the state agency's request for information form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist accurately completes the form and submits it to the state agency."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

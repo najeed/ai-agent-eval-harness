@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-qc-12342",
-  "title": "Initiate a Corrective Action (CAPA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Initiate a Corrective Action (CAPA)",
+    "compliance_level": "Standard"
+  },
   "description": "An internal audit has found a recurring process failure. A quality manager needs to initiate a formal Corrective and Preventive Action (CAPA) request.",
-  "use_case": "Quality Assurance & Control",
-  "core_function": "Non-Conformance & CAPA",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new CAPA record, referencing the internal audit finding.",
-      "expected_outcome": "Agent creates a new CAPA and links it to the specific audit report.",
-      "required_tools": [
-        "create_capa"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new CAPA record, referencing the internal audit finding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new CAPA and links it to the specific audit report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Define the problem statement and assign a cross-functional team to investigate the root cause.",
-      "expected_outcome": "Agent writes a clear problem statement and assigns the investigation to the appropriate personnel.",
-      "required_tools": [
-        "update_capa_details",
-        "assign_capa_team"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Define the problem statement and assign a cross-functional team to investigate the root cause.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a clear problem statement and assigns the investigation to the appropriate personnel."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set a due date for the root cause analysis phase of the CAPA.",
-      "expected_outcome": "Agent sets a deadline for the investigation team to report its findings.",
-      "required_tools": [
-        "set_capa_due_date"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set a due date for the root cause analysis phase of the CAPA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets a deadline for the investigation team to report its findings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

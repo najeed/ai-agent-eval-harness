@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-sa-11003",
-  "title": "Alumnus Requests Official Transcript",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Alumnus Requests Official Transcript",
+    "compliance_level": "Standard"
+  },
   "description": "An alumnus needs to send an official transcript to a potential employer.",
-  "use_case": "Student Administration",
-  "core_function": "Student Records & Transcripts",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the identity of the alumnus using their student ID and other personal information.",
-      "expected_outcome": "Agent successfully authenticates the alumnus.",
-      "required_tools": [
-        "get_alumnus_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the identity of the alumnus using their student ID and other personal information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully authenticates the alumnus."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the recipient's information (e.g., employer's email address) and explain any associated fees.",
-      "expected_outcome": "Agent gathers all necessary details for the transcript order.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the recipient's information (e.g., employer's email address) and explain any associated fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all necessary details for the transcript order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the official transcript request through the university's secure portal.",
-      "expected_outcome": "Agent successfully submits the request for electronic delivery.",
-      "required_tools": [
-        "order_official_transcript"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the official transcript request through the university's secure portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the request for electronic delivery."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,48 +1,59 @@
 {
-  "scenario_id": "mfg-mr-12360",
-  "title": "Consult a Technical Manual for a Repair",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Consult a Technical Manual for a Repair",
+    "compliance_level": "Standard"
+  },
   "description": "A technician is working on an unfamiliar piece of equipment and needs to access its technical service manual.",
-  "use_case": "Maintenance & Repair",
-  "core_function": "Technical Documentation & Support",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the asset tag or model number of the equipment.",
-      "expected_outcome": "Agent identifies the specific equipment being worked on.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the asset tag or model number of the equipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the specific equipment being worked on."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the technical document library for the corresponding service manual.",
-      "expected_outcome": "Agent finds and opens the PDF of the service manual.",
-      "required_tools": [
-        "search_document_library"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the technical document library for the corresponding service manual.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds and opens the PDF of the service manual."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Navigate to the troubleshooting section for 'motor faults' to find repair instructions.",
-      "expected_outcome": "Agent successfully locates the relevant section of the manual to guide their repair.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Navigate to the troubleshooting section for 'motor faults' to find repair instructions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully locates the relevant section of the manual to guide their repair."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

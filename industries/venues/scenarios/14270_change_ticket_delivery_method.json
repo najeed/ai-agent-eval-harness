@@ -1,66 +1,72 @@
 {
-  "scenario_id": "venues-tb-14270",
-  "title": "Change Ticket Delivery Method",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Change Ticket Delivery Method",
+    "compliance_level": "Standard"
+  },
   "description": "A customer who chose to have their tickets mailed now wants to switch to digital mobile tickets.",
-  "use_case": "Ticketing & Box Office",
-  "core_function": "Ticket Administration",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the customer's order.",
-      "expected_outcome": "Agent finds the order and sees the delivery method is 'Standard Mail'.",
-      "required_tools": [
-        "search_ticket_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the customer's order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the order and sees the delivery method is 'Standard Mail'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the physical tickets have not yet been mailed.",
-      "expected_outcome": "Agent confirms the tickets have not been shipped.",
-      "required_tools": [
-        "check_shipping_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the physical tickets have not yet been mailed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the tickets have not been shipped."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cancel the physical ticket printing and change the delivery method to 'Mobile'.",
-      "expected_outcome": "Agent successfully updates the delivery method.",
-      "required_tools": [
-        "update_delivery_method"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cancel the physical ticket printing and change the delivery method to 'Mobile'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the delivery method."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Deliver the digital tickets to the customer's email.",
-      "expected_outcome": "Agent sends the mobile tickets to the customer.",
-      "required_tools": [
-        "deliver_digital_tickets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Deliver the digital tickets to the customer's email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the mobile tickets to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ac-ap-84",
-  "title": "Route an Invoice for Approval Based on Amount",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Route an Invoice for Approval Based on Amount",
+    "compliance_level": "Standard"
+  },
   "description": "An invoice needs to be routed for approval, but the approver depends on the invoice amount according to the company's approval matrix.",
-  "use_case": "Accounts Payable",
-  "core_function": "Invoice Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Capture the invoice data, specifically the total amount.",
-      "expected_outcome": "Agent captures an invoice for $7,500.",
-      "required_tools": [
-        "capture_invoice_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_extraction_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Capture the invoice data, specifically the total amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent captures an invoice for $7,500."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the company's approval matrix.",
-      "expected_outcome": "Agent finds that invoices >$5k require Director approval, and >$25k require VP approval.",
-      "required_tools": [
-        "get_approval_matrix"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the company's approval matrix.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that invoices >$5k require Director approval, and >$25k require VP approval."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on the invoice amount and the approval matrix, route the invoice to the correct person for approval.",
-      "expected_outcome": "Agent correctly routes the $7,500 invoice to the appropriate Director.",
-      "required_tools": [
-        "route_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on the invoice amount and the approval matrix, route the invoice to the correct person for approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly routes the $7,500 invoice to the appropriate Director."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

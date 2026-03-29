@@ -1,68 +1,72 @@
 {
-  "scenario_id": "journalism-cp-12003",
-  "title": "Create a Video Package from an Interview",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Video Package from an Interview",
+    "compliance_level": "Standard"
+  },
   "description": "A video journalist has a 30-minute interview and needs to edit it down to a 2-minute video package for the web, adding B-roll and graphics.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Multimedia & Visuals",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the interview footage, identifying the most compelling soundbites.",
-      "expected_outcome": "Agent creates a list of timestamps for the best quotes.",
-      "required_tools": [
-        "video_editing_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "relevance_of_selected_clips",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the interview footage, identifying the most compelling soundbites.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a list of timestamps for the best quotes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assemble a rough cut of the selected soundbites to form a coherent narrative.",
-      "expected_outcome": "A preliminary video sequence is created.",
-      "required_tools": [
-        "video_editing_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "narrative_coherence",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assemble a rough cut of the selected soundbites to form a coherent narrative.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A preliminary video sequence is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Overlay relevant B-roll footage to cover jump cuts and add visual context.",
-      "expected_outcome": "The video flows smoothly and is visually engaging.",
-      "required_tools": [
-        "video_editing_software",
-        "search_broll_library"
-      ],
-      "success_criteria": [
-        {
-          "metric": "visual_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Overlay relevant B-roll footage to cover jump cuts and add visual context.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The video flows smoothly and is visually engaging."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Add lower-third graphics to identify the speaker and a title card at the beginning.",
-      "expected_outcome": "The video has professional-looking titles and graphics.",
-      "required_tools": [
-        "video_editing_software",
-        "get_graphics_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Add lower-third graphics to identify the speaker and a title card at the beginning.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The video has professional-looking titles and graphics."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

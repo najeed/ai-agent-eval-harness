@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ret-so-13398",
-  "title": "Process Credit Card Sale with Loyalty",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Credit Card Sale with Loyalty",
+    "compliance_level": "Standard"
+  },
   "description": "An associate processes a sale for a customer paying with a credit card who is also a member of the loyalty program.",
-  "use_case": "Store Operations",
-  "core_function": "Point of Sale (POS) Transactions",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan all items.",
-      "expected_outcome": "All items are correctly added to the transaction.",
-      "required_tools": [
-        "scan_item_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan all items.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All items are correctly added to the transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the customer's loyalty card or look up their account by phone number.",
-      "expected_outcome": "The customer's loyalty account is successfully linked to the transaction.",
-      "required_tools": [
-        "lookup_loyalty_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the customer's loyalty card or look up their account by phone number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer's loyalty account is successfully linked to the transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the credit card payment and complete the sale.",
-      "expected_outcome": "The payment is approved, the transaction is completed, and loyalty points are awarded to the customer's account.",
-      "required_tools": [
-        "process_credit_card_payment",
-        "complete_transaction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the credit card payment and complete the sale.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The payment is approved, the transaction is completed, and loyalty points are awarded to the customer's account."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

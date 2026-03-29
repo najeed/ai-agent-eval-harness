@@ -1,52 +1,59 @@
 {
-  "scenario_id": "auto-sf-10441",
-  "title": "Finalizing a Vehicle Sale",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Finalizing a Vehicle Sale",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has agreed to purchase a vehicle and needs to complete the final paperwork.",
-  "use_case": "Vehicle Sales & Financing",
-  "core_function": "Delivery & Handover",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate the final bill of sale, including the vehicle price, taxes, title, and license fees.",
-      "expected_outcome": "Agent generates an accurate and complete bill of sale.",
-      "required_tools": [
-        "generate_bill_of_sale"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate the final bill of sale, including the vehicle price, taxes, title, and license fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates an accurate and complete bill of sale."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Present the financing or lease agreement to the customer and obtain their signature on all required documents.",
-      "expected_outcome": "Agent clearly explains the documents and obtains all necessary signatures.",
-      "required_tools": [
-        "process_financial_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Present the financing or lease agreement to the customer and obtain their signature on all required documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the documents and obtains all necessary signatures."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the customer's down payment.",
-      "expected_outcome": "Agent successfully processes the payment via credit card or check.",
-      "required_tools": [
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the customer's down payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the payment via credit card or check."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

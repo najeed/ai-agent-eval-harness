@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-fs-11075",
-  "title": "Cross-list a Course Between Departments",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cross-list a Course Between Departments",
+    "compliance_level": "Standard"
+  },
   "description": "Two departments want to cross-list a course, making it available for credit to students in both majors.",
-  "use_case": "Faculty & Staff Services",
-  "core_function": "Curriculum Development & Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the course information and the two departments that will be sharing it (e.g., 'SOCI350' and 'ANTH350').",
-      "expected_outcome": "Agent gathers the details of the cross-listing request.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the course information and the two departments that will be sharing it (e.g., 'SOCI350' and 'ANTH350').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the details of the cross-listing request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that both department chairs have approved the cross-listing.",
-      "expected_outcome": "Agent checks the system for the required approvals.",
-      "required_tools": [
-        "check_approval_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that both department chairs have approved the cross-listing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the system for the required approvals."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the cross-listing in the SIS, linking the two course codes to the same class section.",
-      "expected_outcome": "Agent successfully configures the course in the system.",
-      "required_tools": [
-        "cross_list_course"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the cross-listing in the SIS, linking the two course codes to the same class section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully configures the course in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

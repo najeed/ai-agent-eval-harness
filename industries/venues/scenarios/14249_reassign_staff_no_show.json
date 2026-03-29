@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-vo-14249",
-  "title": "Reassign Staff Due to No-Show",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Reassign Staff Due to No-Show",
+    "compliance_level": "Standard"
+  },
   "description": "A scheduled ticket taker has not shown up for their shift, and the gates are about to open.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Staffing & Scheduling",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a notification that a staff member has not checked in for their shift.",
-      "expected_outcome": "Agent acknowledges the no-show alert.",
-      "required_tools": [
-        "get_staff_check_in_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a notification that a staff member has not checked in for their shift.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the no-show alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify which gate is now understaffed.",
-      "expected_outcome": "Agent determines Gate C is short one ticket taker.",
-      "required_tools": [
-        "get_staffing_assignments"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify which gate is now understaffed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines Gate C is short one ticket taker."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify a staff member in a less critical role (e.g., a 'greeter') who can be reassigned.",
-      "expected_outcome": "Agent finds a greeter who is cross-trained as a ticket taker.",
-      "required_tools": [
-        "get_staff_skills"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify a staff member in a less critical role (e.g., a 'greeter') who can be reassigned.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a greeter who is cross-trained as a ticket taker."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Reassign the greeter to cover the ticket taking position at Gate C.",
-      "expected_outcome": "Agent updates the staff member's assignment in the scheduling system and notifies them of the change.",
-      "required_tools": [
-        "update_staff_assignment",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Reassign the greeter to cover the ticket taking position at Gate C.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the staff member's assignment in the scheduling system and notifies them of the change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

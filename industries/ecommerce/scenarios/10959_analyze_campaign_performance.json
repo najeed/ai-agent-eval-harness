@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-mce-10959",
-  "title": "Analyze Marketing Campaign Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Marketing Campaign Performance",
+    "compliance_level": "Standard"
+  },
   "description": "A week after a campaign launch, a marketer wants to analyze its performance.",
-  "use_case": "Marketing & Customer Engagement",
-  "core_function": "Customer Analytics",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the marketing campaign to be analyzed.",
-      "expected_outcome": "Agent selects the 'Summer Sale' campaign.",
-      "required_tools": [
-        "get_marketing_campaigns"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the marketing campaign to be analyzed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the 'Summer Sale' campaign."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve key performance metrics for the campaign, such as email open rate, click-through rate, conversion rate, and revenue generated.",
-      "expected_outcome": "Agent pulls all relevant metrics from the analytics platform.",
-      "required_tools": [
-        "get_campaign_analytics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve key performance metrics for the campaign, such as email open rate, click-through rate, conversion rate, and revenue generated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls all relevant metrics from the analytics platform."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report summarizing the campaign's performance against its goals.",
-      "expected_outcome": "Agent creates a clear report showing the campaign's success or failure.",
-      "required_tools": [
-        "generate_analytics_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report summarizing the campaign's performance against its goals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a clear report showing the campaign's success or failure."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

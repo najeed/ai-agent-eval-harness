@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-mr-12363",
-  "title": "Order a Replacement Spare Part",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Order a Replacement Spare Part",
+    "compliance_level": "Standard"
+  },
   "description": "After using the last spare motor in stock, a technician needs to order a replacement to replenish the inventory.",
-  "use_case": "Maintenance & Repair",
-  "core_function": "Asset & Spares Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the part number and supplier for the motor.",
-      "expected_outcome": "Agent finds the correct part and supplier information.",
-      "required_tools": [
-        "get_spare_part_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the part number and supplier for the motor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct part and supplier information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a purchase requisition for the motor, specifying the reorder quantity.",
-      "expected_outcome": "Agent creates a purchase requisition for approval by the maintenance manager.",
-      "required_tools": [
-        "create_purchase_requisition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a purchase requisition for the motor, specifying the reorder quantity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a purchase requisition for approval by the maintenance manager."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the requisition to the purchasing department.",
-      "expected_outcome": "Agent successfully submits the request into the procurement workflow.",
-      "required_tools": [
-        "submit_purchase_requisition"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the requisition to the purchasing department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the request into the procurement workflow."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

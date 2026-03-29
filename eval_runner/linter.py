@@ -50,7 +50,21 @@ class ScenarioLinter:
             results["tier"] = "UNRANKED"
             return results
 
-        # 1. Metadata & Identity Checks
+        # 1. Registry/List Check
+        if isinstance(data, list):
+            if p.name == "index.json":
+                results["status"] = "pass"
+                results["tier"] = "REGISTRY"
+                results["score"] = 100
+                results["warnings"].append("Registry file ignored by standard scenario linting.")
+                return results
+            else:
+                results["status"] = "fail"
+                results["errors"].append(f"Scenario file must be a JSON object, found list")
+                results["score"] = 0
+                results["tier"] = "UNRANKED"
+                return results
+
         if not isinstance(data, dict):
             results["status"] = "fail"
             results["errors"].append(f"Scenario file must be a JSON object, found {type(data).__name__}")
@@ -58,16 +72,11 @@ class ScenarioLinter:
             results["tier"] = "UNRANKED"
             return results
 
+        aes_version = data.get("aes_version", 1.1)
+        results["aes_version"] = aes_version
+
         # Mandatory Top-Level Fields
-        mandatory_fields = [
-            "scenario_id",
-            "title",
-            "description",
-            "use_case",
-            "core_function",
-            "industry",
-            "tasks",
-        ]
+        mandatory_fields = ["aes_version", "workflow", "description", "industry"]
         for field in mandatory_fields:
             if field not in data or not data[field]:
                 results["errors"].append(f"Missing mandatory field: '{field}'")
@@ -79,34 +88,44 @@ class ScenarioLinter:
             results["warnings"].append("Missing recommended field: 'complexity_level' (low/medium/high)")
             results["score"] -= 5
 
-        # 2. Structure Checks
-        if "tasks" in data and isinstance(data["tasks"], list):
-            if len(data["tasks"]) == 0:
-                results["warnings"].append("Scenario has 0 tasks")
+        # 2. Workflow Validation (Nodes & Edges)
+        if "workflow" not in data or not isinstance(data["workflow"], dict):
+            results["errors"].append("Missing or invalid 'workflow' block (Standard requires nodes/edges)")
+            results["status"] = "fail"
+        else:
+            wf = data["workflow"]
+            if "nodes" not in wf or not isinstance(wf["nodes"], list):
+                results["errors"].append("Workflow missing 'nodes' array")
+                results["status"] = "fail"
+            elif len(wf["nodes"]) == 0:
+                results["warnings"].append("Workflow has 0 nodes")
                 results["score"] -= 20
             else:
-                for i, task in enumerate(data["tasks"]):
-                    task_reqs = [
-                        "task_id",
-                        "description",
-                        "expected_outcome",
-                        "success_criteria",
-                    ]
-                    for tr in task_reqs:
-                        if tr not in task:
-                            results["errors"].append(f"Task {i} ({task.get('task_id', 'unknown')}): Missing '{tr}'")
+                node_ids = set()
+                for i, node in enumerate(wf["nodes"]):
+                    n_id = node.get("id")
+                    if not n_id or "task_description" not in node:
+                        results["errors"].append(f"Node {i} missing 'id' or 'task_description'")
+                        results["status"] = "fail"
+                    if n_id:
+                        node_ids.add(n_id)
+
+                # Edge Integrity
+                edges = wf.get("edges", [])
+                if not isinstance(edges, list):
+                    results["errors"].append("Workflow 'edges' must be a list")
+                else:
+                    for i, edge in enumerate(edges):
+                        if "from" not in edge or "to" not in edge:
+                            results["errors"].append(f"Edge {i} missing 'from' or 'to'")
+                        elif edge["from"] not in node_ids or edge["to"] not in node_ids:
+                            results["errors"].append(f"Edge {i} references invalid node: {edge['from']} -> {edge['to']}")
                             results["status"] = "fail"
-                            results["score"] -= 10
 
         # 3. Complexity Calculation
-        tool_use_count = 0
-        for task in data.get("tasks", []):
-            if "tools" in task:
-                tool_use_count += len(task["tools"])
-
+        node_count = len(data.get("workflow", {}).get("nodes", []))
         results["complexity"] = {
-            "task_count": len(data.get("tasks", [])),
-            "suggested_tools": tool_use_count,
+            "node_count": node_count,
         }
 
         if results["errors"]:
@@ -131,8 +150,11 @@ class ScenarioLinter:
                 with open(p, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
-                # Create a signature based on tasks
-                tasks_str = json.dumps(data.get("tasks", []), sort_keys=True)
+                # Create a signature based on workflow nodes
+                workflow = data.get("workflow", {})
+                sig_payload = workflow.get("nodes", [])
+                
+                tasks_str = json.dumps(sig_payload, sort_keys=True)
                 signature = hashlib.md5(tasks_str.encode()).hexdigest()
 
                 if signature in hashes:

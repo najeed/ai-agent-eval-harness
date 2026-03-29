@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-lm-13685",
-  "title": "Handle Championship Trophy Presentation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Championship Trophy Presentation",
+    "compliance_level": "Standard"
+  },
   "description": "After the championship game, a league official must coordinate the on-field trophy presentation ceremony.",
-  "use_case": "League & Competition Management",
-  "core_function": "Standings & Results Management",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Coordinate with the broadcast producer to schedule the ceremony.",
-      "expected_outcome": "The ceremony is scheduled to happen immediately after the game ends.",
-      "required_tools": [
-        "coordinate_with_broadcaster"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Coordinate with the broadcast producer to schedule the ceremony.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The ceremony is scheduled to happen immediately after the game ends."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ensure the championship trophy is securely transported to the field.",
-      "expected_outcome": "The trophy is in position for the ceremony.",
-      "required_tools": [
-        "manage_trophy_logistics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ensure the championship trophy is securely transported to the field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The trophy is in position for the ceremony."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Direct the winning team and league officials to the presentation stage.",
-      "expected_outcome": "All necessary personnel are in place for the ceremony.",
-      "required_tools": [
-        "direct_personnel_on_field"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Direct the winning team and league officials to the presentation stage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All necessary personnel are in place for the ceremony."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

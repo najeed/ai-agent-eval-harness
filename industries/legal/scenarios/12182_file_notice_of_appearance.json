@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12182",
-  "title": "File a Notice of Appearance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File a Notice of Appearance",
+    "compliance_level": "Standard"
+  },
   "description": "An attorney is taking over a case from a prior counsel and needs to file a notice of appearance with the court.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Pleadings & Motions Practice",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Draft the Notice of Appearance, including the case caption, the attorney's name, bar number, and contact information.",
-      "expected_outcome": "Agent prepares the correct legal document.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Draft the Notice of Appearance, including the case caption, the attorney's name, bar number, and contact information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares the correct legal document."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Electronically file the notice with the court through the CM/ECF system.",
-      "expected_outcome": "The notice is successfully filed on the case docket.",
-      "required_tools": [
-        "ecf_filing_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Electronically file the notice with the court through the CM/ECF system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The notice is successfully filed on the case docket."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Serve a copy of the filed notice on all other parties in the case.",
-      "expected_outcome": "All parties are formally notified that the new attorney is now counsel of record.",
-      "required_tools": [
-        "email_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Serve a copy of the filed notice on all other parties in the case.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All parties are formally notified that the new attorney is now counsel of record."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

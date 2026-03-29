@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-pm-12108",
-  "title": "Calendar Court-Ordered Deadlines",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calendar Court-Ordered Deadlines",
+    "compliance_level": "Standard"
+  },
   "description": "A paralegal receives a scheduling order from a court and must calendar all deadlines.",
-  "use_case": "Law Practice Management",
-  "core_function": "Docketing & Calendar Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the scheduling order document and extract all dates and corresponding deadlines.",
-      "expected_outcome": "Agent identifies a list of dates and events (e.g., 'Discovery Cutoff: Oct 31', 'Final Pretrial Conference: Nov 15').",
-      "required_tools": [
-        "document_parsing_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the scheduling order document and extract all dates and corresponding deadlines.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a list of dates and events (e.g., 'Discovery Cutoff: Oct 31', 'Final Pretrial Conference: Nov 15')."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each deadline, create an entry in the firm's master calendar and the specific case calendar.",
-      "expected_outcome": "Agent populates the calendars with the deadlines.",
-      "required_tools": [
-        "calendar_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each deadline, create an entry in the firm's master calendar and the specific case calendar.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent populates the calendars with the deadlines."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set up automated reminders for the case team for 14 days, 7 days, and 1 day before each deadline.",
-      "expected_outcome": "Agent configures the necessary reminders to prevent missed deadlines.",
-      "required_tools": [
-        "calendar_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set up automated reminders for the case team for 14 days, 7 days, and 1 day before each deadline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent configures the necessary reminders to prevent missed deadlines."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-ecom-13431",
-  "title": "Split an Order for Shipping",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Split an Order for Shipping",
+    "compliance_level": "Standard"
+  },
   "description": "An online order contains two items, but one is in a different warehouse. The order needs to be split into two separate shipments.",
-  "use_case": "E-commerce & Order Management",
-  "core_function": "Order Fulfillment & Status",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The order management system identifies that items in the order are sourced from different locations.",
-      "expected_outcome": "The system's logic flags the order for splitting.",
-      "required_tools": [
-        "check_item_sourcing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The order management system identifies that items in the order are sourced from different locations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system's logic flags the order for splitting."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system automatically splits the single order into two separate fulfillment orders, one for each warehouse.",
-      "expected_outcome": "Two new fulfillment requests are created from the original sales order.",
-      "required_tools": [
-        "split_order_for_fulfillment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system automatically splits the single order into two separate fulfillment orders, one for each warehouse.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Two new fulfillment requests are created from the original sales order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Each warehouse picks and packs their part of the order, and the customer receives two separate shipping notifications with two tracking numbers.",
-      "expected_outcome": "The order is fulfilled efficiently from multiple locations.",
-      "required_tools": [
-        "send_shipping_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Each warehouse picks and packs their part of the order, and the customer receives two separate shipping notifications with two tracking numbers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is fulfilled efficiently from multiple locations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

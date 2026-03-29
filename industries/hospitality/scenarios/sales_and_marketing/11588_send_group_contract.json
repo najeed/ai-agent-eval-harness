@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-sm-11588",
-  "title": "Send a Contract for a Group Block",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Send a Contract for a Group Block",
+    "compliance_level": "Standard"
+  },
   "description": "A client has verbally agreed to a group block proposal, and the sales manager needs to send a formal contract.",
-  "use_case": "Sales & Marketing",
-  "core_function": "Group & Event Sales",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate the legal contract based on the agreed-upon proposal, including rates, dates, and cancellation terms.",
-      "expected_outcome": "A formal contract is generated from a template.",
-      "required_tools": [
-        "ems_generate_contract"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate the legal contract based on the agreed-upon proposal, including rates, dates, and cancellation terms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal contract is generated from a template."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send the contract to the client for electronic signature.",
-      "expected_outcome": "The contract is sent via an e-signature platform.",
-      "required_tools": [
-        "send_for_e_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send the contract to the client for electronic signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The contract is sent via an e-signature platform."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once signed, the system automatically updates the group block status from 'Tentative' to 'Definite'.",
-      "expected_outcome": "The block status is updated, confirming the sale.",
-      "required_tools": [
-        "pms_update_group_block_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once signed, the system automatically updates the group block status from 'Tentative' to 'Definite'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The block status is updated, confirming the sale."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

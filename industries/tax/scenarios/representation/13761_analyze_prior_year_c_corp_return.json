@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tax-rep-13761",
-  "title": "Analyze Prior Year C-Corp Return",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Prior Year C-Corp Return",
+    "compliance_level": "Standard"
+  },
   "description": "A new corporate client wants their prior year Form 1120 reviewed for accuracy.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Account & Transcript Analysis",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain and review the prior year Form 1120 and the company's financial statements.",
-      "expected_outcome": "Agent gets all necessary documents.",
-      "required_tools": [
-        "review_tax_return"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain and review the prior year Form 1120 and the company's financial statements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets all necessary documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Reconcile the book income from the financial statements to the taxable income on the return using Schedule M-1 or M-3.",
-      "expected_outcome": "Agent performs a detailed reconciliation.",
-      "required_tools": [
-        "reconcile_book_to_tax_income"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Reconcile the book income from the financial statements to the taxable income on the return using Schedule M-1 or M-3.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent performs a detailed reconciliation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify any potential errors or missed deductions and advise the client on whether to amend the return.",
-      "expected_outcome": "Agent finds a significant missed deduction and recommends filing an amended return.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify any potential errors or missed deductions and advise the client on whether to amend the return.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a significant missed deduction and recommends filing an amended return."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

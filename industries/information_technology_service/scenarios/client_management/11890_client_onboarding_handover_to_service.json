@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-cm-11890",
-  "title": "Client Onboarding - Handover to Service Desk",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Client Onboarding - Handover to Service Desk",
+    "compliance_level": "Standard"
+  },
   "description": "The onboarding project for a new client is complete, and a formal handover meeting is held with the service desk team.",
-  "use_case": "Client & Contract Management",
-  "core_function": "Client Onboarding",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The onboarding project manager schedules the handover meeting.",
-      "expected_outcome": "Meeting is scheduled.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The onboarding project manager schedules the handover meeting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Meeting is scheduled."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "During the meeting, the onboarding team walks the service desk team through the client's environment, documentation, and any special procedures.",
-      "expected_outcome": "The service desk team is fully briefed on the new client.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "During the meeting, the onboarding team walks the service desk team through the client's environment, documentation, and any special procedures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The service desk team is fully briefed on the new client."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The client's status in the PSA is officially changed to 'Managed', and they are now supported by the service desk.",
-      "expected_outcome": "The handover is complete.",
-      "required_tools": [
-        "update_client_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The client's status in the PSA is officially changed to 'Managed', and they are now supported by the service desk.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The handover is complete."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

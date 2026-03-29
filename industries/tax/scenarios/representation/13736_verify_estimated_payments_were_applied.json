@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tax-rep-13736",
-  "title": "Verify Estimated Payments Were Applied",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify Estimated Payments Were Applied",
+    "compliance_level": "Standard"
+  },
   "description": "A client received a balance due notice, but they believe the IRS did not properly credit their estimated tax payments.",
-  "use_case": "Taxpayer Representation & Resolution",
-  "core_function": "Account & Transcript Analysis",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Request the client's IRS account transcript for the tax year in question.",
-      "expected_outcome": "Agent obtains the official transcript.",
-      "required_tools": [
-        "request_irs_transcript"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Request the client's IRS account transcript for the tax year in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains the official transcript."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the transcript to see all payments credited to the client's account.",
-      "expected_outcome": "Agent reviews the transaction list on the transcript.",
-      "required_tools": [
-        "analyze_transcript"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the transcript to see all payments credited to the client's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the transaction list on the transcript."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the transcript to the client's proof of payment (e.g., bank statements) and identify the missing payment.",
-      "expected_outcome": "Agent finds that the 3rd quarter payment was not credited and prepares a response to the IRS with proof of payment.",
-      "required_tools": [
-        "draft_notice_response"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the transcript to the client's proof of payment (e.g., bank statements) and identify the missing payment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that the 3rd quarter payment was not credited and prepares a response to the IRS with proof of payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

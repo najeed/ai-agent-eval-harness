@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-180",
-  "title": "Proofread and Format a Document",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Proofread and Format a Document",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must proofread a draft report for spelling and grammar errors and format it according to the company's style guide.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the document for spelling and grammatical errors.",
-      "expected_outcome": "Agent identifies all errors in the text.",
-      "required_tools": [
-        "proofread_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the document for spelling and grammatical errors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies all errors in the text."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Correct all identified errors.",
-      "expected_outcome": "Agent produces a corrected version of the text.",
-      "required_tools": [
-        "correct_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Correct all identified errors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a corrected version of the text."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply the standard company style guide (e.g., specific fonts, heading sizes, margins).",
-      "expected_outcome": "Agent reformats the document according to the style guide rules.",
-      "required_tools": [
-        "apply_style_guide"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply the standard company style guide (e.g., specific fonts, heading sizes, margins).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reformats the document according to the style guide rules."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

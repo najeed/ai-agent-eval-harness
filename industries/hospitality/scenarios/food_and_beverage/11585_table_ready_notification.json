@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-fb-11585",
-  "title": "Notify Guest Their Table is Ready",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Notify Guest Their Table is Ready",
+    "compliance_level": "Standard"
+  },
   "description": "A table becomes available for a party on the restaurant's waitlist.",
-  "use_case": "Food & Beverage (F&B)",
-  "core_function": "Restaurant Reservations",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The host marks the table as 'Ready' in the reservation system.",
-      "expected_outcome": "The table status is updated.",
-      "required_tools": [
-        "rms_update_table_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The host marks the table as 'Ready' in the reservation system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The table status is updated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system automatically sends an SMS notification to the next party on the waitlist.",
-      "expected_outcome": "The guest receives a text message that their table is ready.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system automatically sends an SMS notification to the next party on the waitlist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The guest receives a text message that their table is ready."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The host removes the party from the waitlist and assigns them to the table.",
-      "expected_outcome": "The party is seated, and the system is updated.",
-      "required_tools": [
-        "rms_seat_party"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The host removes the party from the waitlist and assigns them to the table.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The party is seated, and the system is updated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

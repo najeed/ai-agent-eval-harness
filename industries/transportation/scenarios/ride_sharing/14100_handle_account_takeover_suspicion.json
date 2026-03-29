@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tr-rs-14100",
-  "title": "Handle Account Takeover Suspicion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Account Takeover Suspicion",
+    "compliance_level": "Standard"
+  },
   "description": "The system detects a suspicious login to a rider's account from a new device in a different country, followed by a trip request.",
-  "use_case": "Ride-Sharing & On-Demand Mobility",
-  "core_function": "Safety & Incident Response",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system's fraud detection engine flags a suspicious login and immediately puts a temporary hold on the account.",
-      "expected_outcome": "The account is frozen to prevent fraudulent activity.",
-      "required_tools": [
-        "monitor_login_activity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system's fraud detection engine flags a suspicious login and immediately puts a temporary hold on the account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The account is frozen to prevent fraudulent activity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "An automated email and push notification are sent to the registered owner of the account, alerting them to the suspicious activity and prompting a password reset.",
-      "expected_outcome": "The legitimate user is notified.",
-      "required_tools": [
-        "send_security_alert",
-        "trigger_password_reset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "An automated email and push notification are sent to the registered owner of the account, alerting them to the suspicious activity and prompting a password reset.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The legitimate user is notified."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Any active trip requests from the suspicious session are automatically cancelled.",
-      "expected_outcome": "Fraudulent trips are prevented.",
-      "required_tools": [
-        "cancel_trip_by_session"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Any active trip requests from the suspicious session are automatically cancelled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Fraudulent trips are prevented."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-down-12746",
-  "title": "Respond to Gas Station Drive-Off",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to Gas Station Drive-Off",
+    "compliance_level": "Standard"
+  },
   "description": "A gas station manager needs to report a 'drive-off' incident where a customer filled their tank and left without paying.",
-  "use_case": "Downstream",
-  "core_function": "Distribution & Retail",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the transaction in the point-of-sale (POS) system that corresponds to the drive-off.",
-      "expected_outcome": "The specific unpaid transaction is located.",
-      "required_tools": [
-        "search_pos_transactions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the transaction in the point-of-sale (POS) system that corresponds to the drive-off.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The specific unpaid transaction is located."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the CCTV footage from the corresponding pump and time to capture the vehicle's license plate.",
-      "expected_outcome": "A clear image of the license plate is retrieved from the security system.",
-      "required_tools": [
-        "get_cctv_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the CCTV footage from the corresponding pump and time to capture the vehicle's license plate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear image of the license plate is retrieved from the security system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the incident in the company's loss prevention system and generate a report to be filed with local police.",
-      "expected_outcome": "The incident is officially logged, and a police report is drafted.",
-      "required_tools": [
-        "log_loss_prevention_incident",
-        "generate_police_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the incident in the company's loss prevention system and generate a report to be filed with local police.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The incident is officially logged, and a police report is drafted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

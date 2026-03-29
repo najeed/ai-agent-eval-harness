@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13258",
-  "title": "File an Eviction for Non-Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File an Eviction for Non-Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A tenant has failed to pay rent or move out after being served a notice. The manager must begin the formal eviction process.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that all prior notices (late notice, notice to pay or quit) were served correctly and have expired.",
-      "expected_outcome": "Agent confirms all legal prerequisites for eviction have been met.",
-      "required_tools": [
-        "get_tenant_communication_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that all prior notices (late notice, notice to pay or quit) were served correctly and have expired.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all legal prerequisites for eviction have been met."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather all necessary documentation: the lease, tenant ledger, and copies of all notices.",
-      "expected_outcome": "Agent compiles a complete file for the eviction.",
-      "required_tools": [
-        "get_lease_details",
-        "get_tenant_ledger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather all necessary documentation: the lease, tenant ledger, and copies of all notices.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a complete file for the eviction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Forward the complete file to the company's legal counsel to file the unlawful detainer lawsuit.",
-      "expected_outcome": "Agent successfully escalates the case to the attorney.",
-      "required_tools": [
-        "send_email_to_attorney"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Forward the complete file to the company's legal counsel to file the unlawful detainer lawsuit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully escalates the case to the attorney."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

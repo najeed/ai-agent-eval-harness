@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tax-plan-13770",
-  "title": "Advise on Tax-Loss Harvesting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Advise on Tax-Loss Harvesting",
+    "compliance_level": "Standard"
+  },
   "description": "An investor has significant capital gains for the year and wants to sell some losing investments to offset those gains.",
-  "use_case": "Tax Planning & Advisory",
-  "core_function": "Individual & Family Planning",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Calculate the investor's total realized capital gains for the year to date.",
-      "expected_outcome": "Agent determines the amount of gains that need to be offset.",
-      "required_tools": [
-        "calculate_realized_gains"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Calculate the investor's total realized capital gains for the year to date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the amount of gains that need to be offset."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify investments in the portfolio with unrealized losses.",
-      "expected_outcome": "Agent finds suitable stocks to sell at a loss.",
-      "required_tools": [
-        "analyze_investment_portfolio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify investments in the portfolio with unrealized losses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds suitable stocks to sell at a loss."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the client on which investments to sell to generate losses, while also explaining the 'wash sale' rule.",
-      "expected_outcome": "Agent provides a specific strategy to offset gains while complying with all rules.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the client on which investments to sell to generate losses, while also explaining the 'wash sale' rule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a specific strategy to offset gains while complying with all rules."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

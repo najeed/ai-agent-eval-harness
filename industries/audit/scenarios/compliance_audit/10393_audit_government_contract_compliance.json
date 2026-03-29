@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-cp-10393",
-  "title": "Audit Government Contract Compliance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Government Contract Compliance",
+    "compliance_level": "Standard"
+  },
   "description": "A compliance auditor reviews a large government contract to ensure the company is meeting all its terms.",
-  "use_case": "Compliance & Regulatory Audit",
-  "core_function": "Regulatory Compliance Testing",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the contract to identify all specific reporting and performance requirements.",
-      "expected_outcome": "The auditor creates a checklist of all contractual obligations.",
-      "required_tools": [
-        "review_government_contract"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the contract to identify all specific reporting and performance requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor creates a checklist of all contractual obligations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that all required monthly progress reports have been submitted on time.",
-      "expected_outcome": "The auditor confirms all reports were submitted by their deadlines.",
-      "required_tools": [
-        "check_report_submission_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that all required monthly progress reports have been submitted on time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor confirms all reports were submitted by their deadlines."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Test the billing for the contract to ensure that labor rates and material costs are being charged in accordance with the contract's strict pricing rules.",
-      "expected_outcome": "The auditor finds that some labor hours were billed at a higher rate than allowed by the contract.",
-      "required_tools": [
-        "test_contract_billing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Test the billing for the contract to ensure that labor rates and material costs are being charged in accordance with the contract's strict pricing rules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor finds that some labor hours were billed at a higher rate than allowed by the contract."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

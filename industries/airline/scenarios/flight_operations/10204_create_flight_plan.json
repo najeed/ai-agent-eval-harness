@@ -1,55 +1,59 @@
 {
-  "scenario_id": "airline-fo-10204",
-  "title": "Create a Flight Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Flight Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A flight dispatcher needs to create the operational flight plan for a flight from London (LHR) to Dubai (DXB).",
-  "use_case": "Flight Operations",
-  "core_function": "Flight Planning & Dispatch",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the most efficient route, considering current weather, winds aloft, and any restricted airspace.",
-      "expected_outcome": "Agent selects an optimal route for the flight.",
-      "required_tools": [
-        "get_weather_data",
-        "get_airspace_restrictions",
-        "select_flight_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the most efficient route, considering current weather, winds aloft, and any restricted airspace.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects an optimal route for the flight."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the required fuel load, including trip fuel, contingency fuel, and fuel for a designated alternate airport.",
-      "expected_outcome": "Agent accurately calculates the total fuel needed.",
-      "required_tools": [
-        "calculate_fuel_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the required fuel load, including trip fuel, contingency fuel, and fuel for a designated alternate airport.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the total fuel needed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the final flight plan document and file it with air traffic control (ATC).",
-      "expected_outcome": "Agent creates the official flight plan and successfully files it with ATC.",
-      "required_tools": [
-        "generate_flight_plan",
-        "file_with_atc"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the final flight plan document and file it with air traffic control (ATC).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the official flight plan and successfully files it with ATC."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

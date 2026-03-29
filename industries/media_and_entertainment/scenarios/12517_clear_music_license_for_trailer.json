@@ -1,54 +1,59 @@
 {
-  "scenario_id": "media-cp-12517",
-  "title": "Clear Music License for a Movie Trailer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Clear Music License for a Movie Trailer",
+    "compliance_level": "Standard"
+  },
   "description": "A marketing team wants to use a popular song in a new movie trailer. An agent must secure the necessary licenses.",
-  "use_case": "Content Production & Management",
-  "core_function": "Rights & Royalties",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the song's publishers and master recording owners.",
-      "expected_outcome": "Agent correctly identifies the two separate rights holders for the song.",
-      "required_tools": [
-        "lookup_music_rights_holders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the song's publishers and master recording owners.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the two separate rights holders for the song."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request quotes for both a synchronization license (for the composition) and a master use license (for the recording).",
-      "expected_outcome": "Agent submits formal quote requests to both rights holders.",
-      "required_tools": [
-        "request_sync_license_quote",
-        "request_master_license_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request quotes for both a synchronization license (for the composition) and a master use license (for the recording).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent submits formal quote requests to both rights holders."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Negotiate the fees and execute the licensing agreements upon approval.",
-      "expected_outcome": "Agent receives the approved quotes and generates the final agreements for signature.",
-      "required_tools": [
-        "generate_licensing_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Negotiate the fees and execute the licensing agreements upon approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the approved quotes and generates the final agreements for signature."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

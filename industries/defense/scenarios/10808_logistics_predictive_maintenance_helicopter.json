@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-log-10808",
-  "title": "Helicopter Predictive Maintenance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Helicopter Predictive Maintenance",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance officer receives an alert from a helicopter's health and usage monitoring system (HUMS) predicting an impending gearbox failure.",
-  "use_case": "Logistics & Sustainment",
-  "core_function": "Predictive Maintenance",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the HUMS alert and review the specific sensor data indicating the fault.",
-      "expected_outcome": "Officer correctly interprets the sensor data (e.g., vibration analysis).",
-      "required_tools": [
-        "get_hums_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_interpretation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the HUMS alert and review the specific sensor data indicating the fault.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer correctly interprets the sensor data (e.g., vibration analysis)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Ground the helicopter immediately to prevent a catastrophic failure.",
-      "expected_outcome": "Officer issues a grounding order for the specific aircraft tail number.",
-      "required_tools": [
-        "issue_grounding_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_speed",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Ground the helicopter immediately to prevent a catastrophic failure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer issues a grounding order for the specific aircraft tail number."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a work order for the replacement of the gearbox and check spare parts inventory.",
-      "expected_outcome": "Officer generates a work order and confirms a replacement part is available.",
-      "required_tools": [
-        "create_maintenance_work_order",
-        "check_spares_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a work order for the replacement of the gearbox and check spare parts inventory.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer generates a work order and confirms a replacement part is available."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

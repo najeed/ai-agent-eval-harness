@@ -1,50 +1,59 @@
 {
-  "scenario_id": "media-bo-12551",
-  "title": "Issue DMCA Takedown for Pirated Content",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue DMCA Takedown for Pirated Content",
+    "compliance_level": "Standard"
+  },
   "description": "A movie studio discovers a full-length copy of their new film has been illegally uploaded to YouTube. An agent must issue a DMCA takedown notice.",
-  "use_case": "Broadcasting & Streaming Operations",
-  "core_function": "Ad Insertion & Management",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the URL of the pirated video on YouTube.",
-      "expected_outcome": "Agent has the exact URL of the infringing content.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the URL of the pirated video on YouTube.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the exact URL of the infringing content."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the uploader is not a legitimate licensee.",
-      "expected_outcome": "Agent confirms the uploader has no rights to the content.",
-      "required_tools": [
-        "check_licensee_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the uploader is not a legitimate licensee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the uploader has no rights to the content."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit a formal DMCA takedown request through YouTube's content protection portal.",
-      "expected_outcome": "Agent successfully fills out and submits the DMCA form.",
-      "required_tools": [
-        "submit_dmca_takedown"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit a formal DMCA takedown request through YouTube's content protection portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully fills out and submits the DMCA form."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

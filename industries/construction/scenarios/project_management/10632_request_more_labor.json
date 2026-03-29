@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-pm-10632",
-  "title": "Request Additional Labor to Accelerate Schedule",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Additional Labor to Accelerate Schedule",
+    "compliance_level": "Standard"
+  },
   "description": "To get back on schedule after a delay, a project manager needs to request two additional carpenters for the framing crew for one week.",
-  "use_case": "Project Management",
-  "core_function": "Resource Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the framing task to determine if adding labor will decrease its duration.",
-      "expected_outcome": "Agent confirms that the task is labor-intensive and can be accelerated.",
-      "required_tools": [
-        "get_task_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the framing task to determine if adding labor will decrease its duration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the task is labor-intensive and can be accelerated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Submit a request to the resource manager for two additional carpenters for a specific one-week period.",
-      "expected_outcome": "A formal resource request is sent.",
-      "required_tools": [
-        "create_resource_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Submit a request to the resource manager for two additional carpenters for a specific one-week period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal resource request is sent."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

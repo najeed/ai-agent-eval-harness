@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13973",
-  "title": "Book an Accessible Hotel Room",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book an Accessible Hotel Room",
+    "compliance_level": "Standard"
+  },
   "description": "A guest who uses a wheelchair needs to book a room with a roll-in shower.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Booking & Reservation Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search for available accessible rooms with a roll-in shower for the requested dates.",
-      "expected_outcome": "Agent confirms that an accessible room is available.",
-      "required_tools": [
-        "check_accessible_room_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search for available accessible rooms with a roll-in shower for the requested dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that an accessible room is available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Confirm the features of the room with the guest (e.g., grab bars, roll-in shower).",
-      "expected_outcome": "Agent clearly communicates the room's accessibility features.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Confirm the features of the room with the guest (e.g., grab bars, roll-in shower).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the room's accessibility features."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the accessible room and add a note to the reservation confirming the requirement.",
-      "expected_outcome": "Agent successfully books the correct room type and adds a confirmation note.",
-      "required_tools": [
-        "create_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the accessible room and add a note to the reservation confirming the requirement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books the correct room type and adds a confirmation note."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

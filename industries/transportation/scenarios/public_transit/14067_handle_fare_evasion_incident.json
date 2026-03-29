@@ -1,60 +1,72 @@
 {
-  "scenario_id": "tr-pt-14067",
-  "title": "Handle a Fare Evasion Incident",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Fare Evasion Incident",
+    "compliance_level": "Standard"
+  },
   "description": "A fare inspector finds a passenger on a train without a valid ticket. The inspector must issue a citation.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Fare & Revenue Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The inspector asks the passenger for their ticket and finds they do not have one.",
-      "expected_outcome": "A fare evasion is identified.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The inspector asks the passenger for their ticket and finds they do not have one.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A fare evasion is identified."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The inspector requests the passenger's identification.",
-      "expected_outcome": "The passenger's ID is obtained.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The inspector requests the passenger's identification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The passenger's ID is obtained."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Using a handheld device, the inspector enters the passenger's information and issues a citation for fare evasion.",
-      "expected_outcome": "A citation is generated and printed.",
-      "required_tools": [
-        "issue_citation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Using a handheld device, the inspector enters the passenger's information and issues a citation for fare evasion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A citation is generated and printed."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The incident is logged in the system for tracking.",
-      "expected_outcome": "The citation is recorded in the compliance database.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The incident is logged in the system for tracking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The citation is recorded in the compliance database."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

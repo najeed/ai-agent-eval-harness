@@ -1,65 +1,72 @@
 {
-  "scenario_id": "ag-fo-10135",
-  "title": "Check Compliance with Water Quality Regulations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Compliance with Water Quality Regulations",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer needs to ensure their nutrient management plan complies with local water quality regulations to prevent runoff.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Financial Management & Compliance",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the farmer's current nutrient management plan, including planned fertilizer application rates and timing.",
-      "expected_outcome": "Agent gets the details of the plan.",
-      "required_tools": [
-        "get_nutrient_management_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the farmer's current nutrient management plan, including planned fertilizer application rates and timing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the details of the plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the specific water quality regulations for the farm's watershed, focusing on phosphorus and nitrogen limits.",
-      "expected_outcome": "Agent retrieves the relevant government regulations.",
-      "required_tools": [
-        "get_local_regulations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the specific water quality regulations for the farm's watershed, focusing on phosphorus and nitrogen limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the relevant government regulations."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the farmer's plan against the regulations and flag any potential non-compliance issues.",
-      "expected_outcome": "Agent identifies that the planned fall phosphorus application is not permitted under the regulations.",
-      "required_tools": [
-        "compare_plan_to_regulations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the farmer's plan against the regulations and flag any potential non-compliance issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies that the planned fall phosphorus application is not permitted under the regulations."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Suggest modifications to the plan to ensure compliance, such as moving the phosphorus application to the spring.",
-      "expected_outcome": "Agent provides an actionable recommendation to fix the compliance issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Suggest modifications to the plan to ensure compliance, such as moving the phosphorus application to the spring.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides an actionable recommendation to fix the compliance issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

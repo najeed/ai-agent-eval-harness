@@ -1,83 +1,61 @@
 {
-  "scenario_id": "finance-wm-11274",
-  "title": "Consolidate Retirement Accounts (Rollover)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Consolidate Retirement Accounts (Rollover)",
+    "compliance_level": "Standard"
+  },
   "description": "A new client wants to roll over an old 401(k) from a previous employer into a new IRA.",
-  "use_case": "Wealth Management",
-  "core_function": "Portfolio Management",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open a new Rollover IRA account for the client.",
-      "expected_outcome": "Agent successfully creates the new IRA account to receive the funds.",
-      "required_tools": [
-        "create_investment_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open a new Rollover IRA account for the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the new IRA account to receive the funds."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assist the client in initiating a direct rollover from their old 401(k) provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the client with the necessary forms and account information to give to their old provider."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assist the client in initiating a direct rollover from their old 401(k) provider.",
-      "expected_outcome": "Agent provides the client with the necessary forms and account information to give to their old provider.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the funds are received, invest them according to the client's investment strategy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms receipt of the rollover check and invests the funds into the client's model portfolio."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the funds are received, invest them according to the client's investment strategy.",
-      "expected_outcome": "Agent confirms receipt of the rollover check and invests the funds into the client's model portfolio.",
-      "required_tools": [
-        "invest_funds"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

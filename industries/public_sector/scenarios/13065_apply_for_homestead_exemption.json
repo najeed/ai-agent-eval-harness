@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-pa-13065",
-  "title": "Apply for a Homestead Exemption",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply for a Homestead Exemption",
+    "compliance_level": "Standard"
+  },
   "description": "A new homeowner wants to apply for a homestead exemption to reduce their property taxes.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Taxation & Revenue",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the homeowner's information and property details.",
-      "expected_outcome": "Agent collects the necessary information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the homeowner's information and property details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the necessary information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the homeowner meets the eligibility criteria (e.g., it is their primary residence).",
-      "expected_outcome": "Agent confirms the homeowner is eligible for the exemption.",
-      "required_tools": [
-        "check_exemption_eligibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the homeowner meets the eligibility criteria (e.g., it is their primary residence).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the homeowner is eligible for the exemption."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the application for the homestead exemption.",
-      "expected_outcome": "Agent successfully applies the exemption to the property record, which will lower future tax bills.",
-      "required_tools": [
-        "apply_tax_exemption"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the application for the homestead exemption.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies the exemption to the property record, which will lower future tax bills."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

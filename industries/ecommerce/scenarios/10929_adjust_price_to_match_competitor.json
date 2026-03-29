@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-osm-10929",
-  "title": "Adjust Price to Match Competitor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Adjust Price to Match Competitor",
+    "compliance_level": "Standard"
+  },
   "description": "A category manager decides to price-match a key competitor for a specific, popular product.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Pricing & Promotions",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the product to be price-matched.",
-      "expected_outcome": "Agent identifies the correct product SKU.",
-      "required_tools": [
-        "get_product_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the product to be price-matched.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the correct product SKU."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scrape the competitor's website to find their current price for the product.",
-      "expected_outcome": "Agent retrieves the competitor's price.",
-      "required_tools": [
-        "scrape_competitor_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scrape the competitor's website to find their current price for the product.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the competitor's price."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the product's price in the system to match the competitor's price.",
-      "expected_outcome": "Agent successfully changes the price.",
-      "required_tools": [
-        "update_product_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the product's price in the system to match the competitor's price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully changes the price."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

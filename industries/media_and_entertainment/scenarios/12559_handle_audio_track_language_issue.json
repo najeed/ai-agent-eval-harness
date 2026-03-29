@@ -1,53 +1,59 @@
 {
-  "scenario_id": "media-bo-12559",
-  "title": "Incorrect Audio Language Track",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Incorrect Audio Language Track",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports that a movie labeled as having a Spanish audio track is only playing in English.",
-  "use_case": "Broadcasting & Streaming Operations",
-  "core_function": "Content Ingest & QC",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the movie asset and check its available audio tracks.",
-      "expected_outcome": "Agent confirms the asset metadata lists a Spanish audio track, but the file itself does not contain one.",
-      "required_tools": [
-        "find_asset_by_title",
-        "analyze_media_file_tracks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the movie asset and check its available audio tracks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the asset metadata lists a Spanish audio track, but the file itself does not contain one."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Temporarily remove the 'Spanish audio' label from the movie's description to avoid further user confusion.",
-      "expected_outcome": "Agent successfully updates the public-facing metadata.",
-      "required_tools": [
-        "update_asset_metadata"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Temporarily remove the 'Spanish audio' label from the movie's description to avoid further user confusion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the public-facing metadata."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Request the correct file with the Spanish audio track from the content provider.",
-      "expected_outcome": "Agent sends a re-delivery request to the provider.",
-      "required_tools": [
-        "send_notification_to_partner"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Request the correct file with the Spanish audio track from the content provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a re-delivery request to the provider."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

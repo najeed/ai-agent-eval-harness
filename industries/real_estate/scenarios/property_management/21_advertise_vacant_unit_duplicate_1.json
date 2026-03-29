@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-021",
-  "title": "Advertise a Vacant Rental Unit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Advertise a Vacant Rental Unit",
+    "compliance_level": "Standard"
+  },
   "description": "A rental unit will be vacant soon. The manager needs to create a listing and post it to multiple rental websites.",
-  "use_case": "Property Management",
-  "core_function": "Leasing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather details for the vacant unit, including rent price, photos, and amenities.",
-      "expected_outcome": "Agent collects all necessary information for the listing.",
-      "required_tools": [
-        "get_property_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather details for the vacant unit, including rent price, photos, and amenities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all necessary information for the listing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write a compelling rental listing description.",
-      "expected_outcome": "Agent generates an attractive and accurate description of the unit.",
-      "required_tools": [
-        "generate_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write a compelling rental listing description.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates an attractive and accurate description of the unit."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Syndicate the listing to Zillow, Apartments.com, and other rental platforms.",
-      "expected_outcome": "Agent successfully posts the rental listing to multiple websites.",
-      "required_tools": [
-        "syndicate_rental_listing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Syndicate the listing to Zillow, Apartments.com, and other rental platforms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully posts the rental listing to multiple websites."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

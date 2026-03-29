@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-ar-12423",
-  "title": "Attribute Conversions to Marketing Channels",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Attribute Conversions to Marketing Channels",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst needs to run a report to understand which marketing channels are driving the most conversions.",
-  "use_case": "Analytics & Reporting",
-  "core_function": "Data Analysis & Insights",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the multi-channel funnels report in Google Analytics.",
-      "expected_outcome": "Agent navigates to the correct report.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the multi-channel funnels report in Google Analytics.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent navigates to the correct report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare different attribution models (e.g., Last Click vs. Linear) to see how credit is distributed across channels.",
-      "expected_outcome": "Agent analyzes the data using multiple attribution models.",
-      "required_tools": [
-        "google_analytics_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare different attribution models (e.g., Last Click vs. Linear) to see how credit is distributed across channels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent analyzes the data using multiple attribution models."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a summary insight, such as 'While Organic Search drives the most last-click conversions, Paid Social is a key channel for introducing new users.'",
-      "expected_outcome": "Agent produces a nuanced insight based on comparing attribution models.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "insight_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a summary insight, such as 'While Organic Search drives the most last-click conversions, Paid Social is a key channel for introducing new users.'",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a nuanced insight based on comparing attribution models."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

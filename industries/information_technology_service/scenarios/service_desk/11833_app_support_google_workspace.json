@@ -1,48 +1,59 @@
 {
-  "scenario_id": "information_technology_service-sd-11833",
-  "title": "Application Support - Google Workspace Sync Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Application Support - Google Workspace Sync Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports that their Google Drive is not syncing files from their desktop.",
-  "use_case": "Service Desk & End-User Support",
-  "core_function": "Application Support",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the Google Workspace status dashboard for any known issues.",
-      "expected_outcome": "The technician confirms there are no widespread issues with Google Drive.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the Google Workspace status dashboard for any known issues.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician confirms there are no widespread issues with Google Drive."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Guide the user to pause and resume syncing in the Google Drive desktop client.",
-      "expected_outcome": "This simple step does not resolve the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Guide the user to pause and resume syncing in the Google Drive desktop client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "This simple step does not resolve the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the user to sign out of the Google Drive client, and then sign back in to force a re-authentication and re-sync.",
-      "expected_outcome": "This action resolves the sync issue, and files begin syncing correctly.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the user to sign out of the Google Drive client, and then sign back in to force a re-authentication and re-sync.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "This action resolves the sync issue, and files begin syncing correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

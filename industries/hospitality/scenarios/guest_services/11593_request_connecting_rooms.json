@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hosp-gs-11593",
-  "title": "Request Connecting Rooms",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Connecting Rooms",
+    "compliance_level": "Standard"
+  },
   "description": "A family booking two rooms requests that they be connecting rooms.",
-  "use_case": "Guest Services & Front Office",
-  "core_function": "Reservations & Booking",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check availability for a pair of connecting rooms for the requested dates.",
-      "expected_outcome": "The agent finds an available connecting pair of rooms.",
-      "required_tools": [
-        "pms_check_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check availability for a pair of connecting rooms for the requested dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent finds an available connecting pair of rooms."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Book both rooms and use the system to link the two reservations together.",
-      "expected_outcome": "Two reservations are created and linked.",
-      "required_tools": [
-        "pms_create_booking",
-        "pms_link_reservations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Book both rooms and use the system to link the two reservations together.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Two reservations are created and linked."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add a note to the booking confirming the connecting room request, ensuring they are not separated.",
-      "expected_outcome": "A clear note is added to prevent accidental room changes.",
-      "required_tools": [
-        "pms_update_booking_notes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add a note to the booking confirming the connecting room request, ensuring they are not separated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear note is added to prevent accidental room changes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

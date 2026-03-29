@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-sc-10620",
-  "title": "Document a Weekly Toolbox Talk",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document a Weekly Toolbox Talk",
+    "compliance_level": "Standard"
+  },
   "description": "A foreman conducts a weekly toolbox talk on ladder safety and needs to log it for compliance.",
-  "use_case": "Safety & Compliance",
-  "core_function": "Safety Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new entry in the safety meeting log.",
-      "expected_outcome": "A new log entry is created for today's date.",
-      "required_tools": [
-        "create_safety_meeting_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new entry in the safety meeting log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new log entry is created for today's date."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Set the topic to 'Ladder Safety' and list the 12 attendees by name.",
-      "expected_outcome": "The log entry is updated with the topic and a list of all attendees.",
-      "required_tools": [
-        "update_safety_meeting_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Set the topic to 'Ladder Safety' and list the 12 attendees by name.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The log entry is updated with the topic and a list of all attendees."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

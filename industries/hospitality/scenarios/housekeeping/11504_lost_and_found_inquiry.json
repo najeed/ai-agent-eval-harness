@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hosp-hk-11504",
-  "title": "Lost and Found Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Lost and Found Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A guest who checked out yesterday calls to report they may have left a phone charger in their room.",
-  "use_case": "Housekeeping & Maintenance",
-  "core_function": "Lost & Found",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the caller and the room they stayed in.",
-      "expected_outcome": "Agent confirms the guest's previous stay details.",
-      "required_tools": [
-        "pms_lookup_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the caller and the room they stayed in.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the guest's previous stay details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the digital lost and found log for any items found in that room.",
-      "expected_outcome": "Agent searches the log and finds an entry for a 'white iPhone charger' found in that room.",
-      "required_tools": [
-        "laf_search_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the digital lost and found log for any items found in that room.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent searches the log and finds an entry for a 'white iPhone charger' found in that room."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the item with the guest and arrange for it to be mailed to their home address.",
-      "expected_outcome": "Agent confirms the item belongs to the guest and processes a shipping request.",
-      "required_tools": [
-        "laf_create_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the item with the guest and arrange for it to be mailed to their home address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the item belongs to the guest and processes a shipping request."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

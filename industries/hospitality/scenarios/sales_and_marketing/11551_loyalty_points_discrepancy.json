@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hosp-sm-11551",
-  "title": "Loyalty Points Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Loyalty Points Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "A loyalty member claims they did not receive points for a recent stay.",
-  "use_case": "Sales & Marketing",
-  "core_function": "Loyalty Program Management",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the member's account and their stay history.",
-      "expected_outcome": "The agent finds the recent stay but sees no points were awarded.",
-      "required_tools": [
-        "lms_get_member_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the member's account and their stay history.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent finds the recent stay but sees no points were awarded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Investigate the reason for the missing points (e.g., ineligible rate, system error).",
-      "expected_outcome": "The agent determines it was a system error.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Investigate the reason for the missing points (e.g., ineligible rate, system error).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent determines it was a system error."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Manually credit the member's account with the correct number of points for their stay.",
-      "expected_outcome": "The agent successfully adds the missing points to the member's account.",
-      "required_tools": [
-        "lms_adjust_points"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Manually credit the member's account with the correct number of points for their stay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent successfully adds the missing points to the member's account."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

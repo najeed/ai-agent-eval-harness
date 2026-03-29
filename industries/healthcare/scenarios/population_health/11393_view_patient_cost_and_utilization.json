@@ -1,106 +1,74 @@
 {
-  "scenario_id": "hc-ph-11393",
-  "title": "View Patient Cost and Utilization",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "View Patient Cost and Utilization",
+    "compliance_level": "Standard"
+  },
   "description": "A care manager is reviewing a high-risk patient and wants to see their healthcare cost and utilization over the past year.",
-  "use_case": "Population Health & Care Management",
-  "core_function": "Reporting & Analytics",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's record in the population health platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The care manager finds the correct patient."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's record in the population health platform.",
-      "expected_outcome": "The care manager finds the correct patient.",
-      "required_tools": [
-        "get_patient_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Navigate to the cost and utilization dashboard for the patient.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The care manager opens the patient's financial and utilization summary."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the data, which shows the patient has had three ED visits and one inpatient admission in the last 12 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The care manager uses the data to understand the patient's history and identify opportunities to reduce unnecessary utilization."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Navigate to the cost and utilization dashboard for the patient.",
-      "expected_outcome": "The care manager opens the patient's financial and utilization summary.",
-      "required_tools": [
-        "open_patient_utilization_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the data, which shows the patient has had three ED visits and one inpatient admission in the last 12 months.",
-      "expected_outcome": "The care manager uses the data to understand the patient's history and identify opportunities to reduce unnecessary utilization.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

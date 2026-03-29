@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13931",
-  "title": "Book a Guided City Tour",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book a Guided City Tour",
+    "compliance_level": "Standard"
+  },
   "description": "A couple wants to book two spots on a guided walking tour of historical Rome.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Activity Booking & Scheduling",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the schedule and availability for the 'Historical Rome' walking tour.",
-      "expected_outcome": "Agent finds availability on the desired date and time.",
-      "required_tools": [
-        "check_tour_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the schedule and availability for the 'Historical Rome' walking tour.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds availability on the desired date and time."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the couple of the price per person and the total cost.",
-      "expected_outcome": "Agent provides the correct total price for two people.",
-      "required_tools": [
-        "calculate_tour_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the couple of the price per person and the total cost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct total price for two people."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book two spots on the tour and provide confirmation details, including the meeting point.",
-      "expected_outcome": "Agent successfully completes the booking and provides all necessary information.",
-      "required_tools": [
-        "book_activity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book two spots on the tour and provide confirmation details, including the meeting point.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the booking and provides all necessary information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

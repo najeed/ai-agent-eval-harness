@@ -1,105 +1,71 @@
 {
-  "scenario_id": "lw-om-12225",
-  "title": "Handle a Lost Shipment Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Lost Shipment Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls because their tracking information has not updated in several days, and they believe the shipment is lost.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Claims Management",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the shipment's tracking history from the carrier.",
-      "expected_outcome": "Agent confirms the tracking has not updated in 5 days.",
-      "required_tools": [
-        "get_carrier_tracking_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the shipment's tracking history from the carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the tracking has not updated in 5 days."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate a 'tracer' request with the carrier to have them search for the package in their network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully files a tracer request with the carrier."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate a 'tracer' request with the carrier to have them search for the package in their network.",
-      "expected_outcome": "Agent successfully files a tracer request with the carrier.",
-      "required_tools": [
-        "initiate_carrier_tracer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After 48 hours, the carrier confirms the package is lost. File a 'lost in transit' claim with the carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent files a claim for the value of the goods."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Ship a replacement order to the customer free of charge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent resolves the issue for the customer by sending a new shipment."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "After 48 hours, the carrier confirms the package is lost. File a 'lost in transit' claim with the carrier.",
-      "expected_outcome": "Agent files a claim for the value of the goods.",
-      "required_tools": [
-        "submit_carrier_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Ship a replacement order to the customer free of charge.",
-      "expected_outcome": "Agent resolves the issue for the customer by sending a new shipment.",
-      "required_tools": [
-        "create_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

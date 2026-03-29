@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13267",
-  "title": "Prepare for Final Walk-Through",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare for Final Walk-Through",
+    "compliance_level": "Standard"
+  },
   "description": "The final walk-through is scheduled for tomorrow. The agent needs to prepare a checklist for their buyer client.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Post-Sale",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the transaction and the scheduled walk-through time.",
-      "expected_outcome": "Agent confirms the appointment details.",
-      "required_tools": [
-        "get_transaction_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the transaction and the scheduled walk-through time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the appointment details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the list of repairs the seller agreed to make from the transaction file.",
-      "expected_outcome": "Agent gets the repair addendum.",
-      "required_tools": [
-        "get_transaction_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the list of repairs the seller agreed to make from the transaction file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the repair addendum."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a final walk-through checklist for the buyer, including verifying the agreed-upon repairs and checking that all systems are in working order.",
-      "expected_outcome": "Agent generates a comprehensive checklist and sends it to the buyer.",
-      "required_tools": [
-        "generate_checklist",
-        "send_email_to_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a final walk-through checklist for the buyer, including verifying the agreed-upon repairs and checking that all systems are in working order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a comprehensive checklist and sends it to the buyer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,64 +1,72 @@
 {
-  "scenario_id": "journalism-no-12043",
-  "title": "File an Expense Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "File an Expense Report",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter has returned from an assignment and needs to file an expense report to be reimbursed for travel and food costs.",
-  "use_case": "Newsroom Operations",
-  "core_function": "Resource Management",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all receipts from the trip.",
-      "expected_outcome": "All physical and digital receipts are collected.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "comprehensiveness_of_collection",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all receipts from the trip.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All physical and digital receipts are collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Open the company's expense reporting software and create a new report.",
-      "expected_outcome": "A new expense report is started.",
-      "required_tools": [
-        "expense_reporting_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Open the company's expense reporting software and create a new report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new expense report is started."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter each expense as a line item, attaching a digital copy of the corresponding receipt.",
-      "expected_outcome": "All expenses are logged with proper documentation.",
-      "required_tools": [
-        "expense_reporting_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter each expense as a line item, attaching a digital copy of the corresponding receipt.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All expenses are logged with proper documentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the completed report to the accounting department for approval and reimbursement.",
-      "expected_outcome": "The report is submitted through the proper channels.",
-      "required_tools": [
-        "expense_reporting_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the completed report to the accounting department for approval and reimbursement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report is submitted through the proper channels."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

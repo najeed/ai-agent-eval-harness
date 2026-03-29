@@ -1,0 +1,37 @@
+# Tasks
+
+- [ ] Phase 1: Externalize Provider Simulation Data
+    - [ ] Create `industries/healthcare/mock_cms.csv`
+    - [ ] Create `industries/telecom/mock_ookla.json`
+    - [ ] Create `industries/finance/mock_worldbank.json`
+    - [ ] Update `healthcare.py` to load from file
+    - [ ] Update `telecom.py` to load from file
+    - [ ] Update `finance.py` to load from file
+- [ ] Phase 2: Robust JSON Serialization
+    - [ ] Implement `AESJsonEncoder` in `eval_runner/trace_utils.py`
+    - [ ] Update `Session._serialize_log` in `eval_runner/session.py`
+- [ ] Phase 3: Configurable LLM Endpoints
+    - [ ] Update `llm_providers.py` to support `api_base` / `base_url`
+- [ ] Phase 4: Dynamic Plugin Discovery
+    - [ ] Create `eval_runner/discovery.py`
+    - [ ] Update `eval_runner/engine.py` to use discovery
+- [ ] Phase 5: Package Manifest Update
+    - [ ] Update `pyproject.toml` to include `industries/`
+- [ ] Phase 6: Absolute Path Elimination
+    - [ ] Audit and replace `C:\tmp` with `Path.home() / .aes / tmp`
+    - [ ] Audit entire repo for absolute paths and replace with relative paths
+- [ ] Phase 7: Comprehensive Documentation Audit & Reconciliation
+    - [ ] Update `README.md`
+    - [ ] Audit nested `docs/` files recursively
+    - [ ] Update `architecture.md`
+    - [ ] Synchronize guides with AES v1.2 (Gating, DAGs)
+    - [ ] Update `TESTING.md`
+    - [ ] **Audit**: Confirm AES v1.2 and Engine Architecture are fully documented
+- [ ] Phase 8: Final Workspace Cleanup
+    - [ ] Remove temporary `implementation_plan.md`
+    - [ ] Remove temporary `task.md`
+    - [ ] Remove any one-off scratch scripts
+- [ ] Verification
+    - [ ] Run `pytest`
+    - [ ] Verify dynamic discovery with CLI
+    - [ ] Manual verification of mock data loading

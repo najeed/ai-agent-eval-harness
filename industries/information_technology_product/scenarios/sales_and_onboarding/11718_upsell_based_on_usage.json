@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11718",
-  "title": "Upsell to Higher Tier Based on Usage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Upsell to Higher Tier Based on Usage",
+    "compliance_level": "Standard"
+  },
   "description": "A customer on the 'Pro' plan consistently hits their API usage limits. The Account Manager should upsell them to the 'Enterprise' plan.",
-  "use_case": "Sales & Account Management",
-  "core_function": "Account Renewals & Upselling",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a customer who has exceeded their plan's API limits for the past 3 consecutive months.",
-      "expected_outcome": "Agent finds a suitable customer from a system report.",
-      "required_tools": [
-        "get_accounts_over_limit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a customer who has exceeded their plan's API limits for the past 3 consecutive months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a suitable customer from a system report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the amount the customer has been paying in overage fees.",
-      "expected_outcome": "Agent determines the customer is paying more in overages than the cost of an upgrade.",
-      "required_tools": [
-        "calculate_overage_fees"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the amount the customer has been paying in overage fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the customer is paying more in overages than the cost of an upgrade."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the customer and present a cost-benefit analysis showing how upgrading to the 'Enterprise' plan would save them money and provide higher limits.",
-      "expected_outcome": "Agent makes a data-driven sales pitch and the customer agrees to upgrade.",
-      "required_tools": [
-        "update_subscription"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the customer and present a cost-benefit analysis showing how upgrading to the 'Enterprise' plan would save them money and provide higher limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a data-driven sales pitch and the customer agrees to upgrade."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

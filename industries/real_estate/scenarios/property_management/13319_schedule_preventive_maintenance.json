@@ -1,54 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13319",
-  "title": "Schedule Annual Preventive Maintenance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Annual Preventive Maintenance",
+    "compliance_level": "Standard"
+  },
   "description": "A property manager needs to schedule annual preventive maintenance, such as HVAC servicing and gutter cleaning, for a property.",
-  "use_case": "Property Management",
-  "core_function": "Maintenance & Repairs",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify that annual HVAC service is due based on the property's maintenance schedule.",
-      "expected_outcome": "Agent is alerted by the system that maintenance is due.",
-      "required_tools": [
-        "get_maintenance_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify that annual HVAC service is due based on the property's maintenance schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is alerted by the system that maintenance is due."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create work orders for HVAC servicing and gutter cleaning and assign them to approved vendors.",
-      "expected_outcome": "Work orders are created and dispatched.",
-      "required_tools": [
-        "create_work_order",
-        "assign_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create work orders for HVAC servicing and gutter cleaning and assign them to approved vendors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Work orders are created and dispatched."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the tenant of the upcoming maintenance appointments.",
-      "expected_outcome": "Tenant is informed of the date and time of the service.",
-      "required_tools": [
-        "send_tenant_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the tenant of the upcoming maintenance appointments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Tenant is informed of the date and time of the service."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "education-sa-11052",
-  "title": "Appeal Financial Aid Decision",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Appeal Financial Aid Decision",
+    "compliance_level": "Standard"
+  },
   "description": "A student's family has had a recent change in financial circumstances (e.g., job loss) and they want to appeal for more financial aid.",
-  "use_case": "Student Administration",
-  "core_function": "Financial Aid & Billing",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and their current financial aid award.",
-      "expected_outcome": "Agent confirms the student's identity and current aid package.",
-      "required_tools": [
-        "get_student_record",
-        "get_financial_aid_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and their current financial aid award.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's identity and current aid package."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the financial aid appeal process (professional judgment) and the types of documentation required.",
-      "expected_outcome": "Agent clearly communicates the process and required proof (e.g., termination letter).",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the financial aid appeal process (professional judgment) and the types of documentation required.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the process and required proof (e.g., termination letter)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide the student with the appeal form and a secure link to upload their documents.",
-      "expected_outcome": "Agent provides the necessary resources for the student to submit their appeal.",
-      "required_tools": [
-        "send_form_to_student",
-        "generate_secure_upload_link"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide the student with the appeal form and a secure link to upload their documents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the necessary resources for the student to submit their appeal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

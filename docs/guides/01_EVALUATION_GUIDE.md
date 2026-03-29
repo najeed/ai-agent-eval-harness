@@ -54,6 +54,10 @@ The `state_verification` metric now supports **dot-notation** for inspecting nes
 ## Advanced Orchestration
 
 - **HITL (Human-In-The-Loop)**: Pause evaluations for manual intervention via the `human` adapter.
+- **Connection Protocols**: The harness supports three primary communication modes:
+    - **HTTP**: Standard REST/JSON endpoint.
+    - **Local**: Executes a subprocess and communicates via stdin/stdout. Configuration: `AGENT_LOCAL_CMD`.
+    - **Socket**: Connects to a raw TCP socket. Configuration: `AGENT_SOCKET_ADDR`.
 
 ## Visual Evaluation & Debugging (**Visual Debugger**)
 

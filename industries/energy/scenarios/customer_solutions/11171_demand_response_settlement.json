@@ -1,53 +1,59 @@
 {
-  "scenario_id": "energy-cs-11171",
-  "title": "Demand Response Event Settlement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Demand Response Event Settlement",
+    "compliance_level": "Standard"
+  },
   "description": "After a demand response event, a program manager needs to calculate the performance and payments for participating customers.",
-  "use_case": "Customer Energy Solutions",
-  "core_function": "Billing & Program Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "For each participating customer, establish their baseline consumption for the event hours based on their historical usage.",
-      "expected_outcome": "Agent calculates a customer baseline load for each participant.",
-      "required_tools": [
-        "calculate_customer_baseline_load"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "For each participating customer, establish their baseline consumption for the event hours based on their historical usage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates a customer baseline load for each participant."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the baseline to their actual consumption during the event to determine the load reduction they provided.",
-      "expected_outcome": "Agent measures the kW reduction for each participant.",
-      "required_tools": [
-        "get_historical_consumption_data",
-        "calculate_load_reduction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the baseline to their actual consumption during the event to determine the load reduction they provided.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent measures the kW reduction for each participant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the payment due to each customer based on their performance and the event's payment rate.",
-      "expected_outcome": "Agent generates a list of payments to be issued.",
-      "required_tools": [
-        "calculate_customer_payouts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the payment due to each customer based on their performance and the event's payment rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of payments to be issued."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

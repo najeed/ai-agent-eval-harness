@@ -1,0 +1,6 @@
+Hospital Name,Provider ID,Hospital overall rating,Mortality national comparison,Patient experience national comparison,Address
+SIM CLINIC A,001,4,Same,Above,"123 Health St, Boston, MA"
+SIM CLINIC B,002,5,Above,Same,"456 Care Ln, San Francisco, CA"
+SIM CLINIC C,003,3,Below,Below,"789 Medical Ave, Chicago, IL"
+SIM CLINIC D,004,4,Same,Same,"101 Wellness Rd, Austin, TX"
+SIM CLINIC E,005,2,Below,Above,"202 Safety Dr, Seattle, WA"

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-com-13229",
-  "title": "Analyze Market Lease Rates",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Market Lease Rates",
+    "compliance_level": "Standard"
+  },
   "description": "A landlord client wants to know if they should increase the asking rent for a vacant office suite. The agent must analyze current market rates.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Leasing & Tenant Representation",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the property's submarket and class.",
-      "expected_outcome": "Agent correctly categorizes the subject property.",
-      "required_tools": [
-        "get_property_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the property's submarket and class.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly categorizes the subject property."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search commercial real estate databases for recent lease comparables in the same submarket and class.",
-      "expected_outcome": "Agent finds at least 5 comparable lease transactions from the last 6 months.",
-      "required_tools": [
-        "search_commercial_comps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search commercial real estate databases for recent lease comparables in the same submarket and class.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds at least 5 comparable lease transactions from the last 6 months."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a lease comparable report and advise the client on a competitive asking price based on the data.",
-      "expected_outcome": "Agent produces a report and provides a data-backed recommendation.",
-      "required_tools": [
-        "generate_lease_comp_report",
-        "provide_strategic_advice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a lease comparable report and advise the client on a competitive asking price based on the data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a report and provides a data-backed recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

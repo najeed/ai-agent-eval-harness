@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-wm-11226",
-  "title": "Identify Tax-Loss Harvesting Opportunities",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Tax-Loss Harvesting Opportunities",
+    "compliance_level": "Standard"
+  },
   "description": "An advisor wants to identify opportunities to sell securities at a loss to offset capital gains for a client.",
-  "use_case": "Wealth Management",
-  "core_function": "Portfolio Management",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the client's portfolio for positions with unrealized losses.",
-      "expected_outcome": "Agent identifies three holdings that are currently valued below their purchase price.",
-      "required_tools": [
-        "scan_for_unrealized_losses"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the client's portfolio for positions with unrealized losses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies three holdings that are currently valued below their purchase price."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for any wash sale rule violations if these positions were sold.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that selling these positions would not violate the wash sale rule."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for any wash sale rule violations if these positions were sold.",
-      "expected_outcome": "Agent confirms that selling these positions would not violate the wash sale rule.",
-      "required_tools": [
-        "check_wash_sale_rule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present the list of potential tax-loss harvesting trades to the advisor for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear, actionable list of securities to sell for tax purposes."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present the list of potential tax-loss harvesting trades to the advisor for review.",
-      "expected_outcome": "Agent provides a clear, actionable list of securities to sell for tax purposes.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

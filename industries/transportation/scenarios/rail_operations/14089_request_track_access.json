@@ -1,63 +1,72 @@
 {
-  "scenario_id": "tr-ro-14089",
-  "title": "Request Track Access for Utility Work",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Track Access for Utility Work",
+    "compliance_level": "Standard"
+  },
   "description": "A utility company needs to work near a railway track and must request permission to ensure the safety of their workers.",
-  "use_case": "Rail Operations",
-  "core_function": "Safety & Compliance",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The utility company submits a track access request via a public portal, specifying the location, date, and time.",
-      "expected_outcome": "The request is received by the railroad.",
-      "required_tools": [
-        "get_public_work_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The utility company submits a track access request via a public portal, specifying the location, date, and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The request is received by the railroad."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "A railroad agent reviews the request and the location.",
-      "expected_outcome": "The agent understands the scope of the work.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "A railroad agent reviews the request and the location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent understands the scope of the work."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The agent determines that a railroad flagman must be present to protect the work crew.",
-      "expected_outcome": "A safety requirement is identified.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The agent determines that a railroad flagman must be present to protect the work crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A safety requirement is identified."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The agent approves the request, conditional on the utility company paying for the flagman, and schedules a flagman for the job.",
-      "expected_outcome": "The work is approved with the necessary safety measures in place.",
-      "required_tools": [
-        "approve_work_request",
-        "schedule_flagman"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The agent approves the request, conditional on the utility company paying for the flagman, and schedules a flagman for the job.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The work is approved with the necessary safety measures in place."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

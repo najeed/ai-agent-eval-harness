@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-isr-10842",
-  "title": "Open Source Intelligence (OSINT) Fusion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Open Source Intelligence (OSINT) Fusion",
+    "compliance_level": "Standard"
+  },
   "description": "An OSINT analyst must fuse social media posts, news reports, and satellite imagery to assess battle damage after a strike.",
-  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
-  "core_function": "ISR Data Fusion & Analysis",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze post-strike satellite imagery to identify visible damage to the target.",
-      "expected_outcome": "Analyst correctly identifies the physical damage from the imagery.",
-      "required_tools": [
-        "analyze_satellite_imagery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "damage_assessment_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze post-strike satellite imagery to identify visible damage to the target.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies the physical damage from the imagery."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scour social media and local news for posts, photos, or videos from the target area.",
-      "expected_outcome": "Analyst finds multiple social media posts confirming the destruction of the target.",
-      "required_tools": [
-        "search_social_media",
-        "search_news_feeds"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_relevance",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scour social media and local news for posts, photos, or videos from the target area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst finds multiple social media posts confirming the destruction of the target."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Fuse the imagery and OSINT to create a comprehensive Battle Damage Assessment (BDA) report.",
-      "expected_outcome": "Analyst produces a report confirming mission success with evidence from multiple sources.",
-      "required_tools": [
-        "generate_bda_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Fuse the imagery and OSINT to create a comprehensive Battle Damage Assessment (BDA) report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst produces a report confirming mission success with evidence from multiple sources."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

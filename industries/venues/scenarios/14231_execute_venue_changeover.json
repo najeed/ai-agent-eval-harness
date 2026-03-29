@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-vo-14231",
-  "title": "Execute Venue Changeover",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Execute Venue Changeover",
+    "compliance_level": "Standard"
+  },
   "description": "The operations team needs to convert the arena from a hockey rink setup to a basketball court setup overnight.",
-  "use_case": "Venue Operations & Logistics",
-  "core_function": "Event Setup & Changeover",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the standard operating procedure (SOP) for the hockey-to-basketball changeover.",
-      "expected_outcome": "Agent pulls up the detailed checklist and timeline for the conversion.",
-      "required_tools": [
-        "get_changeover_sop"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the standard operating procedure (SOP) for the hockey-to-basketball changeover.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the detailed checklist and timeline for the conversion."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create and assign tasks to the various crews (e.g., ice crew, floor crew, seating crew) in the work order system.",
-      "expected_outcome": "Agent creates all necessary work orders for the changeover.",
-      "required_tools": [
-        "create_work_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create and assign tasks to the various crews (e.g., ice crew, floor crew, seating crew) in the work order system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates all necessary work orders for the changeover."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the progress of the changeover against the timeline.",
-      "expected_outcome": "Agent tracks the completion of each major task in real-time.",
-      "required_tools": [
-        "monitor_task_progress"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the progress of the changeover against the timeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent tracks the completion of each major task in real-time."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Once complete, perform a final quality check and mark the venue as 'Ready' for the next event.",
-      "expected_outcome": "Agent confirms the venue is ready and updates its status in the master calendar.",
-      "required_tools": [
-        "perform_quality_check",
-        "update_venue_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Once complete, perform a final quality check and mark the venue as 'Ready' for the next event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the venue is ready and updates its status in the master calendar."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

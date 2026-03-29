@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-hse-12639",
-  "title": "Manage Emergency Response Drill",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Emergency Response Drill",
+    "compliance_level": "Standard"
+  },
   "description": "An HSE superintendent runs a simulated emergency drill (e.g., a fire in the processing plant) to test the site's emergency response team.",
-  "use_case": "Health, Safety & Environment (HSE)",
-  "core_function": "Safety Management",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Initiate the drill by triggering a simulated fire alarm in the control room.",
-      "expected_outcome": "The drill is started, and the site's emergency alarm is sounded.",
-      "required_tools": [
-        "initiate_emergency_drill"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Initiate the drill by triggering a simulated fire alarm in the control room.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The drill is started, and the site's emergency alarm is sounded."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Observe and time the response of the emergency team, including their muster time and how they approach the simulated fire.",
-      "expected_outcome": "The response is observed and key performance indicators (like response time) are recorded.",
-      "required_tools": [
-        "log_drill_observations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Observe and time the response of the emergency team, including their muster time and how they approach the simulated fire.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The response is observed and key performance indicators (like response time) are recorded."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Conduct a debrief after the drill to discuss what went well and identify areas for improvement. Log these in a tracking system.",
-      "expected_outcome": "A list of improvement actions is created and logged for tracking to completion.",
-      "required_tools": [
-        "log_corrective_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Conduct a debrief after the drill to discuss what went well and identify areas for improvement. Log these in a tracking system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of improvement actions is created and logged for tracking to completion."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

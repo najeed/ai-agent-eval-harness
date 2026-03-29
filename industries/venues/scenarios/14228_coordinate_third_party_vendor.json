@@ -1,52 +1,59 @@
 {
-  "scenario_id": "venues-em-14228",
-  "title": "Coordinate with a Third-Party Security Vendor",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate with a Third-Party Security Vendor",
+    "compliance_level": "Standard"
+  },
   "description": "A large music festival requires additional security beyond the in-house team, so a third-party security firm has been hired.",
-  "use_case": "Event Management & Booking",
-  "core_function": "Vendor & Partner Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Share the event's security plan and post orders with the vendor's management.",
-      "expected_outcome": "Agent securely sends the security plan documents to the vendor.",
-      "required_tools": [
-        "send_secure_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Share the event's security plan and post orders with the vendor's management.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely sends the security plan documents to the vendor."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Obtain a list of all vendor staff who will be working the event for credentialing.",
-      "expected_outcome": "Agent receives the staff list from the vendor.",
-      "required_tools": [
-        "request_vendor_staff_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Obtain a list of all vendor staff who will be working the event for credentialing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the staff list from the vendor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Arrange a pre-event briefing between the in-house security manager and the vendor's on-site supervisor.",
-      "expected_outcome": "Agent schedules a meeting to align on protocols and chain of command.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Arrange a pre-event briefing between the in-house security manager and the vendor's on-site supervisor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent schedules a meeting to align on protocols and chain of command."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

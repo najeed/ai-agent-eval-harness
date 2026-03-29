@@ -1,54 +1,59 @@
 {
-  "scenario_id": "og-down-12788",
-  "title": "Monthly Environmental KPI Reporting",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monthly Environmental KPI Reporting",
+    "compliance_level": "Standard"
+  },
   "description": "An HSE manager compiles the monthly environmental performance report for a refinery, including metrics on emissions, spills, and waste disposal.",
-  "use_case": "Downstream",
-  "core_function": "Health, Safety & Environment (HSE)",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather data for the month from various systems: total SO2/NOx emissions from CEMS, number of spills from the incident log, and total waste manifests.",
-      "expected_outcome": "All required environmental data for the month is collected.",
-      "required_tools": [
-        "get_cems_data",
-        "get_incident_log",
-        "get_waste_manifest_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather data for the month from various systems: total SO2/NOx emissions from CEMS, number of spills from the incident log, and total waste manifests.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All required environmental data for the month is collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate the standard monthly environmental KPI dashboard with the collected data.",
-      "expected_outcome": "The KPI dashboard is updated with the latest month's figures.",
-      "required_tools": [
-        "update_kpi_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate the standard monthly environmental KPI dashboard with the collected data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The KPI dashboard is updated with the latest month's figures."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the month's performance against targets and historical trends, adding commentary on any significant deviations.",
-      "expected_outcome": "The report is finalized with analysis and commentary and distributed to plant management.",
-      "required_tools": [
-        "generate_management_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the month's performance against targets and historical trends, adding commentary on any significant deviations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report is finalized with analysis and commentary and distributed to plant management."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

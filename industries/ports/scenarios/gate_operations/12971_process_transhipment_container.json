@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ports-go-12971",
-  "title": "Process a Transhipment Container",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Transhipment Container",
+    "compliance_level": "Standard"
+  },
   "description": "A container is discharged from one vessel and will be loaded onto another vessel at the same terminal without leaving the port.",
-  "use_case": "Gate & Landside Operations",
-  "core_function": "Customs & Documentation",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The TOS identifies a container on a discharge list as 'Transhipment' based on its documentation.",
-      "expected_outcome": "The system automatically flags the container as a transhipment move.",
-      "required_tools": [
-        "import_baplie_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The TOS identifies a container on a discharge list as 'Transhipment' based on its documentation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system automatically flags the container as a transhipment move."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign the container to a specific transhipment block in the yard to keep it separate from local imports.",
-      "expected_outcome": "The yard plan assigns the container to a location in the transhipment zone.",
-      "required_tools": [
-        "assign_yard_positions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign the container to a specific transhipment block in the yard to keep it separate from local imports.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The yard plan assigns the container to a location in the transhipment zone."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Ensure the container is not made available for truck pickup and is automatically added to the load list for the connecting vessel.",
-      "expected_outcome": "The system correctly manages the container's status, preventing an erroneous gate move and ensuring it's planned for the next vessel.",
-      "required_tools": [
-        "update_container_status",
-        "add_container_to_load_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Ensure the container is not made available for truck pickup and is automatically added to the load list for the connecting vessel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system correctly manages the container's status, preventing an erroneous gate move and ensuring it's planned for the next vessel."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

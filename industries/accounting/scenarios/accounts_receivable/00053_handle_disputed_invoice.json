@@ -1,67 +1,72 @@
 {
-  "scenario_id": "ac-ar-53",
-  "title": "Handle a Disputed Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Disputed Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to dispute an invoice, claiming they were billed for services they did not receive.",
-  "use_case": "Accounts Receivable",
-  "core_function": "Collections & Deductions",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the disputed invoice and any related documents, like the original sales order or statement of work.",
-      "expected_outcome": "Agent pulls up the invoice and the signed statement of work.",
-      "required_tools": [
-        "get_invoice_details",
-        "get_sales_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the disputed invoice and any related documents, like the original sales order or statement of work.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the invoice and the signed statement of work."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the documents to validate the charges against the agreed-upon services.",
-      "expected_outcome": "Agent confirms the services on the invoice match the statement of work.",
-      "required_tools": [
-        "review_billing_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the documents to validate the charges against the agreed-upon services.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the services on the invoice match the statement of work."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place the invoice in 'dispute' status to pause collections activity while it's being investigated.",
-      "expected_outcome": "Agent successfully flags the invoice as disputed.",
-      "required_tools": [
-        "update_invoice_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place the invoice in 'dispute' status to pause collections activity while it's being investigated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully flags the invoice as disputed."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Communicate with the sales representative or account manager to gather more information and resolve the dispute with the customer.",
-      "expected_outcome": "Agent sends a notification to the account manager to contact the customer and clarify the services rendered.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Communicate with the sales representative or account manager to gather more information and resolve the dispute with the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a notification to the account manager to contact the customer and clarify the services rendered."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

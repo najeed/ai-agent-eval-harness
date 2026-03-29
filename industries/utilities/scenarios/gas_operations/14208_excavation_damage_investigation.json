@@ -1,50 +1,59 @@
 {
-  "scenario_id": "utils-go-14208",
-  "title": "Investigate Excavation Damage Incident",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Investigate Excavation Damage Incident",
+    "compliance_level": "Standard"
+  },
   "description": "After a third-party digging crew damaged a gas line, a compliance officer investigates the incident.",
-  "use_case": "Gas Operations",
-  "core_function": "Leak Detection & Repair",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the 811 one-call system to see if the excavator had a valid ticket to dig at that location.",
-      "expected_outcome": "Investigator finds that no one-call ticket was ever created for the job.",
-      "required_tools": [
-        "query_one_call_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the 811 one-call system to see if the excavator had a valid ticket to dig at that location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Investigator finds that no one-call ticket was ever created for the job."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Interview the excavation crew and collect documentation.",
-      "expected_outcome": "Investigator documents the details of the incident.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Interview the excavation crew and collect documentation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Investigator documents the details of the incident."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile an incident report and submit it to the state regulatory commission, recommending a fine for the excavator.",
-      "expected_outcome": "Investigator generates and submits the formal regulatory report.",
-      "required_tools": [
-        "generate_compliance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "report_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile an incident report and submit it to the state regulatory commission, recommending a fine for the excavator.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Investigator generates and submits the formal regulatory report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

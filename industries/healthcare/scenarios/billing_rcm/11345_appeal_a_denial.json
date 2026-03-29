@@ -1,86 +1,61 @@
 {
-  "scenario_id": "hc-brc-11345",
-  "title": "Appeal a Claim Denial",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Appeal a Claim Denial",
+    "compliance_level": "Standard"
+  },
   "description": "A claim was denied for 'not medically necessary'. A denial specialist needs to write and submit an appeal.",
-  "use_case": "Billing & Revenue Cycle Management",
-  "core_function": "Denial Management",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the denied claim and the payer's reason for denial.",
-      "expected_outcome": "Specialist understands the reason for the denial.",
-      "required_tools": [
-        "get_claim_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the denied claim and the payer's reason for denial.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist understands the reason for the denial."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather supporting clinical documentation from the patient's chart that proves medical necessity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist finds the physician's note and test results that justify the service."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather supporting clinical documentation from the patient's chart that proves medical necessity.",
-      "expected_outcome": "Specialist finds the physician's note and test results that justify the service.",
-      "required_tools": [
-        "get_encounter_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft an appeal letter, attach the supporting documentation, and submit it to the payer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The appeal is successfully submitted, and the claim status is updated to 'Appealed'."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft an appeal letter, attach the supporting documentation, and submit it to the payer.",
-      "expected_outcome": "The appeal is successfully submitted, and the claim status is updated to 'Appealed'.",
-      "required_tools": [
-        "draft_appeal_letter",
-        "submit_appeal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "hc-ph-11395",
-  "title": "Document in a Shared Care Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Document in a Shared Care Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A home health nurse visits a patient and needs to add a note to the shared care plan that is visible to the patient's PCP and other specialists.",
-  "use_case": "Population Health & Care Management",
-  "core_function": "Care Coordination & Planning",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's shared care plan.",
-      "expected_outcome": "The nurse accesses the collaborative care plan document.",
-      "required_tools": [
-        "get_care_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's shared care plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The nurse accesses the collaborative care plan document."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new progress note within the care plan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The nurse begins a new entry."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new progress note within the care plan.",
-      "expected_outcome": "The nurse begins a new entry.",
-      "required_tools": [
-        "create_note"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document their findings from the home visit and save the note.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The note is saved to the shared plan, and other members of the care team are notified of the update."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document their findings from the home visit and save the note.",
-      "expected_outcome": "The note is saved to the shared plan, and other members of the care team are notified of the update.",
-      "required_tools": [
-        "update_note_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "ag-cm-10107",
-  "title": "Disease Risk Forecast for Wheat",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Disease Risk Forecast for Wheat",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer wants to know the risk of fusarium head blight developing in their wheat field based on weather conditions.",
-  "use_case": "Crop Management",
-  "core_function": "Pest & Disease Management",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the current growth stage of the wheat crop.",
-      "expected_outcome": "Agent identifies the crop is at the critical flowering stage.",
-      "required_tools": [
-        "get_crop_growth_stage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the current growth stage of the wheat crop.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the crop is at the critical flowering stage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the weather forecast for the next 10 days, focusing on temperature, humidity, and rainfall during the flowering period.",
-      "expected_outcome": "Agent retrieves the relevant weather data.",
-      "required_tools": [
-        "get_weather_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the weather forecast for the next 10 days, focusing on temperature, humidity, and rainfall during the flowering period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the relevant weather data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run a disease risk model using the weather data and crop stage.",
-      "expected_outcome": "The model returns a 'High Risk' assessment for fusarium head blight.",
-      "required_tools": [
-        "run_disease_risk_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run a disease risk model using the weather data and crop stage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The model returns a 'High Risk' assessment for fusarium head blight."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Recommend a preventative fungicide application.",
-      "expected_outcome": "Agent advises the farmer to apply a fungicide within the next 48 hours.",
-      "required_tools": [
-        "get_fungicide_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Recommend a preventative fungicide application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent advises the farmer to apply a fungicide within the next 48 hours."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

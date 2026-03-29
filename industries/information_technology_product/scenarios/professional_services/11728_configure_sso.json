@@ -1,48 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11728",
-  "title": "Configure Single Sign-On (SSO)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Configure Single Sign-On (SSO)",
+    "compliance_level": "Standard"
+  },
   "description": "An enterprise customer requires the product to be configured with their Identity Provider (e.g., Okta) for Single Sign-On.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Implementation & Configuration",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain the required SSO metadata (e.g., IdP certificate, sign-on URL) from the customer.",
-      "expected_outcome": "Agent collects the necessary SSO configuration details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain the required SSO metadata (e.g., IdP certificate, sign-on URL) from the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the necessary SSO configuration details."
         }
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the customer's SSO metadata into their account's authentication settings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully configures the SSO settings in the product's admin panel."
+        }
+      },
+      {
+        "id": "task-3",
+        "task_description": "Guide the customer through testing the SSO login flow to confirm it is working correctly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent and customer successfully test and verify the SSO configuration."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the customer's SSO metadata into their account's authentication settings.",
-      "expected_outcome": "Agent successfully configures the SSO settings in the product's admin panel.",
-      "required_tools": [
-        "configure_sso_settings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Guide the customer through testing the SSO login flow to confirm it is working correctly.",
-      "expected_outcome": "Agent and customer successfully test and verify the SSO configuration.",
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "required_tools": []
     }
-  ]
+  }
 }

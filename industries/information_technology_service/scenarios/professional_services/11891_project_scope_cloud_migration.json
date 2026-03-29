@@ -1,50 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11891",
-  "title": "Project Scoping - Cloud Migration",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Scoping - Cloud Migration",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to migrate their on-premise servers to a public cloud like AWS or Azure and needs a quote.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Project Scoping & Quoting",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a discovery tool on the client's on-premise environment to inventory all servers and their specifications.",
-      "expected_outcome": "The sales engineer has a complete list of servers to be migrated.",
-      "required_tools": [
-        "run_cloud_discovery_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a discovery tool on the client's on-premise environment to inventory all servers and their specifications.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sales engineer has a complete list of servers to be migrated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the discovery data to estimate the monthly cost of running the equivalent servers in the cloud.",
-      "expected_outcome": "An estimated cloud spend is calculated.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the discovery data to estimate the monthly cost of running the equivalent servers in the cloud.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An estimated cloud spend is calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a quote that includes the professional services hours for the migration project and the estimated ongoing monthly cloud costs.",
-      "expected_outcome": "A comprehensive quote is provided to the client.",
-      "required_tools": [
-        "create_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a quote that includes the professional services hours for the migration project and the estimated ongoing monthly cloud costs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive quote is provided to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

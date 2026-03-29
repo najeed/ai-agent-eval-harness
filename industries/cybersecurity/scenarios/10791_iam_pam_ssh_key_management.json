@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-iam-10791",
-  "title": "SSH Key Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "SSH Key Management",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must onboard a developer's SSH key into a PAM system to provide audited, temporary access to a production server.",
-  "use_case": "Identity & Access Management (IAM)",
-  "core_function": "Privileged Access Management (PAM)",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a request from a developer for SSH access to a specific server, including their public SSH key.",
-      "expected_outcome": "Analyst receives the complete access request.",
-      "required_tools": [
-        "get_access_request_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_processing_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a request from a developer for SSH access to a specific server, including their public SSH key.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst receives the complete access request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the PAM tool to grant the developer's SSH key access to the server for a limited time (e.g., 4 hours).",
-      "expected_outcome": "The PAM tool temporarily adds the developer's public key to the server's authorized_keys file.",
-      "required_tools": [
-        "grant_ssh_key_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the PAM tool to grant the developer's SSH key access to the server for a limited time (e.g., 4 hours).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PAM tool temporarily adds the developer's public key to the server's authorized_keys file."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After the time expires, the PAM tool automatically removes the developer's key from the server, revoking access.",
-      "expected_outcome": "Access is automatically and securely revoked without manual intervention.",
-      "required_tools": [
-        "revoke_ssh_key_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "automation_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After the time expires, the PAM tool automatically removes the developer's key from the server, revoking access.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Access is automatically and securely revoked without manual intervention."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

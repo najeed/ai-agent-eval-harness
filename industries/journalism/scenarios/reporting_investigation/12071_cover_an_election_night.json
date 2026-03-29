@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-ri-12071",
-  "title": "Cover an Election Night",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cover an Election Night",
+    "compliance_level": "Standard"
+  },
   "description": "A political reporter is responsible for covering election results as they come in.",
-  "use_case": "Reporting & Investigation",
-  "core_function": "Field Reporting & Event Coverage",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the official election results feed from the state election board.",
-      "expected_outcome": "Agent has a reliable, primary source for results.",
-      "required_tools": [
-        "monitor_data_feed"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the official election results feed from the state election board.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has a reliable, primary source for results."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "As results come in for key races, update a data visualization on the website showing the new totals.",
-      "expected_outcome": "The website's graphics are kept up-to-date in real time.",
-      "required_tools": [
-        "data_visualization_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "timeliness_of_updates",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "As results come in for key races, update a data visualization on the website showing the new totals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The website's graphics are kept up-to-date in real time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "When a major race is called by the decision desk, write a breaking news alert and a short article.",
-      "expected_outcome": "News about the race outcome is published immediately.",
-      "required_tools": [
-        "draft_article",
-        "cms_interface"
-      ],
-      "success_criteria": [
-        {
-          "metric": "speed_of_publication",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "When a major race is called by the decision desk, write a breaking news alert and a short article.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "News about the race outcome is published immediately."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

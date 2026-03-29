@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-ast-11437",
-  "title": "Schedule a Lubrication Route",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule a Lubrication Route",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance planner needs to schedule a weekly lubrication route for a maintenance technician.",
-  "use_case": "Asset & Maintenance Management",
-  "core_function": "Maintenance Planning & Execution",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate the list of all equipment requiring lubrication this week based on their PM schedules.",
-      "expected_outcome": "The system generates a list of 25 assets that need lubrication.",
-      "required_tools": [
-        "get_assets_due_for_pm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate the list of all equipment requiring lubrication this week based on their PM schedules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a list of 25 assets that need lubrication."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Group the assets into an optimized route based on their physical location in the plant.",
-      "expected_outcome": "The system creates an efficient path for the technician to follow.",
-      "required_tools": [
-        "optimize_maintenance_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Group the assets into an optimized route based on their physical location in the plant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system creates an efficient path for the technician to follow."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a work order for the lubrication route and assign it to a technician.",
-      "expected_outcome": "Agent generates the work order with the list of assets and the optimized route.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a work order for the lubrication route and assign it to a technician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates the work order with the list of assets and the optimized route."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

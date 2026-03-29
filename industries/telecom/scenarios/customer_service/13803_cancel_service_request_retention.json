@@ -1,86 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13803",
-  "title": "Request to Cancel Service with Retention Offer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request to Cancel Service with Retention Offer",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to cancel due to high price. The agent must attempt a retention offer.",
-  "use_case": "Customer Service",
-  "core_function": "Service Lifecycle",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the customer and understand the reason for cancellation (price).",
-      "expected_outcome": "Agent verifies the customer's identity and logs 'Price' as the cancellation reason.",
-      "required_tools": [
-        "verify_customer_identity",
-        "log_cancellation_reason"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the customer and understand the reason for cancellation (price).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the customer's identity and logs 'Price' as the cancellation reason."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the system for any available retention offers for this customer's profile.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a '20% off for 12 months' retention offer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the system for any available retention offers for this customer's profile.",
-      "expected_outcome": "Agent finds a '20% off for 12 months' retention offer.",
-      "required_tools": [
-        "get_retention_offers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present the retention offer to the customer. If accepted, apply it. If declined, proceed with cancellation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly presents the offer. Customer accepts. Agent applies the promotional discount."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present the retention offer to the customer. If accepted, apply it. If declined, proceed with cancellation.",
-      "expected_outcome": "Agent clearly presents the offer. Customer accepts. Agent applies the promotional discount.",
-      "required_tools": [
-        "apply_promotion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

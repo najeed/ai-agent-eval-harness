@@ -1,63 +1,72 @@
 {
-  "scenario_id": "tr-pt-14035",
-  "title": "Manage Lost and Found",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Lost and Found",
+    "compliance_level": "Standard"
+  },
   "description": "A bus driver turns in a wallet found on their bus. An agent must log the item and attempt to contact the owner.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Passenger Information Systems",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the found item into the lost and found system, noting the date, time, route, and a description of the item.",
-      "expected_outcome": "A new lost and found record is created.",
-      "required_tools": [
-        "log_found_item"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the found item into the lost and found system, noting the date, time, route, and a description of the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new lost and found record is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inspect the wallet for identification.",
-      "expected_outcome": "Agent finds a driver's license inside.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inspect the wallet for identification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a driver's license inside."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Search the fare card database for a passenger with a matching name to find contact information.",
-      "expected_outcome": "Agent finds a matching registered passenger and their phone number.",
-      "required_tools": [
-        "find_passenger_by_name"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Search the fare card database for a passenger with a matching name to find contact information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a matching registered passenger and their phone number."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Contact the passenger to inform them their wallet has been found and explain the pickup procedure.",
-      "expected_outcome": "The agent successfully contacts the owner.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Contact the passenger to inform them their wallet has been found and explain the pickup procedure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent successfully contacts the owner."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

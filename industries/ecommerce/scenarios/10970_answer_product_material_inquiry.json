@@ -1,49 +1,59 @@
 {
-  "scenario_id": "ecommerce-css-10970",
-  "title": "Answer Product Material Inquiry",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Answer Product Material Inquiry",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with an allergy asks what materials a specific piece of jewelry is made of.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Product Inquiries",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the jewelry product in question.",
-      "expected_outcome": "Agent finds the product details for the 'Silver Heart Necklace'.",
-      "required_tools": [
-        "get_product_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the jewelry product in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the product details for the 'Silver Heart Necklace'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the product's material composition in the specifications.",
-      "expected_outcome": "Agent finds the material is '925 Sterling Silver, Nickel-Free'.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the product's material composition in the specifications.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the material is '925 Sterling Silver, Nickel-Free'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer of the exact materials, specifically mentioning that it is nickel-free.",
-      "expected_outcome": "Agent provides a clear and accurate answer that addresses the customer's allergy concern.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer of the exact materials, specifically mentioning that it is nickel-free.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear and accurate answer that addresses the customer's allergy concern."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-pt-12",
-  "title": "Manage Daily Cash Position",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Daily Cash Position",
+    "compliance_level": "Standard"
+  },
   "description": "A treasury analyst needs to determine the company's daily cash position to decide if funds need to be moved from a money market account to the operating account.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Cash Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the closing balances from all company bank accounts from the previous day.",
-      "expected_outcome": "Agent gets all bank balances.",
-      "required_tools": [
-        "get_bank_balances"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the closing balances from all company bank accounts from the previous day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets all bank balances."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve a forecast of today's expected cash inflows (e.g., customer payments) and outflows (e.g., vendor payments).",
-      "expected_outcome": "Agent gets the daily cash forecast.",
-      "required_tools": [
-        "get_cash_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve a forecast of today's expected cash inflows (e.g., customer payments) and outflows (e.g., vendor payments).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the daily cash forecast."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the projected end-of-day cash position.",
-      "expected_outcome": "Agent calculates a projected deficit in the main operating account.",
-      "required_tools": [
-        "calculate_cash_position"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the projected end-of-day cash position.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates a projected deficit in the main operating account."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Initiate a wire transfer from the money market account to the operating account to cover the projected shortfall.",
-      "expected_outcome": "Agent successfully initiates the required transfer.",
-      "required_tools": [
-        "initiate_wire_transfer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Initiate a wire transfer from the money market account to the operating account to cover the projected shortfall.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully initiates the required transfer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

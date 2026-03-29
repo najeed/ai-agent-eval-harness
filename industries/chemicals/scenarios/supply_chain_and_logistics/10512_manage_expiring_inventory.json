@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-scl-10512",
-  "title": "Manage Expiring Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Expiring Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "The inventory system flags a pallet of raw material that is due to expire in 60 days. The planner must ensure it is used before it expires.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Inventory Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the expiring inventory alert and identify the material and batch number.",
-      "expected_outcome": "Agent correctly identifies the specific pallet at risk.",
-      "required_tools": [
-        "get_inventory_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the expiring inventory alert and identify the material and batch number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the specific pallet at risk."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the production schedule to find the next planned batch that uses this material.",
-      "expected_outcome": "Agent finds a suitable production order scheduled in 3 weeks.",
-      "required_tools": [
-        "get_production_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the production schedule to find the next planned batch that uses this material.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a suitable production order scheduled in 3 weeks."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Allocate this specific batch of material to that upcoming production order to ensure it follows FIFO/FEFO rules.",
-      "expected_outcome": "Agent successfully reserves the expiring pallet for the designated production order.",
-      "required_tools": [
-        "allocate_inventory_to_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Allocate this specific batch of material to that upcoming production order to ensure it follows FIFO/FEFO rules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reserves the expiring pallet for the designated production order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

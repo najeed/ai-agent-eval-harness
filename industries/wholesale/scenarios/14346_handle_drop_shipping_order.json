@@ -1,53 +1,59 @@
 {
-  "scenario_id": "wholesale-om-14346",
-  "title": "Handle a Drop-Shipping Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Drop-Shipping Order",
+    "compliance_level": "Standard"
+  },
   "description": "A retailer places an order that needs to be shipped directly to their end customer (drop-shipping).",
-  "use_case": "Order Management & Sales",
-  "core_function": "Order Processing & Fulfillment",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an order with a 'ship-to' address that is different from the retailer's 'bill-to' address.",
-      "expected_outcome": "Agent correctly identifies the order as a drop-shipment.",
-      "required_tools": [
-        "create_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an order with a 'ship-to' address that is different from the retailer's 'bill-to' address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the order as a drop-shipment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a packing slip that shows the retailer's name and logo, not the wholesaler's.",
-      "expected_outcome": "Agent creates a customized, private-label packing slip.",
-      "required_tools": [
-        "generate_private_label_packing_slip"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a packing slip that shows the retailer's name and logo, not the wholesaler's.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a customized, private-label packing slip."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process and ship the order directly to the end customer.",
-      "expected_outcome": "The order is fulfilled and shipped to the correct address.",
-      "required_tools": [
-        "generate_pick_list",
-        "generate_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process and ship the order directly to the end customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The order is fulfilled and shipped to the correct address."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

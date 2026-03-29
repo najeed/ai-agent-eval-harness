@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-ts-13822",
-  "title": "Home Internet - Intermittent Drops",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Home Internet - Intermittent Drops",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports their internet connection drops for a few minutes several times a day.",
-  "use_case": "Technical Support",
-  "core_function": "Broadband and Fixed-Line Support",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a remote line history check for the past 72 hours.",
-      "expected_outcome": "The line history tool shows multiple modem retraining events each day.",
-      "required_tools": [
-        "get_line_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a remote line history check for the past 72 hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The line history tool shows multiple modem retraining events each day."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the line quality metrics from the history, noting a poor Signal-to-Noise Ratio (SNR).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies that the SNR is below the acceptable threshold."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the line quality metrics from the history, noting a poor Signal-to-Noise Ratio (SNR).",
-      "expected_outcome": "Agent correctly identifies that the SNR is below the acceptable threshold.",
-      "required_tools": [
-        "analyze_line_quality_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on the poor line quality, schedule a technician to investigate for physical line faults.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a trouble ticket and schedules a technician visit."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on the poor line quality, schedule a technician to investigate for physical line faults.",
-      "expected_outcome": "Agent creates a trouble ticket and schedules a technician visit.",
-      "required_tools": [
-        "schedule_technician_visit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

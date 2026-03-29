@@ -1,66 +1,72 @@
 {
-  "scenario_id": "journalism-cp-12053",
-  "title": "Create a Photo Gallery for a Website",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Photo Gallery for a Website",
+    "compliance_level": "Standard"
+  },
   "description": "A photo editor needs to create a web-based photo gallery from a recent event.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Multimedia & Visuals",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the best 20-30 photos from the event.",
-      "expected_outcome": "A curated set of photos is chosen.",
-      "required_tools": [
-        "photo_management_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "quality_of_selection",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the best 20-30 photos from the event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A curated set of photos is chosen."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Resize and optimize the photos for fast loading on the web.",
-      "expected_outcome": "The image files are web-ready.",
-      "required_tools": [
-        "image_editing_software"
-      ],
-      "success_criteria": [
-        {
-          "metric": "technical_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Resize and optimize the photos for fast loading on the web.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The image files are web-ready."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upload the photos to the CMS and arrange them in a gallery format.",
-      "expected_outcome": "A new photo gallery is created in the CMS.",
-      "required_tools": [
-        "cms_interface"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upload the photos to the CMS and arrange them in a gallery format.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new photo gallery is created in the CMS."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Write a title and introduction for the gallery and publish it.",
-      "expected_outcome": "The photo gallery is live on the website.",
-      "required_tools": [
-        "cms_interface"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Write a title and introduction for the gallery and publish it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The photo gallery is live on the website."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

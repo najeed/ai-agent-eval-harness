@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-plan-12693",
-  "title": "Analyze Blasting Vibration Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Blasting Vibration Data",
+    "compliance_level": "Standard"
+  },
   "description": "After a blast, an engineer analyzes the data from vibration monitors to ensure the blast complied with environmental limits.",
-  "use_case": "Mine Planning & Engineering",
-  "core_function": "Drill & Blast Design",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Download the vibration data from the monitors placed near sensitive structures (like a nearby town).",
-      "expected_outcome": "The vibration data for the blast is retrieved.",
-      "required_tools": [
-        "get_vibration_monitor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Download the vibration data from the monitors placed near sensitive structures (like a nearby town).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The vibration data for the blast is retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the data to find the peak particle velocity (PPV) at each monitor location.",
-      "expected_outcome": "The peak vibration levels are determined.",
-      "required_tools": [
-        "analyze_vibration_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the data to find the peak particle velocity (PPV) at each monitor location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The peak vibration levels are determined."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the measured PPV against the legal compliance limit. Generate a report confirming the blast was compliant.",
-      "expected_outcome": "The blast is confirmed to be compliant, and a report is generated for record-keeping.",
-      "required_tools": [
-        "check_against_compliance_limits",
-        "generate_blast_compliance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the measured PPV against the legal compliance limit. Generate a report confirming the blast was compliant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The blast is confirmed to be compliant, and a report is generated for record-keeping."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

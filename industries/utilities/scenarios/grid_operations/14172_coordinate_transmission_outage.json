@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14172",
-  "title": "Coordinate Planned Transmission Outage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate Planned Transmission Outage",
+    "compliance_level": "Standard"
+  },
   "description": "A transmission planner needs to schedule a planned outage of a major transmission line for maintenance.",
-  "use_case": "Grid Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Submit an outage request to the independent system operator (ISO) for the desired date and time.",
-      "expected_outcome": "System submits the request to the ISO's outage scheduling system.",
-      "required_tools": [
-        "submit_iso_outage_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Submit an outage request to the independent system operator (ISO) for the desired date and time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System submits the request to the ISO's outage scheduling system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a power flow study to analyze the impact of the outage on the rest of the grid.",
-      "expected_outcome": "The study shows the outage will cause overloads on two other lines unless a specific generator is redispatched.",
-      "required_tools": [
-        "run_power_flow_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_correctness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a power flow study to analyze the impact of the outage on the rest of the grid.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The study shows the outage will cause overloads on two other lines unless a specific generator is redispatched."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Develop a mitigation plan, including the required generator redispatch, and submit it to the ISO for approval.",
-      "expected_outcome": "System creates and submits the mitigation plan.",
-      "required_tools": [
-        "develop_mitigation_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "plan_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Develop a mitigation plan, including the required generator redispatch, and submit it to the ISO for approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates and submits the mitigation plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

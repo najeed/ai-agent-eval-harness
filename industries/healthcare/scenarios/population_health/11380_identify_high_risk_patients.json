@@ -1,84 +1,61 @@
 {
-  "scenario_id": "hc-ph-11380",
-  "title": "Identify High-Risk Patients",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify High-Risk Patients",
+    "compliance_level": "Standard"
+  },
   "description": "A population health analyst needs to identify diabetic patients who are at high risk for hospital readmission.",
-  "use_case": "Population Health & Care Management",
-  "core_function": "Health Risk Assessment",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the population health analytics platform.",
-      "expected_outcome": "Analyst accesses the main dashboard.",
-      "required_tools": [
-        "open_analytics_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the population health analytics platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst accesses the main dashboard."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a cohort of all patients with a diagnosis of diabetes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a list of all diabetic patients in the population."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a cohort of all patients with a diagnosis of diabetes.",
-      "expected_outcome": "The system generates a list of all diabetic patients in the population.",
-      "required_tools": [
-        "create_patient_cohort"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply a risk stratification model to the cohort to identify patients with the highest readmission risk scores.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system produces a prioritized list of high-risk patients who should be targeted for care management interventions."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply a risk stratification model to the cohort to identify patients with the highest readmission risk scores.",
-      "expected_outcome": "The system produces a prioritized list of high-risk patients who should be targeted for care management interventions.",
-      "required_tools": [
-        "apply_risk_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

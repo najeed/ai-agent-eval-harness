@@ -1,39 +1,46 @@
 {
-  "scenario_id": "construction-pm-10676",
-  "title": "Compare Current Schedule to Baseline",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Compare Current Schedule to Baseline",
+    "compliance_level": "Standard"
+  },
   "description": "A PM wants to understand the project's schedule variance by comparing the current schedule to the original baseline schedule.",
-  "use_case": "Project Management",
-  "core_function": "Project Planning & Scheduling",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the current project schedule and the baseline schedule.",
-      "expected_outcome": "Both schedules are retrieved.",
-      "required_tools": [
-        "get_project_schedule",
-        "get_baseline_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the current project schedule and the baseline schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Both schedules are retrieved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a schedule variance report comparing the finish dates of major milestones between the two schedules.",
-      "expected_outcome": "A report is generated showing that the project is currently running 15 days behind the baseline.",
-      "required_tools": [
-        "generate_schedule_variance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a schedule variance report comparing the finish dates of major milestones between the two schedules.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A report is generated showing that the project is currently running 15 days behind the baseline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

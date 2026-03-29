@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-com-13284",
-  "title": "Review a Phase I Environmental Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review a Phase I Environmental Report",
+    "compliance_level": "Standard"
+  },
   "description": "As part of due diligence for a land purchase, a client has received a Phase I Environmental Site Assessment. The agent needs to review it.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment & Sales Analysis",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the Phase I ESA report.",
-      "expected_outcome": "Agent obtains the report document.",
-      "required_tools": [
-        "get_transaction_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the Phase I ESA report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains the report document."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the report's executive summary for any 'Recognized Environmental Conditions' (RECs).",
-      "expected_outcome": "Agent finds that the report identifies a potential REC related to a former gas station nearby.",
-      "required_tools": [
-        "summarize_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the report's executive summary for any 'Recognized Environmental Conditions' (RECs).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds that the report identifies a potential REC related to a former gas station nearby."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the client on the findings and recommend they proceed with a Phase II investigation as suggested in the report.",
-      "expected_outcome": "Agent clearly communicates the risk and the recommended next step.",
-      "required_tools": [
-        "provide_strategic_advice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the client on the findings and recommend they proceed with a Phase II investigation as suggested in the report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the risk and the recommended next step."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

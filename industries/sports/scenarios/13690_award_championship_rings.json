@@ -1,52 +1,59 @@
 {
-  "scenario_id": "sports-lm-13690",
-  "title": "Award Championship Rings",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Award Championship Rings",
+    "compliance_level": "Standard"
+  },
   "description": "After winning a championship, a team needs to design and order championship rings for all players and staff.",
-  "use_case": "League & Competition Management",
-  "core_function": "Disciplinary Actions",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Work with a jewelry company to design the championship ring.",
-      "expected_outcome": "A final design for the ring is approved.",
-      "required_tools": [
-        "design_championship_ring"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Work with a jewelry company to design the championship ring.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A final design for the ring is approved."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the ring size for every eligible player and staff member.",
-      "expected_outcome": "Agent collects all the necessary ring sizes.",
-      "required_tools": [
-        "collect_ring_sizes"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the ring size for every eligible player and staff member.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all the necessary ring sizes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place the order for the rings with the jewelry company.",
-      "expected_outcome": "Agent successfully places the bulk order for the rings.",
-      "required_tools": [
-        "place_purchase_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place the order for the rings with the jewelry company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully places the bulk order for the rings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13978",
-  "title": "Handle Damaged Luggage Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Damaged Luggage Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger's suitcase arrived on the baggage carousel with a broken wheel. They want to file a claim.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Disruption Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the passenger's booking and baggage information.",
-      "expected_outcome": "Agent locates the passenger and bag details.",
-      "required_tools": [
-        "get_booking_details",
-        "get_baggage_info"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the passenger's booking and baggage information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the passenger and bag details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inspect the damage and create a new damaged baggage report, documenting the issue with photos.",
-      "expected_outcome": "Agent successfully creates a detailed report of the damage.",
-      "required_tools": [
-        "create_damaged_baggage_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inspect the damage and create a new damaged baggage report, documenting the issue with photos.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a detailed report of the damage."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the claims process to the passenger, including options for repair or replacement, and provide a file reference number.",
-      "expected_outcome": "Agent clearly communicates the next steps and provides a reference number.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the claims process to the passenger, including options for repair or replacement, and provide a file reference number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the next steps and provides a reference number."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

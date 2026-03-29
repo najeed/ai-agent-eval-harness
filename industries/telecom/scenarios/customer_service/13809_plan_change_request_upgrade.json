@@ -1,86 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13809",
-  "title": "Customer Plan Change Request - Upgrade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Plan Change Request - Upgrade",
+    "compliance_level": "Standard"
+  },
   "description": "A customer frequently exceeds their data limit and wants to upgrade to a plan with more data.",
-  "use_case": "Customer Service",
-  "core_function": "Plan Management",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and review their recent data usage, confirming overages.",
-      "expected_outcome": "Agent confirms the customer has had data overage charges for the last 3 months.",
-      "required_tools": [
-        "get_customer_details",
-        "get_usage_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and review their recent data usage, confirming overages.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer has had data overage charges for the last 3 months."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Recommend a specific higher-tier plan that would be more cost-effective than paying overage fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recommends the 'Unlimited Plus' plan, showing it would have saved the customer money."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Recommend a specific higher-tier plan that would be more cost-effective than paying overage fees.",
-      "expected_outcome": "Agent recommends the 'Unlimited Plus' plan, showing it would have saved the customer money.",
-      "required_tools": [
-        "get_available_plans"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the plan upgrade and confirm the new monthly cost and features.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully upgrades the plan and clearly communicates the new terms."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the plan upgrade and confirm the new monthly cost and features.",
-      "expected_outcome": "Agent successfully upgrades the plan and clearly communicates the new terms.",
-      "required_tools": [
-        "update_customer_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

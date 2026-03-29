@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14130",
-  "title": "Automated Feeder Fault Detection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Automated Feeder Fault Detection",
+    "compliance_level": "Standard"
+  },
   "description": "A recloser on a distribution feeder operates, indicating a fault. The system must automatically analyze the fault data and locate the issue.",
-  "use_case": "Grid Operations",
-  "core_function": "Fault Location, Isolation, and Service Restoration (FLISR)",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive fault data (current, voltage) from the operated recloser.",
-      "expected_outcome": "System ingests the fault data from the SCADA system.",
-      "required_tools": [
-        "get_scada_fault_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive fault data (current, voltage) from the operated recloser.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System ingests the fault data from the SCADA system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the fault data to calculate the distance to the fault from the substation.",
-      "expected_outcome": "System calculates the fault is approximately 2.5 miles down the feeder.",
-      "required_tools": [
-        "calculate_fault_distance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the fault data to calculate the distance to the fault from the substation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System calculates the fault is approximately 2.5 miles down the feeder."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify the specific line segment on the GIS map corresponding to the calculated distance.",
-      "expected_outcome": "System highlights the faulted segment between two specific poles.",
-      "required_tools": [
-        "query_gis_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "location_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify the specific line segment on the GIS map corresponding to the calculated distance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System highlights the faulted segment between two specific poles."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

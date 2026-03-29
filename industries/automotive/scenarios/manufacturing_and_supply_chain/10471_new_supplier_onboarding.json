@@ -1,50 +1,59 @@
 {
-  "scenario_id": "auto-ms-10471",
-  "title": "New Supplier Onboarding",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Supplier Onboarding",
+    "compliance_level": "Standard"
+  },
   "description": "A new supplier for seat foam has been selected and needs to be set up in the procurement and logistics systems.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Supplier Management",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all necessary information for the new supplier (company name, address, contact info, banking details, tax ID).",
-      "expected_outcome": "Agent collects all required data points.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all necessary information for the new supplier (company name, address, contact info, banking details, tax ID).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all required data points."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new vendor profile in the master supplier database.",
-      "expected_outcome": "Agent successfully creates the new supplier record.",
-      "required_tools": [
-        "create_supplier_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new vendor profile in the master supplier database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the new supplier record."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Configure the logistics system with the supplier's shipping location and lead times to enable automated parts ordering.",
-      "expected_outcome": "Agent successfully sets up the supplier in the logistics platform.",
-      "required_tools": [
-        "configure_logistics_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Configure the logistics system with the supplier's shipping location and lead times to enable automated parts ordering.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sets up the supplier in the logistics platform."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,55 +1,59 @@
 {
-  "scenario_id": "chemicals-scl-10507",
-  "title": "Resolve Shipping Document Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Shipping Document Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "A shipment is held at a port because the batch number on the bill of lading does not match the batch number on the container. Logistics must resolve this urgently.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Logistics & Distribution",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the original sales order and the shipping documents generated for the shipment.",
-      "expected_outcome": "Agent pulls up the sales order, packing list, and bill of lading.",
-      "required_tools": [
-        "get_sales_order",
-        "get_shipping_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the original sales order and the shipping documents generated for the shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the sales order, packing list, and bill of lading."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the documents to the batch record to identify the source of the typo.",
-      "expected_outcome": "Agent confirms the correct batch number from the manufacturing record and finds the typo was on the bill of lading.",
-      "required_tools": [
-        "get_batch_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the documents to the batch record to identify the source of the typo.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the correct batch number from the manufacturing record and finds the typo was on the bill of lading."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the freight forwarder, provide the correct information, and request an amended bill of lading to release the shipment.",
-      "expected_outcome": "Agent successfully communicates with the carrier and gets the documentation corrected.",
-      "required_tools": [
-        "contact_freight_forwarder",
-        "request_document_amendment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the freight forwarder, provide the correct information, and request an amended bill of lading to release the shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully communicates with the carrier and gets the documentation corrected."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

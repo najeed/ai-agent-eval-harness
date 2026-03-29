@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ct-12160",
-  "title": "Create a Contract Summary",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Contract Summary",
+    "compliance_level": "Standard"
+  },
   "description": "A business executive needs a one-page summary of a long, complex contract, highlighting the key business terms.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Contract Lifecycle Management",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ingest the full contract document.",
-      "expected_outcome": "Agent has the full text of the agreement.",
-      "required_tools": [
-        "document_parsing_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ingest the full contract document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the full text of the agreement."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify and extract the key business terms, such as the contract term, payment obligations, termination rights, and liability caps.",
-      "expected_outcome": "Agent extracts the most important clauses for a business user.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify and extract the key business terms, such as the contract term, payment obligations, termination rights, and liability caps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent extracts the most important clauses for a business user."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft a concise, one-page summary in plain English, avoiding legal jargon.",
-      "expected_outcome": "Agent produces a clear and easy-to-understand summary for the executive.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft a concise, one-page summary in plain English, avoiding legal jargon.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clear and easy-to-understand summary for the executive."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

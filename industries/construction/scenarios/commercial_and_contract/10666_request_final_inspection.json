@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-cc-10666",
-  "title": "Request Final Building Inspection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Final Building Inspection",
+    "compliance_level": "Standard"
+  },
   "description": "The project is nearing completion. The PM must formally request the final inspection from the city's building department to obtain the Certificate of Occupancy.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Contract Administration",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that all other required inspections (plumbing, electrical, mechanical, fire) have passed.",
-      "expected_outcome": "Agent confirms all prerequisite inspections are complete and passed.",
-      "required_tools": [
-        "get_inspection_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that all other required inspections (plumbing, electrical, mechanical, fire) have passed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all prerequisite inspections are complete and passed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Submit a 'Final Inspection Request' through the city's online portal.",
-      "expected_outcome": "The request is successfully submitted.",
-      "required_tools": [
-        "submit_city_inspection_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Submit a 'Final Inspection Request' through the city's online portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The request is successfully submitted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

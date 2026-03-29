@@ -1,85 +1,61 @@
 {
-  "scenario_id": "hc-brc-11338",
-  "title": "Capture Charges from an Encounter",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Capture Charges from an Encounter",
+    "compliance_level": "Standard"
+  },
   "description": "A coding specialist is reviewing a physician's documentation to capture all billable charges from an office visit.",
-  "use_case": "Billing & Revenue Cycle Management",
-  "core_function": "Charge Capture & Coding",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the provider's progress note for the patient encounter.",
-      "expected_outcome": "Coder reads the clinical documentation to understand the services provided.",
-      "required_tools": [
-        "get_encounter_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the provider's progress note for the patient encounter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Coder reads the clinical documentation to understand the services provided."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the appropriate Evaluation and Management (E&M) code based on the complexity of the visit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Coder correctly assigns the E&M level for the office visit."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the appropriate Evaluation and Management (E&M) code based on the complexity of the visit.",
-      "expected_outcome": "Coder correctly assigns the E&M level for the office visit.",
-      "required_tools": [
-        "select_em_code"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add charges for any additional procedures performed (e.g., an injection) and link the appropriate diagnosis codes to each charge.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Coder accurately captures all billable services and ensures they are medically justified by a diagnosis."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add charges for any additional procedures performed (e.g., an injection) and link the appropriate diagnosis codes to each charge.",
-      "expected_outcome": "Coder accurately captures all billable services and ensures they are medically justified by a diagnosis.",
-      "required_tools": [
-        "add_procedure_charge",
-        "link_diagnosis_to_charge"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

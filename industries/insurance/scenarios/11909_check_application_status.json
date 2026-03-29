@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-la-11909",
-  "title": "Check Life Insurance Application Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Life Insurance Application Status",
+    "compliance_level": "Standard"
+  },
   "description": "An applicant who applied for life insurance two weeks ago is calling to check the status.",
-  "use_case": "Life & Annuities",
-  "core_function": "New Business & Underwriting",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the applicant using their personal information.",
-      "expected_outcome": "Agent successfully locates the pending application.",
-      "required_tools": [
-        "get_application_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the applicant using their personal information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully locates the pending application."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the current status from the underwriting system.",
-      "expected_outcome": "Agent finds the application status is 'Pending review of paramedical exam results'.",
-      "required_tools": [
-        "get_application_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the current status from the underwriting system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the application status is 'Pending review of paramedical exam results'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the applicant of the status and provide an estimated timeline for the next steps.",
-      "expected_outcome": "Agent clearly communicates the status and that a decision is expected within 5-7 business days.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the applicant of the status and provide an estimated timeline for the next steps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the status and that a decision is expected within 5-7 business days."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

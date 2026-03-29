@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-pt-14095",
-  "title": "Generate a National Transit Database (NTD) Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a National Transit Database (NTD) Report",
+    "compliance_level": "Standard"
+  },
   "description": "A transit agency must submit its monthly operating data to the federal government's National Transit Database (NTD).",
-  "use_case": "Public Transit Operations",
-  "core_function": "Service Planning & Scheduling",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all required data for the month, including vehicle revenue miles, vehicle revenue hours, and ridership.",
-      "expected_outcome": "The system queries multiple sources to get the required data points.",
-      "required_tools": [
-        "get_monthly_operating_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all required data for the month, including vehicle revenue miles, vehicle revenue hours, and ridership.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system queries multiple sources to get the required data points."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Validate the data for any anomalies or errors.",
-      "expected_outcome": "The data is checked and confirmed to be reasonable.",
-      "required_tools": [
-        "validate_ntd_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_validation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Validate the data for any anomalies or errors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The data is checked and confirmed to be reasonable."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the NTD report in the federally specified format.",
-      "expected_outcome": "A compliant report file is generated.",
-      "required_tools": [
-        "generate_ntd_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the NTD report in the federally specified format.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A compliant report file is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the report file to the NTD portal.",
-      "expected_outcome": "The monthly compliance reporting is completed.",
-      "required_tools": [
-        "submit_ntd_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the report file to the NTD portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The monthly compliance reporting is completed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

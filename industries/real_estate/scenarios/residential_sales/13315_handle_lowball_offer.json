@@ -1,51 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13315",
-  "title": "Handle a Lowball Offer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Lowball Offer",
+    "compliance_level": "Standard"
+  },
   "description": "A listing agent receives a purchase offer significantly below the asking price and must advise the seller on how to respond.",
-  "use_case": "Residential Sales",
-  "core_function": "Offers & Negotiation",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Present the low offer to the seller and provide context based on current market conditions and recent comps.",
-      "expected_outcome": "Agent helps the seller understand the offer in the context of the market.",
-      "required_tools": [
-        "get_market_analysis_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Present the low offer to the seller and provide context based on current market conditions and recent comps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent helps the seller understand the offer in the context of the market."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Advise the seller on response options: ignore, reject, or make a counter-offer.",
-      "expected_outcome": "Agent provides clear, strategic advice on how to proceed.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "strategic_advice_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Advise the seller on response options: ignore, reject, or make a counter-offer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear, strategic advice on how to proceed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The seller decides to counter. Draft a counter-offer with a price closer to the asking price and send it to the buyer's agent.",
-      "expected_outcome": "A formal counter-offer is generated and submitted.",
-      "required_tools": [
-        "generate_counter_offer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The seller decides to counter. Draft a counter-offer with a price closer to the asking price and send it to the buyer's agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal counter-offer is generated and submitted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tax-ind-13765",
-  "title": "Prepare Return for Gig Economy Worker",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Return for Gig Economy Worker",
+    "compliance_level": "Standard"
+  },
   "description": "A driver for a ride-sharing service needs their tax return prepared, including income from a 1099-K and vehicle expenses.",
-  "use_case": "Individual Tax Preparation & Filing",
-  "core_function": "Data Collection & Input",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Input the income reported on Form 1099-K onto Schedule C.",
-      "expected_outcome": "Agent correctly reports the gross income.",
-      "required_tools": [
-        "enter_1099k_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Input the income reported on Form 1099-K onto Schedule C.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly reports the gross income."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather the driver's total miles driven for the year and their business miles.",
-      "expected_outcome": "Agent obtains the mileage log.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather the driver's total miles driven for the year and their business miles.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent obtains the mileage log."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the vehicle expense deduction using the standard mileage rate.",
-      "expected_outcome": "Agent accurately calculates the largest deduction for the driver.",
-      "required_tools": [
-        "calculate_standard_mileage_deduction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the vehicle expense deduction using the standard mileage rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the largest deduction for the driver."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

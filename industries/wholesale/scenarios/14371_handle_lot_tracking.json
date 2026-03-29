@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-im-14371",
-  "title": "Handle Lot Tracking for Recalls",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Lot Tracking for Recalls",
+    "compliance_level": "Standard"
+  },
   "description": "A wholesaler of food products must track lot numbers to manage potential recalls.",
-  "use_case": "Inventory & Warehouse Management",
-  "core_function": "Inventory Control",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "When receiving goods, record the lot number for each item.",
-      "expected_outcome": "The lot number is entered into the inventory system upon receipt.",
-      "required_tools": [
-        "record_lot_number"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "When receiving goods, record the lot number for each item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The lot number is entered into the inventory system upon receipt."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "When shipping goods, record which lot numbers are being sent to which customers.",
-      "expected_outcome": "The system links specific lot numbers to specific sales orders.",
-      "required_tools": [
-        "assign_lot_number_to_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "When shipping goods, record which lot numbers are being sent to which customers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system links specific lot numbers to specific sales orders."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "In the event of a recall, use the system to quickly identify all customers who received the affected lot.",
-      "expected_outcome": "Agent can instantly generate a list of customers who need to be notified about the recall.",
-      "required_tools": [
-        "trace_lot_number"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "In the event of a recall, use the system to quickly identify all customers who received the affected lot.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent can instantly generate a list of customers who need to be notified about the recall."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

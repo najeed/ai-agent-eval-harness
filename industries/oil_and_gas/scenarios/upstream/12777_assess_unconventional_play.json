@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12777",
-  "title": "Assess Unconventional Shale Play",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assess Unconventional Shale Play",
+    "compliance_level": "Standard"
+  },
   "description": "A geologist analyzes an unconventional shale play by creating maps of key properties like thickness and total organic carbon (TOC) to identify the most promising areas.",
-  "use_case": "Upstream",
-  "core_function": "Geoscience & Exploration",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all available well log and core data across the shale play.",
-      "expected_outcome": "A comprehensive dataset is compiled in a project database.",
-      "required_tools": [
-        "load_well_logs",
-        "load_core_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_ingestion_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all available well log and core data across the shale play.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive dataset is compiled in a project database."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate contour maps of shale thickness, TOC, and thermal maturity based on the well data.",
-      "expected_outcome": "A set of maps is created that visualizes the sweet spots of the play.",
-      "required_tools": [
-        "create_contour_map"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_visualization_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate contour maps of shale thickness, TOC, and thermal maturity based on the well data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A set of maps is created that visualizes the sweet spots of the play."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Overlay the maps to create a composite 'sweet spot' map that highlights the most prospective areas for leasing and drilling.",
-      "expected_outcome": "A final map identifying the core area of the play is generated.",
-      "required_tools": [
-        "overlay_maps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Overlay the maps to create a composite 'sweet spot' map that highlights the most prospective areas for leasing and drilling.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A final map identifying the core area of the play is generated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

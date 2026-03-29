@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-op-10349",
-  "title": "Audit the Contract Management Process",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit the Contract Management Process",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor reviews the process for managing contracts to identify risks like automatic renewals of unwanted services.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Vendor & Third-Party Audit",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Obtain a list of all active contracts from the contract management system.",
-      "expected_outcome": "Auditor has a complete list of contracts.",
-      "required_tools": [
-        "get_contract_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Obtain a list of all active contracts from the contract management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor has a complete list of contracts."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the contract data to identify any contracts that are set to auto-renew within the next 90 days.",
-      "expected_outcome": "The analysis identifies 15 contracts approaching their auto-renewal date.",
-      "required_tools": [
-        "analyze_contract_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the contract data to identify any contracts that are set to auto-renew within the next 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis identifies 15 contracts approaching their auto-renewal date."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For a sample of these contracts, contact the business owner to verify if the service is still needed and if they are aware of the renewal.",
-      "expected_outcome": "Auditor finds that for two contracts, the business owner was unaware of the auto-renewal and no longer needs the service, preventing unnecessary spending.",
-      "required_tools": [
-        "contact_business_owner"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "For a sample of these contracts, contact the business owner to verify if the service is still needed and if they are aware of the renewal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor finds that for two contracts, the business owner was unaware of the auto-renewal and no longer needs the service, preventing unnecessary spending."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

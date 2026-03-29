@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-fo-10123",
-  "title": "Farm Labor Scheduling for Harvest",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Farm Labor Scheduling for Harvest",
+    "compliance_level": "Standard"
+  },
   "description": "A vegetable farm manager needs to create a weekly schedule for their harvest crew, ensuring all tasks are covered.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Labor Management",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "List all harvesting, packing, and logistics tasks that need to be completed for the week.",
-      "expected_outcome": "Agent compiles a complete list of required tasks.",
-      "required_tools": [
-        "get_farm_tasks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "List all harvesting, packing, and logistics tasks that need to be completed for the week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a complete list of required tasks."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the list of available employees and their skill sets (e.g., tractor operator, packer).",
-      "expected_outcome": "Agent gets the list of all available workers.",
-      "required_tools": [
-        "get_employee_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the list of available employees and their skill sets (e.g., tractor operator, packer).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the list of all available workers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate an optimized weekly schedule that assigns employees to tasks based on skills and availability, ensuring compliance with break time regulations.",
-      "expected_outcome": "Agent creates a detailed schedule for the week.",
-      "required_tools": [
-        "generate_labor_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate an optimized weekly schedule that assigns employees to tasks based on skills and availability, ensuring compliance with break time regulations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed schedule for the week."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

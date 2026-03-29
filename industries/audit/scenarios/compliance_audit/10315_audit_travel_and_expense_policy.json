@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-cp-10315",
-  "title": "Audit Adherence to Travel & Expense Policy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Adherence to Travel & Expense Policy",
+    "compliance_level": "Standard"
+  },
   "description": "An auditor checks if employee expense reports are in compliance with the company's T&E policy.",
-  "use_case": "Compliance & Regulatory Audit",
-  "core_function": "Policy & Procedure Adherence",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select a sample of 50 expense reports that included airfare.",
-      "expected_outcome": "A sample is selected for testing.",
-      "required_tools": [
-        "select_random_sample"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select a sample of 50 expense reports that included airfare.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A sample is selected for testing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each sampled report, verify that employees booked economy class tickets, as required by policy for domestic travel.",
-      "expected_outcome": "Auditor finds 4 instances of business class travel that were not pre-approved.",
-      "required_tools": [
-        "review_expense_receipts",
-        "log_test_exception"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each sampled report, verify that employees booked economy class tickets, as required by policy for domestic travel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor finds 4 instances of business class travel that were not pre-approved."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify that all meal expenses claimed are within the per diem limit set by the policy.",
-      "expected_outcome": "Auditor confirms all sampled meal expenses are compliant.",
-      "required_tools": [
-        "review_expense_receipts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify that all meal expenses claimed are within the per diem limit set by the policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor confirms all sampled meal expenses are compliant."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

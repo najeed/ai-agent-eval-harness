@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hr-er-11695",
-  "title": "Handle the Death of an Employee",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle the Death of an Employee",
+    "compliance_level": "Standard"
+  },
   "description": "HR has been notified that an active employee has passed away.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Offboarding",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the information and express condolences to the family.",
-      "expected_outcome": "The HRBP confirms the sad news and speaks with the family.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the information and express condolences to the family.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The HRBP confirms the sad news and speaks with the family."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Work with the family and the company's life insurance provider to process the claim.",
-      "expected_outcome": "HRBP facilitates the life insurance claim process.",
-      "required_tools": [
-        "process_life_insurance_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Work with the family and the company's life insurance provider to process the claim.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP facilitates the life insurance claim process."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the final paycheck and coordinate the return of company property with the employee's family.",
-      "expected_outcome": "HRBP sensitively handles all final administrative tasks related to the employee's separation.",
-      "required_tools": [
-        "calculate_final_pay"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the final paycheck and coordinate the return of company property with the employee's family.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP sensitively handles all final administrative tasks related to the employee's separation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

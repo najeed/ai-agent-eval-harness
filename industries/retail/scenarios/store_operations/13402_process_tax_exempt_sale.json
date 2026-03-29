@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-so-13402",
-  "title": "Process a Tax-Exempt Sale",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Tax-Exempt Sale",
+    "compliance_level": "Standard"
+  },
   "description": "A customer from a non-profit organization is making a purchase and has a tax-exempt certificate.",
-  "use_case": "Store Operations",
-  "core_function": "Point of Sale (POS) Transactions",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan all items for the purchase.",
-      "expected_outcome": "All items are correctly added to the transaction.",
-      "required_tools": [
-        "scan_item_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan all items for the purchase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All items are correctly added to the transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the customer's tax-exempt certificate and enter the tax-exempt ID into the POS.",
-      "expected_outcome": "The associate validates the customer's status.",
-      "required_tools": [
-        "enter_tax_exempt_id"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the customer's tax-exempt certificate and enter the tax-exempt ID into the POS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate validates the customer's status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The POS system removes the sales tax from the total. Complete the transaction.",
-      "expected_outcome": "The sale is completed correctly without sales tax.",
-      "required_tools": [
-        "complete_transaction"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The POS system removes the sales tax from the total. Complete the transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sale is completed correctly without sales tax."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-am-10037",
-  "title": "Perform Final Assembly Quality Check",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Final Assembly Quality Check",
+    "compliance_level": "Standard"
+  },
   "description": "Before an aircraft rolls out of the factory, a quality inspector must perform a final walk-around inspection to check for any defects.",
-  "use_case": "Aircraft Manufacturing",
-  "core_function": "Assembly & Production",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Follow a detailed checklist to inspect the aircraft's exterior for any cosmetic defects, such as scratches or dents.",
-      "expected_outcome": "Agent completes the exterior inspection checklist.",
-      "required_tools": [
-        "get_inspection_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Follow a detailed checklist to inspect the aircraft's exterior for any cosmetic defects, such as scratches or dents.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes the exterior inspection checklist."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that all required placards and markings are correctly installed.",
-      "expected_outcome": "Agent confirms all placards are present and legible.",
-      "required_tools": [
-        "verify_placards"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that all required placards and markings are correctly installed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all placards are present and legible."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document any findings and create a snag list of items to be rectified before the official rollout.",
-      "expected_outcome": "Agent finds a minor paint defect and adds it to the snag list.",
-      "required_tools": [
-        "create_snag_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document any findings and create a snag list of items to be rectified before the official rollout.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a minor paint defect and adds it to the snag list."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

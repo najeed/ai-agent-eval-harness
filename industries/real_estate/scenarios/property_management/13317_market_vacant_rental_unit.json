@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-pm-13317",
-  "title": "Market a Vacant Rental Unit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Market a Vacant Rental Unit",
+    "compliance_level": "Standard"
+  },
   "description": "A property manager needs to market a newly vacant apartment to find a new tenant quickly.",
-  "use_case": "Property Management",
-  "core_function": "Leasing & Tenant Screening",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Determine the optimal market rent for the unit by analyzing current listings for comparable units.",
-      "expected_outcome": "Agent sets a competitive rental price.",
-      "required_tools": [
-        "get_rental_comps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Determine the optimal market rent for the unit by analyzing current listings for comparable units.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets a competitive rental price."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a high-quality rental listing with professional photos and a detailed description.",
-      "expected_outcome": "A compelling listing is created.",
-      "required_tools": [
-        "generate_listing_description"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a high-quality rental listing with professional photos and a detailed description.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A compelling listing is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Syndicate the listing to multiple rental websites like Zillow, Trulia, and Apartments.com.",
-      "expected_outcome": "The listing is published across all major rental platforms.",
-      "required_tools": [
-        "syndicate_rental_listing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Syndicate the listing to multiple rental websites like Zillow, Trulia, and Apartments.com.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The listing is published across all major rental platforms."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "defense-mp-10854",
-  "title": "Electronic Warfare Resource Planning",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Electronic Warfare Resource Planning",
+    "compliance_level": "Standard"
+  },
   "description": "A planner must select the correct electronic warfare (EW) jamming asset to suppress an enemy's air defense radar during a strike.",
-  "use_case": "Mission Planning & Execution",
-  "core_function": "Resource & Ordnance Planning",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze intelligence on the specific type and frequency bands of the enemy radar system.",
-      "expected_outcome": "Planner correctly identifies the technical characteristics of the threat radar.",
-      "required_tools": [
-        "get_threat_intelligence_technical"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze intelligence on the specific type and frequency bands of the enemy radar system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner correctly identifies the technical characteristics of the threat radar."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the available EW asset database for platforms capable of jamming the identified frequencies.",
-      "expected_outcome": "Planner identifies two types of aircraft with suitable jamming pods.",
-      "required_tools": [
-        "query_ew_asset_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the available EW asset database for platforms capable of jamming the identified frequencies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner identifies two types of aircraft with suitable jamming pods."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select the standoff jamming aircraft as it can suppress the radar from a safe distance, reducing risk to the strike package.",
-      "expected_outcome": "Planner makes the optimal choice based on both effectiveness and safety.",
-      "required_tools": [
-        "select_optimal_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select the standoff jamming aircraft as it can suppress the radar from a safe distance, reducing risk to the strike package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner makes the optimal choice based on both effectiveness and safety."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

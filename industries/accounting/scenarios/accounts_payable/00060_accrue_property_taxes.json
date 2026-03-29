@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ac-ap-60",
-  "title": "Accrue Monthly Property Taxes",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Accrue Monthly Property Taxes",
+    "compliance_level": "Standard"
+  },
   "description": "Property taxes are paid twice a year, but for accurate monthly financial statements, the expense must be accrued each month.",
-  "use_case": "Accounts Payable",
-  "core_function": "Accruals & Reconciliation",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the total estimated annual property tax bill.",
-      "expected_outcome": "Agent finds the estimated annual tax is $240,000.",
-      "required_tools": [
-        "get_property_tax_estimate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the total estimated annual property tax bill.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the estimated annual tax is $240,000."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the monthly property tax expense.",
-      "expected_outcome": "Agent correctly calculates the monthly expense of $20,000.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the monthly property tax expense.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the monthly expense of $20,000."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create and post the recurring monthly journal entry to debit 'Property Tax Expense' and credit 'Accrued Property Taxes'.",
-      "expected_outcome": "Agent posts the correct journal entry.",
-      "required_tools": [
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create and post the recurring monthly journal entry to debit 'Property Tax Expense' and credit 'Accrued Property Taxes'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent posts the correct journal entry."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

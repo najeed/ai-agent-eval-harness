@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-go-14137",
-  "title": "Gas Pipeline Pressure Monitoring",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Gas Pipeline Pressure Monitoring",
+    "compliance_level": "Standard"
+  },
   "description": "A gas control room operator needs to monitor pipeline pressure to ensure it stays within safe operating limits.",
-  "use_case": "Gas Operations",
-  "core_function": "Pipeline & Pressure Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Display real-time pressure readings from sensors along a major transmission pipeline.",
-      "expected_outcome": "System shows a dashboard with live pressure data.",
-      "required_tools": [
-        "get_real_time_pressure_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_visualization_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Display real-time pressure readings from sensors along a major transmission pipeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System shows a dashboard with live pressure data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system detects that pressure at one point is approaching its Maximum Allowable Operating Pressure (MAOP).",
-      "expected_outcome": "System generates a high-priority pressure alert.",
-      "required_tools": [
-        "monitor_pressure_limits"
-      ],
-      "success_criteria": [
-        {
-          "metric": "alert_detection_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system detects that pressure at one point is approaching its Maximum Allowable Operating Pressure (MAOP).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System generates a high-priority pressure alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend an action to reduce pressure, such as slightly reducing flow from an upstream compressor station.",
-      "expected_outcome": "System suggests a specific operational adjustment.",
-      "required_tools": [
-        "recommend_pressure_control_action"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend an action to reduce pressure, such as slightly reducing flow from an upstream compressor station.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System suggests a specific operational adjustment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

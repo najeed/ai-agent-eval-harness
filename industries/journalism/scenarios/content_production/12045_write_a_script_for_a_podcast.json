@@ -1,67 +1,72 @@
 {
-  "scenario_id": "journalism-cp-12045",
-  "title": "Write a Script for a Podcast",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write a Script for a Podcast",
+    "compliance_level": "Standard"
+  },
   "description": "A podcast host needs to write a script for an upcoming episode that includes an introduction, interview questions, and an outro.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Writing & Drafting",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Outline the structure of the podcast episode.",
-      "expected_outcome": "A clear outline with all segments is created.",
-      "required_tools": [
-        "outlining_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "structural_coherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Outline the structure of the podcast episode.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear outline with all segments is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write a compelling introduction to hook the listener and introduce the topic and guest.",
-      "expected_outcome": "An engaging intro is drafted.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write a compelling introduction to hook the listener and introduce the topic and guest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An engaging intro is drafted."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Write a list of questions for the interview segment.",
-      "expected_outcome": "A comprehensive list of interview questions is prepared.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "relevance_of_questions",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Write a list of questions for the interview segment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive list of interview questions is prepared."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Write a concluding outro that summarizes the key takeaways and includes a call to action (e.g., 'subscribe to our podcast').",
-      "expected_outcome": "A clear and effective outro is drafted.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_clarity",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Write a concluding outro that summarizes the key takeaways and includes a call to action (e.g., 'subscribe to our podcast').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear and effective outro is drafted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

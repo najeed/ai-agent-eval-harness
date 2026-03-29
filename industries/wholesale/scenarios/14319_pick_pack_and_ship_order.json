@@ -1,67 +1,72 @@
 {
-  "scenario_id": "wholesale-im-14319",
-  "title": "Pick, Pack, and Ship an Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Pick, Pack, and Ship an Order",
+    "compliance_level": "Standard"
+  },
   "description": "A warehouse worker needs to fulfill a customer order from start to finish.",
-  "use_case": "Inventory & Warehouse Management",
-  "core_function": "Picking, Packing, & Shipping",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve a pick list for a ready order.",
-      "expected_outcome": "The worker gets a list of items and their locations.",
-      "required_tools": [
-        "get_pick_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve a pick list for a ready order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker gets a list of items and their locations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Pick the correct items and quantities from the warehouse locations.",
-      "expected_outcome": "The worker gathers all items for the order.",
-      "required_tools": [
-        "scan_item_barcode",
-        "scan_location_barcode"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Pick the correct items and quantities from the warehouse locations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker gathers all items for the order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Pack the items into a box, weigh it, and generate a shipping label.",
-      "expected_outcome": "The worker packs the order and prints a shipping label.",
-      "required_tools": [
-        "generate_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Pack the items into a box, weigh it, and generate a shipping label.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The worker packs the order and prints a shipping label."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the order status to 'shipped' and provide the tracking number.",
-      "expected_outcome": "The system is updated, and the customer is notified of the shipment.",
-      "required_tools": [
-        "update_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the order status to 'shipped' and provide the tracking number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system is updated, and the customer is notified of the shipment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13919",
-  "title": "Book Museum Tickets",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book Museum Tickets",
+    "compliance_level": "Standard"
+  },
   "description": "A family of four wants to book tickets for the Metropolitan Museum of Art for a specific date.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Activity Booking & Scheduling",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check ticket availability for two adults and two children for the specified date.",
-      "expected_outcome": "Agent confirms that tickets are available.",
-      "required_tools": [
-        "check_ticket_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check ticket availability for two adults and two children for the specified date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that tickets are available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the total cost for the tickets.",
-      "expected_outcome": "Agent provides the correct total price for the family.",
-      "required_tools": [
-        "calculate_ticket_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the total cost for the tickets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct total price for the family."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book the tickets and send the e-tickets to the customer's email.",
-      "expected_outcome": "Agent successfully books the tickets and provides a confirmation.",
-      "required_tools": [
-        "book_activity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book the tickets and send the e-tickets to the customer's email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books the tickets and provides a confirmation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

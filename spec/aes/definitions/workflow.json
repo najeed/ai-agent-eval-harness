@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AES Workflow Definition",
+  "type": "object",
+  "description": "The State-Machine DAG defining agentic transitions.",
+  "required": ["nodes", "edges"],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "task_description"],
+        "properties": {
+          "id": { "type": "string" },
+          "task_description": { "type": "string" },
+          "state_hygiene": {
+            "type": "object",
+            "description": "Assertions to check BEFORE this node can execute."
+          },
+          "expected_outcome": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": { "const": "standard_ref" },
+                  "schema_id": { "type": "string" },
+                  "value": { "type": "object" }
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": { "const": "typed_value" },
+                  "data_type": {
+                    "enum": ["string", "number", "boolean", "object", "array"]
+                  },
+                  "value": { "type": "object" }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "condition": {
+            "type": "string",
+            "description": "Logical condition to trigger the transition."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,67 +1,72 @@
 {
-  "scenario_id": "media-cp-12525",
-  "title": "Manage Distribution of Dailies",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Distribution of Dailies",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to process the raw footage from a day's shoot (dailies) and make it securely available for review by the director and producers.",
-  "use_case": "Content Production & Management",
-  "core_function": "Post-production & VFX",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ingest the raw footage from the camera cards into the asset management system.",
-      "expected_outcome": "Agent successfully transfers all footage from the day's shoot.",
-      "required_tools": [
-        "ingest_raw_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ingest the raw footage from the camera cards into the asset management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully transfers all footage from the day's shoot."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Transcode the high-resolution raw footage into low-resolution proxy files for easy streaming.",
-      "expected_outcome": "Agent initiates and completes the transcoding process for all clips.",
-      "required_tools": [
-        "transcode_video_files"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Transcode the high-resolution raw footage into low-resolution proxy files for easy streaming.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates and completes the transcoding process for all clips."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Upload the proxy files to a secure online viewing platform.",
-      "expected_outcome": "Agent successfully uploads all proxy files.",
-      "required_tools": [
-        "upload_to_review_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Upload the proxy files to a secure online viewing platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads all proxy files."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Grant access to the director and producers and send them a notification with the viewing link.",
-      "expected_outcome": "Agent correctly sets permissions and sends the notification.",
-      "required_tools": [
-        "set_user_permissions",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Grant access to the director and producers and send them a notification with the viewing link.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sets permissions and sends the notification."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-ago-10263",
-  "title": "Handle Late Arriving Crew",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Late Arriving Crew",
+    "compliance_level": "Standard"
+  },
   "description": "The flight crew for a departing flight is late arriving from their inbound flight. A ground operations agent must manage the delay.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Ramp & Turnaround Management",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get an updated ETA for the inbound crew.",
-      "expected_outcome": "Agent determines the crew will arrive 20 minutes late.",
-      "required_tools": [
-        "get_flight_eta"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get an updated ETA for the inbound crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the crew will arrive 20 minutes late."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the departure time for the outbound flight, creating a 20-minute delay.",
-      "expected_outcome": "Agent updates the flight status with the new departure time.",
-      "required_tools": [
-        "update_flight_departure_time"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the departure time for the outbound flight, creating a 20-minute delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the flight status with the new departure time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Make an announcement to the waiting passengers, informing them of the delay due to a late-arriving crew.",
-      "expected_outcome": "Agent clearly communicates the reason for the delay to passengers.",
-      "required_tools": [
-        "make_pa_announcement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Make an announcement to the waiting passengers, informing them of the delay due to a late-arriving crew.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the reason for the delay to passengers."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

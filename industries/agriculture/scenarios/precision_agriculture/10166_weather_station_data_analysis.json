@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ag-pa-10166",
-  "title": "Analyze On-Farm Weather Station Data",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze On-Farm Weather Station Data",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer wants to analyze data from their on-farm weather station to calculate growing degree days (GDD) for their corn crop.",
-  "use_case": "Precision Agriculture",
-  "core_function": "Data Collection & Sensing",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the daily minimum and maximum temperature data from the weather station since the planting date.",
-      "expected_outcome": "Agent retrieves the complete temperature dataset.",
-      "required_tools": [
-        "get_weather_station_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the daily minimum and maximum temperature data from the weather station since the planting date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the complete temperature dataset."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the accumulated Growing Degree Days (GDD) for the corn crop.",
-      "expected_outcome": "Agent calculates the correct GDD value.",
-      "required_tools": [
-        "calculate_gdd"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the accumulated Growing Degree Days (GDD) for the corn crop.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the correct GDD value."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the current GDD accumulation to the 30-year average to determine if the crop is ahead or behind schedule.",
-      "expected_outcome": "Agent reports that the crop is approximately 5 days ahead of the average development schedule.",
-      "required_tools": [
-        "get_historical_weather_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the current GDD accumulation to the 30-year average to determine if the crop is ahead or behind schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reports that the crop is approximately 5 days ahead of the average development schedule."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

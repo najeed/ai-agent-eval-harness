@@ -1,50 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12007",
-  "title": "Analyze Weekly Content Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Weekly Content Performance",
+    "compliance_level": "Standard"
+  },
   "description": "An editor wants to review the performance of all articles published last week to understand what resonated with the audience.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Performance Analysis",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Pull a report from the analytics platform showing key metrics (page views, unique visitors, average engagement time) for all articles published last week.",
-      "expected_outcome": "Agent retrieves the raw performance data.",
-      "required_tools": [
-        "get_analytics_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Pull a report from the analytics platform showing key metrics (page views, unique visitors, average engagement time) for all articles published last week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the raw performance data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the top 5 and bottom 5 performing articles based on page views.",
-      "expected_outcome": "Agent creates two lists of articles.",
-      "required_tools": [
-        "data_analysis_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the top 5 and bottom 5 performing articles based on page views.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates two lists of articles."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the topics and formats of the top-performing articles to identify potential trends.",
-      "expected_outcome": "Agent provides a summary of insights, such as 'Human-interest stories with video performed best.'",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "insight_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the topics and formats of the top-performing articles to identify potential trends.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a summary of insights, such as 'Human-interest stories with video performed best.'"
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

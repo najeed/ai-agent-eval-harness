@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-mfg-10583",
-  "title": "Log Equipment Downtime Event",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Log Equipment Downtime Event",
+    "compliance_level": "Standard"
+  },
   "description": "A production line was down for 2 hours due to a mechanical failure. A supervisor must log this event for OEE (Overall Equipment Effectiveness) tracking.",
-  "use_case": "Manufacturing & Operations",
-  "core_function": "Maintenance Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the piece of equipment that failed.",
-      "expected_outcome": "Agent correctly identifies the equipment asset ID.",
-      "required_tools": [
-        "find_equipment_asset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the piece of equipment that failed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the equipment asset ID."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new downtime log entry, entering the start and end times of the outage.",
-      "expected_outcome": "Agent successfully logs the 2-hour duration.",
-      "required_tools": [
-        "create_downtime_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new downtime log entry, entering the start and end times of the outage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully logs the 2-hour duration."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign a reason code for the downtime (e.g., 'Mechanical Failure') from a predefined list.",
-      "expected_outcome": "Agent correctly categorizes the downtime event, which will now be reflected in the OEE calculation.",
-      "required_tools": [
-        "update_downtime_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign a reason code for the downtime (e.g., 'Mechanical Failure') from a predefined list.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly categorizes the downtime event, which will now be reflected in the OEE calculation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

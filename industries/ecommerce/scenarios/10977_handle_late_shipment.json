@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10977",
-  "title": "Proactively Handle a Late Shipment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Proactively Handle a Late Shipment",
+    "compliance_level": "Standard"
+  },
   "description": "A fulfillment delay means an order will not ship on time. The agent must proactively notify the customer.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Order Processing",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify an order that has passed its expected ship date but has not yet been fulfilled.",
-      "expected_outcome": "System flags a late order.",
-      "required_tools": [
-        "get_late_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "event_detection_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify an order that has passed its expected ship date but has not yet been fulfilled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System flags a late order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a proactive email to the customer, apologizing for the delay and providing a new estimated shipping date.",
-      "expected_outcome": "Agent sends a clear and apologetic email.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a proactive email to the customer, apologizing for the delay and providing a new estimated shipping date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a clear and apologetic email."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Offer a small discount on their next purchase as a goodwill gesture.",
-      "expected_outcome": "Agent generates and includes a discount code in the email.",
-      "required_tools": [
-        "generate_discount_code"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Offer a small discount on their next purchase as a goodwill gesture.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates and includes a discount code in the email."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

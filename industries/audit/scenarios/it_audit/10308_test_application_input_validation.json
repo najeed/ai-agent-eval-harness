@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-it-10308",
-  "title": "Test Application Input Validation Controls",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Test Application Input Validation Controls",
+    "compliance_level": "Standard"
+  },
   "description": "An IT auditor tests the input validation controls of a custom web application.",
-  "use_case": "IT Audit",
-  "core_function": "Application Controls Testing",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Attempt to enter a negative number into a 'quantity' field that should only accept positive integers.",
-      "expected_outcome": "The application correctly rejects the input and displays an error message.",
-      "required_tools": [
-        "perform_application_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "control_effectiveness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Attempt to enter a negative number into a 'quantity' field that should only accept positive integers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The application correctly rejects the input and displays an error message."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attempt to enter text into a 'zip code' field that should only accept numbers.",
-      "expected_outcome": "The application correctly rejects the input.",
-      "required_tools": [
-        "perform_application_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "control_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attempt to enter text into a 'zip code' field that should only accept numbers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The application correctly rejects the input."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Attempt to submit a form with a required 'email address' field left blank.",
-      "expected_outcome": "The application correctly prevents submission and highlights the required field.",
-      "required_tools": [
-        "perform_application_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "control_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Attempt to submit a form with a required 'email address' field left blank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The application correctly prevents submission and highlights the required field."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

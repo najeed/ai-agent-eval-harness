@@ -1,108 +1,74 @@
 {
-  "scenario_id": "finance-wm-11252",
-  "title": "Correct a Trade Error",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Correct a Trade Error",
+    "compliance_level": "Standard"
+  },
   "description": "A trade was executed in the wrong client account by mistake and needs to be corrected.",
-  "use_case": "Wealth Management",
-  "core_function": "Trade Execution & Servicing",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the erroneous trade and the two accounts involved (the incorrect and correct accounts).",
-      "expected_outcome": "Agent correctly identifies all details of the trade error.",
-      "required_tools": [
-        "get_trade_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the erroneous trade and the two accounts involved (the incorrect and correct accounts).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies all details of the trade error."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cancel the trade in the incorrect account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reverses the trade in the wrong account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cancel the trade in the incorrect account.",
-      "expected_outcome": "Agent successfully reverses the trade in the wrong account.",
-      "required_tools": [
-        "cancel_trade"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Re-book the trade in the correct client account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully executes the trade for the correct client."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Document the trade error and correction in the compliance log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed record of the incident and its resolution."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Re-book the trade in the correct client account.",
-      "expected_outcome": "Agent successfully executes the trade for the correct client.",
-      "required_tools": [
-        "execute_trade"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Document the trade error and correction in the compliance log.",
-      "expected_outcome": "Agent creates a detailed record of the incident and its resolution.",
-      "required_tools": [
-        "log_trade_error"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

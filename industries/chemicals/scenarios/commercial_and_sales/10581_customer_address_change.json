@@ -1,50 +1,59 @@
 {
-  "scenario_id": "chemicals-com-10581",
-  "title": "Update Customer Primary Address",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Customer Primary Address",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has moved their headquarters and needs to update their primary billing address.",
-  "use_case": "Commercial & Sales",
-  "core_function": "Customer Relationship Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the customer's account in the CRM.",
-      "expected_outcome": "Agent successfully retrieves the customer's main profile.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the customer's account in the CRM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the customer's main profile."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take the new address information from the customer.",
-      "expected_outcome": "Agent records the new billing address.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take the new address information from the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent records the new billing address."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Update the billing address on the customer's master record.",
-      "expected_outcome": "Agent successfully updates the address in the system.",
-      "required_tools": [
-        "update_customer_address"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Update the billing address on the customer's master record.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the address in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

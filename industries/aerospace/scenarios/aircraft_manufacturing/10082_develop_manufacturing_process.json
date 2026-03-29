@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-am-10082",
-  "title": "Develop a Manufacturing Process",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop a Manufacturing Process",
+    "compliance_level": "Standard"
+  },
   "description": "A manufacturing engineer needs to develop the step-by-step process for assembling a new component.",
-  "use_case": "Aircraft Manufacturing",
-  "core_function": "Design & Engineering",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the component's engineering drawings to break down the assembly into a logical sequence of steps.",
-      "expected_outcome": "Agent creates a high-level process flow.",
-      "required_tools": [
-        "get_engineering_drawing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the component's engineering drawings to break down the assembly into a logical sequence of steps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a high-level process flow."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write detailed work instructions for each step, including the required tools, parts, and quality checks.",
-      "expected_outcome": "Agent authors a complete and clear set of work instructions.",
-      "required_tools": [
-        "author_work_instructions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write detailed work instructions for each step, including the required tools, parts, and quality checks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent authors a complete and clear set of work instructions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a visual aid, such as a 3D animated instruction set, to help technicians on the shop floor.",
-      "expected_outcome": "Agent generates a helpful visual guide for the assembly process.",
-      "required_tools": [
-        "create_3d_visual_aid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a visual aid, such as a 3D animated instruction set, to help technicians on the shop floor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a helpful visual guide for the assembly process."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

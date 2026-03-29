@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-fo-10216",
-  "title": "Handle an In-Flight Medical Emergency",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle an In-Flight Medical Emergency",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger is experiencing a medical emergency in-flight. The cabin crew must respond and coordinate with the flight crew and ground support.",
-  "use_case": "Flight Operations",
-  "core_function": "In-Flight Services & Safety",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Assess the passenger's condition and provide first aid.",
-      "expected_outcome": "Cabin crew provides immediate medical assistance.",
-      "required_tools": [
-        "perform_first_aid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Assess the passenger's condition and provide first aid.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Cabin crew provides immediate medical assistance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Make a PA announcement asking if there is a doctor or other medical professional on board.",
-      "expected_outcome": "A doctor on board volunteers to assist.",
-      "required_tools": [
-        "make_pa_announcement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Make a PA announcement asking if there is a doctor or other medical professional on board.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A doctor on board volunteers to assist."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the airline's ground-based medical advisory service via satellite phone for expert advice and inform the captain of the situation.",
-      "expected_outcome": "Crew communicates with medical experts and the captain to decide if a diversion is necessary.",
-      "required_tools": [
-        "contact_medical_advisory_service"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the airline's ground-based medical advisory service via satellite phone for expert advice and inform the captain of the situation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Crew communicates with medical experts and the captain to decide if a diversion is necessary."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

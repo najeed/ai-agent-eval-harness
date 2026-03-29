@@ -1,52 +1,59 @@
 {
-  "scenario_id": "construction-cc-10614",
-  "title": "Create a Change Order for Added Scope",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Change Order for Added Scope",
+    "compliance_level": "Standard"
+  },
   "description": "The client has requested to add a patio, which was not in the original scope. A project manager must create a change order.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Change Order Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new change order document.",
-      "expected_outcome": "A blank change order form is generated with a unique ID.",
-      "required_tools": [
-        "create_change_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new change order document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A blank change order form is generated with a unique ID."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Price the new scope, calculating a cost of $8,000 for materials and labor, plus a 15% markup.",
-      "expected_outcome": "The total price for the change order is calculated as $9,200.",
-      "required_tools": [
-        "calculate_change_order_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Price the new scope, calculating a cost of $8,000 for materials and labor, plus a 15% markup.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The total price for the change order is calculated as $9,200."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the change order to the client for approval.",
-      "expected_outcome": "The completed change order is sent to the client.",
-      "required_tools": [
-        "submit_change_order_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the change order to the client for approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The completed change order is sent to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

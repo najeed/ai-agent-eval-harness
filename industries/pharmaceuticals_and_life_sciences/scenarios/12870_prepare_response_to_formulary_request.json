@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-cm-12870",
-  "title": "Prepare Response to Payer Formulary Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Response to Payer Formulary Request",
+    "compliance_level": "Standard"
+  },
   "description": "A health economics and outcomes research (HEOR) specialist must prepare a dossier for a payer (insurance company) that is considering adding a new drug to its formulary.",
-  "use_case": "Commercial & Medical Affairs",
-  "core_function": "Medical Information & Inquiries",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Assemble the core value dossier for the product, including all clinical efficacy and safety data.",
-      "expected_outcome": "Agent gathers all the relevant clinical study reports.",
-      "required_tools": [
-        "search_document_management_system"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Assemble the core value dossier for the product, including all clinical efficacy and safety data.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all the relevant clinical study reports."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Incorporate economic models showing the cost-effectiveness of the drug compared to competitors.",
-      "expected_outcome": "Agent embeds the approved economic models and their outputs into the dossier.",
-      "required_tools": [
-        "get_health_economic_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Incorporate economic models showing the cost-effectiveness of the drug compared to competitors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent embeds the approved economic models and their outputs into the dossier."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Tailor the dossier to the specific payer's format and requirements.",
-      "expected_outcome": "Agent reformats the dossier to match the payer's template (e.g., AMCP format).",
-      "required_tools": [
-        "format_dossier"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Tailor the dossier to the specific payer's format and requirements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reformats the dossier to match the payer's template (e.g., AMCP format)."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the final dossier to the payer.",
-      "expected_outcome": "Agent successfully submits the dossier via the payer's portal.",
-      "required_tools": [
-        "submit_document_to_portal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the final dossier to the payer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the dossier via the payer's portal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

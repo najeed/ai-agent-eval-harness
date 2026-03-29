@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-dev-13331",
-  "title": "Market a New Condominium Development",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Market a New Condominium Development",
+    "compliance_level": "Standard"
+  },
   "description": "A developer is launching a new condo project and needs a marketing campaign to drive pre-sales.",
-  "use_case": "Real Estate Development",
-  "core_function": "Sales & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Develop a project brand, including a name, logo, and website.",
-      "expected_outcome": "A complete brand identity for the project is created.",
-      "required_tools": [
-        "brand_asset_generator"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Develop a project brand, including a name, logo, and website.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete brand identity for the project is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create high-quality 3D renderings and virtual tours of the future units and amenities.",
-      "expected_outcome": "Compelling visual marketing assets are produced.",
-      "required_tools": [
-        "order_3d_renderings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create high-quality 3D renderings and virtual tours of the future units and amenities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Compelling visual marketing assets are produced."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Launch a digital advertising campaign targeting potential buyers on social media and real estate portals to generate leads for the sales gallery.",
-      "expected_outcome": "A lead generation campaign is launched and monitored.",
-      "required_tools": [
-        "launch_digital_ad_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Launch a digital advertising campaign targeting potential buyers on social media and real estate portals to generate leads for the sales gallery.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A lead generation campaign is launched and monitored."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

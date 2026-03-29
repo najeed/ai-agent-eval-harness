@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-pmc-11474",
-  "title": "Track Contractor Submittal Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Contractor Submittal Status",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager wants to know the status of a critical submittal that was sent to engineering for review.",
-  "use_case": "Project Management & Controls",
-  "core_function": "Contract & Procurement Management",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the submittal in the document control system.",
-      "expected_outcome": "Agent locates the specific submittal record.",
-      "required_tools": [
-        "find_submittal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the submittal in the document control system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the specific submittal record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check its current status and who the current reviewer is.",
-      "expected_outcome": "The system shows the status is 'Under Review' and it is currently assigned to the lead electrical engineer.",
-      "required_tools": [
-        "get_submittal_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check its current status and who the current reviewer is.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows the status is 'Under Review' and it is currently assigned to the lead electrical engineer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a reminder notification to the reviewer, as the review is almost due.",
-      "expected_outcome": "Agent sends a reminder to the lead engineer.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a reminder notification to the reviewer, as the review is almost due.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a reminder to the lead engineer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

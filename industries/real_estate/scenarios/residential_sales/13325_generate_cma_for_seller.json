@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13325",
-  "title": "Generate a Comparative Market Analysis (CMA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a Comparative Market Analysis (CMA)",
+    "compliance_level": "Standard"
+  },
   "description": "A prospective seller wants to know what their home is worth. The agent must prepare a CMA to propose a listing price.",
-  "use_case": "Residential Sales",
-  "core_function": "Client Onboarding & Qualification",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find 3-5 comparable properties that are currently for sale, pending, and recently sold in the same neighborhood.",
-      "expected_outcome": "Agent compiles a list of relevant comparable properties.",
-      "required_tools": [
-        "search_mls_comps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "search_relevance",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find 3-5 comparable properties that are currently for sale, pending, and recently sold in the same neighborhood.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a list of relevant comparable properties."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the comps, making adjustments for key differences (e.g., square footage, condition, upgrades).",
-      "expected_outcome": "Agent determines an adjusted value range for the subject property.",
-      "required_tools": [
-        "analyze_sales_comps"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the comps, making adjustments for key differences (e.g., square footage, condition, upgrades).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines an adjusted value range for the subject property."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a CMA report that visually presents the data and suggests a strategic listing price range.",
-      "expected_outcome": "A professional and persuasive CMA report is created.",
-      "required_tools": [
-        "generate_cma_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a CMA report that visually presents the data and suggests a strategic listing price range.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A professional and persuasive CMA report is created."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

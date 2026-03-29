@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14186",
-  "title": "Launch 'Call Before You Dig' Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Launch 'Call Before You Dig' Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "The public affairs department is launching a public awareness campaign to remind people to call 811 before any digging projects.",
-  "use_case": "Gas Operations",
-  "core_function": "Leak Detection & Repair",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Draft the content for the campaign, including social media posts, bill inserts, and radio ads.",
-      "expected_outcome": "Agent generates various pieces of marketing content with a consistent message.",
-      "required_tools": [
-        "draft_marketing_content"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Draft the content for the campaign, including social media posts, bill inserts, and radio ads.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates various pieces of marketing content with a consistent message."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Schedule the distribution of the content across the various channels for the spring season, when digging projects increase.",
-      "expected_outcome": "Agent creates a campaign schedule.",
-      "required_tools": [
-        "schedule_media_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Schedule the distribution of the content across the various channels for the spring season, when digging projects increase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a campaign schedule."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Track the number of 811 calls before and during the campaign to measure its effectiveness.",
-      "expected_outcome": "System is set up to monitor and report on campaign metrics.",
-      "required_tools": [
-        "track_campaign_metrics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "monitoring_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Track the number of 811 calls before and during the campaign to measure its effectiveness.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System is set up to monitor and report on campaign metrics."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

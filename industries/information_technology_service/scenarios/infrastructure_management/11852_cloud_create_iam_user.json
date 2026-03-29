@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11852",
-  "title": "Cloud - Create New AWS IAM User",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cloud - Create New AWS IAM User",
+    "compliance_level": "Standard"
+  },
   "description": "A client needs a new IAM user created in AWS for a developer, with access restricted to specific services.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Cloud Resource Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Clarify the exact permissions the developer needs (e.g., read-only access to S3 and full access to EC2).",
-      "expected_outcome": "The technician has a clear list of required permissions.",
-      "required_tools": [
-        "get_ticket_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Clarify the exact permissions the developer needs (e.g., read-only access to S3 and full access to EC2).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician has a clear list of required permissions."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new IAM policy with the specified permissions.",
-      "expected_outcome": "A new, least-privilege IAM policy is created.",
-      "required_tools": [
-        "create_iam_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new IAM policy with the specified permissions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new, least-privilege IAM policy is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create the new IAM user and attach the newly created policy to it.",
-      "expected_outcome": "The developer user account is created with the correct permissions.",
-      "required_tools": [
-        "create_iam_user"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create the new IAM user and attach the newly created policy to it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The developer user account is created with the correct permissions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

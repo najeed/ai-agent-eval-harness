@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10763",
-  "title": "SOX ITGC Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "SOX ITGC Audit",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst must test IT General Controls (ITGCs) for a Sarbanes-Oxley (SOX) audit, specifically focusing on change management.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Compliance Auditing & Reporting",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select a sample of recent changes made to a financially-significant application.",
-      "expected_outcome": "Analyst selects a representative sample of changes from the change management system.",
-      "required_tools": [
-        "get_change_management_tickets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "sampling_randomness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select a sample of recent changes made to a financially-significant application.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst selects a representative sample of changes from the change management system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each change, verify that it has documented approval from management and evidence of successful testing before it was deployed.",
-      "expected_outcome": "Analyst checks for the required evidence for each change in the sample.",
-      "required_tools": [
-        "verify_change_approval",
-        "verify_change_testing"
-      ],
-      "success_criteria": [
-        {
-          "metric": "audit_thoroughness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each change, verify that it has documented approval from management and evidence of successful testing before it was deployed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst checks for the required evidence for each change in the sample."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the results of the testing, noting one change that was missing manager approval, and report it as a control deficiency.",
-      "expected_outcome": "Analyst correctly identifies and documents a control failure for remediation.",
-      "required_tools": [
-        "document_audit_finding"
-      ],
-      "success_criteria": [
-        {
-          "metric": "finding_accuracy_and_relevance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the results of the testing, noting one change that was missing manager approval, and report it as a control deficiency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies and documents a control failure for remediation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12413",
-  "title": "Monitor Brand Mentions",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor Brand Mentions",
+    "compliance_level": "Standard"
+  },
   "description": "A brand manager needs to monitor social media and news outlets for mentions of their brand.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Brand Management",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Set up a new monitoring query in a social listening tool for the brand name and key product names.",
-      "expected_outcome": "Agent correctly configures the listening tool.",
-      "required_tools": [
-        "social_listening_tool_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "parameter_setting_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Set up a new monitoring query in a social listening tool for the brand name and key product names.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly configures the listening tool."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the mentions from the last 24 hours.",
-      "expected_outcome": "Agent retrieves a feed of recent brand mentions.",
-      "required_tools": [
-        "social_listening_tool_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the mentions from the last 24 hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a feed of recent brand mentions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify a negative news article and flag it for the PR team to review.",
-      "expected_outcome": "Agent correctly identifies a high-priority mention and escalates it to the appropriate team.",
-      "required_tools": [
-        "create_notification_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify a negative news article and flag it for the PR team to review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies a high-priority mention and escalates it to the appropriate team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

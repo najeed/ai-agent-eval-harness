@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ct-12884",
-  "title": "Perform Medical Coding of an Adverse Event",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Medical Coding of an Adverse Event",
+    "compliance_level": "Standard"
+  },
   "description": "A drug safety physician must perform the medical assessment and coding for a complex adverse event case.",
-  "use_case": "Clinical Trials",
-  "core_function": "Clinical Data Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the source documents and narrative for a serious adverse event case.",
-      "expected_outcome": "Agent reviews the case details.",
-      "required_tools": [
-        "review_safety_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the source documents and narrative for a serious adverse event case.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the case details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Write a medical narrative summarizing the case in a standard format.",
-      "expected_outcome": "Agent writes a clear, concise, and medically accurate narrative.",
-      "required_tools": [
-        "write_medical_narrative"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.98,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Write a medical narrative summarizing the case in a standard format.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes a clear, concise, and medically accurate narrative."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Code the reported events and diagnoses using the MedDRA dictionary.",
-      "expected_outcome": "Agent accurately codes all medical concepts in the case to the appropriate MedDRA terms.",
-      "required_tools": [
-        "manually_code_term"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Code the reported events and diagnoses using the MedDRA dictionary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately codes all medical concepts in the case to the appropriate MedDRA terms."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Perform a causality assessment to determine the likelihood that the drug caused the event.",
-      "expected_outcome": "Agent assesses the relationship as 'possibly related' and documents the justification.",
-      "required_tools": [
-        "perform_causality_assessment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-4",
+        "task_description": "Perform a causality assessment to determine the likelihood that the drug caused the event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assesses the relationship as 'possibly related' and documents the justification."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

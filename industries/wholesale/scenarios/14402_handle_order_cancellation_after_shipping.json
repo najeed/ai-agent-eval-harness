@@ -1,53 +1,59 @@
 {
-  "scenario_id": "wholesale-om-14402",
-  "title": "Handle Order Cancellation After Shipping",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Order Cancellation After Shipping",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to cancel an order, but it has already been shipped.",
-  "use_case": "Order Management & Sales",
-  "core_function": "Order Processing & Fulfillment",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the order and check its status.",
-      "expected_outcome": "Agent confirms the order has already been shipped and provides the tracking number.",
-      "required_tools": [
-        "get_sales_order_details",
-        "get_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the order and check its status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the order has already been shipped and provides the tracking number."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Inform the customer that the order cannot be cancelled but they can return it for a refund once it arrives.",
-      "expected_outcome": "Agent clearly explains the return process.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Inform the customer that the order cannot be cancelled but they can return it for a refund once it arrives.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the return process."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create an RMA for the customer in advance so they can easily process the return.",
-      "expected_outcome": "Agent proactively creates the RMA for the customer.",
-      "required_tools": [
-        "create_rma"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create an RMA for the customer in advance so they can easily process the return.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proactively creates the RMA for the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

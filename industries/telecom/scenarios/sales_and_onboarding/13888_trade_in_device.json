@@ -1,83 +1,61 @@
 {
-  "scenario_id": "telecom-sl-13888",
-  "title": "Process a Device Trade-in",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Device Trade-in",
+    "compliance_level": "Standard"
+  },
   "description": "A customer upgrading their phone wants to trade in their old device for credit.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Upselling and Cross-selling",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the model and condition of the customer's old device to determine its trade-in value.",
-      "expected_outcome": "Agent uses the trade-in tool to provide a quote for the old device.",
-      "required_tools": [
-        "get_device_trade_in_value"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the model and condition of the customer's old device to determine its trade-in value.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses the trade-in tool to provide a quote for the old device."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the trade-in process: how the credit will be applied and how to ship the old device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the full process."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the trade-in process: how the credit will be applied and how to ship the old device.",
-      "expected_outcome": "Agent clearly communicates the full process.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the trade-in and generate a shipping label for the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the trade-in and sends the shipping label."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the trade-in and generate a shipping label for the customer.",
-      "expected_outcome": "Agent successfully processes the trade-in and sends the shipping label.",
-      "required_tools": [
-        "process_device_trade_in"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-cf-11243",
-  "title": "Create a New Annual Budget",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a New Annual Budget",
+    "compliance_level": "Standard"
+  },
   "description": "An FP&A manager is starting the annual budgeting process and needs to create the initial budget template for department heads.",
-  "use_case": "Corporate Finance",
-  "core_function": "Financial Planning & Analysis (FP&A)",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new budget version for the upcoming fiscal year in the planning tool.",
-      "expected_outcome": "Agent successfully creates a new, blank budget for the next fiscal year.",
-      "required_tools": [
-        "create_new_budget_version"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new budget version for the upcoming fiscal year in the planning tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new, blank budget for the next fiscal year."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Pre-populate the budget template with historical data from the previous year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent populates the new budget with last year's actuals as a baseline."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Pre-populate the budget template with historical data from the previous year.",
-      "expected_outcome": "Agent populates the new budget with last year's actuals as a baseline.",
-      "required_tools": [
-        "populate_budget_with_historicals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Distribute the budget templates to all department heads to begin their input.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends notifications and links to the budget templates to the relevant managers."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Distribute the budget templates to all department heads to begin their input.",
-      "expected_outcome": "Agent sends notifications and links to the budget templates to the relevant managers.",
-      "required_tools": [
-        "distribute_budget_templates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

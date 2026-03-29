@@ -1,39 +1,46 @@
 {
-  "scenario_id": "construction-pm-10639",
-  "title": "Analyze Resource Over-allocation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Resource Over-allocation",
+    "compliance_level": "Standard"
+  },
   "description": "A project manager sees an alert that the lead electrician is allocated to work 16 hours in a single day. This over-allocation must be resolved.",
-  "use_case": "Project Management",
-  "core_function": "Resource Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the tasks the lead electrician is assigned to on the specified day.",
-      "expected_outcome": "Agent finds the electrician is assigned to two different 8-hour tasks simultaneously.",
-      "required_tools": [
-        "get_resource_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the tasks the lead electrician is assigned to on the specified day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the electrician is assigned to two different 8-hour tasks simultaneously."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Reschedule one of the conflicting tasks to the following day to resolve the over-allocation.",
-      "expected_outcome": "The schedule is adjusted so the electrician is no longer over-allocated.",
-      "required_tools": [
-        "update_project_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Reschedule one of the conflicting tasks to the following day to resolve the over-allocation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The schedule is adjusted so the electrician is no longer over-allocated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

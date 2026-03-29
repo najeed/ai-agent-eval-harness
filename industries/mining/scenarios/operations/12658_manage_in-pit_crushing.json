@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-ops-12658",
-  "title": "Manage In-Pit Crushing and Conveying",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage In-Pit Crushing and Conveying",
+    "compliance_level": "Standard"
+  },
   "description": "An operator manages an in-pit crushing and conveying (IPCC) system, where ore is crushed inside the pit and transported out via conveyor, instead of by truck.",
-  "use_case": "Mine Operations",
-  "core_function": "Load & Haul",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the feed rate and power draw of the in-pit primary crusher.",
-      "expected_outcome": "The operator confirms the IPCC system is running smoothly.",
-      "required_tools": [
-        "get_crusher_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the feed rate and power draw of the in-pit primary crusher.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator confirms the IPCC system is running smoothly."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Coordinate with the shovel operators to ensure a steady feed of ore to the crusher to maximize utilization.",
-      "expected_outcome": "The shovels and crusher are working in sync to provide a consistent flow.",
-      "required_tools": [
-        "communicate_with_shovel_operators"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_effectiveness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Coordinate with the shovel operators to ensure a steady feed of ore to the crusher to maximize utilization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The shovels and crusher are working in sync to provide a consistent flow."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the status of the overland conveyor that transports the crushed ore out of the pit.",
-      "expected_outcome": "The conveyor is monitored for any signs of belt misalignment or other issues.",
-      "required_tools": [
-        "get_conveyor_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the status of the overland conveyor that transports the crushed ore out of the pit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The conveyor is monitored for any signs of belt misalignment or other issues."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-fe-13641",
-  "title": "Process a Group Ticket Sale",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Group Ticket Sale",
+    "compliance_level": "Standard"
+  },
   "description": "A company wants to buy a block of 50 tickets for a game for a corporate outing.",
-  "use_case": "Fan Engagement & Ticketing",
-  "core_function": "Ticketing & Access Control",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check for the availability of a block of 50 seats together for the desired game.",
-      "expected_outcome": "Agent finds an available block of seats in a specific section.",
-      "required_tools": [
-        "check_seat_block_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check for the availability of a block of 50 seats together for the desired game.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds an available block of seats in a specific section."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide a quote for the group sale, including any applicable group discounts.",
-      "expected_outcome": "Agent generates a quote with a 10% group discount.",
-      "required_tools": [
-        "generate_group_ticket_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide a quote for the group sale, including any applicable group discounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a quote with a 10% group discount."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the sale and issue the block of tickets to the company representative.",
-      "expected_outcome": "Agent successfully completes the sale and delivers the tickets digitally.",
-      "required_tools": [
-        "process_payment",
-        "issue_group_tickets"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the sale and issue the block of tickets to the company representative.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the sale and delivers the tickets digitally."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

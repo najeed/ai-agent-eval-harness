@@ -1,88 +1,61 @@
 {
-  "scenario_id": "finance-wm-11203",
-  "title": "Execute a Stock Trade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Execute a Stock Trade",
+    "compliance_level": "Standard"
+  },
   "description": "A wealth management client wants to buy 100 shares of a specific tech company (e.g., AAPL).",
-  "use_case": "Wealth Management",
-  "core_function": "Trade Execution & Servicing",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the client and confirm the trade details (buy, 100 shares, AAPL, market order).",
-      "expected_outcome": "Agent verifies the client and accurately confirms all trade parameters.",
-      "required_tools": [
-        "verify_client_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
-        },
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the client and confirm the trade details (buy, 100 shares, AAPL, market order).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the client and accurately confirms all trade parameters."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the client's account for sufficient buying power.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the account has enough cash to cover the estimated cost of the trade."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the client's account for sufficient buying power.",
-      "expected_outcome": "Agent confirms the account has enough cash to cover the estimated cost of the trade.",
-      "required_tools": [
-        "check_buying_power"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place the market order and confirm the execution details (price, total cost) back to the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully executes the trade and provides a confirmation."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place the market order and confirm the execution details (price, total cost) back to the client.",
-      "expected_outcome": "Agent successfully executes the trade and provides a confirmation.",
-      "required_tools": [
-        "execute_trade"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

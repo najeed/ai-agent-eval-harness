@@ -1,54 +1,59 @@
 {
-  "scenario_id": "energy-tr-11197",
-  "title": "Long-Term Load Forecasting for Resource Planning",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Long-Term Load Forecasting for Resource Planning",
+    "compliance_level": "Standard"
+  },
   "description": "A resource planner needs a 20-year load forecast for the service territory to inform decisions about building new power plants.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Market Analysis & Forecasting",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather long-term economic forecasts for the region, including population growth and business development.",
-      "expected_outcome": "Planner compiles key economic driver data.",
-      "required_tools": [
-        "get_economic_forecasts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather long-term economic forecasts for the region, including population growth and business development.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner compiles key economic driver data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Forecast the adoption rate of disruptive technologies like rooftop solar, electric vehicles, and energy efficiency measures.",
-      "expected_outcome": "Planner generates adoption curves for key technologies.",
-      "required_tools": [
-        "forecast_technology_adoption"
-      ],
-      "success_criteria": [
-        {
-          "metric": "forecast_accuracy_mae",
-          "threshold": 0.1,
-          "threshold_unit": "kWh",
-          "threshold_type": "min"
+      },
+      {
+        "id": "task-2",
+        "task_description": "Forecast the adoption rate of disruptive technologies like rooftop solar, electric vehicles, and energy efficiency measures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner generates adoption curves for key technologies."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Combine the economic and technology forecasts into an integrated long-term energy forecast.",
-      "expected_outcome": "System produces a 20-year forecast for both peak demand and annual energy consumption.",
-      "required_tools": [
-        "generate_long_term_load_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "forecast_accuracy_mape",
-          "threshold": 0.15
+      },
+      {
+        "id": "task-3",
+        "task_description": "Combine the economic and technology forecasts into an integrated long-term energy forecast.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System produces a 20-year forecast for both peak demand and annual energy consumption."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-pt-55",
-  "title": "Perform Inventory Valuation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Inventory Valuation",
+    "compliance_level": "Standard"
+  },
   "description": "For month-end reporting, the cost accountant must value the ending inventory.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Compliance & Cost Accounting",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the list of all inventory items and their on-hand quantities at the end of the month.",
-      "expected_outcome": "Agent gets the physical inventory count.",
-      "required_tools": [
-        "get_inventory_quantities"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the list of all inventory items and their on-hand quantities at the end of the month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the physical inventory count."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each item, retrieve its standard cost from the item master file.",
-      "expected_outcome": "Agent gets the standard cost for each inventory item.",
-      "required_tools": [
-        "get_standard_costs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each item, retrieve its standard cost from the item master file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the standard cost for each inventory item."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the total value of the ending inventory by multiplying the quantity of each item by its standard cost.",
-      "expected_outcome": "Agent calculates the total inventory value.",
-      "required_tools": [
-        "calculate_inventory_value"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the total value of the ending inventory by multiplying the quantity of each item by its standard cost.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the total inventory value."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create the journal entry to adjust the inventory account in the general ledger to this new value.",
-      "expected_outcome": "Agent creates the adjusting journal entry for inventory.",
-      "required_tools": [
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create the journal entry to adjust the inventory account in the general ledger to this new value.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the adjusting journal entry for inventory."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

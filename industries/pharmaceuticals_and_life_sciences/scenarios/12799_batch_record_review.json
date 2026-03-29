@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-ms-12799",
-  "title": "Review Electronic Batch Record for Deviations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Electronic Batch Record for Deviations",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must review a completed electronic batch record (eBR) for a batch of tablets, checking for any recorded deviations or out-of-specification results.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Production & Batch Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the eBR for the specified batch number.",
-      "expected_outcome": "Agent correctly pulls up the complete batch record.",
-      "required_tools": [
-        "get_batch_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the eBR for the specified batch number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly pulls up the complete batch record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the eBR for any recorded deviation events.",
-      "expected_outcome": "Agent identifies a deviation logged for 'incorrect mixing time' in the granulation step.",
-      "required_tools": [
-        "analyze_batch_record_deviations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the eBR for any recorded deviation events.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a deviation logged for 'incorrect mixing time' in the granulation step."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the linked quality investigation report for the deviation.",
-      "expected_outcome": "Agent finds the investigation which concluded 'no impact on product quality'.",
-      "required_tools": [
-        "get_quality_investigation_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the linked quality investigation report for the deviation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the investigation which concluded 'no impact on product quality'."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Forward the batch record to the Quality Assurance department for final approval and release.",
-      "expected_outcome": "Agent successfully routes the eBR to the QA work queue.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Forward the batch record to the Quality Assurance department for final approval and release.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully routes the eBR to the QA work queue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

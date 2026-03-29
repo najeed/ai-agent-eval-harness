@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-om-12237",
-  "title": "Handle a Backorder Situation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Backorder Situation",
+    "compliance_level": "Standard"
+  },
   "description": "A customer places an order for an item that is out of stock. The agent must inform the customer and provide options.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Order Processing",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "When processing the order, the system flags an item as out of stock.",
-      "expected_outcome": "The system identifies the stockout and places the order on hold.",
-      "required_tools": [
-        "validate_order_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "When processing the order, the system flags an item as out of stock.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system identifies the stockout and places the order on hold."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the next expected receipt date for the out-of-stock item from open purchase orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the item is expected to be back in stock in 7 days."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the next expected receipt date for the out-of-stock item from open purchase orders.",
-      "expected_outcome": "Agent finds the item is expected to be back in stock in 7 days.",
-      "required_tools": [
-        "get_item_eta"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the customer, explain the situation, provide the ETA, and ask if they want to wait or cancel the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the options to the customer, who agrees to wait."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the customer, explain the situation, provide the ETA, and ask if they want to wait or cancel the item.",
-      "expected_outcome": "Agent clearly communicates the options to the customer, who agrees to wait.",
-      "required_tools": [
-        "send_customer_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

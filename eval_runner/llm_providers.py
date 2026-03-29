@@ -127,8 +127,9 @@ class OpenAIProvider(LLMProvider):
 class AnthropicProvider(LLMProvider):
     """Anthropic (Claude) provider."""
 
-    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
         self.api_key = api_key or config.ANTHROPIC_API_KEY
+        self.base_url = base_url or config.ANTHROPIC_BASE_URL
         self.model = model or config.ANTHROPIC_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
@@ -143,7 +144,7 @@ class AnthropicProvider(LLMProvider):
                     "content-type": "application/json",
                 }
                 async with session.post(
-                    "https://api.anthropic.com/v1/messages",
+                    self.base_url,
                     headers=headers,
                     json={
                         "model": self.model,
@@ -178,8 +179,9 @@ class AnthropicProvider(LLMProvider):
 class GeminiProvider(LLMProvider):
     """Google Gemini provider."""
 
-    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
         self.api_key = api_key or config.GOOGLE_API_KEY
+        self.base_url = base_url or config.GEMINI_BASE_URL
         self.model = model or config.GEMINI_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
@@ -192,7 +194,7 @@ class GeminiProvider(LLMProvider):
             model_id = model_id.replace("models/", "", 1)
             
         # Standard v1beta endpoint structure
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent?key={self.api_key}"
+        url = f"{self.base_url}/{model_id}:generateContent?key={self.api_key}"
         
         async with aiohttp.ClientSession() as session:
             try:
@@ -226,7 +228,7 @@ class GeminiProvider(LLMProvider):
         if not self.api_key:
             raise Exception("Google API key missing.")
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={self.api_key}"
+        url = f"{self.base_url}/models?key={self.api_key}"
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as response:

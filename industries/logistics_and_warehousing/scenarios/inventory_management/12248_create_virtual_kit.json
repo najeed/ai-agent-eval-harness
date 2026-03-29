@@ -1,81 +1,58 @@
 {
-  "scenario_id": "lw-im-12248",
-  "title": "Create a Virtual Kit (Bill of Materials)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Virtual Kit (Bill of Materials)",
+    "compliance_level": "Standard"
+  },
   "description": "A marketing team wants to sell a new product bundle online. An inventory analyst must create a virtual kit in the system so that when the kit is sold, the system allocates the component inventory.",
-  "use_case": "Inventory Management",
-  "core_function": "Inventory Analysis",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new SKU for the product bundle (the 'parent' item).",
-      "expected_outcome": "A new product SKU is created.",
-      "required_tools": [
-        "create_product_sku"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new SKU for the product bundle (the 'parent' item).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new product SKU is created."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Define a Bill of Materials (BOM) for the new parent SKU, linking it to the component SKUs and their required quantities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully defines the relationship between the parent kit and its children components."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Define a Bill of Materials (BOM) for the new parent SKU, linking it to the component SKUs and their required quantities.",
-      "expected_outcome": "Agent successfully defines the relationship between the parent kit and its children components.",
-      "required_tools": [
-        "define_bill_of_materials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Activate the kit. Now, when an order for the parent SKU is placed, the system will automatically check and reserve inventory for the component SKUs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The virtual kit is now live and sellable."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Activate the kit. Now, when an order for the parent SKU is placed, the system will automatically check and reserve inventory for the component SKUs.",
-      "expected_outcome": "The virtual kit is now live and sellable.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

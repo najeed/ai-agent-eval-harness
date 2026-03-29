@@ -1,38 +1,46 @@
 {
-  "scenario_id": "ecommerce-osm-10905",
-  "title": "Apply Flash Sale Pricing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply Flash Sale Pricing",
+    "compliance_level": "Standard"
+  },
   "description": "A marketing manager wants to apply a 24-hour 20% discount to an entire category of products for a flash sale.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Pricing & Promotions",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all products within the 'Summer Collection' category.",
-      "expected_outcome": "Agent retrieves a list of all SKUs in the specified category.",
-      "required_tools": [
-        "get_products_by_category"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all products within the 'Summer Collection' category.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of all SKUs in the specified category."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply a 20% discount to all identified products with an expiration of 24 hours.",
-      "expected_outcome": "Agent successfully runs a bulk update to apply the promotional pricing.",
-      "required_tools": [
-        "apply_bulk_discount"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply a 20% discount to all identified products with an expiration of 24 hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully runs a bulk update to apply the promotional pricing."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

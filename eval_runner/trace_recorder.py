@@ -48,7 +48,7 @@ async def record_interaction(agent_url: str):
                 try:
                     async with session.post(agent_url, json={"task_description": task}, timeout=10) as response:
                         if response.status == 200:
-                            data = await response.get_json()
+                            data = await response.json()
                             print(f"  Agent: {data.get('summary', 'No summary provided')}")
 
                             # Record response
@@ -65,9 +65,10 @@ async def record_interaction(agent_url: str):
 
     finally:
         # Save to file
+        from .trace_utils import AESJsonEncoder
         with open(log_file, "w", encoding="utf-8") as f:
             for e in events:
-                f.write(json.dumps(e) + "\n")
+                f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")
 
         print(f"\n✅ Recording saved to: {log_file}")
         print(f"Tip: You can replay this with 'multiagent-eval replay --path {log_file}'")

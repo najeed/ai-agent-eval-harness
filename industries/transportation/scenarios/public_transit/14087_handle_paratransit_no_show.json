@@ -1,64 +1,72 @@
 {
-  "scenario_id": "tr-pt-14087",
-  "title": "Handle a Paratransit No-Show",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Paratransit No-Show",
+    "compliance_level": "Standard"
+  },
   "description": "A paratransit vehicle arrives to pick up a passenger, but the passenger is not there. The driver must report the no-show.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Service Planning & Scheduling",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The driver arrives at the pickup location at the scheduled time.",
-      "expected_outcome": "The driver is on time at the correct location.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The driver arrives at the pickup location at the scheduled time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver is on time at the correct location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The driver waits for the required period (e.g., 5 minutes).",
-      "expected_outcome": "The driver follows the waiting policy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The driver waits for the required period (e.g., 5 minutes).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver follows the waiting policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The driver contacts dispatch to report that the passenger is a no-show.",
-      "expected_outcome": "Dispatch is notified of the no-show.",
-      "required_tools": [
-        "contact_dispatch"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "The driver contacts dispatch to report that the passenger is a no-show.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatch is notified of the no-show."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Dispatch logs the no-show event on the passenger's account (as excessive no-shows can lead to suspension) and instructs the driver to proceed to their next pickup.",
-      "expected_outcome": "The no-show is recorded, and the driver continues their route.",
-      "required_tools": [
-        "log_paratransit_no_show",
-        "update_driver_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Dispatch logs the no-show event on the passenger's account (as excessive no-shows can lead to suspension) and instructs the driver to proceed to their next pickup.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The no-show is recorded, and the driver continues their route."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

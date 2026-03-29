@@ -1,52 +1,59 @@
 {
-  "scenario_id": "venues-fb-14214",
-  "title": "Restock a Concession Stand",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Restock a Concession Stand",
+    "compliance_level": "Standard"
+  },
   "description": "A concession stand manager reports they are running low on hot dog buns during a sold-out event.",
-  "use_case": "Food & Beverage (Concessions)",
-  "core_function": "Inventory Management",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the request for more hot dog buns from the concession stand.",
-      "expected_outcome": "Agent logs the request from Stand 14.",
-      "required_tools": [
-        "log_inventory_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the request for more hot dog buns from the concession stand.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the request from Stand 14."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the inventory level of hot dog buns in the central storeroom.",
-      "expected_outcome": "Agent confirms there are sufficient buns in stock.",
-      "required_tools": [
-        "check_central_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the inventory level of hot dog buns in the central storeroom.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there are sufficient buns in stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a runner to deliver two cases of buns from the storeroom to the concession stand.",
-      "expected_outcome": "Agent creates and assigns a delivery task to an available runner.",
-      "required_tools": [
-        "dispatch_runner"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a runner to deliver two cases of buns from the storeroom to the concession stand.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates and assigns a delivery task to an available runner."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

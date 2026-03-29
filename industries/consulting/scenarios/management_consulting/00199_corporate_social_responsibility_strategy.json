@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-199",
-  "title": "Corporate Social Responsibility (CSR) Strategy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Corporate Social Responsibility (CSR) Strategy",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must draft a CSR strategy for a client that aligns with their brand values.",
-  "use_case": "Management Consulting",
-  "core_function": "Strategy & Recommendation",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the client's brand values statement (e.g., 'Innovation', 'Community', 'Sustainability').",
-      "expected_outcome": "Agent correctly identifies the core brand values.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the client's brand values statement (e.g., 'Innovation', 'Community', 'Sustainability').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the core brand values."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Brainstorm CSR initiatives that align with each brand value.",
-      "expected_outcome": "Agent suggests relevant initiatives, such as 'sponsoring a local STEM fair' to align with 'Community' and 'Innovation'.",
-      "required_tools": [
-        "brainstorm_ideas"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Brainstorm CSR initiatives that align with each brand value.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent suggests relevant initiatives, such as 'sponsoring a local STEM fair' to align with 'Community' and 'Innovation'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Structure the initiatives into a formal CSR strategy document.",
-      "expected_outcome": "Agent produces a well-organized strategy document.",
-      "required_tools": [
-        "create_document_from_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Structure the initiatives into a formal CSR strategy document.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a well-organized strategy document."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

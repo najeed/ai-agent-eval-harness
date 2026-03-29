@@ -1,53 +1,59 @@
 {
-  "scenario_id": "auto-ms-10438",
-  "title": "Inbound Logistics Delay",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inbound Logistics Delay",
+    "compliance_level": "Standard"
+  },
   "description": "A train carrying essential chassis components has been delayed due to weather, impacting the start of the next production shift.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Logistics & Parts Tracking",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the delay notification from the rail carrier.",
-      "expected_outcome": "Agent receives an alert that shipment #75B is delayed by 12 hours.",
-      "required_tools": [
-        "get_carrier_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the delay notification from the rail carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives an alert that shipment #75B is delayed by 12 hours."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assess the impact on the production schedule by checking current inventory levels of the affected parts.",
-      "expected_outcome": "Agent determines there is only enough inventory for 2 more hours of production.",
-      "required_tools": [
-        "check_parts_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assess the impact on the production schedule by checking current inventory levels of the affected parts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines there is only enough inventory for 2 more hours of production."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the production manager and adjust the shift start time to minimize idle labor costs.",
-      "expected_outcome": "Agent communicates the delay and the production schedule is officially updated.",
-      "required_tools": [
-        "send_notification",
-        "update_production_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the production manager and adjust the shift start time to minimize idle labor costs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent communicates the delay and the production schedule is officially updated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

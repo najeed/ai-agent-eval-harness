@@ -1,62 +1,72 @@
 {
-  "scenario_id": "marketing-sp-12487",
-  "title": "Create a Marketing SWOT Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create a Marketing SWOT Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "A strategist is preparing for a planning session and needs to create a SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis for the marketing department.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Campaign Strategy & Planning",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "List the internal strengths of the marketing team (e.g., 'Strong organic social media following').",
-      "expected_outcome": "Agent identifies and documents internal positive factors.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "List the internal strengths of the marketing team (e.g., 'Strong organic social media following').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies and documents internal positive factors."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "List the internal weaknesses (e.g., 'Low email marketing engagement').",
-      "expected_outcome": "Agent identifies and documents internal negative factors.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "List the internal weaknesses (e.g., 'Low email marketing engagement').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies and documents internal negative factors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "List the external opportunities (e.g., 'New social media platform gaining popularity with our audience').",
-      "expected_outcome": "Agent identifies and documents external positive factors.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "List the external opportunities (e.g., 'New social media platform gaining popularity with our audience').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies and documents external positive factors."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "List the external threats (e.g., 'A major competitor just increased their ad spend').",
-      "expected_outcome": "Agent identifies and documents external negative factors, completing the SWOT analysis.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "List the external threats (e.g., 'A major competitor just increased their ad spend').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies and documents external negative factors, completing the SWOT analysis."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

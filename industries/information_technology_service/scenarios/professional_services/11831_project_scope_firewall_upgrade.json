@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-ps-11831",
-  "title": "Project Scoping - Firewall Upgrade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Scoping - Firewall Upgrade",
+    "compliance_level": "Standard"
+  },
   "description": "A client with an aging firewall wants a quote to replace it with a new, next-generation model.",
-  "use_case": "Professional Services & Projects",
-  "core_function": "Project Scoping & Quoting",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the client's existing firewall configuration to understand the complexity (number of rules, VPNs, etc.).",
-      "expected_outcome": "The sales engineer has a full understanding of the current configuration that needs to be migrated.",
-      "required_tools": [
-        "get_firewall_config"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the client's existing firewall configuration to understand the complexity (number of rules, VPNs, etc.).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The sales engineer has a full understanding of the current configuration that needs to be migrated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Recommend a suitable next-generation firewall model that meets the client's needs.",
-      "expected_outcome": "A specific firewall model is recommended.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Recommend a suitable next-generation firewall model that meets the client's needs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A specific firewall model is recommended."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a quote that includes the cost of the hardware, software licenses, and the professional services hours to configure and install it.",
-      "expected_outcome": "A comprehensive quote is created and sent to the client.",
-      "required_tools": [
-        "create_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a quote that includes the cost of the hardware, software licenses, and the professional services hours to configure and install it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive quote is created and sent to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

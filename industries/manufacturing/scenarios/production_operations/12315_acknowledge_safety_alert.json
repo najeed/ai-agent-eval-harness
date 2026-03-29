@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-po-12315",
-  "title": "Acknowledge Safety Alert",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Acknowledge Safety Alert",
+    "compliance_level": "Standard"
+  },
   "description": "A light curtain on a robotic arm has been tripped, pausing the machine. The area supervisor needs to acknowledge and resolve the alert.",
-  "use_case": "Production & Operations",
-  "core_function": "Real-time Monitoring & Control",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the safety alert in the control system.",
-      "expected_outcome": "Agent acknowledges the alert, noting the time and location.",
-      "required_tools": [
-        "acknowledge_safety_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the safety alert in the control system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the alert, noting the time and location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review safety camera footage to determine the cause of the alert.",
-      "expected_outcome": "Agent reviews the footage and sees a piece of cardboard fell into the path of the sensor.",
-      "required_tools": [
-        "review_safety_camera"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review safety camera footage to determine the cause of the alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the footage and sees a piece of cardboard fell into the path of the sensor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the cause, clear the obstruction, and reset the machine to resume operation.",
-      "expected_outcome": "Agent logs 'Foreign Object' as the cause and successfully restarts the machine.",
-      "required_tools": [
-        "log_alert_cause",
-        "reset_machine"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the cause, clear the obstruction, and reset the machine to resume operation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs 'Foreign Object' as the cause and successfully restarts the machine."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

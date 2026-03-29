@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-com-10511",
-  "title": "Process New Customer Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process New Customer Order",
+    "compliance_level": "Standard"
+  },
   "description": "A sales representative needs to enter a new order for an existing customer for 10 drums of a standard product.",
-  "use_case": "Commercial & Sales",
-  "core_function": "Order Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer account and their default shipping location.",
-      "expected_outcome": "Agent correctly pulls up the customer's master data.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer account and their default shipping location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly pulls up the customer's master data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check inventory levels for the requested product to ensure availability.",
-      "expected_outcome": "Agent confirms there are sufficient drums in stock to fulfill the order.",
-      "required_tools": [
-        "check_inventory_levels"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check inventory levels for the requested product to ensure availability.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms there are sufficient drums in stock to fulfill the order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new sales order, applying the customer's contract pricing, and submit it for fulfillment.",
-      "expected_outcome": "Agent successfully creates the sales order, which is now visible to the logistics team.",
-      "required_tools": [
-        "create_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new sales order, applying the customer's contract pricing, and submit it for fulfillment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the sales order, which is now visible to the logistics team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

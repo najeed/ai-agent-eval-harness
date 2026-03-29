@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tax-ind-13776",
-  "title": "Prepare Return for U.S. Citizen Abroad",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Return for U.S. Citizen Abroad",
+    "compliance_level": "Standard"
+  },
   "description": "A U.S. citizen living and working in Germany needs to file their U.S. tax return.",
-  "use_case": "Individual Tax Preparation & Filing",
-  "core_function": "Data Collection & Input",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the taxpayer's foreign income information and convert it to U.S. dollars.",
-      "expected_outcome": "Agent correctly converts the income using the proper exchange rate.",
-      "required_tools": [
-        "convert_currency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the taxpayer's foreign income information and convert it to U.S. dollars.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly converts the income using the proper exchange rate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Determine eligibility for the Foreign Earned Income Exclusion using Form 2555.",
-      "expected_outcome": "Agent confirms the taxpayer meets the bona fide residence or physical presence test.",
-      "required_tools": [
-        "prepare_form_2555"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Determine eligibility for the Foreign Earned Income Exclusion using Form 2555.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the taxpayer meets the bona fide residence or physical presence test."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Alternatively, calculate the Foreign Tax Credit on Form 1116 to see which provides a better tax outcome.",
-      "expected_outcome": "Agent compares the two methods and chooses the one that results in lower tax.",
-      "required_tools": [
-        "prepare_form_1116",
-        "compare_tax_scenarios"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Alternatively, calculate the Foreign Tax Credit on Form 1116 to see which provides a better tax outcome.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compares the two methods and chooses the one that results in lower tax."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

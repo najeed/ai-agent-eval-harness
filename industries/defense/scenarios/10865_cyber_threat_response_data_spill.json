@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-cy-10865",
-  "title": "Classified Data Spill Response",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Classified Data Spill Response",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst discovers that a classified document was accidentally sent over an unclassified email system.",
-  "use_case": "Cybersecurity & Information Warfare",
-  "core_function": "Network Threat Detection & Response",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific email containing the classified document and all recipients.",
-      "expected_outcome": "Analyst quickly and accurately identifies the scope of the data spill.",
-      "required_tools": [
-        "search_email_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific email containing the classified document and all recipients.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst quickly and accurately identifies the scope of the data spill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Remotely delete the email from the sender's and all recipients' inboxes.",
-      "expected_outcome": "Analyst successfully removes the email from the unclassified system.",
-      "required_tools": [
-        "delete_malicious_email_bulk"
-      ],
-      "success_criteria": [
-        {
-          "metric": "containment_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Remotely delete the email from the sender's and all recipients' inboxes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully removes the email from the unclassified system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a data spill incident report and notify the appropriate security and command authorities.",
-      "expected_outcome": "Analyst follows correct procedure for reporting a security incident.",
-      "required_tools": [
-        "generate_security_incident_report",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a data spill incident report and notify the appropriate security and command authorities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst follows correct procedure for reporting a security incident."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "auto-csra-10446",
-  "title": "Roadside Assistance for Dead Battery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Roadside Assistance for Dead Battery",
+    "compliance_level": "Standard"
+  },
   "description": "A customer's car won't start, and they suspect a dead battery.",
-  "use_case": "Customer Support & Roadside Assistance",
-  "core_function": "Emergency & Roadside Assistance",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their location.",
-      "expected_outcome": "Agent verifies the customer and gets their location.",
-      "required_tools": [
-        "get_customer_details",
-        "get_caller_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the customer and gets their location."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a remote diagnostic to check the battery voltage.",
-      "expected_outcome": "The diagnostic shows the battery voltage is 9.5V, confirming it is discharged.",
-      "required_tools": [
-        "run_remote_diagnostics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a remote diagnostic to check the battery voltage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The diagnostic shows the battery voltage is 9.5V, confirming it is discharged."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch a service provider to perform a jump start and provide an ETA.",
-      "expected_outcome": "Agent dispatches help for a jump start and gives a 30-minute ETA.",
-      "required_tools": [
-        "dispatch_roadside_assistance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch a service provider to perform a jump start and provide an ETA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent dispatches help for a jump start and gives a 30-minute ETA."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ecommerce-refund-narrative",
-  "title": "The Case of the Missing Refund",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "The Case of the Missing Refund",
+    "compliance_level": "Standard"
+  },
   "description": "Customer Jane Doe is frustrated because she returned her item two weeks ago but hasn't seen a refund for Order #OM-5566.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Payment & Invoicing",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate order #OM-5566 and check its status.",
-      "expected_outcome": "Order is found, status is 'Returned', total is $129.99.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate order #OM-5566 and check its status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Order is found, status is 'Returned', total is $129.99."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the refund history for order #OM-5566.",
-      "expected_outcome": "Confirm no refund has been processed yet.",
-      "required_tools": [
-        "get_refund_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the refund history for order #OM-5566.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Confirm no refund has been processed yet."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue a full refund of $129.99.",
-      "expected_outcome": "Refund is successfully processed.",
-      "required_tools": [
-        "issue_refund"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue a full refund of $129.99.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Refund is successfully processed."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Notify Jane Doe (jane.doe@example.com) that her refund has been issued and apologize for the delay.",
-      "expected_outcome": "Email is sent with the transaction details.",
-      "required_tools": [
-        "send_email_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Notify Jane Doe (jane.doe@example.com) that her refund has been issued and apologize for the delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Email is sent with the transaction details."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

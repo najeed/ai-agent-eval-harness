@@ -1,83 +1,61 @@
 {
-  "scenario_id": "finance-wm-11241",
-  "title": "Verify Source of Wealth for Large Deposit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Verify Source of Wealth for Large Deposit",
+    "compliance_level": "Standard"
+  },
   "description": "A client makes a large, unusual deposit, triggering a requirement to verify the source of the wealth.",
-  "use_case": "Wealth Management",
-  "core_function": "Client Onboarding & KYC",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Contact the client to inquire about the source of the large deposit.",
-      "expected_outcome": "Agent securely contacts the client, who states the funds are from the sale of a property.",
-      "required_tools": [
-        "send_secure_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Contact the client to inquire about the source of the large deposit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent securely contacts the client, who states the funds are from the sale of a property."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Request supporting documentation for the stated source of wealth (e.g., property sale agreement).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent requests the specific documentation needed for verification."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Request supporting documentation for the stated source of wealth (e.g., property sale agreement).",
-      "expected_outcome": "Agent requests the specific documentation needed for verification.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the provided documentation and approve the transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the sale agreement, finds it satisfactory, and adds a note to the client's file clearing the deposit."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the provided documentation and approve the transaction.",
-      "expected_outcome": "Agent reviews the sale agreement, finds it satisfactory, and adds a note to the client's file clearing the deposit.",
-      "required_tools": [
-        "log_kyc_note"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

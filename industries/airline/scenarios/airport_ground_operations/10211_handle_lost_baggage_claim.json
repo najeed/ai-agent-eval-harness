@@ -1,52 +1,59 @@
 {
-  "scenario_id": "airline-ago-10211",
-  "title": "Handle a Lost Baggage Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Lost Baggage Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger has arrived at their destination, but their checked bag did not. An agent at the baggage service office must create a claim.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Baggage Handling & Resolution",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the passenger's baggage claim receipt and flight details.",
-      "expected_outcome": "Agent collects the necessary information.",
-      "required_tools": [
-        "get_passenger_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the passenger's baggage claim receipt and flight details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the necessary information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the baggage tracking system to trace the bag's last known location.",
-      "expected_outcome": "Agent finds the bag was last scanned at the departure airport but not loaded onto the connecting flight.",
-      "required_tools": [
-        "trace_bag"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the baggage tracking system to trace the bag's last known location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the bag was last scanned at the departure airport but not loaded onto the connecting flight."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a new mishandled baggage report, provide the passenger with a file reference number, and explain the process for delivery.",
-      "expected_outcome": "Agent creates the report and clearly explains the next steps to the passenger.",
-      "required_tools": [
-        "create_mishandled_bag_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a new mishandled baggage report, provide the passenger with a file reference number, and explain the process for delivery.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the report and clearly explains the next steps to the passenger."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

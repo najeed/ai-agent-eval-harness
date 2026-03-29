@@ -1,52 +1,59 @@
 {
-  "scenario_id": "auto-ms-10483",
-  "title": "Finished Vehicle Inventory Audit",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Finished Vehicle Inventory Audit",
+    "compliance_level": "Standard"
+  },
   "description": "A manager needs to perform an audit to reconcile the list of finished vehicles in the system with the physical vehicles in the storage lot.",
-  "use_case": "Manufacturing & Supply Chain",
-  "core_function": "Logistics & Parts Tracking",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all vehicles currently listed as being in the 'Finished Goods - Lot G' status.",
-      "expected_outcome": "Agent generates a list of 500 VINs.",
-      "required_tools": [
-        "get_vehicle_inventory_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all vehicles currently listed as being in the 'Finished Goods - Lot G' status.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of 500 VINs."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Dispatch a team with handheld scanners to scan the VIN of every vehicle physically present in Lot G.",
-      "expected_outcome": "A team is dispatched to perform the physical scan.",
-      "required_tools": [
-        "dispatch_audit_team"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Dispatch a team with handheld scanners to scan the VIN of every vehicle physically present in Lot G.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A team is dispatched to perform the physical scan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the system list with the scanned list and flag any discrepancies (missing or extra vehicles).",
-      "expected_outcome": "The comparison shows one vehicle is physically present but not in the system list, and one is in the system list but not physically present.",
-      "required_tools": [
-        "compare_data_lists"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the system list with the scanned list and flag any discrepancies (missing or extra vehicles).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The comparison shows one vehicle is physically present but not in the system list, and one is in the system list but not physically present."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

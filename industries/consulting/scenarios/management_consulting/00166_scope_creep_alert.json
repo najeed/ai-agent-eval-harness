@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-166",
-  "title": "Alert on Potential Scope Creep",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Alert on Potential Scope Creep",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must monitor client communications (emails) for phrases that might indicate a scope creep request.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze an incoming client email.",
-      "expected_outcome": "Agent ingests the email text.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze an incoming client email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ingests the email text."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the email for keywords and phrases like 'just one more thing', 'while you're at it', 'small addition'.",
-      "expected_outcome": "Agent identifies a phrase that indicates potential scope creep.",
-      "required_tools": [
-        "find_keywords"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the email for keywords and phrases like 'just one more thing', 'while you're at it', 'small addition'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a phrase that indicates potential scope creep."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Flag the email and send a notification to the project manager for review.",
-      "expected_outcome": "Agent successfully flags the email and alerts the project manager.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Flag the email and send a notification to the project manager for review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully flags the email and alerts the project manager."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

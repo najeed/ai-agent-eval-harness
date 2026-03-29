@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-up-12715",
-  "title": "Manage Offshore Rig Personnel",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Offshore Rig Personnel",
+    "compliance_level": "Standard"
+  },
   "description": "An offshore installation manager needs to generate a POB (Personnel on Board) list for an emergency muster drill.",
-  "use_case": "Upstream",
-  "core_function": "Asset & Maintenance Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Access the personnel logistics system to get a real-time list of everyone currently on the offshore platform.",
-      "expected_outcome": "A complete list of all personnel currently on board is generated.",
-      "required_tools": [
-        "get_personnel_on_board_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Access the personnel logistics system to get a real-time list of everyone currently on the offshore platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete list of all personnel currently on board is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Filter the list to show each person's assigned muster station.",
-      "expected_outcome": "The POB list is updated to include the correct muster station for each individual.",
-      "required_tools": [
-        "get_muster_station_assignments"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_processing_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Filter the list to show each person's assigned muster station.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The POB list is updated to include the correct muster station for each individual."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Transmit the list to the emergency response leader's tablet for the drill.",
-      "expected_outcome": "The list is successfully sent and received for use in the muster drill.",
-      "required_tools": [
-        "send_data_to_device"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Transmit the list to the emergency response leader's tablet for the drill.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The list is successfully sent and received for use in the muster drill."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

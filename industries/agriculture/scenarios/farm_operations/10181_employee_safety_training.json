@@ -1,64 +1,72 @@
 {
-  "scenario_id": "ag-fo-10181",
-  "title": "Track Employee Safety Training",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Employee Safety Training",
+    "compliance_level": "Standard"
+  },
   "description": "A farm manager needs to ensure all employees have completed their annual safety training.",
-  "use_case": "Farm Operations & Finance",
-  "core_function": "Labor Management",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve a list of all current employees.",
-      "expected_outcome": "Agent gets the employee list.",
-      "required_tools": [
-        "get_employee_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve a list of all current employees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the employee list."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the training records for each employee to see if they have completed the 'Annual Safety' course.",
-      "expected_outcome": "Agent checks the records against the employee list.",
-      "required_tools": [
-        "get_training_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the training records for each employee to see if they have completed the 'Annual Safety' course.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the records against the employee list."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a list of all employees who have not yet completed the training.",
-      "expected_outcome": "Agent provides a list of non-compliant employees.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a list of all employees who have not yet completed the training.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a list of non-compliant employees."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Send a reminder notification to the non-compliant employees and their supervisor.",
-      "expected_outcome": "Agent successfully sends the reminders.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Send a reminder notification to the non-compliant employees and their supervisor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends the reminders."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

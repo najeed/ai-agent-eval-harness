@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13527",
-  "title": "Notify Residents of Road Closure for a Parade",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Notify Residents of Road Closure for a Parade",
+    "compliance_level": "Standard"
+  },
   "description": "The city has approved a parade. An operator must notify residents and businesses along the route of upcoming road closures.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Public Information & Alerting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the approved parade route and the schedule for road closures.",
-      "expected_outcome": "Agent gets the geographic route and timing details.",
-      "required_tools": [
-        "get_event_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the approved parade route and the schedule for road closures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the geographic route and timing details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a list of all residential and commercial addresses along the parade route.",
-      "expected_outcome": "Agent gets a list of all affected properties.",
-      "required_tools": [
-        "get_addresses_along_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a list of all residential and commercial addresses along the parade route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a list of all affected properties."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a targeted notification email or text message to all affected addresses about the closures.",
-      "expected_outcome": "Agent successfully sends the targeted alert.",
-      "required_tools": [
-        "send_targeted_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a targeted notification email or text message to all affected addresses about the closures.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends the targeted alert."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

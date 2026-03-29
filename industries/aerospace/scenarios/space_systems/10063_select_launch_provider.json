@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10063",
-  "title": "Select a Launch Provider",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Select a Launch Provider",
+    "compliance_level": "Standard"
+  },
   "description": "A satellite program manager needs to select a launch provider to get their new satellite into orbit.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Mission Design & Analysis",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Define the satellite's requirements for launch, including its mass, volume, and target orbit.",
-      "expected_outcome": "Agent lists all key launch requirements.",
-      "required_tools": [
-        "get_satellite_specs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Define the satellite's requirements for launch, including its mass, volume, and target orbit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists all key launch requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the capabilities, cost, and reliability of available launch providers (e.g., SpaceX, Arianespace, ULA).",
-      "expected_outcome": "Agent creates a trade study comparing the different providers.",
-      "required_tools": [
-        "analyze_launch_providers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the capabilities, cost, and reliability of available launch providers (e.g., SpaceX, Arianespace, ULA).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a trade study comparing the different providers."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select the best-value provider and begin contract negotiations.",
-      "expected_outcome": "Agent makes a data-driven recommendation and initiates the procurement process.",
-      "required_tools": [
-        "make_recommendation",
-        "draft_contract"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select the best-value provider and begin contract negotiations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a data-driven recommendation and initiates the procurement process."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

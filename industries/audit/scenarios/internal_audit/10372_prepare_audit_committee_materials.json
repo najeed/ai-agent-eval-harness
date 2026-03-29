@@ -1,52 +1,59 @@
 {
-  "scenario_id": "audit-ia-10372",
-  "title": "Prepare Audit Committee Materials",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Audit Committee Materials",
+    "compliance_level": "Standard"
+  },
   "description": "The Chief Audit Executive (CAE) prepares materials for the quarterly Audit Committee meeting.",
-  "use_case": "Internal Audit",
-  "core_function": "Reporting & Remediation Tracking",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Summarize all audit reports issued during the quarter.",
-      "expected_outcome": "A concise summary of recent audit activity is created.",
-      "required_tools": [
-        "summarize_audit_reports"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Summarize all audit reports issued during the quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A concise summary of recent audit activity is created."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a dashboard showing the status of all open audit findings, highlighting any that are past their remediation due date.",
-      "expected_outcome": "A clear visual dashboard on remediation status is generated.",
-      "required_tools": [
-        "generate_remediation_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a dashboard showing the status of all open audit findings, highlighting any that are past their remediation due date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear visual dashboard on remediation status is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile the materials into a formal presentation deck for the Audit Committee.",
-      "expected_outcome": "A professional presentation is ready for the board-level meeting.",
-      "required_tools": [
-        "compile_presentation_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile the materials into a formal presentation deck for the Audit Committee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A professional presentation is ready for the board-level meeting."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

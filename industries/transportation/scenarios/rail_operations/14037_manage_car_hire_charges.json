@@ -1,64 +1,72 @@
 {
-  "scenario_id": "tr-ro-14037",
-  "title": "Manage Car Hire Charges",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Car Hire Charges",
+    "compliance_level": "Standard"
+  },
   "description": "A railroad has used a railcar owned by another company. An agent must calculate and process the 'car hire' (per diem rental) payment.",
-  "use_case": "Rail Operations",
-  "core_function": "Yard & Terminal Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a report of all foreign-owned railcars that were on the railroad's tracks for the previous month.",
-      "expected_outcome": "Agent gets a list of cars and the duration they were on the network.",
-      "required_tools": [
-        "get_foreign_car_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a report of all foreign-owned railcars that were on the railroad's tracks for the previous month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a list of cars and the duration they were on the network."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each car, look up the daily car hire rate based on the car's owner and type.",
-      "expected_outcome": "The correct daily rate is found for each car.",
-      "required_tools": [
-        "get_car_hire_rate"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each car, look up the daily car hire rate based on the car's owner and type.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct daily rate is found for each car."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the total car hire charges owed to each railroad.",
-      "expected_outcome": "The total payment due is calculated.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the total car hire charges owed to each railroad.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The total payment due is calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Generate and send the car hire settlement statements and payments to the other railroads.",
-      "expected_outcome": "Payments are processed correctly.",
-      "required_tools": [
-        "process_car_hire_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Generate and send the car hire settlement statements and payments to the other railroads.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Payments are processed correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

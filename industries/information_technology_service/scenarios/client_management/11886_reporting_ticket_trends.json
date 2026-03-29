@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-cm-11886",
-  "title": "SLA Reporting - Analyze Ticket Trends",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "SLA Reporting - Analyze Ticket Trends",
+    "compliance_level": "Standard"
+  },
   "description": "An account manager analyzes ticket trends for a client to identify recurring problems.",
-  "use_case": "Client & Contract Management",
-  "core_function": "Service Level Agreement (SLA) & Reporting",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Export all tickets for a client for the last quarter.",
-      "expected_outcome": "The manager has a CSV file of all recent tickets.",
-      "required_tools": [
-        "export_ticket_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Export all tickets for a client for the last quarter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager has a CSV file of all recent tickets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Categorize and analyze the data to identify the most common ticket types.",
-      "expected_outcome": "The analysis reveals that 'password reset' tickets are the most frequent category, indicating a potential for user training or a self-service solution.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Categorize and analyze the data to identify the most common ticket types.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analysis reveals that 'password reset' tickets are the most frequent category, indicating a potential for user training or a self-service solution."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Propose implementing a self-service password reset (SSPR) solution to the client to reduce ticket volume and improve user experience.",
-      "expected_outcome": "A data-driven recommendation is made to the client.",
-      "required_tools": [
-        "create_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Propose implementing a self-service password reset (SSPR) solution to the client to reduce ticket volume and improve user experience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A data-driven recommendation is made to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

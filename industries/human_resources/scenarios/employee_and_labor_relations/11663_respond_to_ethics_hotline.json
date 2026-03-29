@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-er-11663",
-  "title": "Respond to an Ethics Hotline Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to an Ethics Hotline Report",
+    "compliance_level": "Standard"
+  },
   "description": "An anonymous report has been submitted through the ethics hotline alleging fraudulent expense reporting by a manager.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Disciplinary Actions",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the anonymous report from the ethics hotline system.",
-      "expected_outcome": "The compliance officer receives the case details.",
-      "required_tools": [
-        "get_ethics_hotline_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the anonymous report from the ethics hotline system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The compliance officer receives the case details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate a confidential investigation, partnering with internal audit.",
-      "expected_outcome": "Officer creates a new investigation case and engages the internal audit team.",
-      "required_tools": [
-        "create_investigation_case"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate a confidential investigation, partnering with internal audit.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer creates a new investigation case and engages the internal audit team."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the manager's expense reports for the last year to look for anomalies.",
-      "expected_outcome": "The investigation team analyzes the expense reports for policy violations.",
-      "required_tools": [
-        "get_employee_expense_reports"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the manager's expense reports for the last year to look for anomalies.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The investigation team analyzes the expense reports for policy violations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

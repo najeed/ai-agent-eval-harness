@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11787",
-  "title": "Check In on Trial Progress",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check In on Trial Progress",
+    "compliance_level": "Standard"
+  },
   "description": "A sales development representative checks in with a high-potential user halfway through their trial period.",
-  "use_case": "Sales & Account Management",
-  "core_function": "Trial & Proof of Concept (PoC) Management",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a trial user who has shown high engagement (e.g., invited team members, created projects).",
-      "expected_outcome": "Agent finds a promising trial user.",
-      "required_tools": [
-        "get_trial_account_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a trial user who has shown high engagement (e.g., invited team members, created projects).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a promising trial user."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send a personalized email to the user, offering assistance and asking if they have any questions.",
-      "expected_outcome": "Agent initiates a proactive, helpful conversation.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send a personalized email to the user, offering assistance and asking if they have any questions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent initiates a proactive, helpful conversation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on the user's response, schedule a brief call to provide tips or answer questions.",
-      "expected_outcome": "Agent nurtures the lead and increases the likelihood of conversion.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on the user's response, schedule a brief call to provide tips or answer questions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent nurtures the lead and increases the likelihood of conversion."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

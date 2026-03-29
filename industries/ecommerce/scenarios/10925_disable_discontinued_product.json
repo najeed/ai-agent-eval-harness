@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-osm-10925",
-  "title": "Disable a Discontinued Product",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Disable a Discontinued Product",
+    "compliance_level": "Standard"
+  },
   "description": "A product has been discontinued by the manufacturer and needs to be removed from the storefront.",
-  "use_case": "Online Storefront & Merchandising",
-  "core_function": "Product Information Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the product by its SKU.",
-      "expected_outcome": "Agent finds the correct product.",
-      "required_tools": [
-        "get_product_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the product by its SKU.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct product."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Change the product's status to 'disabled' or 'archived' so it is no longer visible or searchable on the website.",
-      "expected_outcome": "Agent successfully hides the product from the storefront.",
-      "required_tools": [
-        "update_product_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Change the product's status to 'disabled' or 'archived' so it is no longer visible or searchable on the website.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully hides the product from the storefront."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Optionally, set up a redirect from the old product URL to a relevant category page.",
-      "expected_outcome": "Agent prevents customers from hitting a 404 error page.",
-      "required_tools": [
-        "create_url_redirect"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Optionally, set up a redirect from the old product URL to a relevant category page.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prevents customers from hitting a 404 error page."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

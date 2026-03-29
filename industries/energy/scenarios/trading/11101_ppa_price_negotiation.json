@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-tr-11101",
-  "title": "PPA Price Negotiation Support",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "PPA Price Negotiation Support",
+    "compliance_level": "Standard"
+  },
   "description": "An energy trader needs to analyze market data to propose a competitive price for a 10-year Power Purchase Agreement (PPA) with a corporate off-taker.",
-  "use_case": "Energy Trading & Portfolio Management",
-  "core_function": "Trade Execution & Hedging",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Fetch the last 24 months of historical wholesale electricity prices for the relevant market node.",
-      "expected_outcome": "Agent retrieves accurate historical price data.",
-      "required_tools": [
-        "get_historical_market_prices"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_retrieval_accuracy",
-          "threshold": 0.99
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Fetch the last 24 months of historical wholesale electricity prices for the relevant market node.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves accurate historical price data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze long-term price forecasts and market volatility trends.",
-      "expected_outcome": "Agent summarizes key trends and forecasted price ranges.",
-      "required_tools": [
-        "get_long_term_price_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze long-term price forecasts and market volatility trends.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent summarizes key trends and forecasted price ranges."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate a proposed PPA price with a target profit margin, considering price cannibalization and curtailment risks.",
-      "expected_outcome": "Agent provides a justified PPA price and risk assessment.",
-      "required_tools": [
-        "calculate_ppa_price"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate a proposed PPA price with a target profit margin, considering price cannibalization and curtailment risks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a justified PPA price and risk assessment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-go-14204",
-  "title": "Develop Black Sky Restoration Plan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop Black Sky Restoration Plan",
+    "compliance_level": "Standard"
+  },
   "description": "A system planner is developing a restoration plan for a 'black sky' event (e.g., a major cyberattack or EMP) that causes a widespread, long-duration blackout.",
-  "use_case": "Grid Operations",
-  "core_function": "Outage Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the utility's 'black start' capable power plants, which can start up without external power.",
-      "expected_outcome": "Planner identifies three power plants with black start capability.",
-      "required_tools": [
-        "query_asset_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the utility's 'black start' capable power plants, which can start up without external power.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner identifies three power plants with black start capability."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Develop a cranking path plan, which is a sequence for re-energizing transmission lines and other power plants step-by-step from the black start units.",
-      "expected_outcome": "Planner creates a detailed, sequential restoration plan.",
-      "required_tools": [
-        "develop_cranking_path"
-      ],
-      "success_criteria": [
-        {
-          "metric": "plan_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Develop a cranking path plan, which is a sequence for re-energizing transmission lines and other power plants step-by-step from the black start units.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner creates a detailed, sequential restoration plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify critical loads (hospitals, water treatment plants, etc.) that should be prioritized during restoration.",
-      "expected_outcome": "Planner creates a prioritized list of critical infrastructure to be restored first.",
-      "required_tools": [
-        "get_critical_customer_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify critical loads (hospitals, water treatment plants, etc.) that should be prioritized during restoration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Planner creates a prioritized list of critical infrastructure to be restored first."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

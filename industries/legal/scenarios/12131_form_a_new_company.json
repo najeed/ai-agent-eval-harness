@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ct-12131",
-  "title": "Form a New LLC",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Form a New LLC",
+    "compliance_level": "Standard"
+  },
   "description": "A corporate paralegal needs to form a new Limited Liability Company (LLC) for a client in the state of Delaware.",
-  "use_case": "Corporate & Transactional",
-  "core_function": "Corporate Governance & Compliance",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the availability of the proposed company name with the Delaware Secretary of State.",
-      "expected_outcome": "Agent confirms the name is available for use.",
-      "required_tools": [
-        "secretary_of_state_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the availability of the proposed company name with the Delaware Secretary of State.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the name is available for use."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the Certificate of Formation with the required information (company name, registered agent).",
-      "expected_outcome": "Agent prepares the necessary formation document.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the Certificate of Formation with the required information (company name, registered agent).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prepares the necessary formation document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "File the Certificate of Formation with the Delaware Secretary of State and pay the filing fee.",
-      "expected_outcome": "The LLC is successfully formed.",
-      "required_tools": [
-        "secretary_of_state_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "File the Certificate of Formation with the Delaware Secretary of State and pay the filing fee.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The LLC is successfully formed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,64 +1,72 @@
 {
-  "scenario_id": "venues-tb-14235",
-  "title": "Handle Fraudulent Ticket Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Fraudulent Ticket Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A guest presents a ticket that has already been scanned, claiming their ticket must be the valid one.",
-  "use_case": "Ticketing & Box Office",
-  "core_function": "Ticket Administration",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the ticket's unique barcode in the access control system.",
-      "expected_outcome": "Agent finds the ticket was already scanned 20 minutes prior at a different gate.",
-      "required_tools": [
-        "get_ticket_scan_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the ticket's unique barcode in the access control system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the ticket was already scanned 20 minutes prior at a different gate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the 'first scan is the only valid scan' policy to the guest.",
-      "expected_outcome": "Agent clearly and calmly explains the venue policy regarding duplicate tickets.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the 'first scan is the only valid scan' policy to the guest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly and calmly explains the venue policy regarding duplicate tickets."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the guest to contact their original point of purchase, as the venue cannot honor a duplicated ticket.",
-      "expected_outcome": "Agent provides the correct advice to the guest.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the guest to contact their original point of purchase, as the venue cannot honor a duplicated ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the correct advice to the guest."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Log the incident, including the ticket details, as a potential fraud case.",
-      "expected_outcome": "Agent creates a record of the incident for security and ticketing review.",
-      "required_tools": [
-        "log_fraud_incident"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Log the incident, including the ticket details, as a potential fraud case.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a record of the incident for security and ticketing review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

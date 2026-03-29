@@ -1,53 +1,59 @@
 {
-  "scenario_id": "auto-sm-10444",
-  "title": "Customer Checks on Repair Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Customer Checks on Repair Status",
+    "compliance_level": "Standard"
+  },
   "description": "A customer whose car is in for service is calling to get a status update.",
-  "use_case": "Service & Maintenance",
-  "core_function": "Repair & Maintenance Execution",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their active repair order.",
-      "expected_outcome": "Agent successfully locates the repair order.",
-      "required_tools": [
-        "get_repair_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their active repair order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully locates the repair order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the technician's notes and the current status of the repair.",
-      "expected_outcome": "Agent sees the status is 'Awaiting Part' and the technician's note says 'Waiting for replacement alternator'.",
-      "required_tools": [
-        "get_repair_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the technician's notes and the current status of the repair.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees the status is 'Awaiting Part' and the technician's note says 'Waiting for replacement alternator'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the ETA for the required part and provide the customer with an updated timeline for when the repair will be complete.",
-      "expected_outcome": "Agent checks the part order, finds it will arrive tomorrow morning, and informs the customer the car should be ready by tomorrow afternoon.",
-      "required_tools": [
-        "track_part_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the ETA for the required part and provide the customer with an updated timeline for when the repair will be complete.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the part order, finds it will arrive tomorrow morning, and informs the customer the car should be ready by tomorrow afternoon."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

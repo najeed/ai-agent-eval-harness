@@ -1,50 +1,59 @@
 {
-  "scenario_id": "heavy-industries-eng-11423",
-  "title": "Perform Failure Mode and Effects Analysis (FMEA)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Failure Mode and Effects Analysis (FMEA)",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer is leading an FMEA session for a new piece of heavy machinery to proactively identify and mitigate potential failure modes.",
-  "use_case": "Engineering & Design",
-  "core_function": "Quality Engineering",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all major components of the machinery.",
-      "expected_outcome": "The team lists all key components like the engine, transmission, and hydraulic pump.",
-      "required_tools": [
-        "get_equipment_bom"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all major components of the machinery.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team lists all key components like the engine, transmission, and hydraulic pump."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each component, brainstorm potential failure modes (e.g., 'Engine overheats').",
-      "expected_outcome": "The team identifies multiple potential failures for each component.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each component, brainstorm potential failure modes (e.g., 'Engine overheats').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team identifies multiple potential failures for each component."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each failure mode, assess its severity, occurrence, and detection to calculate a Risk Priority Number (RPN) and identify the highest-risk items to address.",
-      "expected_outcome": "The team calculates the RPN for all failure modes and identifies the top 3 risks to focus on for mitigation.",
-      "required_tools": [
-        "calculate_rpn"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each failure mode, assess its severity, occurrence, and detection to calculate a Risk Priority Number (RPN) and identify the highest-risk items to address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team calculates the RPN for all failure modes and identifies the top 3 risks to focus on for mitigation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

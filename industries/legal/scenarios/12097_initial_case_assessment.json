@@ -1,53 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12097",
-  "title": "Initial Case Assessment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Initial Case Assessment",
+    "compliance_level": "Standard"
+  },
   "description": "A senior partner needs to assess a new potential litigation matter to determine its viability and strategy.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Case Management & Intake",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the client intake form and all initial documents provided by the potential client.",
-      "expected_outcome": "Agent summarizes the key facts, parties, and nature of the dispute.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the client intake form and all initial documents provided by the potential client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent summarizes the key facts, parties, and nature of the dispute."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a preliminary legal research to identify the relevant causes of action and statutes of limitations.",
-      "expected_outcome": "Agent identifies 2-3 potential legal claims and confirms the filing deadline has not passed.",
-      "required_tools": [
-        "legal_research_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a preliminary legal research to identify the relevant causes of action and statutes of limitations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies 2-3 potential legal claims and confirms the filing deadline has not passed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft a preliminary case assessment memo outlining the facts, potential claims, risks, and recommended next steps.",
-      "expected_outcome": "Agent produces a structured memo for the partner's review.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft a preliminary case assessment memo outlining the facts, potential claims, risks, and recommended next steps.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a structured memo for the partner's review."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

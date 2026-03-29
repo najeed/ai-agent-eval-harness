@@ -1,53 +1,59 @@
 {
-  "scenario_id": "og-up-12769",
-  "title": "Perform Rig Acceptance Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Rig Acceptance Test",
+    "compliance_level": "Standard"
+  },
   "description": "Before starting a long-term contract, a drilling supervisor performs an acceptance test on a drilling rig to ensure all equipment meets specifications.",
-  "use_case": "Upstream",
-  "core_function": "Drilling & Completions",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load the digital rig acceptance checklist, which contains hundreds of items to verify.",
-      "expected_outcome": "The official checklist is loaded on a tablet.",
-      "required_tools": [
-        "load_audit_checklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load the digital rig acceptance checklist, which contains hundreds of items to verify.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The official checklist is loaded on a tablet."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Go through the checklist, inspecting equipment (e.g., top drive, mud pumps, BOP) and verifying certifications.",
-      "expected_outcome": "The checklist is completed, with most items passing but a few deficiencies noted (e.g., expired sling).",
-      "required_tools": [
-        "complete_digital_form"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Go through the checklist, inspecting equipment (e.g., top drive, mud pumps, BOP) and verifying certifications.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The checklist is completed, with most items passing but a few deficiencies noted (e.g., expired sling)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a punch list of the deficient items and send it to the drilling contractor to be rectified before the rig can go on hire.",
-      "expected_outcome": "A formal punch list is created and sent to the contractor, and the items are tracked for closure.",
-      "required_tools": [
-        "generate_punch_list",
-        "track_corrective_actions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a punch list of the deficient items and send it to the drilling contractor to be rectified before the rig can go on hire.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal punch list is created and sent to the contractor, and the items are tracked for closure."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

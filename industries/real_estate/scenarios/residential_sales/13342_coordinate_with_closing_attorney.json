@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13342",
-  "title": "Coordinate with Closing Attorney/Title Company",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Coordinate with Closing Attorney/Title Company",
+    "compliance_level": "Standard"
+  },
   "description": "A transaction coordinator must ensure the closing attorney has all necessary documents and information to prepare for closing.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Escrow",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Send the fully executed purchase agreement and all addenda to the closing attorney.",
-      "expected_outcome": "The attorney receives the complete contract package.",
-      "required_tools": [
-        "send_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Send the fully executed purchase agreement and all addenda to the closing attorney.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The attorney receives the complete contract package."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Provide the attorney with contact information for the buyer, seller, agents, and lender.",
-      "expected_outcome": "The attorney has a complete list of all parties to the transaction.",
-      "required_tools": [
-        "compile_contact_sheet"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Provide the attorney with contact information for the buyer, seller, agents, and lender.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The attorney has a complete list of all parties to the transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review the draft Closing Disclosure (CD) or HUD-1 settlement statement for accuracy before it's sent to the clients.",
-      "expected_outcome": "Agent verifies that all figures, including commission, are correct on the settlement statement.",
-      "required_tools": [
-        "review_settlement_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review the draft Closing Disclosure (CD) or HUD-1 settlement statement for accuracy before it's sent to the clients.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that all figures, including commission, are correct on the settlement statement."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

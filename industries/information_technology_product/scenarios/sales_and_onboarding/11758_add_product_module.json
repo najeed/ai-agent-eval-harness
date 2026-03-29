@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11758",
-  "title": "Cross-sell New Product Module",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cross-sell New Product Module",
+    "compliance_level": "Standard"
+  },
   "description": "The company releases a new 'Advanced Analytics' module. An Account Manager contacts existing customers to sell them the new add-on.",
-  "use_case": "Sales & Account Management",
-  "core_function": "Account Renewals & Upselling",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of customers who would be good candidates for the new module based on their usage patterns.",
-      "expected_outcome": "Agent creates a target list of customers who frequently use the standard reporting features.",
-      "required_tools": [
-        "generate_customer_target_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of customers who would be good candidates for the new module based on their usage patterns.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a target list of customers who frequently use the standard reporting features."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact a target customer and demonstrate the new 'Advanced Analytics' module.",
-      "expected_outcome": "Agent effectively shows the value of the new module.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact a target customer and demonstrate the new 'Advanced Analytics' module.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent effectively shows the value of the new module."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the order to add the new module to the customer's existing subscription.",
-      "expected_outcome": "Agent successfully completes the cross-sell.",
-      "required_tools": [
-        "add_product_module"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the order to add the new module to the customer's existing subscription.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully completes the cross-sell."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

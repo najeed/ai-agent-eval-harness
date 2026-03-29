@@ -1,68 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12852",
-  "title": "Update Product Labeling",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Product Labeling",
+    "compliance_level": "Standard"
+  },
   "description": "Following the identification of a new safety signal, the company must update the product's official labeling (prescribing information).",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Submission Management",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Draft the new text to be added to the 'Warnings and Precautions' section of the label.",
-      "expected_outcome": "Agent drafts clear and accurate text describing the new safety risk.",
-      "required_tools": [
-        "draft_labeling_update"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.98,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Draft the new text to be added to the 'Warnings and Precautions' section of the label.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts clear and accurate text describing the new safety risk."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Route the proposed labeling change for internal review and approval.",
-      "expected_outcome": "Agent circulates the draft to all relevant internal stakeholders for approval.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Route the proposed labeling change for internal review and approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent circulates the draft to all relevant internal stakeholders for approval."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare a labeling supplement for submission to the appropriate health authority (e.g., FDA).",
-      "expected_outcome": "Agent compiles the necessary submission package.",
-      "required_tools": [
-        "assemble_submission_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare a labeling supplement for submission to the appropriate health authority (e.g., FDA).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles the necessary submission package."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Submit the supplement and track it until approval.",
-      "expected_outcome": "Agent successfully submits the labeling update and monitors for health authority feedback.",
-      "required_tools": [
-        "submit_to_regulatory_gateway",
-        "track_submission_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Submit the supplement and track it until approval.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the labeling update and monitors for health authority feedback."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

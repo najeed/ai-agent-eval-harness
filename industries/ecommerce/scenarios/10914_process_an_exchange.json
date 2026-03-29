@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10914",
-  "title": "Process a Size Exchange",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Size Exchange",
+    "compliance_level": "Standard"
+  },
   "description": "A customer ordered a shirt that doesn't fit and wants to exchange it for a different size.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Returns & Exchanges",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the original order and verify the item the customer wants to exchange.",
-      "expected_outcome": "Agent finds the original order for the 'Blue T-Shirt, Size M'.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the original order and verify the item the customer wants to exchange.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the original order for the 'Blue T-Shirt, Size M'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check inventory for the requested new size ('Blue T-Shirt, Size L').",
-      "expected_outcome": "Agent confirms the new size is in stock.",
-      "required_tools": [
-        "check_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check inventory for the requested new size ('Blue T-Shirt, Size L').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the new size is in stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a return authorization for the original item and a new, no-charge order for the replacement item.",
-      "expected_outcome": "Agent successfully processes the exchange in the system.",
-      "required_tools": [
-        "create_exchange_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a return authorization for the original item and a new, no-charge order for the replacement item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully processes the exchange in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

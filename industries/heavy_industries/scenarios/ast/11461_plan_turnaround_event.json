@@ -1,52 +1,59 @@
 {
-  "scenario_id": "heavy-industries-ast-11461",
-  "title": "Plan a Plant Turnaround Event",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan a Plant Turnaround Event",
+    "compliance_level": "Standard"
+  },
   "description": "A shutdown planner is developing the master plan for a major plant turnaround, which involves hundreds of individual work orders.",
-  "use_case": "Asset & Maintenance Management",
-  "core_function": "Maintenance Planning & Execution",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all maintenance, inspection, and project work to be executed during the turnaround.",
-      "expected_outcome": "Agent compiles a list of all planned activities.",
-      "required_tools": [
-        "get_turnaround_work_scope"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all maintenance, inspection, and project work to be executed during the turnaround.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a list of all planned activities."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a planning tool to schedule all the activities, considering their durations, dependencies, and resource constraints.",
-      "expected_outcome": "The planner creates a detailed, integrated schedule for the entire event.",
-      "required_tools": [
-        "create_turnaround_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a planning tool to schedule all the activities, considering their durations, dependencies, and resource constraints.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The planner creates a detailed, integrated schedule for the entire event."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run a critical path analysis on the turnaround schedule to identify the activities that will drive the overall duration.",
-      "expected_outcome": "Agent identifies the critical path, which includes the replacement of a major vessel.",
-      "required_tools": [
-        "run_critical_path_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run a critical path analysis on the turnaround schedule to identify the activities that will drive the overall duration.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the critical path, which includes the replacement of a major vessel."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

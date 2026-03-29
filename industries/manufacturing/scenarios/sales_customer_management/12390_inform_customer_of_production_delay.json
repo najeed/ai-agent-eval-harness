@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-sc-12390",
-  "title": "Inform Customer of a Production Delay",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inform Customer of a Production Delay",
+    "compliance_level": "Standard"
+  },
   "description": "A production delay means a customer's order will be late. A sales rep needs to proactively inform the customer.",
-  "use_case": "Sales & Customer Management",
-  "core_function": "Order Status & Fulfillment Tracking",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the sales order affected by the production delay.",
-      "expected_outcome": "Agent finds the relevant sales order.",
-      "required_tools": [
-        "find_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the sales order affected by the production delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the relevant sales order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Get the revised estimated completion date from the production planning team.",
-      "expected_outcome": "Agent receives a new ETA for the order.",
-      "required_tools": [
-        "get_revised_completion_date"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Get the revised estimated completion date from the production planning team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives a new ETA for the order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the customer, explain the situation, provide the new ETA, and apologize for the delay.",
-      "expected_outcome": "Agent clearly and proactively communicates the delay to the customer.",
-      "required_tools": [
-        "send_email_to_customer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the customer, explain the situation, provide the new ETA, and apologize for the delay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly and proactively communicates the delay to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

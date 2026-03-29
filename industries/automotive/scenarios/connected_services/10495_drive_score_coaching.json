@@ -1,49 +1,59 @@
 {
-  "scenario_id": "auto-cs-10495",
-  "title": "Review Driving Score for Insurance Discount",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Driving Score for Insurance Discount",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is enrolled in a usage-based insurance program and wants to review their driving score and get tips for improving it.",
-  "use_case": "Connected Services & In-Car Experience",
-  "core_function": "Subscription Management",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the customer's driving data for the last 30 days, including events like hard braking, rapid acceleration, and speeding.",
-      "expected_outcome": "Agent pulls the driving behavior report.",
-      "required_tools": [
-        "get_driving_behavior_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the customer's driving data for the last 30 days, including events like hard braking, rapid acceleration, and speeding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls the driving behavior report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the customer's current score and highlight the specific behaviors that are negatively impacting it (e.g., frequent hard braking).",
-      "expected_outcome": "Agent clearly communicates the reasons for the score.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the customer's current score and highlight the specific behaviors that are negatively impacting it (e.g., frequent hard braking).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the reasons for the score."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide coaching tips for improving the score, such as maintaining a greater following distance to avoid hard braking.",
-      "expected_outcome": "Agent provides actionable advice to help the customer improve their score and earn a larger discount.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide coaching tips for improving the score, such as maintaining a greater following distance to avoid hard braking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides actionable advice to help the customer improve their score and earn a larger discount."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

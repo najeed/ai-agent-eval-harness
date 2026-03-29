@@ -1,49 +1,59 @@
 {
-  "scenario_id": "consulting-mc-115",
-  "title": "Draft Weekly Client Update Email",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft Weekly Client Update Email",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must draft a weekly status update email for a client based on a list of completed tasks and upcoming activities.",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a list of tasks completed this week and tasks planned for next week.",
-      "expected_outcome": "Agent correctly ingests the lists.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a list of tasks completed this week and tasks planned for next week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly ingests the lists."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft a professional email with three sections: 'Progress This Week', 'Plan for Next Week', and 'Risks & Issues'.",
-      "expected_outcome": "Agent generates a well-structured and professionally toned email.",
-      "required_tools": [
-        "draft_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft a professional email with three sections: 'Progress This Week', 'Plan for Next Week', and 'Risks & Issues'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a well-structured and professionally toned email."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Ensure the email has a clear subject line (e.g., 'Project Phoenix - Weekly Status Update - July 12, 2025').",
-      "expected_outcome": "Agent creates a correctly formatted subject line.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Ensure the email has a clear subject line (e.g., 'Project Phoenix - Weekly Status Update - July 12, 2025').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a correctly formatted subject line."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

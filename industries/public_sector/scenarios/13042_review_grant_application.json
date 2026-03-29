@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-pa-13042",
-  "title": "Review a Grant Application",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review a Grant Application",
+    "compliance_level": "Standard"
+  },
   "description": "A program officer is reviewing a submitted grant application to score it against a rubric.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Grants & Funding Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the submitted grant application and all its attachments.",
-      "expected_outcome": "The officer has the complete application package for review.",
-      "required_tools": [
-        "get_grant_application"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the submitted grant application and all its attachments.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer has the complete application package for review."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Score the application against the program's official scoring rubric (e.g., project impact, budget reasonableness, organizational capacity).",
-      "expected_outcome": "The officer systematically scores each section of the application.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Score the application against the program's official scoring rubric (e.g., project impact, budget reasonableness, organizational capacity).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer systematically scores each section of the application."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the score and any comments into the grant management system.",
-      "expected_outcome": "The officer saves their review and score, moving the application to the next stage.",
-      "required_tools": [
-        "submit_grant_review"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the score and any comments into the grant management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The officer saves their review and score, moving the application to the next stage."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

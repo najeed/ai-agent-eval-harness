@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-pt-87",
-  "title": "Manage a Petty Cash Fund",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Petty Cash Fund",
+    "compliance_level": "Standard"
+  },
   "description": "An office manager needs to be reimbursed for the petty cash they spent during the month.",
-  "use_case": "Treasury & Payroll",
-  "core_function": "Cash Management",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the petty cash reimbursement request and all supporting receipts from the office manager.",
-      "expected_outcome": "Agent gets the request form and receipts.",
-      "required_tools": [
-        "get_petty_cash_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the petty cash reimbursement request and all supporting receipts from the office manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the request form and receipts."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the receipts and ensure they are for valid business expenses.",
-      "expected_outcome": "Agent validates all the receipts.",
-      "required_tools": [
-        "review_receipts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the receipts and ensure they are for valid business expenses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent validates all the receipts."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a journal entry to record the expenses, debiting the various expense accounts (e.g., office supplies, postage) and crediting 'Cash'.",
-      "expected_outcome": "Agent creates the journal entry to record the expenses.",
-      "required_tools": [
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a journal entry to record the expenses, debiting the various expense accounts (e.g., office supplies, postage) and crediting 'Cash'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates the journal entry to record the expenses."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Issue a check to the office manager to replenish the petty cash fund.",
-      "expected_outcome": "Agent processes a check to bring the fund back to its original amount.",
-      "required_tools": [
-        "generate_physical_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Issue a check to the office manager to replenish the petty cash fund.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes a check to bring the fund back to its original amount."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

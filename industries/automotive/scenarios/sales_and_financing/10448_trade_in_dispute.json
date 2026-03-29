@@ -1,52 +1,59 @@
 {
-  "scenario_id": "auto-sf-10448",
-  "title": "Dispute Over Trade-in Value",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dispute Over Trade-in Value",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is unhappy with the final trade-in value offered after physical inspection, claiming it is much lower than the online estimate.",
-  "use_case": "Vehicle Sales & Financing",
-  "core_function": "Trade-in & Appraisal",
   "industry": "Automotive",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the initial online estimate and the appraiser's physical inspection report.",
-      "expected_outcome": "Agent pulls both reports.",
-      "required_tools": [
-        "get_market_valuation",
-        "get_appraisal_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the initial online estimate and the appraiser's physical inspection report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls both reports."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the reports and identify the reasons for the discrepancy (e.g., undisclosed cosmetic damage, worn tires noted during inspection).",
-      "expected_outcome": "Agent finds the appraiser noted significant tire wear and a large scratch not mentioned in the online submission.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the reports and identify the reasons for the discrepancy (e.g., undisclosed cosmetic damage, worn tires noted during inspection).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the appraiser noted significant tire wear and a large scratch not mentioned in the online submission."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Clearly explain the specific reasons for the lower final value to the customer and get the sales manager to review the offer.",
-      "expected_outcome": "Agent explains the findings, and the manager approves a small increase as a goodwill gesture.",
-      "required_tools": [
-        "contact_manager_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Clearly explain the specific reasons for the lower final value to the customer and get the sales manager to review the offer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent explains the findings, and the manager approves a small increase as a goodwill gesture."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

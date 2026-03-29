@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pw-13024",
-  "title": "Get Information on a Public Construction Project",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Get Information on a Public Construction Project",
+    "compliance_level": "Standard"
+  },
   "description": "A resident is asking for the timeline and scope of a road construction project happening on their street.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Project Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific construction project based on the location provided by the resident.",
-      "expected_outcome": "Agent locates the 'Main Street Repaving' project in the system.",
-      "required_tools": [
-        "get_project_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific construction project based on the location provided by the resident.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the 'Main Street Repaving' project in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the project's public information, including scope, expected duration, and work hours.",
-      "expected_outcome": "Agent finds the project details.",
-      "required_tools": [
-        "get_project_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the project's public information, including scope, expected duration, and work hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the project details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a summary of the project information to the resident.",
-      "expected_outcome": "Agent clearly explains the project scope and timeline to the resident.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a summary of the project information to the resident.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the project scope and timeline to the resident."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

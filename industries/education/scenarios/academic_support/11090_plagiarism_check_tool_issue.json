@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-as-11090",
-  "title": "Plagiarism Check Tool Issue",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plagiarism Check Tool Issue",
+    "compliance_level": "Standard"
+  },
   "description": "A faculty member is trying to use the plagiarism detection tool (e.g., Turnitin) integrated with the LMS, but it's not generating a report.",
-  "use_case": "Academic Support",
-  "core_function": "Learning Management System (LMS) Support",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the faculty member, course, and assignment.",
-      "expected_outcome": "Agent gathers the context of the issue.",
-      "required_tools": [
-        "get_employee_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the faculty member, course, and assignment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the context of the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the assignment settings in the LMS to ensure the plagiarism tool was enabled correctly.",
-      "expected_outcome": "Agent verifies the settings are correct.",
-      "required_tools": [
-        "check_lms_assignment_settings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the assignment settings in the LMS to ensure the plagiarism tool was enabled correctly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies the settings are correct."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Manually re-sync the assignment with the plagiarism detection service.",
-      "expected_outcome": "Agent forces a refresh of the connection, which successfully generates the report.",
-      "required_tools": [
-        "resync_lti_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Manually re-sync the assignment with the plagiarism detection service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent forces a refresh of the connection, which successfully generates the report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

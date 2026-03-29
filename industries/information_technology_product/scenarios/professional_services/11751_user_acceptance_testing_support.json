@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11751",
-  "title": "User Acceptance Testing (UAT) Support",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "User Acceptance Testing (UAT) Support",
+    "compliance_level": "Standard"
+  },
   "description": "During the UAT phase of a project, a customer reports that a configured workflow is not behaving as expected.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Implementation & Configuration",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the bug report from the UAT tester.",
-      "expected_outcome": "Consultant understands the reported issue and the expected behavior.",
-      "required_tools": [
-        "view_bug_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the bug report from the UAT tester.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant understands the reported issue and the expected behavior."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the workflow's configuration settings in the admin panel.",
-      "expected_outcome": "Consultant finds a misconfigured rule in the workflow logic (e.g., a condition is 'AND' instead of 'OR').",
-      "required_tools": [
-        "review_workflow_configuration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the workflow's configuration settings in the admin panel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant finds a misconfigured rule in the workflow logic (e.g., a condition is 'AND' instead of 'OR')."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Correct the configuration and ask the UAT tester to re-test the scenario.",
-      "expected_outcome": "Consultant fixes the issue, and the tester confirms the workflow now functions correctly.",
-      "required_tools": [
-        "update_workflow_configuration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Correct the configuration and ask the UAT tester to re-test the scenario.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant fixes the issue, and the tester confirms the workflow now functions correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

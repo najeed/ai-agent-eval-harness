@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-rdq-10559",
-  "title": "Disposition Expired Retain Sample",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Disposition Expired Retain Sample",
+    "compliance_level": "Standard"
+  },
   "description": "A retain sample has passed its required retention period and must be disposed of.",
-  "use_case": "R&D and Quality",
-  "core_function": "Sample Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate a list of all retain samples that are past their disposition date.",
-      "expected_outcome": "Agent retrieves a list of samples to be destroyed.",
-      "required_tools": [
-        "get_expired_samples_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate a list of all retain samples that are past their disposition date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of samples to be destroyed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For the first sample on the list, update its status in the LIMS to 'Pending Disposal'.",
-      "expected_outcome": "Agent changes the sample's status.",
-      "required_tools": [
-        "update_sample_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For the first sample on the list, update its status in the LIMS to 'Pending Disposal'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent changes the sample's status."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "After physically disposing of the sample according to procedure, log the disposal date and method in the LIMS.",
-      "expected_outcome": "Agent records the final disposition details, completing the sample's lifecycle.",
-      "required_tools": [
-        "log_sample_disposal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "After physically disposing of the sample according to procedure, log the disposal date and method in the LIMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent records the final disposition details, completing the sample's lifecycle."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

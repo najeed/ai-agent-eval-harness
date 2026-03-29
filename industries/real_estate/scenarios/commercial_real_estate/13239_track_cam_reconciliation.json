@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-com-13239",
-  "title": "Track Annual CAM Reconciliation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Annual CAM Reconciliation",
+    "compliance_level": "Standard"
+  },
   "description": "It's year-end, and the property manager must reconcile the Common Area Maintenance (CAM) expenses for a commercial property.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Property & Asset Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Compile all actual CAM expenses for the property for the entire year.",
-      "expected_outcome": "Agent gathers all relevant invoices and expense records.",
-      "required_tools": [
-        "get_property_expenses"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Compile all actual CAM expenses for the property for the entire year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all relevant invoices and expense records."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate each tenant's pro-rata share of the actual expenses based on their leased square footage.",
-      "expected_outcome": "Agent accurately calculates each tenant's share.",
-      "required_tools": [
-        "calculate_cam_charges"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate each tenant's pro-rata share of the actual expenses based on their leased square footage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates each tenant's share."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the actual charges to the estimated CAM charges paid by each tenant and issue a credit or invoice for the difference.",
-      "expected_outcome": "Agent generates and sends correct reconciliation statements to all tenants.",
-      "required_tools": [
-        "generate_cam_reconciliation_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the actual charges to the estimated CAM charges paid by each tenant and issue a credit or invoice for the difference.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates and sends correct reconciliation statements to all tenants."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-las-10269",
-  "title": "Purchase In-Flight Wi-Fi",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Purchase In-Flight Wi-Fi",
+    "compliance_level": "Standard"
+  },
   "description": "A passenger on board a flight wants to purchase Wi-Fi access.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Ancillary Revenue & Sales",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The passenger connects to the onboard Wi-Fi network and is directed to a payment portal.",
-      "expected_outcome": "Passenger accesses the portal.",
-      "required_tools": [
-        "access_wifi_portal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The passenger connects to the onboard Wi-Fi network and is directed to a payment portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Passenger accesses the portal."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The portal displays the available Wi-Fi packages and their prices (e.g., 1-hour pass, full-flight pass).",
-      "expected_outcome": "Passenger sees the options.",
-      "required_tools": [
-        "display_wifi_packages"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The portal displays the available Wi-Fi packages and their prices (e.g., 1-hour pass, full-flight pass).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Passenger sees the options."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The passenger selects a package, enters their payment information, and their device is granted internet access.",
-      "expected_outcome": "Passenger successfully purchases and connects to the Wi-Fi.",
-      "required_tools": [
-        "process_payment",
-        "grant_wifi_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The passenger selects a package, enters their payment information, and their device is granted internet access.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Passenger successfully purchases and connects to the Wi-Fi."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

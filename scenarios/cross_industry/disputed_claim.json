@@ -1,68 +1,74 @@
 {
-  "scenario_id": "cross-industry-hc-ins-001",
-  "title": "The Disputed Claim (Healthcare & Insurance)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "The Disputed Claim (Healthcare & Insurance)",
+    "compliance_level": "Standard"
+  },
   "description": "A high-stakes resolution between General Hospital and SecureHealth Insurance regarding patient John Smith.",
-  "use_case": "Cross Industry",
   "industry": "Multi-Industry",
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "title": "Data Retrieval (Healthcare)",
-      "description": "Fetch authorization AUTH-99 from the Healthcare Provider's API.",
-      "expected_outcome": "Record found with code AUTH-99, status 'Pending'.",
-      "required_tools": ["get_provider_record"],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Fetch authorization AUTH-99 from the Healthcare Provider's API.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Record found with code AUTH-99, status 'Pending'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "title": "Discrepancy Analysis (Insurance)",
-      "description": "Query the Insurance Payer's database for AUTH-99.",
-      "expected_outcome": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'.",
-      "required_tools": ["check_insurance_authorization"],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the Insurance Payer's database for AUTH-99.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "title": "Conflict Resolution",
-      "description": "Reconcile the records and propose a 'Correction Request' to the Insurance system.",
-      "expected_outcome": "Correction submitted, status updated to 'Under Review'.",
-      "required_tools": ["submit_claim_correction"],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reconcile the records and propose a 'Correction Request' to the Insurance system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Correction submitted, status updated to 'Under Review'."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "title": "Patient Transparency",
-      "description": "Notify John Smith (john.smith@example.com) about the current status and the expected resolution timeline.",
-      "expected_outcome": "Email sent to patient explaining the administrative correction.",
-      "required_tools": ["send_patient_update"],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Notify John Smith (john.smith@example.com) about the current status and the expected resolution timeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Email sent to patient explaining the administrative correction."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "auth_code": "AUTH-99",
     "patient_email": "john.smith@example.com"

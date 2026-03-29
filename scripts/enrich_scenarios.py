@@ -33,32 +33,35 @@ def enrich_scenario(file_path: Path) -> bool:
             "requires_approval_for_destructive_actions": True,
         }
 
-        # Modify tasks to include expected_state_changes if tool_call_correctness is present
+        # Modify nodes to include expected_state_changes if tool_call_correctness is present
         modified = False
-        if "tasks" in data:
-            for task in data["tasks"]:
+        workflow = data.get("workflow", {})
+        nodes = workflow.get("nodes", [])
+
+        if nodes:
+            for node in nodes:
                 has_state_metric = any(
                     c.get("metric") == "state_verification"
-                    for c in task.get("success_criteria", [])
+                    for c in node.get("success_criteria", [])
                 )
                 if not has_state_metric:
                     # Add dummy state change to test state_verification
-                    if "expected_state_changes" not in task:
-                        task["expected_state_changes"] = [
+                    if "expected_state_changes" not in node:
+                        node["expected_state_changes"] = [
                             {"path": "task_completed", "value": True}
                         ]
 
-                    if "success_criteria" not in task:
-                        task["success_criteria"] = []
+                    if "success_criteria" not in node:
+                        node["success_criteria"] = []
 
-                    task["success_criteria"].append(
+                    node["success_criteria"].append(
                         {"metric": "state_verification", "threshold": 1.0}
                     )
                     modified = True
 
         if (
             modified or "initial_state" not in data
-        ):  # Save if we modified tasks or added state
+        ):  # Save if we modified nodes or added state
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
             return True

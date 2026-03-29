@@ -72,6 +72,9 @@ class AbstractSandbox(ABC):
         # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
         self.grounding_hits: Dict[str, Dict[str, int]] = {"policies": {}, "tools": {}}
 
+        # Cache for state-aware world simulators
+        self._simulator_cache: Optional[Dict[str, Any]] = None
+
     def setup(self):
         """Perform one-time setup: Create workspace directory."""
         from pathlib import Path
@@ -91,6 +94,15 @@ class AbstractSandbox(ABC):
             if ws_path.exists():
                 shutil.rmtree(ws_path)
                 print(f"      [Sandbox] Workspace cleaned up.")
+
+        # Explicitly teardown all simulators to release resources
+        if self._simulator_cache:
+            for sim in self._simulator_cache.values():
+                try:
+                    sim.cleanup()
+                except:
+                    pass
+            print(f"      [Sandbox] All simulators cleaned up (Registry Teardown).")
 
     @abstractmethod
     def execute(self, tool_name: str, params: dict, agent_name: Optional[str] = None) -> dict:
@@ -211,8 +223,12 @@ class ToolSandbox(AbstractSandbox):
 
     def get_active_simulators(self) -> dict:
         """Filters the global simulator registry based on both system-wide and scenario configs."""
+        if self._simulator_cache is not None:
+            return self._simulator_cache
+
         from . import simulators, config
 
+        # Instantiate the fresh registry for this sandbox session
         registry = simulators.get_simulator_registry()
 
         # Layer 1: Global System Filter (from config.py / environment)
@@ -226,6 +242,7 @@ class ToolSandbox(AbstractSandbox):
         if "*" not in scenario_enabled:
             registry = {name: sim for name, sim in registry.items() if name in scenario_enabled}
 
+        self._simulator_cache = registry
         return registry
 
     @staticmethod

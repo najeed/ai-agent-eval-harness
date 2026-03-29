@@ -1,53 +1,59 @@
 {
-  "scenario_id": "hosp-gs-11539",
-  "title": "Guest Room Change Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Guest Room Change Request",
+    "compliance_level": "Standard"
+  },
   "description": "A guest is unhappy with their room's location (e.g., too close to the elevator) and requests a different room.",
-  "use_case": "Guest Services & Front Office",
-  "core_function": "Check-in & Check-out",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Empathize with the guest and check for availability of other rooms of the same type.",
-      "expected_outcome": "Agent confirms other standard king rooms are available.",
-      "required_tools": [
-        "pms_check_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Empathize with the guest and check for availability of other rooms of the same type.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms other standard king rooms are available."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select a suitable new room away from the elevator and update the guest's reservation.",
-      "expected_outcome": "Agent reassigns the guest to a new room in the PMS.",
-      "required_tools": [
-        "pms_change_room"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select a suitable new room away from the elevator and update the guest's reservation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reassigns the guest to a new room in the PMS."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue new keys for the new room and arrange for a bellman to help the guest move their luggage.",
-      "expected_outcome": "New keys are issued, and a bellman is dispatched.",
-      "required_tools": [
-        "pms_encode_keycard",
-        "dispatch_bellman"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue new keys for the new room and arrange for a bellman to help the guest move their luggage.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "New keys are issued, and a bellman is dispatched."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

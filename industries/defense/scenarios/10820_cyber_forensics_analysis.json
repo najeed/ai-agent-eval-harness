@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-cy-10820",
-  "title": "Cyber Forensics and Attribution",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cyber Forensics and Attribution",
+    "compliance_level": "Standard"
+  },
   "description": "Following a network breach, a cyber forensics analyst must analyze the attacker's malware to determine its capabilities and origin.",
-  "use_case": "Cybersecurity & Information Warfare",
-  "core_function": "Cyber Forensics & Attribution",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Safely extract the malware sample from the compromised system.",
-      "expected_outcome": "Analyst successfully obtains the malware in a secure, isolated environment.",
-      "required_tools": [
-        "extract_malware_sample"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Safely extract the malware sample from the compromised system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst successfully obtains the malware in a secure, isolated environment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform static and dynamic analysis of the malware to identify its functions (e.g., keylogging, data exfiltration).",
-      "expected_outcome": "Analyst correctly identifies all of the malware's capabilities.",
-      "required_tools": [
-        "run_static_malware_analysis",
-        "run_dynamic_malware_analysis"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_completeness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform static and dynamic analysis of the malware to identify its functions (e.g., keylogging, data exfiltration).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly identifies all of the malware's capabilities."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the malware's code and behavior to a database of known threat actors to make a preliminary attribution.",
-      "expected_outcome": "Analyst finds a match and attributes the attack to a known nation-state adversary.",
-      "required_tools": [
-        "compare_to_threat_actor_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "attribution_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the malware's code and behavior to a database of known threat actors to make a preliminary attribution.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst finds a match and attributes the attack to a known nation-state adversary."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

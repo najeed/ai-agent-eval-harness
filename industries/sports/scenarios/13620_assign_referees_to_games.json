@@ -1,55 +1,59 @@
 {
-  "scenario_id": "sports-lm-13620",
-  "title": "Assign Referees to Games",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Assign Referees to Games",
+    "compliance_level": "Standard"
+  },
   "description": "A league administrator needs to assign referees to all games for the upcoming week, ensuring no conflicts of interest.",
-  "use_case": "League & Competition Management",
-  "core_function": "Officiating & Rules Enforcement",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the list of all games for the upcoming week and the list of all available referees.",
-      "expected_outcome": "Agent has the schedule and the list of officials.",
-      "required_tools": [
-        "get_weekly_schedule",
-        "get_available_referees"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the list of all games for the upcoming week and the list of all available referees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the schedule and the list of officials."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Automatically assign referees to games based on their experience level, location, and avoiding any conflicts of interest (e.g., assigning a referee to their hometown team's game).",
-      "expected_outcome": "Agent generates a full, conflict-free assignment list.",
-      "required_tools": [
-        "auto_assign_referees"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Automatically assign referees to games based on their experience level, location, and avoiding any conflicts of interest (e.g., assigning a referee to their hometown team's game).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a full, conflict-free assignment list."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Publish the assignments and notify each referee of their schedule for the week.",
-      "expected_outcome": "Agent finalizes the assignments and sends out notifications.",
-      "required_tools": [
-        "publish_referee_assignments",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Publish the assignments and notify each referee of their schedule for the week.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finalizes the assignments and sends out notifications."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

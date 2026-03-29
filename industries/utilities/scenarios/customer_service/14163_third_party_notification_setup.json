@@ -1,50 +1,59 @@
 {
-  "scenario_id": "utils-cs-14163",
-  "title": "Set up Third-Party Notification",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Set up Third-Party Notification",
+    "compliance_level": "Standard"
+  },
   "description": "An elderly customer wants to designate their daughter to receive a copy of any disconnection notices.",
-  "use_case": "Customer Service",
-  "core_function": "Billing & Account Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Authenticate the primary account holder.",
-      "expected_outcome": "Agent successfully verifies the customer's identity.",
-      "required_tools": [
-        "verify_customer_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Authenticate the primary account holder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully verifies the customer's identity."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Collect the name and contact information for the third party (the daughter).",
-      "expected_outcome": "Agent accurately records the third party's details.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Collect the name and contact information for the third party (the daughter).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records the third party's details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add the third party's information to the account with the specific 'disconnection notice' flag.",
-      "expected_outcome": "Agent successfully updates the account in the CIS.",
-      "required_tools": [
-        "add_third_party_contact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add the third party's information to the account with the specific 'disconnection notice' flag.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the account in the CIS."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

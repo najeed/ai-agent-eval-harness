@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-sa-11036",
-  "title": "Question About a Specific Tuition Fee",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Question About a Specific Tuition Fee",
+    "compliance_level": "Standard"
+  },
   "description": "A student is inquiring about a 'Student Activity Fee' listed on their tuition bill.",
-  "use_case": "Student Administration",
-  "core_function": "Financial Aid & Billing",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and view their itemized tuition bill.",
-      "expected_outcome": "Agent locates the 'Student Activity Fee' on the bill.",
-      "required_tools": [
-        "get_student_record",
-        "get_student_bill_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and view their itemized tuition bill.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the 'Student Activity Fee' on the bill."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Look up the definition and purpose of the fee in the university's fee schedule documentation.",
-      "expected_outcome": "Agent finds the fee supports student clubs, events, and government.",
-      "required_tools": [
-        "lookup_fee_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Look up the definition and purpose of the fee in the university's fee schedule documentation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the fee supports student clubs, events, and government."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Clearly explain the purpose of the fee to the student.",
-      "expected_outcome": "Agent provides a clear and concise explanation.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Clearly explain the purpose of the fee to the student.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear and concise explanation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

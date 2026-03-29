@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-am-10062",
-  "title": "Perform a CFD Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a CFD Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "An aerodynamicist needs to run a Computational Fluid Dynamics (CFD) simulation to analyze airflow over a new winglet design.",
-  "use_case": "Aircraft Manufacturing",
-  "core_function": "Design & Engineering",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a mesh (a grid of points) around the 3D model of the winglet for the simulation.",
-      "expected_outcome": "Agent generates a high-quality mesh suitable for CFD.",
-      "required_tools": [
-        "create_cfd_mesh"
-      ],
-      "success_criteria": [
-        {
-          "metric": "model_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a mesh (a grid of points) around the 3D model of the winglet for the simulation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a high-quality mesh suitable for CFD."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Set up the simulation conditions, including airspeed, altitude (air density), and turbulence model.",
-      "expected_outcome": "Agent correctly defines all simulation parameters.",
-      "required_tools": [
-        "define_simulation_conditions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Set up the simulation conditions, including airspeed, altitude (air density), and turbulence model.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly defines all simulation parameters."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run the CFD simulation and analyze the results to determine the winglet's effectiveness at reducing induced drag.",
-      "expected_outcome": "Agent runs the simulation and the results show a 4% reduction in drag.",
-      "required_tools": [
-        "run_cfd_simulation",
-        "analyze_simulation_results"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run the CFD simulation and analyze the results to determine the winglet's effectiveness at reducing induced drag.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs the simulation and the results show a 4% reduction in drag."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

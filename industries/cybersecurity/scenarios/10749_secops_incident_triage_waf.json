@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-so-10749",
-  "title": "WAF Alert Triage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "WAF Alert Triage",
+    "compliance_level": "Standard"
+  },
   "description": "A SOC analyst receives an alert from the Web Application Firewall (WAF) for a cross-site scripting (XSS) attempt.",
-  "use_case": "Security Operations (SecOps)",
-  "core_function": "Incident Detection & Triage",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the WAF alert details, including the source IP and the malicious payload.",
-      "expected_outcome": "Analyst correctly retrieves the alert data.",
-      "required_tools": [
-        "get_waf_alert_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the WAF alert details, including the source IP and the malicious payload.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly retrieves the alert data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Confirm that the WAF successfully blocked the malicious request and the XSS payload was not processed by the server.",
-      "expected_outcome": "Analyst verifies that the security control worked as intended.",
-      "required_tools": [
-        "query_web_server_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Confirm that the WAF successfully blocked the malicious request and the XSS payload was not processed by the server.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst verifies that the security control worked as intended."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the reputation of the source IP and, finding it is a known malicious actor, add it to a temporary blocklist.",
-      "expected_outcome": "Analyst takes a proactive step to block the attacker from making further attempts.",
-      "required_tools": [
-        "check_ip_reputation",
-        "add_to_firewall_blocklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "proactive_defense_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the reputation of the source IP and, finding it is a known malicious actor, add it to a temporary blocklist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst takes a proactive step to block the attacker from making further attempts."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

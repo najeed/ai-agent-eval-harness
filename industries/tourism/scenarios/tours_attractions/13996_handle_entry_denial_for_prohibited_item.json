@@ -1,53 +1,59 @@
 {
-  "scenario_id": "tourism-ta-13996",
-  "title": "Handle Entry Denial for Prohibited Item",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Entry Denial for Prohibited Item",
+    "compliance_level": "Standard"
+  },
   "description": "A visitor at a stadium entrance has a prohibited item (a large backpack) and is denied entry by security.",
-  "use_case": "Tours & Attractions",
-  "core_function": "Access & Entry Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Politely inform the visitor that their backpack exceeds the size limit allowed in the stadium.",
-      "expected_outcome": "Agent clearly and calmly explains the policy.",
-      "required_tools": [
-        "get_entry_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Politely inform the visitor that their backpack exceeds the size limit allowed in the stadium.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly and calmly explains the policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Advise the visitor of their options, such as returning the bag to their vehicle or using a nearby paid locker service.",
-      "expected_outcome": "Agent provides helpful solutions to the visitor.",
-      "required_tools": [
-        "get_locker_information"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Advise the visitor of their options, such as returning the bag to their vehicle or using a nearby paid locker service.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides helpful solutions to the visitor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reiterate that they can enter once they no longer have the prohibited item.",
-      "expected_outcome": "Agent ensures the visitor understands how they can gain entry.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reiterate that they can enter once they no longer have the prohibited item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ensures the visitor understands how they can gain entry."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

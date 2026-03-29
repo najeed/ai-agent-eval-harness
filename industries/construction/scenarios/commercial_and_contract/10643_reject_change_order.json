@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-cc-10643",
-  "title": "Client Rejects a Change Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Client Rejects a Change Order",
+    "compliance_level": "Standard"
+  },
   "description": "A client reviews a change order and rejects it due to the high cost.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Change Order Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the client's rejection of the change order, noting the reason 'Cost too high'.",
-      "expected_outcome": "The rejection is logged in the system.",
-      "required_tools": [
-        "receive_client_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the client's rejection of the change order, noting the reason 'Cost too high'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The rejection is logged in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the status of the change order to 'Rejected' in the project management system.",
-      "expected_outcome": "The change order status is updated.",
-      "required_tools": [
-        "update_change_order_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the status of the change order to 'Rejected' in the project management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The change order status is updated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the project team that the added scope will not be proceeding.",
-      "expected_outcome": "The project team is informed not to perform the work in the rejected change order.",
-      "required_tools": [
-        "send_stakeholder_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the project team that the added scope will not be proceeding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project team is informed not to perform the work in the rejected change order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

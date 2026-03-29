@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-sl-12333",
-  "title": "Resolve a Supplier Invoice Discrepancy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve a Supplier Invoice Discrepancy",
+    "compliance_level": "Standard"
+  },
   "description": "The accounts payable team has flagged a supplier invoice where the price charged is higher than the price on the PO.",
-  "use_case": "Supply Chain & Logistics",
-  "core_function": "Supplier Relationship Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the purchase order and the supplier's invoice.",
-      "expected_outcome": "Agent pulls up both documents for comparison.",
-      "required_tools": [
-        "find_purchase_order",
-        "get_supplier_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the purchase order and the supplier's invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up both documents for comparison."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the line item prices and identify the discrepancy.",
-      "expected_outcome": "Agent confirms the supplier charged a higher price for one of the items.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the line item prices and identify the discrepancy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the supplier charged a higher price for one of the items."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the supplier with the evidence and request a corrected invoice or a credit memo.",
-      "expected_outcome": "Agent sends a formal dispute to the supplier with the PO and invoice attached.",
-      "required_tools": [
-        "send_supplier_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the supplier with the evidence and request a corrected invoice or a credit memo.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a formal dispute to the supplier with the PO and invoice attached."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,55 +1,59 @@
 {
-  "scenario_id": "media-ae-12570",
-  "title": "Handle Account Takeover Support Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Account Takeover Support Request",
+    "compliance_level": "Standard"
+  },
   "description": "A user reports they can no longer access their streaming account and suspect it has been taken over by someone else.",
-  "use_case": "Audience Engagement & Subscriber Management",
-  "core_function": "Customer & Community Support",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the account details and review the recent login and profile change history.",
-      "expected_outcome": "Agent finds a recent login from an unrecognized IP address, followed by an email and password change.",
-      "required_tools": [
-        "get_subscriber_details",
-        "get_account_event_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the account details and review the recent login and profile change history.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a recent login from an unrecognized IP address, followed by an email and password change."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the user's identity using personal information and past billing details.",
-      "expected_outcome": "Agent confirms the person reporting the issue is the legitimate owner.",
-      "required_tools": [
-        "verify_user_identity_secure"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the user's identity using personal information and past billing details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the person reporting the issue is the legitimate owner."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Revert the fraudulent email and password changes and secure the account.",
-      "expected_outcome": "Agent restores the original account details and forces a password reset for the legitimate user.",
-      "required_tools": [
-        "revert_account_changes",
-        "force_password_reset"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Revert the fraudulent email and password changes and secure the account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent restores the original account details and forces a password reset for the legitimate user."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

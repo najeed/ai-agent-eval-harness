@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-cp-12092",
-  "title": "Write SEO-Friendly Article",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Write SEO-Friendly Article",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter is writing an article on a popular topic and needs to ensure it is optimized to rank well in search engine results.",
-  "use_case": "Content Production & Editing",
-  "core_function": "Publishing & CMS Management",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Use an SEO tool to research the most common keywords and phrases people use when searching for this topic.",
-      "expected_outcome": "A list of target keywords is generated.",
-      "required_tools": [
-        "seo_research_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "relevance_of_keywords",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Use an SEO tool to research the most common keywords and phrases people use when searching for this topic.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of target keywords is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Incorporate the target keywords naturally into the article's headline, subheadings, and body text.",
-      "expected_outcome": "The article is optimized for the target keywords.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "seo_best_practices_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Incorporate the target keywords naturally into the article's headline, subheadings, and body text.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The article is optimized for the target keywords."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Write a compelling meta description that includes the primary keyword and will entice users to click from a search results page.",
-      "expected_outcome": "An effective meta description is drafted.",
-      "required_tools": [
-        "draft_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Write a compelling meta description that includes the primary keyword and will entice users to click from a search results page.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An effective meta description is drafted."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

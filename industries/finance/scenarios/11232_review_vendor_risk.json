@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-cf-11232",
-  "title": "Review Vendor for Financial Risk",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Vendor for Financial Risk",
+    "compliance_level": "Standard"
+  },
   "description": "Before signing a large contract, a risk officer needs to assess the financial stability of a new vendor.",
-  "use_case": "Corporate Finance",
-  "core_function": "Risk & Compliance",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Pull a third-party financial risk report for the specified vendor.",
-      "expected_outcome": "Agent successfully retrieves the vendor's credit score and financial health report.",
-      "required_tools": [
-        "get_third_party_risk_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Pull a third-party financial risk report for the specified vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the vendor's credit score and financial health report."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the report for any red flags, such as poor credit rating or pending litigation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the report and finds no significant red flags."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the report for any red flags, such as poor credit rating or pending litigation.",
-      "expected_outcome": "Agent reviews the report and finds no significant red flags.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the risk assessment and provide a recommendation to proceed with the contract.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the assessment and gives a 'low risk' recommendation."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the risk assessment and provide a recommendation to proceed with the contract.",
-      "expected_outcome": "Agent logs the assessment and gives a 'low risk' recommendation.",
-      "required_tools": [
-        "log_risk_assessment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-131",
-  "title": "Resolve Staffing Conflict",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Staffing Conflict",
+    "compliance_level": "Standard"
+  },
   "description": "Two project proposals request the same lead data scientist. An agent must identify the conflict and propose a solution.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the resource plans for two new project proposals.",
-      "expected_outcome": "Agent successfully loads the two plans.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the resource plans for two new project proposals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully loads the two plans."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify that both plans have requested 'Dr. Eva Rostova' as the lead data scientist for overlapping time periods.",
-      "expected_outcome": "Agent correctly identifies the resource conflict.",
-      "required_tools": [
-        "identify_resource_conflict"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify that both plans have requested 'Dr. Eva Rostova' as the lead data scientist for overlapping time periods.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the resource conflict."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Propose a solution, such as suggesting an alternative data scientist for one project or adjusting the timelines so they don't overlap.",
-      "expected_outcome": "Agent provides at least one viable solution to the conflict.",
-      "required_tools": [
-        "propose_solution"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.85,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Propose a solution, such as suggesting an alternative data scientist for one project or adjusting the timelines so they don't overlap.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides at least one viable solution to the conflict."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

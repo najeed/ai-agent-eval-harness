@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13111",
-  "title": "Generate Monthly Owner Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Monthly Owner Report",
+    "compliance_level": "Standard"
+  },
   "description": "A property owner requires their monthly financial statement. The PM needs to generate and send the report.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management & Reporting",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the property owner and the specific property.",
-      "expected_outcome": "Agent locates the correct owner and property in the system.",
-      "required_tools": [
-        "get_owner_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the property owner and the specific property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct owner and property in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the 'Monthly Owner Statement' for the previous month.",
-      "expected_outcome": "The system generates a PDF report showing income, expenses, and net distribution.",
-      "required_tools": [
-        "generate_owner_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the 'Monthly Owner Statement' for the previous month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a PDF report showing income, expenses, and net distribution."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Email the statement to the property owner with a brief summary.",
-      "expected_outcome": "The report is successfully emailed to the owner.",
-      "required_tools": [
-        "send_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Email the statement to the property owner with a brief summary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The report is successfully emailed to the owner."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-sc-12380",
-  "title": "Update a Customer Account",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update a Customer Account",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has a new shipping address and it needs to be updated in their account.",
-  "use_case": "Sales & Customer Management",
-  "core_function": "Account & Contract Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the customer's account in the CRM.",
-      "expected_outcome": "Agent retrieves the correct customer account.",
-      "required_tools": [
-        "get_customer_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the customer's account in the CRM.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct customer account."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add the new address to the customer's list of shipping locations.",
-      "expected_outcome": "Agent accurately enters the new address details.",
-      "required_tools": [
-        "add_customer_address"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add the new address to the customer's list of shipping locations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately enters the new address details."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set the new address as the default shipping address for future orders.",
-      "expected_outcome": "Agent updates the customer's preferences to use the new address by default.",
-      "required_tools": [
-        "update_customer_defaults"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set the new address as the default shipping address for future orders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the customer's preferences to use the new address by default."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

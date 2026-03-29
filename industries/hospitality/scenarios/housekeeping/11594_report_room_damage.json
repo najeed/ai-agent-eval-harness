@@ -1,62 +1,72 @@
 {
-  "scenario_id": "hosp-hk-11594",
-  "title": "Report Guest-Caused Room Damage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Guest-Caused Room Damage",
+    "compliance_level": "Standard"
+  },
   "description": "After a guest checks out, housekeeping finds significant damage to the room (e.g., a broken chair, stained carpet).",
-  "use_case": "Housekeeping & Maintenance",
-  "core_function": "Maintenance Requests",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The housekeeper immediately reports the damage to the housekeeping manager.",
-      "expected_outcome": "The manager is notified.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The housekeeper immediately reports the damage to the housekeeping manager.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager is notified."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The manager takes photos of the damage and documents it thoroughly.",
-      "expected_outcome": "Evidence of the damage is collected.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The manager takes photos of the damage and documents it thoroughly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Evidence of the damage is collected."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The manager informs the front office manager or general manager to determine if the guest should be charged for the damages.",
-      "expected_outcome": "The issue is escalated to management for a decision on billing.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The manager informs the front office manager or general manager to determine if the guest should be charged for the damages.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The issue is escalated to management for a decision on billing."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The room is placed 'Out of Order' until repairs can be made.",
-      "expected_outcome": "The room is taken out of inventory for maintenance.",
-      "required_tools": [
-        "pms_block_room"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The room is placed 'Out of Order' until repairs can be made.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The room is taken out of inventory for maintenance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

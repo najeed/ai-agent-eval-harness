@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hr-er-11627",
-  "title": "Process an Employee Resignation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an Employee Resignation",
+    "compliance_level": "Standard"
+  },
   "description": "An employee submits their two-week notice of resignation.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Offboarding",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the resignation letter and acknowledge it in writing.",
-      "expected_outcome": "HR specialist receives the resignation and sends a confirmation email.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the resignation letter and acknowledge it in writing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR specialist receives the resignation and sends a confirmation email."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the termination date into the HRIS to trigger the offboarding workflow.",
-      "expected_outcome": "Specialist correctly enters the employee's last day in the system.",
-      "required_tools": [
-        "process_employee_termination"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the termination date into the HRIS to trigger the offboarding workflow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist correctly enters the employee's last day in the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prepare the final paycheck and benefits paperwork for the employee's last day.",
-      "expected_outcome": "Specialist calculates and prepares all final separation documents and pay.",
-      "required_tools": [
-        "calculate_final_pay",
-        "generate_offboarding_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prepare the final paycheck and benefits paperwork for the employee's last day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Specialist calculates and prepares all final separation documents and pay."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

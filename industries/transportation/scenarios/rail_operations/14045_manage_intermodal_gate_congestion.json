@@ -1,67 +1,72 @@
 {
-  "scenario_id": "tr-ro-14045",
-  "title": "Manage Intermodal Gate Congestion",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Intermodal Gate Congestion",
+    "compliance_level": "Standard"
+  },
   "description": "The system detects long wait times for trucks at an intermodal terminal's entry gate. A manager must take action.",
-  "use_case": "Rail Operations",
-  "core_function": "Intermodal Operations",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a system alert that the average gate queue time has exceeded 30 minutes.",
-      "expected_outcome": "The manager is alerted to the congestion problem.",
-      "required_tools": [
-        "get_terminal_kpi_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a system alert that the average gate queue time has exceeded 30 minutes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The manager is alerted to the congestion problem."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the status of the gate processing systems and staffing levels.",
-      "expected_outcome": "Manager sees that one of the two entry lanes is closed due to a hardware failure.",
-      "required_tools": [
-        "get_gate_system_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the status of the gate processing systems and staffing levels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Manager sees that one of the two entry lanes is closed due to a hardware failure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch an IT technician to repair the broken gate hardware.",
-      "expected_outcome": "A technician is sent to fix the issue.",
-      "required_tools": [
-        "dispatch_it_technician"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch an IT technician to repair the broken gate hardware.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A technician is sent to fix the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Temporarily re-route some inbound trucks to a secondary, less-used gate to alleviate pressure.",
-      "expected_outcome": "Gate traffic is redirected to reduce the queue.",
-      "required_tools": [
-        "update_gate_signage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Temporarily re-route some inbound trucks to a secondary, less-used gate to alleviate pressure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Gate traffic is redirected to reduce the queue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

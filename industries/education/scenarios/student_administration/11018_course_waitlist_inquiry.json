@@ -1,51 +1,59 @@
 {
-  "scenario_id": "education-sa-11018",
-  "title": "Check Position on Course Waitlist",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Position on Course Waitlist",
+    "compliance_level": "Standard"
+  },
   "description": "A student who is on a waitlist for a full course wants to know their position.",
-  "use_case": "Student Administration",
-  "core_function": "Registration & Course Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and the waitlisted course.",
-      "expected_outcome": "Agent confirms the student's identity and the course in question.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and the waitlisted course.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's identity and the course in question."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Query the registration system for the student's position on the waitlist.",
-      "expected_outcome": "Agent finds the student is position #3 on the waitlist for 'PSYC250'.",
-      "required_tools": [
-        "get_course_waitlist_position"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Query the registration system for the student's position on the waitlist.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the student is position #3 on the waitlist for 'PSYC250'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the student of their position and explain the automatic enrollment process if a spot opens.",
-      "expected_outcome": "Agent clearly explains the student's status.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the student of their position and explain the automatic enrollment process if a spot opens.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the student's status."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

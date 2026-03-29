@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11804",
-  "title": "Cloud - Provision New Azure VM",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cloud - Provision New Azure VM",
+    "compliance_level": "Standard"
+  },
   "description": "A client has requested a new virtual machine in their Microsoft Azure environment to host a new application.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Cloud Resource Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Confirm the required specifications for the VM (CPU, RAM, storage) from the ticket.",
-      "expected_outcome": "Technician has the required specs for the new server.",
-      "required_tools": [
-        "get_ticket_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Confirm the required specifications for the VM (CPU, RAM, storage) from the ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician has the required specs for the new server."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log in to the Azure portal and provision the new VM based on the specifications, placing it in the correct virtual network and resource group.",
-      "expected_outcome": "A new VM is successfully created in the client's Azure tenant.",
-      "required_tools": [
-        "provision_vm_azure"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log in to the Azure portal and provision the new VM based on the specifications, placing it in the correct virtual network and resource group.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new VM is successfully created in the client's Azure tenant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Document the new VM's details (IP address, credentials) in the client's documentation.",
-      "expected_outcome": "The new asset is documented correctly for future reference.",
-      "required_tools": [
-        "update_client_documentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Document the new VM's details (IP address, credentials) in the client's documentation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new asset is documented correctly for future reference."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

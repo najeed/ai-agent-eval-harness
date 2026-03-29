@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tax-bus-13779",
-  "title": "Respond to a State Nexus Questionnaire",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a State Nexus Questionnaire",
+    "compliance_level": "Standard"
+  },
   "description": "A business receives a questionnaire from a state's Department of Revenue asking about its activities in the state to determine if it has tax nexus.",
-  "use_case": "Business Tax Services",
-  "core_function": "Sales & Use Tax Compliance",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the questionnaire to understand the specific information the state is seeking.",
-      "expected_outcome": "Agent understands the scope of the state's inquiry.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the questionnaire to understand the specific information the state is seeking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the scope of the state's inquiry."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather data on the company's activities in that state (e.g., sales, property, payroll, employee travel).",
-      "expected_outcome": "Agent compiles a complete record of the company's connections to the state.",
-      "required_tools": [
-        "analyze_business_activities_by_state"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather data on the company's activities in that state (e.g., sales, property, payroll, employee travel).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a complete record of the company's connections to the state."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete the questionnaire accurately and strategically to present the company's position.",
-      "expected_outcome": "Agent provides truthful answers while avoiding unnecessary disclosures.",
-      "required_tools": [
-        "complete_nexus_questionnaire"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete the questionnaire accurately and strategically to present the company's position.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides truthful answers while avoiding unnecessary disclosures."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

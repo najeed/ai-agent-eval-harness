@@ -1,53 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11889",
-  "title": "Monitoring - High Latency on WAN Link",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitoring - High Latency on WAN Link",
+    "compliance_level": "Standard"
+  },
   "description": "An RMM alert indicates high latency on the primary WAN link for a client's office.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Monitoring & Alerting",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the alert.",
-      "expected_outcome": "A technician takes ownership.",
-      "required_tools": [
-        "acknowledge_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A technician takes ownership."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the firewall's traffic graphs to see if the link is saturated.",
-      "expected_outcome": "The technician finds that a user is downloading a very large file, consuming all available bandwidth.",
-      "required_tools": [
-        "get_firewall_traffic_graphs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the firewall's traffic graphs to see if the link is saturated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician finds that a user is downloading a very large file, consuming all available bandwidth."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Apply a temporary Quality of Service (QoS) policy to limit the bandwidth for that user's workstation, allowing critical traffic to function normally.",
-      "expected_outcome": "The high latency issue is resolved by traffic shaping, and the alert clears.",
-      "required_tools": [
-        "apply_qos_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Apply a temporary Quality of Service (QoS) policy to limit the bandwidth for that user's workstation, allowing critical traffic to function normally.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The high latency issue is resolved by traffic shaping, and the alert clears."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "information_technology_product-sl-11714",
-  "title": "Proactive Renewal Outreach",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Proactive Renewal Outreach",
+    "compliance_level": "Standard"
+  },
   "description": "An Account Manager reaches out to a customer 90 days before their annual subscription is set to renew.",
-  "use_case": "Sales & Account Management",
-  "core_function": "Account Renewals & Upselling",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a customer whose contract expires in 90 days.",
-      "expected_outcome": "Agent pulls a report of upcoming renewals and selects a customer.",
-      "required_tools": [
-        "get_upcoming_renewals"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a customer whose contract expires in 90 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls a report of upcoming renewals and selects a customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the customer's usage metrics and support ticket history to prepare for the call.",
-      "expected_outcome": "Agent notes the customer has high adoption but has hit their API call limit several times.",
-      "required_tools": [
-        "view_customer_usage_logs",
-        "view_ticket_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the customer's usage metrics and support ticket history to prepare for the call.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent notes the customer has high adoption but has hit their API call limit several times."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the customer to schedule a 'business review' meeting to discuss their renewal and the possibility of upgrading to a higher tier with more API calls.",
-      "expected_outcome": "Agent successfully schedules a meeting to discuss renewal and a potential upsell.",
-      "required_tools": [
-        "schedule_meeting"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the customer to schedule a 'business review' meeting to discuss their renewal and the possibility of upgrading to a higher tier with more API calls.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules a meeting to discuss renewal and a potential upsell."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "marketing-sp-12401",
-  "title": "Develop a Campaign Budget",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop a Campaign Budget",
+    "compliance_level": "Standard"
+  },
   "description": "A planner needs to create a recommended budget allocation for an upcoming quarterly campaign.",
-  "use_case": "Strategy & Planning",
-  "core_function": "Campaign Strategy & Planning",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the campaign goals and the total available budget.",
-      "expected_outcome": "Agent identifies the overall budget and key objectives.",
-      "required_tools": [
-        "get_campaign_brief"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the campaign goals and the total available budget.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the overall budget and key objectives."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Research industry benchmarks for cost-per-click (CPC) and cost-per-mille (CPM) for the selected channels.",
-      "expected_outcome": "Agent gathers typical cost data for the planned media channels.",
-      "required_tools": [
-        "get_media_cost_benchmarks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Research industry benchmarks for cost-per-click (CPC) and cost-per-mille (CPM) for the selected channels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers typical cost data for the planned media channels."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a budget spreadsheet that allocates the total budget across channels (e.g., 50% Search, 40% Social, 10% Display) based on goals and cost estimates.",
-      "expected_outcome": "Agent produces a logical and well-justified budget allocation plan.",
-      "required_tools": [
-        "spreadsheet_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a budget spreadsheet that allocates the total budget across channels (e.g., 50% Search, 40% Social, 10% Display) based on goals and cost estimates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a logical and well-justified budget allocation plan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-101",
-  "title": "Draft Project Proposal from Client Brief",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Draft Project Proposal from Client Brief",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must draft a project proposal based on a client's initial project brief document.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the provided client brief to extract key objectives, scope, and constraints.",
-      "expected_outcome": "Agent correctly identifies the client's main goals (e.g., 'reduce operational costs by 15%') and constraints (e.g., '6-month timeline').",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the provided client brief to extract key objectives, scope, and constraints.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the client's main goals (e.g., 'reduce operational costs by 15%') and constraints (e.g., '6-month timeline')."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the 'Our Understanding' and 'Proposed Scope' sections of the proposal.",
-      "expected_outcome": "Agent generates well-structured text that accurately reflects the client's needs and defines clear project boundaries.",
-      "required_tools": [
-        "draft_text_section"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the 'Our Understanding' and 'Proposed Scope' sections of the proposal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates well-structured text that accurately reflects the client's needs and defines clear project boundaries."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a high-level project timeline with key phases (e.g., Discovery, Analysis, Recommendation, Implementation).",
-      "expected_outcome": "Agent generates a logical timeline with estimated durations for each phase.",
-      "required_tools": [
-        "create_project_timeline"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a high-level project timeline with key phases (e.g., Discovery, Analysis, Recommendation, Implementation).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a logical timeline with estimated durations for each phase."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

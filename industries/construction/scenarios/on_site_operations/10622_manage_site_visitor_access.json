@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-os-10622",
-  "title": "Manage Site Visitor Access",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Site Visitor Access",
+    "compliance_level": "Standard"
+  },
   "description": "A client representative is visiting the site. The site superintendent must log their entry and ensure they have the required PPE.",
-  "use_case": "On-Site Operations",
-  "core_function": "Daily Operations & Reporting",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the visitor's name, company, and time of entry in the site visitor log.",
-      "expected_outcome": "A new entry is created in the visitor log.",
-      "required_tools": [
-        "create_visitor_log_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the visitor's name, company, and time of entry in the site visitor log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new entry is created in the visitor log."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the visitor has the required Personal Protective Equipment (PPE): hard hat and safety glasses.",
-      "expected_outcome": "Agent confirms the visitor has the correct PPE.",
-      "required_tools": [
-        "verify_visitor_ppe"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the visitor has the required Personal Protective Equipment (PPE): hard hat and safety glasses.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the visitor has the correct PPE."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

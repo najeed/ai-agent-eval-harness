@@ -1,65 +1,72 @@
 {
-  "scenario_id": "sports-fe-13676",
-  "title": "Handle a Counterfeit Ticket",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Counterfeit Ticket",
+    "compliance_level": "Standard"
+  },
   "description": "A fan presents a ticket at the gate that is identified as counterfeit by the scanning system.",
-  "use_case": "Fan Engagement & Ticketing",
-  "core_function": "Ticketing & Access Control",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The gate scanner flags the ticket as invalid. The gate attendant notifies security.",
-      "expected_outcome": "The system prevents entry, and security is alerted.",
-      "required_tools": [
-        "verify_ticket_validity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The gate scanner flags the ticket as invalid. The gate attendant notifies security.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system prevents entry, and security is alerted."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Security escorts the fan to the customer service window.",
-      "expected_outcome": "The fan is moved to a secure location to resolve the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Security escorts the fan to the customer service window.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The fan is moved to a secure location to resolve the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "A customer service agent investigates the ticket and confirms it is counterfeit, explaining the situation to the fan.",
-      "expected_outcome": "Agent confirms the ticket is fake and explains why.",
-      "required_tools": [
-        "investigate_ticket_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "A customer service agent investigates the ticket and confirms it is counterfeit, explaining the situation to the fan.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the ticket is fake and explains why."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Log the incident and advise the fan to only purchase tickets from official team channels.",
-      "expected_outcome": "Agent logs the counterfeit ticket incident and provides advice to the fan.",
-      "required_tools": [
-        "create_incident_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Log the incident and advise the fan to only purchase tickets from official team channels.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the counterfeit ticket incident and provides advice to the fan."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

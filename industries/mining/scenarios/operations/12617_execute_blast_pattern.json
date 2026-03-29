@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-ops-12617",
-  "title": "Execute Blast Pattern",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Execute Blast Pattern",
+    "compliance_level": "Standard"
+  },
   "description": "A blast crew foreman oversees the execution of a designed blast, including drilling the holes and charging them with explosives.",
-  "use_case": "Mine Operations",
-  "core_function": "Drilling & Blasting",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the drill rig has accurately drilled the holes according to the designed pattern using GPS.",
-      "expected_outcome": "The system confirms all holes are drilled within the specified tolerance.",
-      "required_tools": [
-        "verify_drillhole_locations"
-      ],
-      "success_criteria": [
-        {
-          "metric": "drilling_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the drill rig has accurately drilled the holes according to the designed pattern using GPS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms all holes are drilled within the specified tolerance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Supervise the charging of each hole with the correct amount and type of explosive as per the loading sheet.",
-      "expected_outcome": "All holes are safely charged according to the plan.",
-      "required_tools": [
-        "get_blast_loading_sheet"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Supervise the charging of each hole with the correct amount and type of explosive as per the loading sheet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All holes are safely charged according to the plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Clear the blast area of all personnel and equipment and then fire the blast at the scheduled time.",
-      "expected_outcome": "The blast is executed safely and successfully.",
-      "required_tools": [
-        "clear_blast_area",
-        "fire_blast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "safety_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Clear the blast area of all personnel and equipment and then fire the blast at the scheduled time.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The blast is executed safely and successfully."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

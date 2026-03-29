@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ac-fc-6",
-  "title": "Post Monthly Prepaid Amortization",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Post Monthly Prepaid Amortization",
+    "compliance_level": "Standard"
+  },
   "description": "As part of the month-end close, an accountant needs to amortize the company's prepaid insurance policy.",
-  "use_case": "Financial Closing & Reporting",
-  "core_function": "General Ledger & Journal Entries",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the prepaid expenses sub-ledger, specifically for the annual insurance policy.",
-      "expected_outcome": "Agent finds the policy with a starting balance of $12,000 and a 12-month term.",
-      "required_tools": [
-        "get_subledger_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the prepaid expenses sub-ledger, specifically for the annual insurance policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the policy with a starting balance of $12,000 and a 12-month term."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the monthly amortization amount.",
-      "expected_outcome": "Agent correctly calculates the monthly expense of $1,000.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the monthly amortization amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the monthly expense of $1,000."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create and post the recurring journal entry to debit Insurance Expense and credit Prepaid Insurance.",
-      "expected_outcome": "Agent successfully creates and posts the correct journal entry.",
-      "required_tools": [
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create and post the recurring journal entry to debit Insurance Expense and credit Prepaid Insurance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates and posts the correct journal entry."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

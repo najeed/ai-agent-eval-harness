@@ -1,54 +1,59 @@
 {
-  "scenario_id": "wholesale-im-14331",
-  "title": "Consolidate Multiple Orders for Shipping",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Consolidate Multiple Orders for Shipping",
+    "compliance_level": "Standard"
+  },
   "description": "A single customer has placed multiple small orders that are all scheduled to ship on the same day. An agent needs to consolidate them into one shipment to save costs.",
-  "use_case": "Inventory & Warehouse Management",
-  "core_function": "Picking, Packing, & Shipping",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all unshipped orders for a single customer with the same shipping date.",
-      "expected_outcome": "Agent finds three separate orders for the same customer.",
-      "required_tools": [
-        "get_unshipped_orders_by_customer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all unshipped orders for a single customer with the same shipping date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds three separate orders for the same customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Merge the three orders into a single consolidated shipment.",
-      "expected_outcome": "Agent successfully merges the orders in the warehouse management system.",
-      "required_tools": [
-        "consolidate_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Merge the three orders into a single consolidated shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully merges the orders in the warehouse management system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a single pick list and shipping label for the consolidated order.",
-      "expected_outcome": "Agent creates one pick list and one shipping label for the entire shipment.",
-      "required_tools": [
-        "generate_pick_list",
-        "generate_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a single pick list and shipping label for the consolidated order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates one pick list and one shipping label for the entire shipment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

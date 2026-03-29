@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-as-11006",
-  "title": "Schedule a Tutoring Session",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule a Tutoring Session",
+    "compliance_level": "Standard"
+  },
   "description": "A student needs help in their 'Calculus I' course and wants to schedule a session at the tutoring center.",
-  "use_case": "Academic Support",
-  "core_function": "Tutoring & Academic Advising",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and the course they need help with.",
-      "expected_outcome": "Agent confirms the student's identity and the course is 'MATH150 - Calculus I'.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and the course they need help with.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's identity and the course is 'MATH150 - Calculus I'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the tutoring center's schedule for available 'Calculus I' tutors.",
-      "expected_outcome": "Agent finds available time slots with a qualified math tutor.",
-      "required_tools": [
-        "get_tutor_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the tutoring center's schedule for available 'Calculus I' tutors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds available time slots with a qualified math tutor."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book a 1-hour tutoring session for the student and send them a confirmation email.",
-      "expected_outcome": "Agent successfully schedules the appointment and confirms with the student.",
-      "required_tools": [
-        "schedule_tutoring_appointment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book a 1-hour tutoring session for the student and send them a confirmation email.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules the appointment and confirms with the student."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

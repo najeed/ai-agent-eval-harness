@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ports-af-12958",
-  "title": "Audit Maintenance Records",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit Maintenance Records",
+    "compliance_level": "Standard"
+  },
   "description": "A manager needs to audit the maintenance records for a piece of equipment to ensure compliance with the manufacturer's recommendations.",
-  "use_case": "Port Administration & Finance",
-  "core_function": "Asset Management & Maintenance",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the complete maintenance history for a specific asset (e.g., straddle carrier SC-10).",
-      "expected_outcome": "Auditor pulls all work orders and service records for SC-10 from the maintenance system.",
-      "required_tools": [
-        "get_asset_maintenance_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the complete maintenance history for a specific asset (e.g., straddle carrier SC-10).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Auditor pulls all work orders and service records for SC-10 from the maintenance system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the completed work orders against the OEM's recommended maintenance schedule.",
-      "expected_outcome": "The auditor checks if all required PMs have been completed at the correct intervals.",
-      "required_tools": [
-        "get_oem_maintenance_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the completed work orders against the OEM's recommended maintenance schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor checks if all required PMs have been completed at the correct intervals."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify any missed or overdue maintenance tasks and create a report of the findings.",
-      "expected_outcome": "The audit reveals that a scheduled oil change was missed. A report is generated to flag the non-compliance.",
-      "required_tools": [
-        "generate_audit_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify any missed or overdue maintenance tasks and create a report of the findings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The audit reveals that a scheduled oil change was missed. A report is generated to flag the non-compliance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

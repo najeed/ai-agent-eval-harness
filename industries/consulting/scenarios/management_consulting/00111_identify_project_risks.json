@@ -1,54 +1,59 @@
 {
-  "scenario_id": "consulting-mc-111",
-  "title": "Identify Project Risks",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Project Risks",
+    "compliance_level": "Standard"
+  },
   "description": "Based on a project plan, an agent must identify potential risks and suggest mitigation strategies.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the project plan, paying attention to dependencies, assumptions, and timeline.",
-      "expected_outcome": "Agent correctly reads and understands the project plan.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the project plan, paying attention to dependencies, assumptions, and timeline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly reads and understands the project plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify at least five potential risks (e.g., 'key stakeholder unavailability', 'data access delays').",
-      "expected_outcome": "Agent generates a list of relevant and plausible project risks.",
-      "required_tools": [
-        "identify_risks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.85,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify at least five potential risks (e.g., 'key stakeholder unavailability', 'data access delays').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a list of relevant and plausible project risks."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each risk, propose a potential mitigation strategy.",
-      "expected_outcome": "Agent suggests a reasonable mitigation for each identified risk (e.g., 'confirm stakeholder schedule in advance').",
-      "required_tools": [
-        "propose_mitigation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 0.8,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each risk, propose a potential mitigation strategy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent suggests a reasonable mitigation for each identified risk (e.g., 'confirm stakeholder schedule in advance')."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

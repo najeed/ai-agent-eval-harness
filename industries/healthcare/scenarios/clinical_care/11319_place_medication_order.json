@@ -1,109 +1,74 @@
 {
-  "scenario_id": "hc-cc-11319",
-  "title": "Place a Medication Order (CPOE)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Place a Medication Order (CPOE)",
+    "compliance_level": "Standard"
+  },
   "description": "A physician needs to order a new medication for a patient.",
-  "use_case": "Clinical Care",
-  "core_function": "Orders & Results Management (CPOE)",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-0",
-      "description": "Verify clinician access and patient identity.",
-      "expected_outcome": "Identity verified/authorized",
-      "required_tools": [
-        "verify_clinician_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-0",
+        "task_description": "Verify clinician access and patient identity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Identity verified/authorized"
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-1",
+        "task_description": "Open the patient's chart and navigate to the 'Orders' section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician accesses the order entry module for the correct patient."
         }
-      ]
-    },
-    {
-      "task_id": "task-1",
-      "description": "Open the patient's chart and navigate to the 'Orders' section.",
-      "expected_outcome": "Physician accesses the order entry module for the correct patient.",
-      "required_tools": [
-        "get_patient_record",
-        "open_orders_module"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for the medication, select the correct dosage, route, and frequency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician correctly selects 'Lisinopril 10 mg tablet, by mouth, once daily'."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Sign the order, which sends it electronically to the pharmacy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Physician successfully signs the order, and it appears in the pharmacy's queue to be verified."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for the medication, select the correct dosage, route, and frequency.",
-      "expected_outcome": "Physician correctly selects 'Lisinopril 10 mg tablet, by mouth, once daily'.",
-      "required_tools": [
-        "search_medication_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Sign the order, which sends it electronically to the pharmacy.",
-      "expected_outcome": "Physician successfully signs the order, and it appears in the pharmacy's queue to be verified.",
-      "required_tools": [
-        "sign_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-0",
+        "to": "task-1"
+      },
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-c2-10886",
-  "title": "Maritime Patrol Aircraft Management",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Maritime Patrol Aircraft Management",
+    "compliance_level": "Standard"
+  },
   "description": "A C2 operator must manage a fleet of maritime patrol aircraft (MPA) to maintain surveillance over a large ocean area.",
-  "use_case": "Command & Control (C2)",
-  "core_function": "Asset & Task Management",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Divide the large operational area into smaller patrol sectors.",
-      "expected_outcome": "Operator creates an efficient patrol plan.",
-      "required_tools": [
-        "define_patrol_sectors"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_effectiveness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Divide the large operational area into smaller patrol sectors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator creates an efficient patrol plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign available MPA to each sector, considering aircraft endurance and sensor capabilities.",
-      "expected_outcome": "Operator creates an optimal assignment of aircraft to sectors.",
-      "required_tools": [
-        "assign_asset_to_sector"
-      ],
-      "success_criteria": [
-        {
-          "metric": "resource_optimization_effectiveness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign available MPA to each sector, considering aircraft endurance and sensor capabilities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator creates an optimal assignment of aircraft to sectors."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the aircraft as they execute their patrols and adjust sectors as needed to respond to new intelligence or contacts.",
-      "expected_outcome": "Operator dynamically manages the patrol fleet to maintain continuous surveillance.",
-      "required_tools": [
-        "monitor_mission_progress",
-        "adjust_patrol_sectors"
-      ],
-      "success_criteria": [
-        {
-          "metric": "dynamic_management_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the aircraft as they execute their patrols and adjust sectors as needed to respond to new intelligence or contacts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator dynamically manages the patrol fleet to maintain continuous surveillance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "legal-ldr-12148",
-  "title": "Summarize a Deposition Transcript",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Summarize a Deposition Transcript",
+    "compliance_level": "Standard"
+  },
   "description": "A junior lawyer needs to create a concise summary of a key witness's deposition testimony.",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Legal Research & Writing",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Read the entire deposition transcript.",
-      "expected_outcome": "Agent processes the full text of the transcript.",
-      "required_tools": [
-        "document_review_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Read the entire deposition transcript.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the full text of the transcript."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the top 5-10 most important admissions or statements made by the witness.",
-      "expected_outcome": "Agent extracts the key pieces of testimony.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the top 5-10 most important admissions or statements made by the witness.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent extracts the key pieces of testimony."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Draft a one-page summary of the deposition, organized by topic, with page/line citations for the key statements.",
-      "expected_outcome": "Agent produces a useful, well-organized summary for the case team.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Draft a one-page summary of the deposition, organized by topic, with page/line citations for the key statements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a useful, well-organized summary for the case team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

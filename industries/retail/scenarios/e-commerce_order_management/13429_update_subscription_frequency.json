@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ret-ecom-13429",
-  "title": "Update Subscription Frequency",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Subscription Frequency",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to change their subscription from being delivered every month to every two months.",
-  "use_case": "E-commerce & Order Management",
-  "core_function": "Subscription Management",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into their account and navigate to the 'Manage Subscription' page.",
-      "expected_outcome": "The customer accesses their subscription details.",
-      "required_tools": [
-        "login_to_account",
-        "view_subscription"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into their account and navigate to the 'Manage Subscription' page.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer accesses their subscription details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the option to change the delivery frequency.",
-      "expected_outcome": "The customer accesses the frequency setting.",
-      "required_tools": [
-        "edit_subscription_frequency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the option to change the delivery frequency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The customer accesses the frequency setting."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Change the frequency from 'Every 1 Month' to 'Every 2 Months' and save.",
-      "expected_outcome": "The subscription schedule is successfully updated to the new frequency.",
-      "required_tools": [
-        "update_subscription_frequency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Change the frequency from 'Every 1 Month' to 'Every 2 Months' and save.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The subscription schedule is successfully updated to the new frequency."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

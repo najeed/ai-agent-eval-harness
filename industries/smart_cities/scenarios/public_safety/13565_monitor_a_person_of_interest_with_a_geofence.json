@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-ps-13565",
-  "title": "Monitor a Person of Interest with a Geofence",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Monitor a Person of Interest with a Geofence",
+    "compliance_level": "Standard"
+  },
   "description": "Police have a person of interest under surveillance and want to be alerted if they enter a sensitive area.",
-  "use_case": "Public Safety & Security",
-  "core_function": "Predictive Policing & Prevention",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a request from police to monitor a specific device ID (e.g., a phone or vehicle tracker).",
-      "expected_outcome": "Agent acknowledges the surveillance request.",
-      "required_tools": [
-        "get_police_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a request from police to monitor a specific device ID (e.g., a phone or vehicle tracker).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the surveillance request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a geofence around a sensitive location, such as a school or government building.",
-      "expected_outcome": "Agent successfully draws the virtual fence on the map.",
-      "required_tools": [
-        "create_geofence"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a geofence around a sensitive location, such as a school or government building.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully draws the virtual fence on the map."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Set up an alert to be sent directly to the requesting detective if the monitored device ID crosses into the geofenced area.",
-      "expected_outcome": "Agent successfully creates the conditional alert.",
-      "required_tools": [
-        "set_geofence_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Set up an alert to be sent directly to the requesting detective if the monitored device ID crosses into the geofenced area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates the conditional alert."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

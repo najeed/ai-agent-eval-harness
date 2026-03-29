@@ -1,54 +1,59 @@
 {
-  "scenario_id": "realestate-rs-13178",
-  "title": "Calculate a Seller's Net Sheet",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate a Seller's Net Sheet",
+    "compliance_level": "Standard"
+  },
   "description": "A seller is considering an offer and wants to know how much money they will walk away with after all costs. The agent needs to prepare a seller's net sheet.",
-  "use_case": "Residential & Commercial Sales",
-  "core_function": "Valuation & Market Analysis",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather all necessary figures: offer price, outstanding mortgage balance, and estimated closing costs (e.g., commissions, title fees, taxes).",
-      "expected_outcome": "Agent collects all financial data needed for the calculation.",
-      "required_tools": [
-        "get_property_financials",
-        "get_estimated_closing_costs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather all necessary figures: offer price, outstanding mortgage balance, and estimated closing costs (e.g., commissions, title fees, taxes).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects all financial data needed for the calculation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a net sheet calculator to itemize all credits and debits.",
-      "expected_outcome": "A detailed breakdown of all costs and proceeds is generated.",
-      "required_tools": [
-        "calculate_seller_net_sheet"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a net sheet calculator to itemize all credits and debits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A detailed breakdown of all costs and proceeds is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present the final estimated net proceeds to the seller.",
-      "expected_outcome": "A clear, easy-to-understand net sheet is generated and shared with the seller client.",
-      "required_tools": [
-        "generate_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present the final estimated net proceeds to the seller.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A clear, easy-to-understand net sheet is generated and shared with the seller client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

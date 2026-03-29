@@ -1,65 +1,72 @@
 {
-  "scenario_id": "venues-sh-14257",
-  "title": "Renew a Season Suite Lease",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Renew a Season Suite Lease",
+    "compliance_level": "Standard"
+  },
   "description": "A sales representative is contacting an existing suite holder to renew their lease for the upcoming season.",
-  "use_case": "Sales & Hospitality",
-  "core_function": "Premium Seating & Suite Sales",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Look up the suite holder's account and their current lease details.",
-      "expected_outcome": "Agent finds the account and notes the lease expires in 60 days.",
-      "required_tools": [
-        "get_suite_holder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Look up the suite holder's account and their current lease details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the account and notes the lease expires in 60 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Contact the client to discuss renewal and inform them of the new season's pricing.",
-      "expected_outcome": "Agent calls the client and presents the renewal offer.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Contact the client to discuss renewal and inform them of the new season's pricing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calls the client and presents the renewal offer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the renewal agreement and send it to the client for signature.",
-      "expected_outcome": "Agent sends the renewal contract.",
-      "required_tools": [
-        "generate_lease_agreement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the renewal agreement and send it to the client for signature.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the renewal contract."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Once signed, process the deposit for the new season.",
-      "expected_outcome": "Agent processes the payment and confirms the renewal.",
-      "required_tools": [
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Once signed, process the deposit for the new season.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the payment and confirms the renewal."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

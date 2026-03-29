@@ -1,52 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12038",
-  "title": "Analyze Audience Demographics",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Audience Demographics",
+    "compliance_level": "Standard"
+  },
   "description": "An editor wants to understand the demographic makeup (age, gender, location) of their website's audience to better tailor content.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Performance Analysis",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Navigate to the 'Audience Demographics' section of the web analytics platform.",
-      "expected_outcome": "Agent accesses the correct report.",
-      "required_tools": [
-        "get_analytics_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_navigation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Navigate to the 'Audience Demographics' section of the web analytics platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accesses the correct report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the age, gender, and geographic location data of the website's visitors over the last 6 months.",
-      "expected_outcome": "Agent understands the primary demographics of the audience.",
-      "required_tools": [
-        "analyze_analytics_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the age, gender, and geographic location data of the website's visitors over the last 6 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent understands the primary demographics of the audience."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a summary report of the findings for the editorial team.",
-      "expected_outcome": "The team receives a clear picture of who their readers are.",
-      "required_tools": [
-        "generate_summary_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "clarity_of_report",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a summary report of the findings for the editorial team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The team receives a clear picture of who their readers are."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

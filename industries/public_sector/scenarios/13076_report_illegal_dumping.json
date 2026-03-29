@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ps-pw-13076",
-  "title": "Report Illegal Dumping",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Illegal Dumping",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen reports that someone has illegally dumped a large amount of trash on a vacant public lot.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Service Request Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the location and a description of the dumped materials.",
-      "expected_outcome": "Agent accurately documents the citizen's report.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the location and a description of the dumped materials.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately documents the citizen's report."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a service request for the sanitation department to investigate and clean up.",
-      "expected_outcome": "Agent creates a new service ticket for the issue.",
-      "required_tools": [
-        "create_service_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a service request for the sanitation department to investigate and clean up.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new service ticket for the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "If the citizen has information about who dumped the trash, route a report to code enforcement or police.",
-      "expected_outcome": "Agent also routes the information to the proper enforcement agency.",
-      "required_tools": [
-        "route_to_department"
-      ],
-      "success_criteria": [
-        {
-          "metric": "routing_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "If the citizen has information about who dumped the trash, route a report to code enforcement or police.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent also routes the information to the proper enforcement agency."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

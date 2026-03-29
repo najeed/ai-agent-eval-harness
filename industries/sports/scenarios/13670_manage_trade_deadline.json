@@ -1,67 +1,72 @@
 {
-  "scenario_id": "sports-lm-13670",
-  "title": "Manage the Trade Deadline",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage the Trade Deadline",
+    "compliance_level": "Standard"
+  },
   "description": "On the league's trade deadline day, an administrator must process all last-minute trades before the cutoff time.",
-  "use_case": "League & Competition Management",
-  "core_function": "Officiating & Rules Enforcement",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the incoming trade submissions from teams.",
-      "expected_outcome": "Agent sees a high volume of trades being submitted.",
-      "required_tools": [
-        "monitor_trade_submissions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the incoming trade submissions from teams.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees a high volume of trades being submitted."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each trade, verify that it is compliant with all league rules (e.g., salary cap, roster limits).",
-      "expected_outcome": "Agent reviews each trade and flags one that is non-compliant.",
-      "required_tools": [
-        "verify_trade_compliance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each trade, verify that it is compliant with all league rules (e.g., salary cap, roster limits).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews each trade and flags one that is non-compliant."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Approve all compliant trades and notify the non-compliant team of the issue.",
-      "expected_outcome": "Agent approves valid trades and informs the other team why their trade was rejected.",
-      "required_tools": [
-        "approve_trade",
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Approve all compliant trades and notify the non-compliant team of the issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent approves valid trades and informs the other team why their trade was rejected."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "At the deadline, officially close the trade window.",
-      "expected_outcome": "Agent closes the system to any new trade submissions.",
-      "required_tools": [
-        "close_trade_window"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "At the deadline, officially close the trade window.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent closes the system to any new trade submissions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

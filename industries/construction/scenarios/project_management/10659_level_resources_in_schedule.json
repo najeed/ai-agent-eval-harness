@@ -1,39 +1,46 @@
 {
-  "scenario_id": "construction-pm-10659",
-  "title": "Level Resources to Smooth Workload",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Level Resources to Smooth Workload",
+    "compliance_level": "Standard"
+  },
   "description": "A PM uses resource leveling to resolve over-allocations by delaying non-critical tasks to smooth out the workload for the carpentry crew.",
-  "use_case": "Project Management",
-  "core_function": "Resource Management",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run the resource leveling tool on the project schedule, focusing on the 'Carpentry Crew'.",
-      "expected_outcome": "The tool identifies over-allocations and suggests delaying several non-critical tasks.",
-      "required_tools": [
-        "run_resource_leveling"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run the resource leveling tool on the project schedule, focusing on the 'Carpentry Crew'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool identifies over-allocations and suggests delaying several non-critical tasks."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Accept the suggested changes to delay non-critical tasks and resolve the over-allocations.",
-      "expected_outcome": "The project schedule is updated, and the resource graph for the crew is now level.",
-      "required_tools": [
-        "update_project_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Accept the suggested changes to delay non-critical tasks and resolve the over-allocations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project schedule is updated, and the resource graph for the crew is now level."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

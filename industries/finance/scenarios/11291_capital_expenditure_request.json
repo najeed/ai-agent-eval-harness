@@ -1,81 +1,61 @@
 {
-  "scenario_id": "finance-cf-11291",
-  "title": "Analyze a Capital Expenditure Request",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze a Capital Expenditure Request",
+    "compliance_level": "Standard"
+  },
   "description": "The FP&A team needs to analyze a request from the operations department to purchase a new piece of machinery for $500,000.",
-  "use_case": "Corporate Finance",
-  "core_function": "Financial Planning & Analysis (FP&A)",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the details of the capital expenditure request, including the cost and expected cost savings or revenue generation.",
-      "expected_outcome": "Agent collects the business case for the new machine.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the details of the capital expenditure request, including the cost and expected cost savings or revenue generation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects the business case for the new machine."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform a financial analysis, calculating metrics like Net Present Value (NPV), Internal Rate of Return (IRR), and payback period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates a positive NPV and an IRR above the company's hurdle rate."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform a financial analysis, calculating metrics like Net Present Value (NPV), Internal Rate of Return (IRR), and payback period.",
-      "expected_outcome": "Agent calculates a positive NPV and an IRR above the company's hurdle rate.",
-      "required_tools": [
-        "calculate_capital_budgeting_metrics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide a recommendation to the capital committee on whether to approve the expenditure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent drafts a report recommending approval based on the strong financial metrics."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide a recommendation to the capital committee on whether to approve the expenditure.",
-      "expected_outcome": "Agent drafts a report recommending approval based on the strong financial metrics.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

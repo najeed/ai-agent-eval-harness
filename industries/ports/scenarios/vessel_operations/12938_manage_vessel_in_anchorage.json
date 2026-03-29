@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ports-vo-12938",
-  "title": "Manage Vessel in Anchorage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Vessel in Anchorage",
+    "compliance_level": "Standard"
+  },
   "description": "A vessel has arrived early and there is no berth available. The VTS operator must direct it to an anchorage spot.",
-  "use_case": "Vessel Operations",
-  "core_function": "Vessel Traffic & Navigation",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Communicate with the vessel master to confirm their ETA and that no berth is yet available.",
-      "expected_outcome": "VTS operator informs the vessel they will need to anchor.",
-      "required_tools": [
-        "contact_vessel_by_radio"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Communicate with the vessel master to confirm their ETA and that no berth is yet available.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "VTS operator informs the vessel they will need to anchor."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the anchorage chart for an available and suitable spot based on vessel size and draft.",
-      "expected_outcome": "Operator identifies Anchorage B2 as available.",
-      "required_tools": [
-        "check_anchorage_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the anchorage chart for an available and suitable spot based on vessel size and draft.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator identifies Anchorage B2 as available."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Instruct the vessel to proceed to the designated anchorage spot and report when they are 'at anchor'.",
-      "expected_outcome": "The vessel is guided to the anchorage, and its status is updated in the VTS system once anchored.",
-      "required_tools": [
-        "issue_navigational_instruction",
-        "update_vessel_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Instruct the vessel to proceed to the designated anchorage spot and report when they are 'at anchor'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The vessel is guided to the anchorage, and its status is updated in the VTS system once anchored."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,83 +1,61 @@
 {
-  "scenario_id": "finance-wm-11289",
-  "title": "Plan for Charitable Giving",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan for Charitable Giving",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to donate appreciated stock to a charity to be more tax-efficient.",
-  "use_case": "Wealth Management",
-  "core_function": "Financial Planning",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify highly appreciated, long-term holdings in the client's portfolio.",
-      "expected_outcome": "Agent identifies a stock that has significant unrealized capital gains.",
-      "required_tools": [
-        "scan_for_unrealized_gains"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify highly appreciated, long-term holdings in the client's portfolio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies a stock that has significant unrealized capital gains."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the tax benefits of donating appreciated stock directly versus selling it and donating the cash.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains how donating the stock avoids capital gains tax."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Explain the tax benefits of donating appreciated stock directly versus selling it and donating the cash.",
-      "expected_outcome": "Agent clearly explains how donating the stock avoids capital gains tax.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Facilitate the transfer of the shares from the client's account to the charity's brokerage account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the transfer of shares to the designated charity."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Facilitate the transfer of the shares from the client's account to the charity's brokerage account.",
-      "expected_outcome": "Agent processes the transfer of shares to the designated charity.",
-      "required_tools": [
-        "transfer_shares"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

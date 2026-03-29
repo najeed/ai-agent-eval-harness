@@ -1,52 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10070",
-  "title": "Maintain Cleanroom Environment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Maintain Cleanroom Environment",
+    "compliance_level": "Standard"
+  },
   "description": "A cleanroom technician must monitor and maintain the environment where a satellite is being assembled to prevent contamination.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Satellite Manufacturing & Integration",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Monitor the cleanroom's particle counters, temperature, and humidity levels to ensure they remain within the specified limits (e.g., ISO 8).",
-      "expected_outcome": "Agent observes all environmental parameters are nominal.",
-      "required_tools": [
-        "monitor_cleanroom_environment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Monitor the cleanroom's particle counters, temperature, and humidity levels to ensure they remain within the specified limits (e.g., ISO 8).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent observes all environmental parameters are nominal."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform regular wipe-downs of surfaces with approved cleaning solutions.",
-      "expected_outcome": "Agent follows the standard cleaning procedure.",
-      "required_tools": [
-        "perform_cleanroom_cleaning"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform regular wipe-downs of surfaces with approved cleaning solutions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent follows the standard cleaning procedure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log all environmental data and cleaning activities in the cleanroom logbook.",
-      "expected_outcome": "Agent maintains a complete and accurate log.",
-      "required_tools": [
-        "update_cleanroom_log"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log all environmental data and cleaning activities in the cleanroom logbook.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent maintains a complete and accurate log."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

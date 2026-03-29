@@ -1,50 +1,59 @@
 {
-  "scenario_id": "mfg-po-12316",
-  "title": "Move Finished Goods to Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Move Finished Goods to Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A pallet of finished goods has been produced and needs to be moved from the production line to the finished goods warehouse.",
-  "use_case": "Production & Operations",
-  "core_function": "Material & Inventory Management",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the product and the quantity on the pallet.",
-      "expected_outcome": "Agent identifies the product SKU and counts the number of cases on the pallet.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the product and the quantity on the pallet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the product SKU and counts the number of cases on the pallet."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a pallet license plate or tracking ID.",
-      "expected_outcome": "Agent prints a unique barcode label for the pallet.",
-      "required_tools": [
-        "generate_pallet_id"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a pallet license plate or tracking ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent prints a unique barcode label for the pallet."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Perform an inventory transfer transaction from the production line location to a warehouse location.",
-      "expected_outcome": "Agent successfully transfers the pallet in the system, updating inventory records.",
-      "required_tools": [
-        "perform_inventory_transfer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Perform an inventory transfer transaction from the production line location to a warehouse location.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully transfers the pallet in the system, updating inventory records."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

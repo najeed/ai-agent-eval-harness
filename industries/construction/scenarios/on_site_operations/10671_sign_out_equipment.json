@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-os-10671",
-  "title": "Sign Out a Piece of Equipment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Sign Out a Piece of Equipment",
+    "compliance_level": "Standard"
+  },
   "description": "A carpenter needs to use a power saw from the on-site tool crib. The tool crib manager must log the checkout.",
-  "use_case": "On-Site Operations",
-  "core_function": "Material & Equipment Logistics",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the specific power saw by its asset ID number.",
-      "expected_outcome": "The correct asset ID is identified.",
-      "required_tools": [
-        "scan_asset_tag"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the specific power saw by its asset ID number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The correct asset ID is identified."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Log in the equipment tracking system that the saw has been checked out by the specified carpenter.",
-      "expected_outcome": "The checkout is successfully logged, assigning the tool to the carpenter.",
-      "required_tools": [
-        "checkout_equipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Log in the equipment tracking system that the saw has been checked out by the specified carpenter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The checkout is successfully logged, assigning the tool to the carpenter."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-cf-11279",
-  "title": "Create Board of Directors Financial Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Board of Directors Financial Report",
+    "compliance_level": "Standard"
+  },
   "description": "An FP&A director needs to create the financial package for the upcoming quarterly board of directors meeting.",
-  "use_case": "Corporate Finance",
-  "core_function": "Financial Planning & Analysis (FP&A)",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate all standard financial reports for the quarter (P&L, Balance Sheet, Cash Flow Statement).",
-      "expected_outcome": "Agent successfully generates all required reports.",
-      "required_tools": [
-        "get_financial_statements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate all standard financial reports for the quarter (P&L, Balance Sheet, Cash Flow Statement).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates all required reports."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a summary dashboard with key performance indicators (KPIs) and variance analysis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a visual dashboard highlighting key financial metrics."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a summary dashboard with key performance indicators (KPIs) and variance analysis.",
-      "expected_outcome": "Agent creates a visual dashboard highlighting key financial metrics.",
-      "required_tools": [
-        "create_kpi_dashboard"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 0.95
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile all reports and the dashboard into a single presentation deck for the board.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent assembles the final board package."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile all reports and the dashboard into a single presentation deck for the board.",
-      "expected_outcome": "Agent assembles the final board package.",
-      "required_tools": [
-        "compile_presentation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

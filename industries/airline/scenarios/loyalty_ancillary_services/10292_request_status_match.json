@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-las-10292",
-  "title": "Request a Status Match",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request a Status Match",
+    "compliance_level": "Standard"
+  },
   "description": "A frequent flyer who has elite status with a competing airline wants to request a status match with this airline.",
-  "use_case": "Loyalty & Ancillary Services",
-  "core_function": "Frequent Flyer Program",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the status match challenge requirements, such as providing proof of status with the other airline.",
-      "expected_outcome": "Agent clearly communicates the policy.",
-      "required_tools": [
-        "get_status_match_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the status match challenge requirements, such as providing proof of status with the other airline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Receive the customer's proof of status (e.g., a screenshot of their account).",
-      "expected_outcome": "Agent receives the required documentation.",
-      "required_tools": [
-        "get_customer_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Receive the customer's proof of status (e.g., a screenshot of their account).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the required documentation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify the documentation and grant the customer a temporary, promotional elite status for a trial period.",
-      "expected_outcome": "Agent successfully grants the temporary status.",
-      "required_tools": [
-        "grant_promotional_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify the documentation and grant the customer a temporary, promotional elite status for a trial period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully grants the temporary status."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

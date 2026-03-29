@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-pg-13587",
-  "title": "Analyze Citizen Report Trends",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Citizen Report Trends",
+    "compliance_level": "Standard"
+  },
   "description": "A city manager wants to know what the most common citizen complaints have been over the last year.",
-  "use_case": "Public Services & Governance",
-  "core_function": "Citizen Reporting & Service Requests",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all citizen service requests from the last 12 months.",
-      "expected_outcome": "Agent successfully queries the 311 database.",
-      "required_tools": [
-        "get_citizen_service_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all citizen service requests from the last 12 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully queries the 311 database."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Categorize and count the requests by type (e.g., 'pothole', 'graffiti', 'noise complaint').",
-      "expected_outcome": "The system aggregates the data by category.",
-      "required_tools": [
-        "categorize_service_requests"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Categorize and count the requests by type (e.g., 'pothole', 'graffiti', 'noise complaint').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system aggregates the data by category."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report showing the top 10 most frequent complaint types.",
-      "expected_outcome": "Agent creates a summary report identifying 'potholes' and 'missed trash collection' as the top two issues.",
-      "required_tools": [
-        "generate_summary_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report showing the top 10 most frequent complaint types.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a summary report identifying 'potholes' and 'missed trash collection' as the top two issues."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10730",
-  "title": "System Security Risk Assessment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "System Security Risk Assessment",
+    "compliance_level": "Standard"
+  },
   "description": "A GRC analyst must perform a security risk assessment on a legacy, business-critical application that cannot be easily patched.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Risk Assessment & Management",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify all known vulnerabilities in the legacy application and the business impact if it were compromised.",
-      "expected_outcome": "Analyst creates a comprehensive list of vulnerabilities and their potential business impact.",
-      "required_tools": [
-        "get_system_vulnerabilities",
-        "assess_business_impact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify all known vulnerabilities in the legacy application and the business impact if it were compromised.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst creates a comprehensive list of vulnerabilities and their potential business impact."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify existing compensating controls (e.g., network segmentation, enhanced monitoring) that reduce the risk.",
-      "expected_outcome": "Analyst identifies all controls currently in place to protect the system.",
-      "required_tools": [
-        "identify_compensating_controls"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify existing compensating controls (e.g., network segmentation, enhanced monitoring) that reduce the risk.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst identifies all controls currently in place to protect the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the residual risk and formally accept it in the risk register, with a recommendation for eventual system replacement.",
-      "expected_outcome": "Analyst correctly documents the residual risk and makes a strategic recommendation to address it long-term.",
-      "required_tools": [
-        "calculate_residual_risk",
-        "update_risk_register"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_management_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the residual risk and formally accept it in the risk register, with a recommendation for eventual system replacement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst correctly documents the residual risk and makes a strategic recommendation to address it long-term."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

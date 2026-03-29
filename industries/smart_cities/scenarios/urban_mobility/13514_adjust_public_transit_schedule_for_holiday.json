@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-um-13514",
-  "title": "Adjust Public Transit Schedule for Holiday",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Adjust Public Transit Schedule for Holiday",
+    "compliance_level": "Standard"
+  },
   "description": "For an upcoming public holiday, an operator needs to switch the entire bus and train network to a 'Sunday' service schedule.",
-  "use_case": "Urban Mobility & Transport",
-  "core_function": "Public Transit Operations",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the date of the upcoming public holiday in the transit scheduling system.",
-      "expected_outcome": "Agent correctly identifies the target date.",
-      "required_tools": [
-        "select_schedule_date"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the date of the upcoming public holiday in the transit scheduling system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the target date."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply the 'Sunday/Holiday' service template to all transit routes for the selected date.",
-      "expected_outcome": "Agent successfully applies the new schedule across the network.",
-      "required_tools": [
-        "apply_service_schedule_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply the 'Sunday/Holiday' service template to all transit routes for the selected date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies the new schedule across the network."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Publish a notification about the holiday service changes on the transit website and app.",
-      "expected_outcome": "Agent informs the public of the upcoming schedule change.",
-      "required_tools": [
-        "publish_transit_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Publish a notification about the holiday service changes on the transit website and app.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent informs the public of the upcoming schedule change."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

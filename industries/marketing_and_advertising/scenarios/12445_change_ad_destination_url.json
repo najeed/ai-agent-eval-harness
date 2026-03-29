@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12445",
-  "title": "Change an Ad's Destination URL",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Change an Ad's Destination URL",
+    "compliance_level": "Standard"
+  },
   "description": "A landing page URL has changed, and a manager needs to update a live ad to point to the new page.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Campaign Monitoring & Optimization",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the specific ad that needs to be updated.",
-      "expected_outcome": "Agent finds the correct ad within the campaign.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the specific ad that needs to be updated.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct ad within the campaign."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the 'Final URL' field for the ad with the new landing page address.",
-      "expected_outcome": "Agent successfully changes the destination URL.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the 'Final URL' field for the ad with the new landing page address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully changes the destination URL."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Save the ad, which may trigger a re-review by the platform.",
-      "expected_outcome": "The ad is saved with the new URL.",
-      "required_tools": [
-        "ads_manager_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Save the ad, which may trigger a re-review by the platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The ad is saved with the new URL."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

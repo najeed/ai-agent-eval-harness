@@ -1,66 +1,72 @@
 {
-  "scenario_id": "energy-pd-11140",
-  "title": "Wind Farm Site Access Road Planning",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Wind Farm Site Access Road Planning",
+    "compliance_level": "Standard"
+  },
   "description": "A civil engineer must plan the route for an access road to a remote wind farm site, minimizing environmental impact and cost.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Site Assessment & Feasibility",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze topographical maps and satellite imagery to identify potential road corridors.",
-      "expected_outcome": "Agent proposes three potential routes from the main highway to the site.",
-      "required_tools": [
-        "get_topographical_map",
-        "analyze_satellite_imagery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_correctness",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze topographical maps and satellite imagery to identify potential road corridors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent proposes three potential routes from the main highway to the site."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Evaluate each route for factors like grade, water crossings, and proximity to sensitive habitats.",
-      "expected_outcome": "Agent scores each route based on the evaluation criteria.",
-      "required_tools": [
-        "evaluate_route_impact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Evaluate each route for factors like grade, water crossings, and proximity to sensitive habitats.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent scores each route based on the evaluation criteria."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Estimate the construction cost for the most promising route.",
-      "expected_outcome": "Agent provides a preliminary cost estimate for the recommended route.",
-      "required_tools": [
-        "estimate_construction_cost"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Estimate the construction cost for the most promising route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a preliminary cost estimate for the recommended route."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Recommend the optimal route and provide a justification.",
-      "expected_outcome": "Agent selects the route that best balances cost and environmental impact.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Recommend the optimal route and provide a justification.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent selects the route that best balances cost and environmental impact."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

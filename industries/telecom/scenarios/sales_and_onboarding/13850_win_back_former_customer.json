@@ -1,61 +1,48 @@
 {
-  "scenario_id": "telecom-sl-13850",
-  "title": "New Customer Acquisition - Win-Back",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Customer Acquisition - Win-Back",
+    "compliance_level": "Standard"
+  },
   "description": "A former customer is targeted with a special 'win-back' offer to rejoin.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "New Customer Acquisition",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the former customer in the marketing database and verify the win-back offer details.",
-      "expected_outcome": "Agent confirms the customer is eligible for '50% off for 6 months'.",
-      "required_tools": [
-        "get_marketing_offer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the former customer in the marketing database and verify the win-back offer details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer is eligible for '50% off for 6 months'."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a new account for the customer, applying the special win-back promotion.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new account with the promotional code applied."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a new account for the customer, applying the special win-back promotion.",
-      "expected_outcome": "Agent successfully creates a new account with the promotional code applied.",
-      "required_tools": [
-        "create_customer_account",
-        "apply_promotion"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

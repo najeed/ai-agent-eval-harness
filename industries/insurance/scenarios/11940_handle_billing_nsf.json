@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11940",
-  "title": "Handle a Returned Payment (NSF)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Returned Payment (NSF)",
+    "compliance_level": "Standard"
+  },
   "description": "A customer's automatic EFT payment was returned for Non-Sufficient Funds (NSF).",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Billing & Collections",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the NSF notification from the bank.",
-      "expected_outcome": "The system automatically flags the customer's account for a returned payment.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the NSF notification from the bank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system automatically flags the customer's account for a returned payment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Add any applicable NSF fees to the customer's account balance.",
-      "expected_outcome": "The system adds a $25 NSF fee to the amount due.",
-      "required_tools": [
-        "apply_nsf_fee"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Add any applicable NSF fees to the customer's account balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system adds a $25 NSF fee to the amount due."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the customer of the returned payment, the fee, and the risk of cancellation if payment is not made.",
-      "expected_outcome": "An automated email and letter are sent to the customer explaining the situation.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the customer of the returned payment, the fee, and the risk of cancellation if payment is not made.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An automated email and letter are sent to the customer explaining the situation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

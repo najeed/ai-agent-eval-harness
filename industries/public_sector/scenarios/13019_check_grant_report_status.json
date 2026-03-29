@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pa-13019",
-  "title": "Check Grant Reporting Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Grant Reporting Status",
+    "compliance_level": "Standard"
+  },
   "description": "A non-profit that received a government grant is checking to see if their quarterly report was received.",
-  "use_case": "Public Administration & Finance",
-  "core_function": "Grants & Funding Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the non-profit organization and their specific grant.",
-      "expected_outcome": "Agent locates the organization's grant file.",
-      "required_tools": [
-        "get_grant_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the non-profit organization and their specific grant.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the organization's grant file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the system for the status of their latest quarterly report submission.",
-      "expected_outcome": "Agent confirms that the report was successfully received and is pending review.",
-      "required_tools": [
-        "check_grant_report_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the system for the status of their latest quarterly report submission.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that the report was successfully received and is pending review."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Communicate the status to the organization.",
-      "expected_outcome": "Agent provides a clear status update.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Communicate the status to the organization.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear status update."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

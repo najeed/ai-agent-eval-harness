@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-pm-10683",
-  "title": "Identify Schedule Float",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Identify Schedule Float",
+    "compliance_level": "Standard"
+  },
   "description": "A PM needs to identify which upcoming tasks have float (can be delayed without affecting the project completion date) to allow for resource reallocation.",
-  "use_case": "Project Management",
-  "core_function": "Project Planning & Scheduling",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Run a critical path analysis on the project schedule.",
-      "expected_outcome": "The critical path is calculated.",
-      "required_tools": [
-        "get_critical_path"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Run a critical path analysis on the project schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The critical path is calculated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a report of all tasks not on the critical path, sorted by the amount of total float.",
-      "expected_outcome": "A report is generated, showing 'Landscaping' has 15 days of float.",
-      "required_tools": [
-        "generate_schedule_float_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a report of all tasks not on the critical path, sorted by the amount of total float.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A report is generated, showing 'Landscaping' has 15 days of float."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "information_technology_product-ps-11776",
-  "title": "Project Sign-off",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Project Sign-off",
+    "compliance_level": "Standard"
+  },
   "description": "An implementation project has been completed, and the consultant needs to get formal sign-off from the customer.",
-  "use_case": "Professional Services & Implementation",
-  "core_function": "Implementation & Configuration",
   "industry": "Information Technology Product",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the original SOW to ensure all deliverables have been met.",
-      "expected_outcome": "Consultant confirms the project is complete.",
-      "required_tools": [
-        "review_project_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the original SOW to ensure all deliverables have been met.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant confirms the project is complete."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Prepare a project completion document summarizing the work done and outcomes.",
-      "expected_outcome": "Consultant creates the final sign-off document.",
-      "required_tools": [
-        "create_project_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Prepare a project completion document summarizing the work done and outcomes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Consultant creates the final sign-off document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the document to the customer for their final signature to officially close the project.",
-      "expected_outcome": "The project is formally closed.",
-      "required_tools": [
-        "send_for_signature"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the document to the customer for their final signature to officially close the project.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The project is formally closed."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

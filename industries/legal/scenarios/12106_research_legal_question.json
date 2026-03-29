@@ -1,64 +1,72 @@
 {
-  "scenario_id": "legal-ldr-12106",
-  "title": "Research a Specific Legal Question",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Research a Specific Legal Question",
+    "compliance_level": "Standard"
+  },
   "description": "An associate needs to research case law to answer a specific question: 'What constitutes 'reasonable accommodation' for a religious practice under Title VII in the 9th Circuit?'",
-  "use_case": "Litigation & Dispute Resolution",
-  "core_function": "Legal Research & Writing",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Formulate a search query for a legal research database like Westlaw or LexisNexis.",
-      "expected_outcome": "Agent creates an effective search query using Boolean operators and relevant keywords.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Formulate a search query for a legal research database like Westlaw or LexisNexis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates an effective search query using Boolean operators and relevant keywords."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Execute the search, filtering for cases within the 9th Circuit Court of Appeals.",
-      "expected_outcome": "Agent retrieves a list of relevant cases.",
-      "required_tools": [
-        "legal_research_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Execute the search, filtering for cases within the 9th Circuit Court of Appeals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of relevant cases."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the top 5-10 cases to synthesize a rule and identify the key factors the court considers.",
-      "expected_outcome": "Agent identifies the legal test and factors used by the court.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "legal_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the top 5-10 cases to synthesize a rule and identify the key factors the court considers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the legal test and factors used by the court."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Draft a research memo summarizing the findings, citing the key cases.",
-      "expected_outcome": "Agent produces a memo that directly answers the partner's question.",
-      "required_tools": [
-        "document_drafting_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Draft a research memo summarizing the findings, citing the key cases.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a memo that directly answers the partner's question."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

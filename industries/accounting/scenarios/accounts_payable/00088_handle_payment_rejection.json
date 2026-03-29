@@ -1,68 +1,72 @@
 {
-  "scenario_id": "ac-ap-88",
-  "title": "Handle a Rejected ACH Payment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Rejected ACH Payment",
+    "compliance_level": "Standard"
+  },
   "description": "A payment in an ACH payment run has been rejected by the bank due to incorrect vendor banking information.",
-  "use_case": "Accounts Payable",
-  "core_function": "Payment Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the ACH rejection notification from the bank.",
-      "expected_outcome": "Agent gets the notification, which includes the vendor name and reason code 'Invalid Account Number'.",
-      "required_tools": [
-        "get_bank_rejection_notice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the ACH rejection notification from the bank.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the notification, which includes the vendor name and reason code 'Invalid Account Number'."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Reverse the payment posting in the ERP system to reopen the vendor invoice.",
-      "expected_outcome": "Agent successfully reverses the payment transaction.",
-      "required_tools": [
-        "void_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Reverse the payment posting in the ERP system to reopen the vendor invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reverses the payment transaction."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the vendor to obtain the correct banking information.",
-      "expected_outcome": "Agent contacts the vendor and gets the updated details.",
-      "required_tools": [
-        "contact_vendor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the vendor to obtain the correct banking information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent contacts the vendor and gets the updated details."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the vendor master file and re-process the payment in the next payment run.",
-      "expected_outcome": "Agent updates the vendor record and reschedules the payment.",
-      "required_tools": [
-        "update_vendor_record",
-        "schedule_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the vendor master file and re-process the payment in the next payment run.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent updates the vendor record and reschedules the payment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-ops-12684",
-  "title": "Manage Underground Personnel Tracking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Underground Personnel Tracking",
+    "compliance_level": "Standard"
+  },
   "description": "In an emergency, a control room operator must use the personnel tracking system to find the location of every person underground.",
-  "use_case": "Mine Operations",
-  "core_function": "Underground Production",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "An emergency alarm is activated. Immediately bring up the personnel tracking system dashboard.",
-      "expected_outcome": "A map showing the last known location of all personnel underground is displayed.",
-      "required_tools": [
-        "get_personnel_location_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "response_time_seconds",
-          "threshold": 20
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "An emergency alarm is activated. Immediately bring up the personnel tracking system dashboard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A map showing the last known location of all personnel underground is displayed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a list of all personnel currently underground and their assigned refuge station.",
-      "expected_outcome": "A complete muster list is generated.",
-      "required_tools": [
-        "generate_muster_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a list of all personnel currently underground and their assigned refuge station.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete muster list is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "As personnel arrive at the refuge stations, check them off the list to quickly identify anyone who is missing.",
-      "expected_outcome": "The system provides a real-time view of who is safe and who is still unaccounted for, guiding the search and rescue team.",
-      "required_tools": [
-        "update_muster_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "As personnel arrive at the refuge stations, check them off the list to quickly identify anyone who is missing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system provides a real-time view of who is safe and who is still unaccounted for, guiding the search and rescue team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "consulting-mc-181",
-  "title": "Create Project Kick-off Deck",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Project Kick-off Deck",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must create a standard project kick-off presentation from an SOW.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Extract project scope, timeline, team members, and key deliverables from the SOW.",
-      "expected_outcome": "Agent accurately extracts all key information.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Extract project scope, timeline, team members, and key deliverables from the SOW.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately extracts all key information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate a standard kick-off presentation template with the extracted information.",
-      "expected_outcome": "Agent correctly fills slides for 'Project Goals', 'Scope', 'Timeline', 'Team', and 'Ways of Working'.",
-      "required_tools": [
-        "populate_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate a standard kick-off presentation template with the extracted information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly fills slides for 'Project Goals', 'Scope', 'Timeline', 'Team', and 'Ways of Working'."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a 'Next Steps' slide outlining the immediate activities for the first two weeks.",
-      "expected_outcome": "Agent creates a clear and actionable next steps slide.",
-      "required_tools": [
-        "draft_text_section"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_relevance",
-          "threshold": 0.9,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a 'Next Steps' slide outlining the immediate activities for the first two weeks.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a clear and actionable next steps slide."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

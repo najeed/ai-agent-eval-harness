@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-sc-12393",
-  "title": "Amend a Sales Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Amend a Sales Order",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to increase the quantity of an item on an order that has not yet entered production.",
-  "use_case": "Sales & Customer Management",
-  "core_function": "Quoting & Ordering",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the sales order and verify it is not yet in production.",
-      "expected_outcome": "Agent finds the order and confirms its status allows for changes.",
-      "required_tools": [
-        "find_sales_order",
-        "get_work_order_status_by_so"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the sales order and verify it is not yet in production.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the order and confirms its status allows for changes."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the quantity for the line item as requested by the customer.",
-      "expected_outcome": "Agent changes the quantity on the sales order line.",
-      "required_tools": [
-        "update_sales_order_line"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the quantity for the line item as requested by the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent changes the quantity on the sales order line."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a revised order acknowledgement to the customer with the new total.",
-      "expected_outcome": "Agent sends the updated confirmation to the customer.",
-      "required_tools": [
-        "send_order_acknowledgement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a revised order acknowledgement to the customer with the new total.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends the updated confirmation to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

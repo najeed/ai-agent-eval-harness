@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13885",
-  "title": "Resolve IP Address Conflict",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve IP Address Conflict",
+    "compliance_level": "Standard"
+  },
   "description": "The network monitoring system reports a duplicate IP address conflict.",
-  "use_case": "Network Operations",
-  "core_function": "Fault Management",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the duplicate IP address and the MAC addresses of the two devices involved from the alert.",
-      "expected_outcome": "Agent correctly identifies the conflicting IP and MACs.",
-      "required_tools": [
-        "get_network_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the duplicate IP address and the MAC addresses of the two devices involved from the alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the conflicting IP and MACs."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify which of the two devices is the legitimate owner of the IP address based on system records.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines one device has a static assignment while the other should be using DHCP."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify which of the two devices is the legitimate owner of the IP address based on system records.",
-      "expected_outcome": "Agent determines one device has a static assignment while the other should be using DHCP.",
-      "required_tools": [
-        "check_ip_assignment_records"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Remotely force the non-legitimate device to release its IP and request a new one via DHCP.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends a DHCP release/renew command to the problematic device."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Remotely force the non-legitimate device to release its IP and request a new one via DHCP.",
-      "expected_outcome": "Agent successfully sends a DHCP release/renew command to the problematic device.",
-      "required_tools": [
-        "force_dhcp_renew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

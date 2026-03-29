@@ -1,50 +1,59 @@
 {
-  "scenario_id": "consulting-mc-173",
-  "title": "Forecast Market Share",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Forecast Market Share",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must forecast a client's market share based on historical data and competitor growth rates.",
-  "use_case": "Management Consulting",
-  "core_function": "Analysis & Modeling",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Load historical market share data for the client and its main competitors.",
-      "expected_outcome": "Agent successfully loads the data.",
-      "required_tools": [
-        "load_csv"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Load historical market share data for the client and its main competitors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully loads the data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Extrapolate the historical trends for the next 3 years to create a baseline forecast.",
-      "expected_outcome": "Agent creates a simple trend-based forecast.",
-      "required_tools": [
-        "create_time_series_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Extrapolate the historical trends for the next 3 years to create a baseline forecast.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a simple trend-based forecast."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Adjust the forecast based on a given assumption (e.g., 'Competitor A will grow 5% faster than trend due to a new product launch').",
-      "expected_outcome": "Agent correctly modifies the forecast to account for the new assumption.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Adjust the forecast based on a given assumption (e.g., 'Competitor A will grow 5% faster than trend due to a new product launch').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly modifies the forecast to account for the new assumption."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

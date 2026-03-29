@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-cc-10677",
-  "title": "Manage a Joint Check Agreement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Joint Check Agreement",
+    "compliance_level": "Standard"
+  },
   "description": "A subcontractor is having financial trouble, so a joint check agreement is put in place with their material supplier. The accountant must process a payment accordingly.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Billing & Invoicing",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that a valid joint check agreement is on file for the subcontractor and their supplier.",
-      "expected_outcome": "Agent confirms the agreement is in place.",
-      "required_tools": [
-        "get_vendor_agreements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that a valid joint check agreement is on file for the subcontractor and their supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the agreement is in place."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "When processing the subcontractor's payment, issue the check as payable to both the subcontractor and the material supplier.",
-      "expected_outcome": "A joint check is correctly generated.",
-      "required_tools": [
-        "process_joint_check_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "When processing the subcontractor's payment, issue the check as payable to both the subcontractor and the material supplier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A joint check is correctly generated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

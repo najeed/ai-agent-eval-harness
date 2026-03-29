@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-om-14318",
-  "title": "Generate Invoice for a Shipped Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Invoice for a Shipped Order",
+    "compliance_level": "Standard"
+  },
   "description": "An order has been shipped to a customer. An agent in the finance department needs to generate and send the invoice.",
-  "use_case": "Order Management & Sales",
-  "core_function": "Invoicing & Payments",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify a sales order that has been marked as 'shipped'.",
-      "expected_outcome": "Agent retrieves a recently shipped order.",
-      "required_tools": [
-        "get_shipped_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify a sales order that has been marked as 'shipped'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a recently shipped order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate an invoice for the order, including item costs, taxes, and shipping fees.",
-      "expected_outcome": "Agent successfully creates an accurate invoice.",
-      "required_tools": [
-        "generate_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate an invoice for the order, including item costs, taxes, and shipping fees.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates an accurate invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the invoice to the customer's billing contact.",
-      "expected_outcome": "Agent emails the invoice to the customer.",
-      "required_tools": [
-        "send_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the invoice to the customer's billing contact.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent emails the invoice to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

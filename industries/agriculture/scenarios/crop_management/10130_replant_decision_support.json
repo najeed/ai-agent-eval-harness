@@ -1,64 +1,72 @@
 {
-  "scenario_id": "ag-cm-10130",
-  "title": "Replant Decision Support",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Replant Decision Support",
+    "compliance_level": "Standard"
+  },
   "description": "After a flood, a farmer needs to decide if the remaining plant stand in their soybean field is sufficient, or if they should replant.",
-  "use_case": "Crop Management",
-  "core_function": "Planting & Seeding",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Guide the farmer on how to perform a plant stand count in several representative areas of the field.",
-      "expected_outcome": "Agent provides clear instructions for conducting a stand count.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "instructional_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Guide the farmer on how to perform a plant stand count in several representative areas of the field.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides clear instructions for conducting a stand count."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the average plants per acre based on the farmer's counts.",
-      "expected_outcome": "Agent calculates the current plant population.",
-      "required_tools": [
-        "calculate_plant_population"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the average plants per acre based on the farmer's counts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the current plant population."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the current population to an economic model that considers the cost of replanting, the potential yield of the current stand, and the potential yield of a later-planted crop.",
-      "expected_outcome": "The model shows that keeping the current stand is more profitable than replanting.",
-      "required_tools": [
-        "run_replant_analysis_model"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the current population to an economic model that considers the cost of replanting, the potential yield of the current stand, and the potential yield of a later-planted crop.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The model shows that keeping the current stand is more profitable than replanting."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Provide a recommendation against replanting based on the model's output.",
-      "expected_outcome": "Agent advises the farmer to keep the existing crop.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Provide a recommendation against replanting based on the model's output.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent advises the farmer to keep the existing crop."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

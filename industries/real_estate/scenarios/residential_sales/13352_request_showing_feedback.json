@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13352",
-  "title": "Request Showing Feedback",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Request Showing Feedback",
+    "compliance_level": "Standard"
+  },
   "description": "After a buyer's agent shows a property, the listing agent follows up to request feedback.",
-  "use_case": "Residential Sales",
-  "core_function": "Showings & Open Houses",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify that a showing was completed the previous day.",
-      "expected_outcome": "Agent's system flags a completed showing.",
-      "required_tools": [
-        "get_showing_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify that a showing was completed the previous day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent's system flags a completed showing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send an automated email or text to the buyer's agent with a link to a feedback form.",
-      "expected_outcome": "A feedback request is sent.",
-      "required_tools": [
-        "send_automated_feedback_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send an automated email or text to the buyer's agent with a link to a feedback form.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A feedback request is sent."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile any feedback received and share it with the seller.",
-      "expected_outcome": "The seller receives a summary of feedback from recent showings.",
-      "required_tools": [
-        "compile_feedback_summary"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile any feedback received and share it with the seller.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The seller receives a summary of feedback from recent showings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

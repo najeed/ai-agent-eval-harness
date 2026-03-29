@@ -1,69 +1,72 @@
 {
-  "scenario_id": "energy-op-11150",
-  "title": "Solar Panel Soiling Loss Analysis",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Solar Panel Soiling Loss Analysis",
+    "compliance_level": "Standard"
+  },
   "description": "An O&M manager wants to determine if the cost of cleaning the panels at a solar farm is justified by the expected gain in energy production.",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Asset Performance Monitoring",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Measure the current soiling loss by comparing the output of a dirty panel to a recently cleaned reference panel.",
-      "expected_outcome": "Agent determines the current soiling loss is 4%.",
-      "required_tools": [
-        "measure_soiling_loss"
-      ],
-      "success_criteria": [
-        {
-          "metric": "measurement_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Measure the current soiling loss by comparing the output of a dirty panel to a recently cleaned reference panel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent determines the current soiling loss is 4%."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Calculate the expected annual energy gain if the panels were cleaned, based on the farm's total capacity.",
-      "expected_outcome": "Agent calculates the potential increase in MWh.",
-      "required_tools": [
-        "calculate_energy_gain_from_cleaning"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Calculate the expected annual energy gain if the panels were cleaned, based on the farm's total capacity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the potential increase in MWh."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Estimate the revenue from the extra energy based on the expected PPA price.",
-      "expected_outcome": "Agent calculates the potential revenue gain.",
-      "required_tools": [
-        "get_ppa_price",
-        "calculate_financial_impact"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Estimate the revenue from the extra energy based on the expected PPA price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates the potential revenue gain."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Compare the revenue gain to the cost of a panel cleaning service. Recommend for or against cleaning.",
-      "expected_outcome": "Agent finds the revenue gain exceeds the cleaning cost and recommends scheduling a cleaning.",
-      "required_tools": [
-        "get_service_quotes",
-        "compare_costs_benefits"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Compare the revenue gain to the cost of a panel cleaning service. Recommend for or against cleaning.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the revenue gain exceeds the cleaning cost and recommends scheduling a cleaning."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

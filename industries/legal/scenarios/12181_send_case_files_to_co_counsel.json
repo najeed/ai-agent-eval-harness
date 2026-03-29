@@ -1,52 +1,59 @@
 {
-  "scenario_id": "legal-pm-12181",
-  "title": "Send Case Files to Co-Counsel",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Send Case Files to Co-Counsel",
+    "compliance_level": "Standard"
+  },
   "description": "A firm is bringing on co-counsel for a large case and needs to share the primary case files with them.",
-  "use_case": "Law Practice Management",
-  "core_function": "Client Communication & Reporting",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the key case documents that need to be shared (e.g., all pleadings, major discovery responses).",
-      "expected_outcome": "Agent creates a list of essential documents.",
-      "required_tools": [
-        "case_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the key case documents that need to be shared (e.g., all pleadings, major discovery responses).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a list of essential documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compile the selected documents into a single, organized folder.",
-      "expected_outcome": "Agent gathers all the files.",
-      "required_tools": [
-        "document_management_system_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compile the selected documents into a single, organized folder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers all the files."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Share the folder with the co-counsel via a secure file sharing portal.",
-      "expected_outcome": "The files are securely transferred to the new legal team.",
-      "required_tools": [
-        "secure_file_transfer_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Share the folder with the co-counsel via a secure file sharing portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The files are securely transferred to the new legal team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

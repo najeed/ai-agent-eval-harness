@@ -1,38 +1,46 @@
 {
-  "scenario_id": "construction-sc-10612",
-  "title": "Create JHA for Roofing Work",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create JHA for Roofing Work",
+    "compliance_level": "Standard"
+  },
   "description": "A safety officer must create a Job Hazard Analysis (JHA) for the upcoming roofing installation.",
-  "use_case": "Safety & Compliance",
-  "core_function": "Hazard Analysis",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the primary hazards associated with roofing work, such as 'Falls from height', 'Material handling', and 'Heat exposure'.",
-      "expected_outcome": "Agent lists the key hazards for the JHA.",
-      "required_tools": [
-        "get_standard_hazard_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the primary hazards associated with roofing work, such as 'Falls from height', 'Material handling', and 'Heat exposure'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent lists the key hazards for the JHA."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For the 'Falls from height' hazard, specify the preventative measure as 'Mandatory use of personal fall arrest systems (PFAS) for all workers'.",
-      "expected_outcome": "A specific, actionable control measure is documented for a key hazard.",
-      "required_tools": [
-        "create_jha_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For the 'Falls from height' hazard, specify the preventative measure as 'Mandatory use of personal fall arrest systems (PFAS) for all workers'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A specific, actionable control measure is documented for a key hazard."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

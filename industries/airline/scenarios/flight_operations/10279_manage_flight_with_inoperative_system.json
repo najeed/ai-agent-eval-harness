@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-fo-10279",
-  "title": "Dispatch Flight with an MEL Item",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Dispatch Flight with an MEL Item",
+    "compliance_level": "Standard"
+  },
   "description": "A flight is departing with an inoperative system under the MEL. The dispatcher must ensure all operational restrictions are followed.",
-  "use_case": "Flight Operations",
-  "core_function": "Flight Planning & Dispatch",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the MEL item and its operational restrictions (e.g., flight cannot exceed a certain altitude).",
-      "expected_outcome": "Dispatcher understands the limitations.",
-      "required_tools": [
-        "get_mel_restrictions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the MEL item and its operational restrictions (e.g., flight cannot exceed a certain altitude).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher understands the limitations."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a flight plan that respects the operational restriction, even if it's less efficient.",
-      "expected_outcome": "Dispatcher creates a compliant flight plan.",
-      "required_tools": [
-        "generate_flight_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a flight plan that respects the operational restriction, even if it's less efficient.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher creates a compliant flight plan."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Brief the flight crew on the MEL item and the required operational procedures before they depart.",
-      "expected_outcome": "Dispatcher ensures the crew is aware of the situation and limitations.",
-      "required_tools": [
-        "brief_flight_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Brief the flight crew on the MEL item and the required operational procedures before they depart.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Dispatcher ensures the crew is aware of the situation and limitations."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

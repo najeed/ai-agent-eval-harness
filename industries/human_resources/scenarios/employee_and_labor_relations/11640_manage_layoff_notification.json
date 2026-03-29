@@ -1,49 +1,59 @@
 {
-  "scenario_id": "hr-er-11640",
-  "title": "Manage a Layoff Notification",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage a Layoff Notification",
+    "compliance_level": "Standard"
+  },
   "description": "As part of a reduction in force, an HRBP must support a manager in notifying an employee that their position has been eliminated.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Offboarding",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare the separation packet for the affected employee, including severance details and benefits continuation (COBRA) information.",
-      "expected_outcome": "HRBP prepares all required legal and informational documents.",
-      "required_tools": [
-        "generate_separation_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare the separation packet for the affected employee, including severance details and benefits continuation (COBRA) information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP prepares all required legal and informational documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Coach the manager on the messaging for the notification meeting.",
-      "expected_outcome": "HRBP provides the manager with a script and talking points.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Coach the manager on the messaging for the notification meeting.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP provides the manager with a script and talking points."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Attend the notification meeting to answer HR-specific questions and collect company property.",
-      "expected_outcome": "HRBP supports the meeting, explains the severance package, and collects the employee's laptop and badge.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Attend the notification meeting to answer HR-specific questions and collect company property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HRBP supports the meeting, explains the severance package, and collects the employee's laptop and badge."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

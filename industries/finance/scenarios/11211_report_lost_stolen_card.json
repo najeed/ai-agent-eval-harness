@@ -1,109 +1,74 @@
 {
-  "scenario_id": "finance-rb-11211",
-  "title": "Report a Lost or Stolen Credit Card",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report a Lost or Stolen Credit Card",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls in a panic because they have lost their credit card.",
-  "use_case": "Retail Banking",
-  "core_function": "Fraud & Security",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify and authenticate the customer.",
-      "expected_outcome": "Agent quickly and securely verifies the customer's identity.",
-      "required_tools": [
-        "get_customer_details",
-        "verify_customer_identity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify and authenticate the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent quickly and securely verifies the customer's identity."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Immediately deactivate the lost credit card to prevent any transactions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully deactivates the specified card."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Immediately deactivate the lost credit card to prevent any transactions.",
-      "expected_outcome": "Agent successfully deactivates the specified card.",
-      "required_tools": [
-        "set_card_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review recent transactions with the customer to identify any potential fraud.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent and customer review the last 5 transactions and confirm they are all legitimate."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Order a replacement card to be sent to the customer's address on file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully issues a new card."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review recent transactions with the customer to identify any potential fraud.",
-      "expected_outcome": "Agent and customer review the last 5 transactions and confirm they are all legitimate.",
-      "required_tools": [
-        "get_transaction_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Order a replacement card to be sent to the customer's address on file.",
-      "expected_outcome": "Agent successfully issues a new card.",
-      "required_tools": [
-        "order_replacement_card"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

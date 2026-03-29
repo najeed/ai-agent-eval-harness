@@ -1,67 +1,72 @@
 {
-  "scenario_id": "venues-gs-14254",
-  "title": "Find Owner of a Found Item",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find Owner of a Found Item",
+    "compliance_level": "Standard"
+  },
   "description": "A wallet is found with an ID inside. A guest services agent needs to attempt to contact the owner.",
-  "use_case": "Guest & Patron Services",
-  "core_function": "Lost & Found",
   "industry": "Venues",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the found wallet in the lost and found database, including the name on the ID.",
-      "expected_outcome": "Agent creates a new found item record.",
-      "required_tools": [
-        "create_found_item_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the found wallet in the lost and found database, including the name on the ID.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new found item record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the ticketing system's order history for a guest with the matching name who attended the event.",
-      "expected_outcome": "Agent finds a ticket order with a matching name and retrieves the guest's contact information (email and phone number).",
-      "required_tools": [
-        "search_ticket_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the ticketing system's order history for a guest with the matching name who attended the event.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a ticket order with a matching name and retrieves the guest's contact information (email and phone number)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the guest via phone or email to inform them their wallet has been found.",
-      "expected_outcome": "Agent successfully contacts the guest.",
-      "required_tools": [
-        "send_email_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the guest via phone or email to inform them their wallet has been found.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully contacts the guest."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Arrange a time for the guest to come to the venue to pick up the wallet.",
-      "expected_outcome": "Agent schedules a pickup time and provides instructions.",
-      "required_tools": [
-        "schedule_pickup"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Arrange a time for the guest to come to the venue to pick up the wallet.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent schedules a pickup time and provides instructions."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

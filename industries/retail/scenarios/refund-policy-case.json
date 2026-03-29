@@ -1,21 +1,32 @@
 {
-  "scenario_id": "refund-policy-case",
-  "title": "Refund Policy Case",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Refund Policy Case",
+    "compliance_level": "Standard"
+  },
   "description": "Evaluation for Refund Policy Case in the retail industry.",
   "industry": "retail",
-  "use_case": "Customer Support",
-  "core_function": "Inquiry Handling",
-  "complexity_level": "medium",
-  "tasks": [
-    {
-      "task_id": "test-1",
-      "description": "User asks a basic question about...",
-      "expected_outcome": "Agent provides a clear, accurate answer...",
-      "success_criteria": [
-        { "metric": "Accuracy", "threshold": 0.8 },
-        { "metric": "Clarity", "threshold": 0.8 }
-      ],
-      "tools": []
+  "workflow": {
+    "nodes": [
+      {
+        "id": "test-1",
+        "task_description": "User asks a basic question about...",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear, accurate answer..."
+        }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
     }
-  ]
+  }
 }

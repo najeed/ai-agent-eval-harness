@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-ps-13580",
-  "title": "Analyze Response Time for Emergency Services",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Response Time for Emergency Services",
+    "compliance_level": "Standard"
+  },
   "description": "A fire chief wants a report on the department's average response time over the last year to see if they are meeting their goals.",
-  "use_case": "Public Safety & Security",
-  "core_function": "Emergency Response",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all fire department dispatch and arrival time data for the last 12 months.",
-      "expected_outcome": "Agent successfully queries the emergency dispatch database.",
-      "required_tools": [
-        "get_historical_dispatch_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all fire department dispatch and arrival time data for the last 12 months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully queries the emergency dispatch database."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each incident, calculate the response time (time from dispatch to arrival on scene).",
-      "expected_outcome": "The system calculates the response time for thousands of incidents.",
-      "required_tools": [
-        "calculate_response_times"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each incident, calculate the response time (time from dispatch to arrival on scene).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system calculates the response time for thousands of incidents."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report showing the average response time by month and by station, and compare it to the department's 6-minute goal.",
-      "expected_outcome": "Agent creates a detailed performance report for the fire chief.",
-      "required_tools": [
-        "generate_performance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report showing the average response time by month and by station, and compare it to the department's 6-minute goal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed performance report for the fire chief."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

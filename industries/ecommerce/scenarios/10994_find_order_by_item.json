@@ -1,38 +1,46 @@
 {
-  "scenario_id": "ecommerce-css-10994",
-  "title": "Find an Order by Item Purchased",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Find an Order by Item Purchased",
+    "compliance_level": "Standard"
+  },
   "description": "A customer can't remember their order number but knows they bought a specific item last month. An agent needs to find their order.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Account Management",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's account.",
-      "expected_outcome": "Agent finds the customer's profile.",
-      "required_tools": [
-        "get_customer_by_email"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the customer's profile."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search the customer's order history for the specific product they mentioned within the given timeframe.",
-      "expected_outcome": "Agent successfully finds the order containing the 'Red Scarf' purchased last month.",
-      "required_tools": [
-        "search_order_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search the customer's order history for the specific product they mentioned within the given timeframe.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully finds the order containing the 'Red Scarf' purchased last month."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

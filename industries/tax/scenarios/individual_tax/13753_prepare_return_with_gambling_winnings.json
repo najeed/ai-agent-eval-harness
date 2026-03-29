@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tax-ind-13753",
-  "title": "Prepare Return with Gambling Winnings",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare Return with Gambling Winnings",
+    "compliance_level": "Standard"
+  },
   "description": "A taxpayer received a Form W-2G for significant gambling winnings.",
-  "use_case": "Individual Tax Preparation & Filing",
-  "core_function": "Data Collection & Input",
   "industry": "Tax",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Enter the gambling winnings from Form W-2G as 'Other Income' on Schedule 1.",
-      "expected_outcome": "Agent correctly reports the winnings.",
-      "required_tools": [
-        "enter_w2g_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Enter the gambling winnings from Form W-2G as 'Other Income' on Schedule 1.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly reports the winnings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather information on the taxpayer's gambling losses for the year.",
-      "expected_outcome": "Agent collects documentation of losses.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather information on the taxpayer's gambling losses for the year.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent collects documentation of losses."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Deduct the gambling losses on Schedule A, up to the amount of the winnings.",
-      "expected_outcome": "Agent correctly claims the gambling loss deduction, offsetting the winnings.",
-      "required_tools": [
-        "enter_schedule_a_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Deduct the gambling losses on Schedule A, up to the amount of the winnings.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly claims the gambling loss deduction, offsetting the winnings."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

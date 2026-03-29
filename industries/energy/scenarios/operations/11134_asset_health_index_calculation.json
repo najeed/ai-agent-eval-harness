@@ -1,51 +1,59 @@
 {
-  "scenario_id": "energy-op-11134",
-  "title": "Asset Health Index Calculation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Asset Health Index Calculation",
+    "compliance_level": "Standard"
+  },
   "description": "An asset manager wants to calculate a composite 'health index' for each wind turbine in a farm to prioritize maintenance.",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Asset Performance Monitoring",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather key performance and condition data for each turbine, including vibration analysis, temperature readings, and fault history.",
-      "expected_outcome": "Agent compiles a comprehensive dataset for all turbines.",
-      "required_tools": [
-        "get_asset_condition_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_aggregation_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather key performance and condition data for each turbine, including vibration analysis, temperature readings, and fault history.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a comprehensive dataset for all turbines."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply a weighted scoring model to the data to calculate a single health index score (0-100) for each turbine.",
-      "expected_outcome": "Agent calculates a health score for every asset.",
-      "required_tools": [
-        "calculate_asset_health_index"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply a weighted scoring model to the data to calculate a single health index score (0-100) for each turbine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calculates a health score for every asset."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a ranked list of turbines from lowest to highest health score and recommend inspections for the bottom 10%.",
-      "expected_outcome": "Agent produces a prioritized list for the maintenance team.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a ranked list of turbines from lowest to highest health score and recommend inspections for the bottom 10%.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a prioritized list for the maintenance team."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

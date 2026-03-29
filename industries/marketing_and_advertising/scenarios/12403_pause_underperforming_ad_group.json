@@ -1,50 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12403",
-  "title": "Pause Underperforming Ad Group",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Pause Underperforming Ad Group",
+    "compliance_level": "Standard"
+  },
   "description": "While reviewing a live Google Ads campaign, an account manager notices one ad group has a very high cost-per-conversion and needs to pause it.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Campaign Monitoring & Optimization",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the performance of all ad groups in the campaign for the last 14 days.",
-      "expected_outcome": "Agent retrieves the performance data for all ad groups.",
-      "required_tools": [
-        "google_ads_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the performance of all ad groups in the campaign for the last 14 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the performance data for all ad groups."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify the ad group with a cost-per-conversion that is 50% higher than the campaign average.",
-      "expected_outcome": "Agent correctly identifies the underperforming ad group.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify the ad group with a cost-per-conversion that is 50% higher than the campaign average.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the underperforming ad group."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Pause the identified ad group to prevent further inefficient spending.",
-      "expected_outcome": "Agent successfully pauses the correct ad group.",
-      "required_tools": [
-        "google_ads_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Pause the identified ad group to prevent further inefficient spending.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully pauses the correct ad group."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,50 +1,59 @@
 {
-  "scenario_id": "legal-pm-12141",
-  "title": "Process an Expense Against a Matter",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an Expense Against a Matter",
+    "compliance_level": "Standard"
+  },
   "description": "An attorney incurred an expense (e.g., a filing fee) and needs to have it recorded against the correct client matter for billing.",
-  "use_case": "Law Practice Management",
-  "core_function": "Billing & Timekeeping",
   "industry": "Legal",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the expense details (amount, date, description) and the client/matter code.",
-      "expected_outcome": "Agent has all the necessary information.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the expense details (amount, date, description) and the client/matter code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has all the necessary information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Enter the expense into the billing system, associating it with the correct matter.",
-      "expected_outcome": "Agent successfully records the expense.",
-      "required_tools": [
-        "billing_software_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Enter the expense into the billing system, associating it with the correct matter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully records the expense."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Attach a copy of the receipt to the expense entry for auditing purposes.",
-      "expected_outcome": "The expense is fully documented in the system.",
-      "required_tools": [
-        "billing_software_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Attach a copy of the receipt to the expense entry for auditing purposes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The expense is fully documented in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

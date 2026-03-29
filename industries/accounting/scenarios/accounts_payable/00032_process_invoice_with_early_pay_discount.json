@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ac-ap-32",
-  "title": "Process an Invoice with an Early Payment Discount",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process an Invoice with an Early Payment Discount",
+    "compliance_level": "Standard"
+  },
   "description": "A vendor offers a 2% discount if their invoice is paid within 10 days. An accountant needs to process the payment to take advantage of the discount.",
-  "use_case": "Accounts Payable",
-  "core_function": "Payment Processing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify an approved invoice that has a '2/10, n/30' payment term and is still within the discount period.",
-      "expected_outcome": "Agent finds a suitable invoice.",
-      "required_tools": [
-        "get_invoices_with_discounts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify an approved invoice that has a '2/10, n/30' payment term and is still within the discount period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a suitable invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Schedule the invoice for immediate payment, calculating the reduced payment amount after the 2% discount.",
-      "expected_outcome": "Agent correctly calculates the discounted payment amount.",
-      "required_tools": [
-        "schedule_payment_with_discount"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Schedule the invoice for immediate payment, calculating the reduced payment amount after the 2% discount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the discounted payment amount."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Execute the payment and ensure the discount is correctly recorded in the general ledger.",
-      "expected_outcome": "Agent processes the payment and posts the transaction, crediting 'Purchase Discounts'.",
-      "required_tools": [
-        "execute_payment_run",
-        "create_journal_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Execute the payment and ensure the discount is correctly recorded in the general ledger.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent processes the payment and posts the transaction, crediting 'Purchase Discounts'."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

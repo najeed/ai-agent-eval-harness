@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-118",
-  "title": "Perform Customer Segmentation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Customer Segmentation",
+    "compliance_level": "Standard"
+  },
   "description": "Using customer purchase data, an agent must perform a simple RFM (Recency, Frequency, Monetary) segmentation.",
-  "use_case": "Management Consulting",
-  "core_function": "Analysis & Modeling",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "For each customer in the dataset, calculate their Recency, Frequency, and Monetary value.",
-      "expected_outcome": "Agent correctly calculates the three RFM metrics for each customer.",
-      "required_tools": [
-        "calculate_rfm_values"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "For each customer in the dataset, calculate their Recency, Frequency, and Monetary value.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly calculates the three RFM metrics for each customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Assign each customer to a segment (e.g., 'High-Value', 'At-Risk', 'New') based on their RFM scores.",
-      "expected_outcome": "Agent correctly applies the segmentation logic.",
-      "required_tools": [
-        "segment_customers"
-      ],
-      "success_criteria": [
-        {
-          "metric": "classification_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Assign each customer to a segment (e.g., 'High-Value', 'At-Risk', 'New') based on their RFM scores.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly applies the segmentation logic."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a summary showing the number of customers in each segment.",
-      "expected_outcome": "Agent produces an accurate count for each customer segment.",
-      "required_tools": [
-        "generate_summary_statistics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a summary showing the number of customers in each segment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces an accurate count for each customer segment."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

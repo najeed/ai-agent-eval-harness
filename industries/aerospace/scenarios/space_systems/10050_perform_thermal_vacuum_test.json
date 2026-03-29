@@ -1,53 +1,59 @@
 {
-  "scenario_id": "aerospace-ss-10050",
-  "title": "Perform a Thermal Vacuum (TVAC) Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Thermal Vacuum (TVAC) Test",
+    "compliance_level": "Standard"
+  },
   "description": "A satellite must undergo TVAC testing to ensure it can operate in the vacuum and extreme temperatures of space.",
-  "use_case": "Space Systems & Satellites",
-  "core_function": "Satellite Manufacturing & Integration",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Place the satellite inside the TVAC chamber and connect all test umbilicals.",
-      "expected_outcome": "Agent correctly installs the satellite in the chamber.",
-      "required_tools": [
-        "install_in_tvac_chamber"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Place the satellite inside the TVAC chamber and connect all test umbilicals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly installs the satellite in the chamber."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Evacuate the air from the chamber to create a vacuum and cycle the temperature between its hot and cold operational limits.",
-      "expected_outcome": "Agent operates the chamber to simulate the space environment.",
-      "required_tools": [
-        "control_tvac_chamber"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Evacuate the air from the chamber to create a vacuum and cycle the temperature between its hot and cold operational limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent operates the chamber to simulate the space environment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "During the temperature cycles, operate the satellite and monitor its telemetry to verify all systems function correctly.",
-      "expected_outcome": "Agent runs functional tests and confirms the satellite operates nominally at both temperature extremes.",
-      "required_tools": [
-        "monitor_telemetry",
-        "run_functional_test"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "During the temperature cycles, operate the satellite and monitor its telemetry to verify all systems function correctly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent runs functional tests and confirms the satellite operates nominally at both temperature extremes."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

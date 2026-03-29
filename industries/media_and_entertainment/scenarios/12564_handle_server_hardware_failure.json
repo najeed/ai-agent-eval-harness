@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-go-12564",
-  "title": "Handle Game Server Hardware Failure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Game Server Hardware Failure",
+    "compliance_level": "Standard"
+  },
   "description": "A physical game server reports a critical hardware failure (e.g., a failed hard drive) and goes offline.",
-  "use_case": "Gaming Operations",
-  "core_function": "Server Operations & Matchmaking",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Acknowledge the hardware failure alert from the data center monitoring system.",
-      "expected_outcome": "Agent identifies the specific server and the nature of the hardware fault.",
-      "required_tools": [
-        "get_datacenter_hardware_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Acknowledge the hardware failure alert from the data center monitoring system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the specific server and the nature of the hardware fault."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Remove the failed server from the active matchmaking pool.",
-      "expected_outcome": "Agent successfully updates the matchmaking configuration to stop sending players to the dead server.",
-      "required_tools": [
-        "update_matchmaking_config"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Remove the failed server from the active matchmaking pool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the matchmaking configuration to stop sending players to the dead server."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a ticket for the data center operations team to physically replace the failed hard drive.",
-      "expected_outcome": "Agent creates a hardware replacement ticket.",
-      "required_tools": [
-        "create_hardware_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a ticket for the data center operations team to physically replace the failed hard drive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a hardware replacement ticket."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

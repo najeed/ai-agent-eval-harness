@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13351",
-  "title": "Advise on a 1031 Exchange",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Advise on a 1031 Exchange",
+    "compliance_level": "Standard"
+  },
   "description": "An investor is selling a property and wants to perform a 1031 exchange to defer capital gains taxes. Their agent must guide them on the process.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment Sales",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Explain the strict timelines of a 1031 exchange (45 days to identify a replacement property, 180 days to close).",
-      "expected_outcome": "The client understands the critical deadlines.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Explain the strict timelines of a 1031 exchange (45 days to identify a replacement property, 180 days to close).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client understands the critical deadlines."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Refer the client to a qualified intermediary (QI) who is legally required to facilitate the exchange.",
-      "expected_outcome": "The client is connected with a QI.",
-      "required_tools": [
-        "get_vendor_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Refer the client to a qualified intermediary (QI) who is legally required to facilitate the exchange.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client is connected with a QI."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Begin searching for suitable replacement properties that meet the exchange criteria before the sale of the original property closes.",
-      "expected_outcome": "A proactive search for replacement properties is initiated.",
-      "required_tools": [
-        "search_commercial_listings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Begin searching for suitable replacement properties that meet the exchange criteria before the sale of the original property closes.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A proactive search for replacement properties is initiated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-177",
-  "title": "Company Info for Due Diligence",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Company Info for Due Diligence",
+    "compliance_level": "Standard"
+  },
   "description": "For a due diligence project, an agent must compile a background report on a target company.",
-  "use_case": "Management Consulting",
-  "core_function": "Data Collection & Research",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Find the company's official registration details, address, and list of directors.",
-      "expected_outcome": "Agent retrieves correct corporate information from official registries.",
-      "required_tools": [
-        "search_corporate_registry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Find the company's official registration details, address, and list of directors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves correct corporate information from official registries."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Search for any recent negative news or litigation involving the company.",
-      "expected_outcome": "Agent finds and summarizes any relevant negative news.",
-      "required_tools": [
-        "web_search"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Search for any recent negative news or litigation involving the company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds and summarizes any relevant negative news."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compile the information into a structured background report.",
-      "expected_outcome": "Agent produces a clean report with all the gathered information.",
-      "required_tools": [
-        "create_document_from_text"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compile the information into a structured background report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a clean report with all the gathered information."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

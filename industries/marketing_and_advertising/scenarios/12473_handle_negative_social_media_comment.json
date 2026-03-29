@@ -1,54 +1,59 @@
 {
-  "scenario_id": "marketing-cm-12473",
-  "title": "Handle a Negative Social Media Comment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Negative Social Media Comment",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has left an angry comment on a brand's Facebook post about a negative experience. A social media manager needs to respond.",
-  "use_case": "Campaign Management & Execution",
-  "core_function": "Paid Social & Display",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the negative comment and the user who posted it.",
-      "expected_outcome": "Agent sees the comment.",
-      "required_tools": [
-        "social_media_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the negative comment and the user who posted it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees the comment."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Post a public reply that acknowledges the issue, apologizes, and asks the user to send a private message with more details.",
-      "expected_outcome": "Agent responds publicly in a professional and empathetic manner, moving the conversation to a private channel.",
-      "required_tools": [
-        "social_media_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Post a public reply that acknowledges the issue, apologizes, and asks the user to send a private message with more details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent responds publicly in a professional and empathetic manner, moving the conversation to a private channel."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once the user sends a private message, work to resolve their specific issue.",
-      "expected_outcome": "Agent resolves the customer's problem through private messaging.",
-      "required_tools": [
-        "social_media_platform_api"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once the user sends a private message, work to resolve their specific issue.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent resolves the customer's problem through private messaging."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

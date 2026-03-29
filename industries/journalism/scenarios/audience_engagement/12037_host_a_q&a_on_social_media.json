@@ -1,53 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12037",
-  "title": "Host a Q&A on Social Media",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Host a Q&A on Social Media",
+    "compliance_level": "Standard"
+  },
   "description": "Following a major investigation, the lead reporter hosts a live Q&A session on Twitter to answer audience questions.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Community Interaction",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Announce the Q&A session in advance to gather questions from the audience.",
-      "expected_outcome": "A pool of questions is ready before the event starts.",
-      "required_tools": [
-        "social_media_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Announce the Q&A session in advance to gather questions from the audience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A pool of questions is ready before the event starts."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "During the live session, monitor incoming questions and select the most relevant ones to answer.",
-      "expected_outcome": "Agent effectively filters and prioritizes questions.",
-      "required_tools": [
-        "social_media_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "During the live session, monitor incoming questions and select the most relevant ones to answer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent effectively filters and prioritizes questions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Provide clear and concise answers to the selected questions.",
-      "expected_outcome": "The audience's questions are answered satisfactorily.",
-      "required_tools": [
-        "social_media_client"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Provide clear and concise answers to the selected questions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The audience's questions are answered satisfactorily."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

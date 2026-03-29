@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13385",
-  "title": "Manage CRM and Sphere of Influence (SOI)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage CRM and Sphere of Influence (SOI)",
+    "compliance_level": "Standard"
+  },
   "description": "An agent wants to systematically market to their past clients and personal contacts (their SOI).",
-  "use_case": "Residential Sales",
-  "core_function": "Listing & Marketing",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Segment the contacts in the CRM database into categories (e.g., past clients, hot leads, cold leads, personal friends).",
-      "expected_outcome": "The CRM is organized for targeted marketing.",
-      "required_tools": [
-        "segment_crm_contacts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Segment the contacts in the CRM database into categories (e.g., past clients, hot leads, cold leads, personal friends).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The CRM is organized for targeted marketing."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Set up all contacts on a monthly email newsletter with market updates and home tips.",
-      "expected_outcome": "A monthly newsletter campaign is launched.",
-      "required_tools": [
-        "add_contact_to_crm_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Set up all contacts on a monthly email newsletter with market updates and home tips.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A monthly newsletter campaign is launched."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a task to call everyone in the 'past client' category quarterly to check in and ask for referrals.",
-      "expected_outcome": "A systematic calling plan is implemented in the CRM.",
-      "required_tools": [
-        "create_recurring_crm_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a task to call everyone in the 'past client' category quarterly to check in and ask for referrals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A systematic calling plan is implemented in the CRM."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

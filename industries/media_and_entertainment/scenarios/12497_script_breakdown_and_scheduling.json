@@ -1,54 +1,59 @@
 {
-  "scenario_id": "media-cp-12497",
-  "title": "Script Breakdown and Scheduling",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Script Breakdown and Scheduling",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must analyze a film script to identify all necessary elements (props, cast, locations) and create a preliminary shooting schedule.",
-  "use_case": "Content Production & Management",
-  "core_function": "Pre-production & Development",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Ingest the script and identify all mentioned characters, props, and locations.",
-      "expected_outcome": "Agent produces a structured list of all required production elements.",
-      "required_tools": [
-        "analyze_script_elements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Ingest the script and identify all mentioned characters, props, and locations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a structured list of all required production elements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Cross-reference the identified cast and locations with an availability database.",
-      "expected_outcome": "Agent identifies potential scheduling conflicts for a lead actor and a key location.",
-      "required_tools": [
-        "check_cast_availability",
-        "check_location_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Cross-reference the identified cast and locations with an availability database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies potential scheduling conflicts for a lead actor and a key location."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate an optimized, conflict-free preliminary shooting schedule.",
-      "expected_outcome": "Agent produces a day-by-day schedule that accounts for all known constraints.",
-      "required_tools": [
-        "generate_shooting_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate an optimized, conflict-free preliminary shooting schedule.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a day-by-day schedule that accounts for all known constraints."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

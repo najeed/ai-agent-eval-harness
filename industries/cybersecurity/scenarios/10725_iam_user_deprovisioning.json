@@ -1,52 +1,59 @@
 {
-  "scenario_id": "cyber-iam-10725",
-  "title": "Employee Termination",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Employee Termination",
+    "compliance_level": "Standard"
+  },
   "description": "An IAM analyst must immediately deprovision all access for an employee who has been terminated.",
-  "use_case": "Identity & Access Management (IAM)",
-  "core_function": "User Provisioning & Deprovisioning",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the termination notification from HR, which triggers the automated deprovisioning workflow.",
-      "expected_outcome": "The workflow is triggered successfully upon receipt of the HR notification.",
-      "required_tools": [
-        "get_hr_termination_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "automation_trigger_success",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the termination notification from HR, which triggers the automated deprovisioning workflow.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The workflow is triggered successfully upon receipt of the HR notification."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The workflow immediately disables the user's Active Directory account, preventing all logins.",
-      "expected_outcome": "The user's primary account is disabled within seconds.",
-      "required_tools": [
-        "disable_ad_user_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "remediation_speed",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The workflow immediately disables the user's Active Directory account, preventing all logins.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user's primary account is disabled within seconds."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The workflow revokes the user's access to all cloud applications (e.g., Salesforce, Slack) via the SSO provider.",
-      "expected_outcome": "The user's access to all connected applications is successfully revoked.",
-      "required_tools": [
-        "revoke_sso_access"
-      ],
-      "success_criteria": [
-        {
-          "metric": "deprovisioning_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The workflow revokes the user's access to all cloud applications (e.g., Salesforce, Slack) via the SSO provider.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The user's access to all connected applications is successfully revoked."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

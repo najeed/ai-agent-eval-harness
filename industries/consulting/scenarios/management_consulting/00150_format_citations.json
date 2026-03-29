@@ -1,50 +1,59 @@
 {
-  "scenario_id": "consulting-mc-150",
-  "title": "Format Report Citations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Format Report Citations",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must take a list of sources and format them into a consistent citation style (e.g., APA).",
-  "use_case": "Management Consulting",
-  "core_function": "Presentation & Reporting",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a list of sources in various informal formats.",
-      "expected_outcome": "Agent ingests the list of sources.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a list of sources in various informal formats.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ingests the list of sources."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each source, identify the author, year, title, and publication information.",
-      "expected_outcome": "Agent correctly extracts the metadata from each source string.",
-      "required_tools": [
-        "extract_citation_metadata"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each source, identify the author, year, title, and publication information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly extracts the metadata from each source string."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Format each source into the APA citation style.",
-      "expected_outcome": "Agent produces a correctly formatted bibliography in APA style.",
-      "required_tools": [
-        "format_citation_apa"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Format each source into the APA citation style.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a correctly formatted bibliography in APA style."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-maint-12669",
-  "title": "Manage Component Rebuild Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Component Rebuild Program",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance planner manages the program for rebuilding major components (like haul truck engines) to be swapped into the fleet.",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Asset Strategy & Planning",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the forward forecast of component change-outs to determine how many rebuilt engines will be needed in the next six months.",
-      "expected_outcome": "The forecast shows a need for four rebuilt engines.",
-      "required_tools": [
-        "get_component_changeout_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "prediction_accuracy",
-          "threshold": 0.9
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the forward forecast of component change-outs to determine how many rebuilt engines will be needed in the next six months.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The forecast shows a need for four rebuilt engines."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the current inventory of rebuilt engines in the warehouse.",
-      "expected_outcome": "The system shows only one rebuilt engine is currently in stock.",
-      "required_tools": [
-        "check_spare_part_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the current inventory of rebuilt engines in the warehouse.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows only one rebuilt engine is currently in stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue work orders to the workshop to rebuild three used engines that are waiting to be repaired.",
-      "expected_outcome": "Work orders are created to rebuild the components, ensuring a sufficient supply of rotables for the fleet.",
-      "required_tools": [
-        "create_rebuild_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue work orders to the workshop to rebuild three used engines that are waiting to be repaired.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Work orders are created to rebuild the components, ensuring a sufficient supply of rotables for the fleet."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

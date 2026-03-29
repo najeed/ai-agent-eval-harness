@@ -1,85 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13878",
-  "title": "Setup a Payment Arrangement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Setup a Payment Arrangement",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is unable to pay their full bill and requests to set up a payment arrangement.",
-  "use_case": "Customer Service",
-  "core_function": "Billing and Payments",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and their outstanding balance.",
-      "expected_outcome": "Agent confirms the customer and the amount due.",
-      "required_tools": [
-        "get_customer_details",
-        "get_billing_statement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and their outstanding balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer and the amount due."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the customer's eligibility for a payment arrangement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer is eligible based on their account history."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the customer's eligibility for a payment arrangement.",
-      "expected_outcome": "Agent confirms the customer is eligible based on their account history.",
-      "required_tools": [
-        "check_payment_arrangement_eligibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Propose a standard payment plan (e.g., 3 monthly installments) and process it upon customer agreement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sets up the payment plan in the system."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Propose a standard payment plan (e.g., 3 monthly installments) and process it upon customer agreement.",
-      "expected_outcome": "Agent sets up the payment plan in the system.",
-      "required_tools": [
-        "setup_payment_arrangement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

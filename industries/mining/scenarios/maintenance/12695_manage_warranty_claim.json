@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mining-maint-12695",
-  "title": "Manage Equipment Warranty Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Equipment Warranty Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A major component on a new haul truck fails prematurely while still under warranty. A maintenance manager must file a claim with the manufacturer (OEM).",
-  "use_case": "Maintenance & Asset Management",
-  "core_function": "Asset Strategy & Planning",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the failed component (e.g., a final drive) is still within its warranty period based on its operating hours.",
-      "expected_outcome": "The system confirms the component is still under warranty.",
-      "required_tools": [
-        "check_warranty_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the failed component (e.g., a final drive) is still within its warranty period based on its operating hours.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms the component is still under warranty."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Gather all required documentation for the claim, including the failure report, maintenance records, and photos of the failed part.",
-      "expected_outcome": "A complete package of supporting documentation is compiled.",
-      "required_tools": [
-        "get_failure_report",
-        "get_asset_maintenance_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Gather all required documentation for the claim, including the failure report, maintenance records, and photos of the failed part.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete package of supporting documentation is compiled."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the warranty claim to the OEM through their online portal.",
-      "expected_outcome": "The claim is successfully submitted, and a claim number is received for tracking.",
-      "required_tools": [
-        "submit_warranty_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the warranty claim to the OEM through their online portal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The claim is successfully submitted, and a claim number is received for tracking."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

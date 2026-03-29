@@ -1,50 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10595",
-  "title": "Conduct and Document an Emergency Drill",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Conduct and Document an Emergency Drill",
+    "compliance_level": "Standard"
+  },
   "description": "An EHS specialist is conducting a planned fire drill for the site.",
-  "use_case": "EHS & Compliance",
-  "core_function": "Incident Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Initiate the fire alarm system to start the drill.",
-      "expected_outcome": "The site alarms are activated.",
-      "required_tools": [
-        "activate_emergency_alarm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Initiate the fire alarm system to start the drill.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The site alarms are activated."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Time how long it takes for all personnel to evacuate to their designated muster points.",
-      "expected_outcome": "The EHS specialist records the total evacuation time.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Time how long it takes for all personnel to evacuate to their designated muster points.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The EHS specialist records the total evacuation time."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the drill details, including the evacuation time and any observations, in the emergency drill log.",
-      "expected_outcome": "Agent successfully creates a new record in the drill log, documenting the successful drill.",
-      "required_tools": [
-        "create_drill_log_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the drill details, including the evacuation time and any observations, in the emergency drill log.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a new record in the drill log, documenting the successful drill."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

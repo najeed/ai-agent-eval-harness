@@ -1,53 +1,59 @@
 {
-  "scenario_id": "audit-op-10364",
-  "title": "Audit the New Hire Onboarding Program",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Audit the New Hire Onboarding Program",
+    "compliance_level": "Standard"
+  },
   "description": "An operational auditor reviews the HR onboarding program to assess its effectiveness and efficiency.",
-  "use_case": "Operational & Performance Audit",
-  "core_function": "Process Efficiency Review",
   "industry": "Audit",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Survey a sample of employees hired in the last 6 months to get their feedback on the onboarding experience.",
-      "expected_outcome": "Survey results indicate that new hires feel unprepared for their roles after the standard one-week onboarding.",
-      "required_tools": [
-        "distribute_survey",
-        "analyze_survey_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Survey a sample of employees hired in the last 6 months to get their feedback on the onboarding experience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Survey results indicate that new hires feel unprepared for their roles after the standard one-week onboarding."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the onboarding curriculum and identify that it lacks role-specific training.",
-      "expected_outcome": "The auditor identifies a gap in the onboarding content.",
-      "required_tools": [
-        "review_training_materials"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the onboarding curriculum and identify that it lacks role-specific training.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The auditor identifies a gap in the onboarding content."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend that HR develop role-specific training paths to be included in the onboarding program.",
-      "expected_outcome": "A recommendation is made to improve the effectiveness of onboarding.",
-      "required_tools": [
-        "draft_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "strategic_advice_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend that HR develop role-specific training paths to be included in the onboarding program.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A recommendation is made to improve the effectiveness of onboarding."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,52 +1,59 @@
 {
-  "scenario_id": "hosp-hk-11525",
-  "title": "Order Cleaning Supplies",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Order Cleaning Supplies",
+    "compliance_level": "Standard"
+  },
   "description": "The housekeeping manager needs to order more cleaning chemicals as stock is running low.",
-  "use_case": "Housekeeping & Maintenance",
-  "core_function": "Inventory Management",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the current inventory level of the required cleaning chemical.",
-      "expected_outcome": "The system shows the stock is below the reorder point.",
-      "required_tools": [
-        "ims_check_stock_level"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the current inventory level of the required cleaning chemical.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system shows the stock is below the reorder point."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a purchase order for the chemical from the approved vendor.",
-      "expected_outcome": "A new purchase order is created in the procurement system.",
-      "required_tools": [
-        "proc_create_purchase_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a purchase order for the chemical from the approved vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new purchase order is created in the procurement system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the purchase order to the vendor.",
-      "expected_outcome": "The PO is successfully transmitted to the vendor.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the purchase order to the vendor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The PO is successfully transmitted to the vendor."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

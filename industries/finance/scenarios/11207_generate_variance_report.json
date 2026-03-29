@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-cf-11207",
-  "title": "Generate Budget vs. Actual Variance Report",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate Budget vs. Actual Variance Report",
+    "compliance_level": "Standard"
+  },
   "description": "An FP&A analyst requests a variance report for the Sales department's T&E expenses for the last quarter.",
-  "use_case": "Corporate Finance",
-  "core_function": "Financial Planning & Analysis (FP&A)",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the correct department and expense accounts for the report.",
-      "expected_outcome": "Agent correctly selects the 'Sales' department and 'Travel & Entertainment' accounts.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the correct department and expense accounts for the report.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly selects the 'Sales' department and 'Travel & Entertainment' accounts."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the report comparing budgeted amounts to actual spending for the specified period.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the report showing a 15% overage."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the report comparing budgeted amounts to actual spending for the specified period.",
-      "expected_outcome": "Agent successfully generates the report showing a 15% overage.",
-      "required_tools": [
-        "generate_variance_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Export the report in a format suitable for analysis (e.g., CSV).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a downloadable CSV file of the report."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Export the report in a format suitable for analysis (e.g., CSV).",
-      "expected_outcome": "Agent provides a downloadable CSV file of the report.",
-      "required_tools": [
-        "export_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

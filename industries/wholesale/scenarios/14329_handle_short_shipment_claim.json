@@ -1,67 +1,72 @@
 {
-  "scenario_id": "wholesale-cr-14329",
-  "title": "Handle a Short Shipment Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Short Shipment Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A retailer claims they were short-shipped on a recent order (i.e., they received fewer items than they were billed for).",
-  "use_case": "Customer & Retailer Support",
-  "core_function": "Claims & Dispute Resolution",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the short shipment claim from the retailer.",
-      "expected_outcome": "Agent logs the claim.",
-      "required_tools": [
-        "create_customer_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the short shipment claim from the retailer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent logs the claim."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the original pick list and the packing video for the order.",
-      "expected_outcome": "Agent reviews the evidence and confirms that the item was indeed short-packed.",
-      "required_tools": [
-        "get_pick_list",
-        "review_packing_video"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the original pick list and the packing video for the order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the evidence and confirms that the item was indeed short-packed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue a credit to the retailer for the missing item.",
-      "expected_outcome": "Agent credits the retailer's account.",
-      "required_tools": [
-        "issue_credit_memo"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue a credit to the retailer for the missing item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent credits the retailer's account."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Provide feedback to the warehouse team to prevent future errors.",
-      "expected_outcome": "Agent sends a report to the warehouse manager about the picking error.",
-      "required_tools": [
-        "send_internal_feedback"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Provide feedback to the warehouse team to prevent future errors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sends a report to the warehouse manager about the picking error."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

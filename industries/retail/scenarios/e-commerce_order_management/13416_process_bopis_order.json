@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-ecom-13416",
-  "title": "Process a BOPIS Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a BOPIS Order",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has placed a 'Buy Online, Pick up In Store' (BOPIS) order. A store associate needs to prepare it.",
-  "use_case": "E-commerce & Order Management",
-  "core_function": "Click & Collect / BOPIS",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the new BOPIS order notification on the store's fulfillment device.",
-      "expected_outcome": "The associate is alerted to a new order that needs to be picked from store inventory.",
-      "required_tools": [
-        "get_bopis_order_alert"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the new BOPIS order notification on the store's fulfillment device.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate is alerted to a new order that needs to be picked from store inventory."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Pick the items from the sales floor and bring them to the pickup staging area.",
-      "expected_outcome": "All items for the order are gathered.",
-      "required_tools": [
-        "lookup_product_location"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Pick the items from the sales floor and bring them to the pickup staging area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All items for the order are gathered."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Mark the order as 'Ready for Pickup' in the system.",
-      "expected_outcome": "The system automatically sends a notification to the customer that their order is ready.",
-      "required_tools": [
-        "update_order_status_ready"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Mark the order as 'Ready for Pickup' in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system automatically sends a notification to the customer that their order is ready."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

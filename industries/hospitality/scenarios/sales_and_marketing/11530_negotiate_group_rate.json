@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-sm-11530",
-  "title": "Negotiate Group Room Rate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Negotiate Group Room Rate",
+    "compliance_level": "Standard"
+  },
   "description": "A client for a large conference wants to negotiate a lower room rate than was initially proposed.",
-  "use_case": "Sales & Marketing",
-  "core_function": "Group & Event Sales",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the event's overall value, including F&B spend and meeting room rental, to determine how much flexibility exists on the room rate.",
-      "expected_outcome": "Agent analyzes the total potential revenue from the event.",
-      "required_tools": [
-        "ems_get_event_contract"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the event's overall value, including F&B spend and meeting room rental, to determine how much flexibility exists on the room rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent analyzes the total potential revenue from the event."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the hotel's occupancy forecast for the event dates to see if there is a high demand.",
-      "expected_outcome": "Agent sees that demand is moderate, allowing for some flexibility.",
-      "required_tools": [
-        "pms_get_occupancy_forecast"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the hotel's occupancy forecast for the event dates to see if there is a high demand.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees that demand is moderate, allowing for some flexibility."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Offer a revised, slightly lower rate and present it as a final offer to secure the business.",
-      "expected_outcome": "Agent makes a counter-offer to the client.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Offer a revised, slightly lower rate and present it as a final offer to secure the business.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent makes a counter-offer to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

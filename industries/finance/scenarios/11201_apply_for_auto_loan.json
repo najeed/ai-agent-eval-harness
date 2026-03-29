@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-rb-11201",
-  "title": "Apply for an Auto Loan",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Apply for an Auto Loan",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to apply for a pre-approval for a $30,000 auto loan.",
-  "use_case": "Retail Banking",
-  "core_function": "Loan & Mortgage Services",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the customer's application details, including income, employment, and requested loan amount.",
-      "expected_outcome": "Agent accurately captures all required information for the loan application.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the customer's application details, including income, employment, and requested loan amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures all required information for the loan application."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a credit check with the customer's consent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the customer's credit score after getting consent."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a credit check with the customer's consent.",
-      "expected_outcome": "Agent successfully retrieves the customer's credit score after getting consent.",
-      "required_tools": [
-        "run_credit_check"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on the credit score and income, provide a pre-approval decision with the approved amount, interest rate, and term.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear pre-approval decision to the customer."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on the credit score and income, provide a pre-approval decision with the approved amount, interest rate, and term.",
-      "expected_outcome": "Agent provides a clear pre-approval decision to the customer.",
-      "required_tools": [
-        "get_loan_decision"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

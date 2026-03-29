@@ -1,53 +1,59 @@
 {
-  "scenario_id": "construction-cc-10693",
-  "title": "Process a Conditional Payment Notice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Conditional Payment Notice",
+    "compliance_level": "Standard"
+  },
   "description": "A general contractor receives a notice from a sub-subcontractor that they have not been paid by the subcontractor. The GC must now take action to ensure payment.",
-  "use_case": "Commercial & Contract Management",
-  "core_function": "Contract Administration",
   "industry": "Construction",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the receipt of the conditional payment notice.",
-      "expected_outcome": "The notice is formally logged in the project's legal correspondence file.",
-      "required_tools": [
-        "create_communication_log_entry"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the receipt of the conditional payment notice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The notice is formally logged in the project's legal correspondence file."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Place a temporary hold on future payments to the subcontractor in question.",
-      "expected_outcome": "A payment hold is successfully placed in the accounting system.",
-      "required_tools": [
-        "hold_vendor_payments"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Place a temporary hold on future payments to the subcontractor in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A payment hold is successfully placed in the accounting system."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Contact the subcontractor to demand proof of payment to their sub-subcontractor.",
-      "expected_outcome": "A formal communication is sent to the subcontractor to resolve the issue.",
-      "required_tools": [
-        "send_vendor_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Contact the subcontractor to demand proof of payment to their sub-subcontractor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A formal communication is sent to the subcontractor to resolve the issue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ag-cm-10112",
-  "title": "Diagnose Nutrient Deficiency from Leaf Image",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Diagnose Nutrient Deficiency from Leaf Image",
+    "compliance_level": "Standard"
+  },
   "description": "A farmer uploads a picture of a soybean leaf that is yellowing. The agent must diagnose the nutrient deficiency.",
-  "use_case": "Crop Management",
-  "core_function": "Fertilization & Nutrition",
   "industry": "Agriculture",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Analyze the image of the leaf, noting the pattern of chlorosis (yellowing).",
-      "expected_outcome": "Agent correctly identifies interveinal chlorosis on the upper leaves.",
-      "required_tools": [
-        "image_analysis_nutrient_deficiency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "identification_accuracy",
-          "threshold": 0.98
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Analyze the image of the leaf, noting the pattern of chlorosis (yellowing).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies interveinal chlorosis on the upper leaves."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Based on the visual symptoms, diagnose the most likely nutrient deficiency.",
-      "expected_outcome": "Agent diagnoses a likely Iron (Fe) deficiency.",
-      "required_tools": [
-        "diagnose_nutrient_deficiency"
-      ],
-      "success_criteria": [
-        {
-          "metric": "diagnostic_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Based on the visual symptoms, diagnose the most likely nutrient deficiency.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent diagnoses a likely Iron (Fe) deficiency."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend a foliar fertilizer application to correct the deficiency and suggest a soil test to confirm the diagnosis.",
-      "expected_outcome": "Agent recommends a specific chelated iron fertilizer and advises on soil sampling.",
-      "required_tools": [
-        "get_fertilizer_recommendation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend a foliar fertilizer application to correct the deficiency and suggest a soil test to confirm the diagnosis.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent recommends a specific chelated iron fertilizer and advises on soil sampling."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-grc-10762",
-  "title": "New Project Risk Assessment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "New Project Risk Assessment",
+    "compliance_level": "Standard"
+  },
   "description": "A GRC analyst must conduct a security risk assessment for a new internal project to develop a mobile application.",
-  "use_case": "Governance, Risk & Compliance (GRC)",
-  "core_function": "Risk Assessment & Management",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the project's design documents to understand the application's architecture and data flows.",
-      "expected_outcome": "Analyst gains a thorough understanding of the proposed application.",
-      "required_tools": [
-        "review_design_documents"
-      ],
-      "success_criteria": [
-        {
-          "metric": "technical_understanding",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the project's design documents to understand the application's architecture and data flows.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst gains a thorough understanding of the proposed application."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Conduct a threat modeling exercise to identify potential threats and vulnerabilities in the design.",
-      "expected_outcome": "Analyst identifies several potential threats, such as insecure data storage on the mobile device.",
-      "required_tools": [
-        "conduct_threat_modeling"
-      ],
-      "success_criteria": [
-        {
-          "metric": "threat_identification_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Conduct a threat modeling exercise to identify potential threats and vulnerabilities in the design.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst identifies several potential threats, such as insecure data storage on the mobile device."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a risk register for the project, documenting the identified risks and recommending security requirements for the developers to implement.",
-      "expected_outcome": "Analyst provides the project team with actionable security requirements to mitigate the identified risks.",
-      "required_tools": [
-        "update_risk_register",
-        "define_security_requirements"
-      ],
-      "success_criteria": [
-        {
-          "metric": "risk_management_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a risk register for the project, documenting the identified risks and recommending security requirements for the developers to implement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst provides the project team with actionable security requirements to mitigate the identified risks."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

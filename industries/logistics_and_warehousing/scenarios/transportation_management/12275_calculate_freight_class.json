@@ -1,81 +1,58 @@
 {
-  "scenario_id": "lw-tm-12275",
-  "title": "Calculate Freight Class",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Freight Class",
+    "compliance_level": "Standard"
+  },
   "description": "A shipper needs to determine the correct National Motor Freight Classification (NMFC) freight class for a new item to get accurate LTL shipping rates.",
-  "use_case": "Transportation Management",
-  "core_function": "Shipment Planning & Execution",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Enter the dimensions (length, width, height) and weight of the item being shipped.",
-      "expected_outcome": "Agent accurately inputs the item's physical characteristics.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Enter the dimensions (length, width, height) and weight of the item being shipped.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately inputs the item's physical characteristics."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system calculates the item's density (pounds per cubic foot).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The density is calculated correctly."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system calculates the item's density (pounds per cubic foot).",
-      "expected_outcome": "The density is calculated correctly.",
-      "required_tools": [
-        "calculate_density"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Based on the density and the item's commodity type, the system looks up the correct freight class from an NMFC table.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system returns the correct freight class (e.g., Class 70)."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Based on the density and the item's commodity type, the system looks up the correct freight class from an NMFC table.",
-      "expected_outcome": "The system returns the correct freight class (e.g., Class 70).",
-      "required_tools": [
-        "get_freight_class"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

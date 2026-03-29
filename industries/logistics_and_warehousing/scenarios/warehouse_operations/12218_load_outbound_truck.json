@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-wo-12218",
-  "title": "Load an Outbound Truck",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Load an Outbound Truck",
+    "compliance_level": "Standard"
+  },
   "description": "A warehouse loader must load all staged pallets for a specific shipment onto the correct truck, in the correct order.",
-  "use_case": "Warehouse Operations",
-  "core_function": "Outbound & Shipping",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the door number where the truck is parked to get the list of shipments assigned to it.",
-      "expected_outcome": "Agent retrieves the manifest for the truck at Dock 4.",
-      "required_tools": [
-        "get_manifest_by_dock_door"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the door number where the truck is parked to get the list of shipments assigned to it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the manifest for the truck at Dock 4."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan the first pallet in the staging lane, and the system confirms it belongs to the correct shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System validates the pallet is correct for this load."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan the first pallet in the staging lane, and the system confirms it belongs to the correct shipment.",
-      "expected_outcome": "System validates the pallet is correct for this load.",
-      "required_tools": [
-        "validate_pallet_for_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Load the pallet onto the truck and repeat the process for all staged pallets.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent loads all pallets for the shipment."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Finalize the loading process, which marks the shipment as 'Shipped' and notifies the carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the load is complete, and the system updates the shipment status."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Load the pallet onto the truck and repeat the process for all staged pallets.",
-      "expected_outcome": "Agent loads all pallets for the shipment.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Finalize the loading process, which marks the shipment as 'Shipped' and notifies the carrier.",
-      "expected_outcome": "Agent confirms the load is complete, and the system updates the shipment status.",
-      "required_tools": [
-        "confirm_shipment_loaded"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

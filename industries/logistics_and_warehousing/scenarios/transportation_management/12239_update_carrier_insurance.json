@@ -1,104 +1,71 @@
 {
-  "scenario_id": "lw-tm-12239",
-  "title": "Update Carrier Insurance Certificate",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Carrier Insurance Certificate",
+    "compliance_level": "Standard"
+  },
   "description": "A carrier's insurance certificate is about to expire. A compliance specialist must obtain and upload the new certificate.",
-  "use_case": "Transportation Management",
-  "core_function": "Freight & Carrier Management",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a system alert that a carrier's insurance expires in 30 days.",
-      "expected_outcome": "Agent is notified of the pending expiration.",
-      "required_tools": [
-        "get_compliance_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a system alert that a carrier's insurance expires in 30 days.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is notified of the pending expiration."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Send an automated request to the carrier for their updated insurance certificate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An email is sent to the carrier's compliance contact."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Send an automated request to the carrier for their updated insurance certificate.",
-      "expected_outcome": "An email is sent to the carrier's compliance contact.",
-      "required_tools": [
-        "send_carrier_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Receive the new certificate from the carrier and upload it to their profile in the system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully uploads the new document."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the expiration date in the carrier's profile, which removes the compliance alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The carrier's profile is updated, and they remain in good standing."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Receive the new certificate from the carrier and upload it to their profile in the system.",
-      "expected_outcome": "Agent successfully uploads the new document.",
-      "required_tools": [
-        "upload_carrier_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the expiration date in the carrier's profile, which removes the compliance alert.",
-      "expected_outcome": "The carrier's profile is updated, and they remain in good standing.",
-      "required_tools": [
-        "update_carrier_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

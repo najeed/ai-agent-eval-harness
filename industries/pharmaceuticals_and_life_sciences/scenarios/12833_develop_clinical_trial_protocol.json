@@ -1,67 +1,72 @@
 {
-  "scenario_id": "pharma-ct-12833",
-  "title": "Develop a Clinical Trial Protocol",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Develop a Clinical Trial Protocol",
+    "compliance_level": "Standard"
+  },
   "description": "A clinical scientist is leading the development of a new protocol for a Phase 1 study.",
-  "use_case": "Clinical Trials",
-  "core_function": "Trial Design & Feasibility",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a new protocol document from a company template.",
-      "expected_outcome": "Agent generates a new protocol document with standard sections.",
-      "required_tools": [
-        "generate_document_from_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a new protocol document from a company template.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a new protocol document with standard sections."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Draft the study design and methodology sections, including objectives, endpoints, and patient population.",
-      "expected_outcome": "Agent writes the core scientific sections of the protocol.",
-      "required_tools": [
-        "draft_protocol_section"
-      ],
-      "success_criteria": [
-        {
-          "metric": "writing_quality",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Draft the study design and methodology sections, including objectives, endpoints, and patient population.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent writes the core scientific sections of the protocol."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Collaborate with a biostatistician to develop the statistical analysis plan section.",
-      "expected_outcome": "Agent incorporates the statistical plan provided by the statistician into the protocol.",
-      "required_tools": [
-        "collaborate_on_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Collaborate with a biostatistician to develop the statistical analysis plan section.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent incorporates the statistical plan provided by the statistician into the protocol."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Route the draft protocol for review and approval by the cross-functional team.",
-      "expected_outcome": "Agent circulates the document for review, collects feedback, and finalizes the protocol.",
-      "required_tools": [
-        "route_document_for_approval"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Route the draft protocol for review and approval by the cross-functional team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent circulates the document for review, collects feedback, and finalizes the protocol."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

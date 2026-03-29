@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hosp-bo-11597",
-  "title": "Respond to a Guest Medical Emergency",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Respond to a Guest Medical Emergency",
+    "compliance_level": "Standard"
+  },
   "description": "A guest calls the front desk reporting a medical emergency (e.g., chest pains).",
-  "use_case": "Back Office & Administration",
-  "core_function": "Security & Emergency Response",
   "industry": "Hospitality",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Immediately call emergency medical services (911/ambulance) and provide the hotel address and guest's room number.",
-      "expected_outcome": "Paramedics are dispatched.",
-      "required_tools": [
-        "contact_emergency_services"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Immediately call emergency medical services (911/ambulance) and provide the hotel address and guest's room number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Paramedics are dispatched."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Keep the guest on the line to offer reassurance until help arrives, if possible.",
-      "expected_outcome": "The agent provides a calming presence.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Keep the guest on the line to offer reassurance until help arrives, if possible.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent provides a calming presence."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch hotel security to the guest's room to provide immediate assistance and to guide the paramedics when they arrive.",
-      "expected_outcome": "Security is sent to the room and the hotel entrance.",
-      "required_tools": [
-        "dispatch_security"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch hotel security to the guest's room to provide immediate assistance and to guide the paramedics when they arrive.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Security is sent to the room and the hotel entrance."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

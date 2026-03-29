@@ -1,60 +1,48 @@
 {
-  "scenario_id": "telecom-sl-13853",
-  "title": "Handle Port-in from Prepaid Carrier",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Port-in from Prepaid Carrier",
+    "compliance_level": "Standard"
+  },
   "description": "A new customer wants to port their number from a prepaid carrier, which requires different information than a postpaid account.",
-  "use_case": "Sales and Onboarding",
-  "core_function": "Competitive Port-in",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify that the customer is porting from a prepaid carrier and ask for the specific information required (e.g., phone's IMEI, not an account PIN).",
-      "expected_outcome": "Agent correctly identifies the source carrier type and asks for the right information.",
-      "required_tools": [
-        "get_porting_requirements_by_carrier"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify that the customer is porting from a prepaid carrier and ask for the specific information required (e.g., phone's IMEI, not an account PIN).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the source carrier type and asks for the right information."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Submit the port-in request using the prepaid-specific fields.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the port request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Submit the port-in request using the prepaid-specific fields.",
-      "expected_outcome": "Agent successfully submits the port request.",
-      "required_tools": [
-        "submit_port_in_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

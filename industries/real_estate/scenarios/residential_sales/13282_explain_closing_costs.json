@@ -1,53 +1,59 @@
 {
-  "scenario_id": "realestate-res-13282",
-  "title": "Explain Closing Costs to a First-Time Buyer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Explain Closing Costs to a First-Time Buyer",
+    "compliance_level": "Standard"
+  },
   "description": "A first-time homebuyer is confused about the estimated closing costs. The agent needs to explain the different fees.",
-  "use_case": "Residential Sales",
-  "core_function": "Buyer & Seller Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the Loan Estimate document for the buyer's transaction.",
-      "expected_outcome": "Agent gets the document that lists the estimated closing costs.",
-      "required_tools": [
-        "get_transaction_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the Loan Estimate document for the buyer's transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the document that lists the estimated closing costs."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Break down the major categories of closing costs: lender fees, title/escrow fees, and prepaid items (taxes, insurance).",
-      "expected_outcome": "Agent categorizes the costs for clarity.",
-      "required_tools": [
-        "analyze_financial_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Break down the major categories of closing costs: lender fees, title/escrow fees, and prepaid items (taxes, insurance).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent categorizes the costs for clarity."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain the purpose of each major fee in simple, easy-to-understand language.",
-      "expected_outcome": "Agent provides a clear and patient explanation to the client.",
-      "required_tools": [
-        "log_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain the purpose of each major fee in simple, easy-to-understand language.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear and patient explanation to the client."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

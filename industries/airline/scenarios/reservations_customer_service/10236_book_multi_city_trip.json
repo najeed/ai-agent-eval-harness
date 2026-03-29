@@ -1,54 +1,59 @@
 {
-  "scenario_id": "airline-res-10236",
-  "title": "Book a Multi-City Trip",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book a Multi-City Trip",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants to book a trip with three legs: Dallas to Denver, then Denver to Seattle, then Seattle back to Dallas.",
-  "use_case": "Reservations & Customer Service",
-  "core_function": "Booking & Ticketing",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search for flights for each of the three individual legs of the journey.",
-      "expected_outcome": "Agent finds available flights for all three legs.",
-      "required_tools": [
-        "search_flights"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search for flights for each of the three individual legs of the journey.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds available flights for all three legs."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Combine the selected flights into a single multi-city booking.",
-      "expected_outcome": "Agent successfully creates one booking containing all three flights.",
-      "required_tools": [
-        "create_multi_city_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Combine the selected flights into a single multi-city booking.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates one booking containing all three flights."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Calculate the total price, process payment, and issue the ticket for the entire itinerary.",
-      "expected_outcome": "Agent completes the booking and ticketing process.",
-      "required_tools": [
-        "calculate_total_fare",
-        "process_payment",
-        "issue_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Calculate the total price, process payment, and issue the ticket for the entire itinerary.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent completes the booking and ticketing process."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

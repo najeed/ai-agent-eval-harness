@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ps-pw-13011",
-  "title": "Report Missed Trash Collection",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Missed Trash Collection",
+    "compliance_level": "Standard"
+  },
   "description": "A resident reports that their trash was not picked up on the scheduled collection day.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Service Request Management",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the resident's address and confirm their scheduled collection day.",
-      "expected_outcome": "Agent confirms the resident's address and that today was their collection day.",
-      "required_tools": [
-        "get_sanitation_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the resident's address and confirm their scheduled collection day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the resident's address and that today was their collection day."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check for any known service disruptions or delays in the area.",
-      "expected_outcome": "Agent checks the system and finds no reported disruptions.",
-      "required_tools": [
-        "check_service_disruptions"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check for any known service disruptions or delays in the area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the system and finds no reported disruptions."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a service request for a special pickup and inform the resident it will be collected the next business day.",
-      "expected_outcome": "Agent successfully logs the missed pickup and provides a clear resolution timeline.",
-      "required_tools": [
-        "create_service_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a service request for a special pickup and inform the resident it will be collected the next business day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully logs the missed pickup and provides a clear resolution timeline."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

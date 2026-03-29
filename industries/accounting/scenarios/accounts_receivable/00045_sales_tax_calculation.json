@@ -1,66 +1,72 @@
 {
-  "scenario_id": "ac-ar-45",
-  "title": "Calculate Sales Tax on an Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calculate Sales Tax on an Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "When creating an invoice for a customer, the system needs to calculate the correct sales tax based on the customer's location.",
-  "use_case": "Accounts Receivable",
-  "core_function": "Billing & Invoicing",
   "industry": "Accounting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer's shipping address from the sales order.",
-      "expected_outcome": "Agent retrieves the customer's address.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer's shipping address from the sales order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the customer's address."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check if the customer has a valid sales tax exemption certificate on file.",
-      "expected_outcome": "Agent confirms the customer is not tax-exempt.",
-      "required_tools": [
-        "check_tax_exemption_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check if the customer has a valid sales tax exemption certificate on file.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the customer is not tax-exempt."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use a tax calculation engine to determine the correct state, county, and city sales tax rates for the shipping address.",
-      "expected_outcome": "Agent retrieves the correct, multi-level tax rates.",
-      "required_tools": [
-        "calculate_sales_tax"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use a tax calculation engine to determine the correct state, county, and city sales tax rates for the shipping address.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct, multi-level tax rates."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Apply the calculated sales tax to the invoice.",
-      "expected_outcome": "Agent adds the correct sales tax amount to the final invoice total.",
-      "required_tools": [
-        "apply_tax_to_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Apply the calculated sales tax to the invoice.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds the correct sales tax amount to the final invoice total."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

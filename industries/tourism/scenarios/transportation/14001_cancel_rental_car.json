@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tourism-tr-14001",
-  "title": "Cancel a Rental Car Booking",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cancel a Rental Car Booking",
+    "compliance_level": "Standard"
+  },
   "description": "A customer needs to cancel their upcoming car rental reservation.",
-  "use_case": "Transportation & Travel",
-  "core_function": "Itinerary Planning & Booking",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the car rental booking using the confirmation number.",
-      "expected_outcome": "Agent locates the correct reservation.",
-      "required_tools": [
-        "get_rental_car_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the car rental booking using the confirmation number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the correct reservation."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the cancellation policy.",
-      "expected_outcome": "Agent confirms the booking is outside the 24-hour penalty window and can be cancelled for free.",
-      "required_tools": [
-        "check_cancellation_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the cancellation policy.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the booking is outside the 24-hour penalty window and can be cancelled for free."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Cancel the reservation and provide the customer with a cancellation number.",
-      "expected_outcome": "Agent successfully cancels the booking.",
-      "required_tools": [
-        "cancel_rental_car_booking"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Cancel the reservation and provide the customer with a cancellation number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully cancels the booking."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13326",
-  "title": "Manage the Appraisal Process",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage the Appraisal Process",
+    "compliance_level": "Standard"
+  },
   "description": "After a contract is signed, the buyer's lender orders an appraisal. The listing agent must provide information to the appraiser.",
-  "use_case": "Residential Sales",
-  "core_function": "Closing & Escrow",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Schedule the appraisal appointment and ensure the appraiser has access to the property.",
-      "expected_outcome": "The appraisal appointment is scheduled and confirmed.",
-      "required_tools": [
-        "schedule_appraisal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Schedule the appraisal appointment and ensure the appraiser has access to the property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The appraisal appointment is scheduled and confirmed."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Prepare an 'appraiser package' including a list of recent home improvements and the most relevant comparable sales.",
-      "expected_outcome": "Agent provides the appraiser with helpful information to support the contract price.",
-      "required_tools": [
-        "compile_appraiser_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Prepare an 'appraiser package' including a list of recent home improvements and the most relevant comparable sales.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the appraiser with helpful information to support the contract price."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Receive the appraisal report. If it comes in low, prepare a rebuttal or negotiate a price reduction with the buyer.",
-      "expected_outcome": "The appraisal contingency is resolved, either by a successful appraisal or subsequent negotiation.",
-      "required_tools": [
-        "analyze_appraisal_report",
-        "generate_contract_addendum"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Receive the appraisal report. If it comes in low, prepare a rebuttal or negotiate a price reduction with the buyer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The appraisal contingency is resolved, either by a successful appraisal or subsequent negotiation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

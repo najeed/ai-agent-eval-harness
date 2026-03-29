@@ -1,52 +1,59 @@
 {
-  "scenario_id": "energy-op-11146",
-  "title": "Report Unplanned Outage to ISO",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Unplanned Outage to ISO",
+    "compliance_level": "Standard"
+  },
   "description": "A gas-fired peaker plant unexpectedly trips offline. The operator must immediately report the outage to the ISO/RTO.",
-  "use_case": "Grid & Asset Operations",
-  "core_function": "Maintenance & Outage Management",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the asset ID, the exact time of the outage, and the total MW capacity that is now offline.",
-      "expected_outcome": "Agent gathers the critical outage information.",
-      "required_tools": [
-        "get_scada_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the asset ID, the exact time of the outage, and the total MW capacity that is now offline.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the critical outage information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Determine the initial cause of the trip from the plant's control system (e.g., 'turbine over-speed').",
-      "expected_outcome": "Agent retrieves the system's initial fault code.",
-      "required_tools": [
-        "get_plant_control_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Determine the initial cause of the trip from the plant's control system (e.g., 'turbine over-speed').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the system's initial fault code."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit a formal outage report (e.g., a GADS report) to the ISO/RTO portal within the required timeframe (e.g., 15 minutes).",
-      "expected_outcome": "Agent successfully files the outage report.",
-      "required_tools": [
-        "submit_iso_outage_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit a formal outage report (e.g., a GADS report) to the ISO/RTO portal within the required timeframe (e.g., 15 minutes).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully files the outage report."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

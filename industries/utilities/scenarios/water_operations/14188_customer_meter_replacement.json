@@ -1,52 +1,59 @@
 {
-  "scenario_id": "utils-wo-14188",
-  "title": "Schedule Customer Water Meter Replacement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule Customer Water Meter Replacement",
+    "compliance_level": "Standard"
+  },
   "description": "A water meter has reached the end of its service life and needs to be replaced.",
-  "use_case": "Water & Wastewater Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The asset management system flags a meter that is due for replacement.",
-      "expected_outcome": "System automatically generates a replacement work order.",
-      "required_tools": [
-        "identify_assets_for_replacement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "event_detection_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The asset management system flags a meter that is due for replacement.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System automatically generates a replacement work order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Notify the customer of the upcoming required meter change and provide a scheduling link.",
-      "expected_outcome": "System sends a notification to the customer.",
-      "required_tools": [
-        "send_customer_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Notify the customer of the upcoming required meter change and provide a scheduling link.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System sends a notification to the customer."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Once scheduled, assign the work order to a field technician.",
-      "expected_outcome": "System dispatches the work order for the scheduled date.",
-      "required_tools": [
-        "dispatch_field_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Once scheduled, assign the work order to a field technician.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System dispatches the work order for the scheduled date."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

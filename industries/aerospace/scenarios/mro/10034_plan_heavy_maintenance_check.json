@@ -1,54 +1,59 @@
 {
-  "scenario_id": "aerospace-mro-10034",
-  "title": "Plan a C-Check (Heavy Maintenance)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Plan a C-Check (Heavy Maintenance)",
+    "compliance_level": "Standard"
+  },
   "description": "A maintenance planner is creating the work package for an upcoming C-check on a commercial airliner.",
-  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
-  "core_function": "Maintenance Planning",
   "industry": "Aerospace",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Generate the list of all routine maintenance tasks required for a C-check from the aircraft's maintenance program.",
-      "expected_outcome": "Agent creates a master list of all standard C-check tasks.",
-      "required_tools": [
-        "get_maintenance_program_tasks"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Generate the list of all routine maintenance tasks required for a C-check from the aircraft's maintenance program.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a master list of all standard C-check tasks."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Incorporate any outstanding non-routine repair tasks and service bulletins for that specific aircraft.",
-      "expected_outcome": "Agent adds aircraft-specific repairs to the work package.",
-      "required_tools": [
-        "get_deferred_maintenance_items"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Incorporate any outstanding non-routine repair tasks and service bulletins for that specific aircraft.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds aircraft-specific repairs to the work package."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Estimate the total man-hours and required ground support equipment, and schedule the C-check in an available MRO hangar.",
-      "expected_outcome": "Agent generates a complete plan and books the maintenance event.",
-      "required_tools": [
-        "estimate_man_hours",
-        "schedule_mro_job"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_quality",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Estimate the total man-hours and required ground support equipment, and schedule the C-check in an available MRO hangar.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a complete plan and books the maintenance event."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

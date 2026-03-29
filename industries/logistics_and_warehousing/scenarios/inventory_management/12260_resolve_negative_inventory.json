@@ -1,105 +1,71 @@
 {
-  "scenario_id": "lw-im-12260",
-  "title": "Resolve Negative Inventory",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Negative Inventory",
+    "compliance_level": "Standard"
+  },
   "description": "A system report shows a negative on-hand quantity for an item, which is physically impossible. An inventory controller must investigate and correct it.",
-  "use_case": "Inventory Management",
-  "core_function": "Inventory Control",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the item with negative inventory from a system alert.",
-      "expected_outcome": "Agent correctly identifies the problematic SKU.",
-      "required_tools": [
-        "get_inventory_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the item with negative inventory from a system alert.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the problematic SKU."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the item's transaction history to find the cause of the error.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent discovers a shipment was received against the wrong PO, causing this item's inventory to go negative when it was shipped."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the item's transaction history to find the cause of the error.",
-      "expected_outcome": "Agent discovers a shipment was received against the wrong PO, causing this item's inventory to go negative when it was shipped.",
-      "required_tools": [
-        "get_item_transaction_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reverse the incorrect receiving transaction.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The incorrect receipt is reversed."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Re-receive the shipment against the correct PO, which resolves the negative inventory balance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The inventory levels are now correct."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reverse the incorrect receiving transaction.",
-      "expected_outcome": "The incorrect receipt is reversed.",
-      "required_tools": [
-        "reverse_po_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "Re-receive the shipment against the correct PO, which resolves the negative inventory balance.",
-      "expected_outcome": "The inventory levels are now correct.",
-      "required_tools": [
-        "update_po_received_quantity"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "information_technology_service-im-11835",
-  "title": "Cloud - Resize Azure VM",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Cloud - Resize Azure VM",
+    "compliance_level": "Standard"
+  },
   "description": "A client reports that an application running on an Azure VM is slow. Monitoring shows the VM has high CPU usage.",
-  "use_case": "Infrastructure & Cloud Management",
-  "core_function": "Cloud Resource Management",
   "industry": "Information Technology Service",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the performance metrics for the Azure VM and confirm it is CPU-constrained.",
-      "expected_outcome": "The technician verifies CPU usage is constantly over 90%.",
-      "required_tools": [
-        "get_azure_vm_metrics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the performance metrics for the Azure VM and confirm it is CPU-constrained.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The technician verifies CPU usage is constantly over 90%."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Recommend upgrading the VM to the next size up to provide more CPU cores.",
-      "expected_outcome": "The client approves the recommendation and the associated cost increase.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Recommend upgrading the VM to the next size up to provide more CPU cores.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The client approves the recommendation and the associated cost increase."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "During a scheduled maintenance window, resize the Azure VM to the larger instance type.",
-      "expected_outcome": "The VM is successfully resized, and performance improves.",
-      "required_tools": [
-        "resize_azure_vm"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "During a scheduled maintenance window, resize the Azure VM to the larger instance type.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The VM is successfully resized, and performance improves."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

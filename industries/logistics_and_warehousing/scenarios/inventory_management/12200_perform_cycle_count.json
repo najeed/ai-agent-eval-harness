@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-im-12200",
-  "title": "Perform a Cycle Count",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Cycle Count",
+    "compliance_level": "Standard"
+  },
   "description": "An inventory controller is assigned a set of locations to count to ensure inventory accuracy.",
-  "use_case": "Inventory Management",
-  "core_function": "Inventory Control",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the list of locations and items to be counted for the day.",
-      "expected_outcome": "Agent retrieves the assigned cycle count task.",
-      "required_tools": [
-        "get_cycle_count_task"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the list of locations and items to be counted for the day.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the assigned cycle count task."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Go to a specified location, scan the location barcode, and count the physical quantity of the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately counts the items in the location."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Go to a specified location, scan the location barcode, and count the physical quantity of the item.",
-      "expected_outcome": "Agent accurately counts the items in the location.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.99
+      },
+      {
+        "id": "task-3",
+        "task_description": "Enter the counted quantity into the system. The system flags a discrepancy where the count does not match the system quantity.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent enters the count, and the system correctly identifies a variance."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "For the discrepancy, create an inventory adjustment request for a supervisor to review.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a request to investigate the discrepancy."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Enter the counted quantity into the system. The system flags a discrepancy where the count does not match the system quantity.",
-      "expected_outcome": "Agent enters the count, and the system correctly identifies a variance.",
-      "required_tools": [
-        "submit_cycle_count"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "For the discrepancy, create an inventory adjustment request for a supervisor to review.",
-      "expected_outcome": "Agent successfully creates a request to investigate the discrepancy.",
-      "required_tools": [
-        "create_inventory_adjustment_request"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

@@ -1,190 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Agent Eval Specification (AES) v1.1",
+  "title": "Agent Eval Specification (AES) v1.2",
   "type": "object",
-  "required": ["aes_version", "metadata", "task"],
+  "required": ["aes_version", "metadata", "workflow"],
   "properties": {
     "aes_version": {
       "type": "number",
-      "enum": [0.1, 0.2, 1.0, 1.1]
+      "const": 1.2
     },
     "metadata": {
-      "type": "object",
-      "required": ["name"],
-      "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "author": { "type": "string" },
-        "tags": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "difficulty": {
-          "type": "string",
-          "enum": ["low", "medium", "high"]
-        }
-      }
+      "$ref": "definitions/metadata.json"
     },
-    "enabled_shims": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": [
-          "git", "api", "database", "slack", "crm", "email", "calendar",
-          "jira", "cloud", "terminal", "stripe", "erp", "browser", "kb",
-          "support", "social", "vector", "cicd", "iot", "security"
-        ]
-      }
-    },
-    "complexity_level": {
-      "type": "string",
-      "enum": ["low", "medium", "high"]
-    },
-    "environment": {
-      "type": "object",
-      "required": ["simulator"],
-      "properties": {
-        "simulator": { "type": "string" },
-        "max_steps": { "type": "integer", "minimum": 1 },
-        "timeout_seconds": { "type": "integer", "minimum": 1 },
-        "hooks": {
-          "type": "object",
-          "properties": {
-            "pre_eval": { "type": "string" },
-            "post_eval": { "type": "string" }
-          }
-        }
-      }
-    },
-    "agent": {
-      "type": "object",
-      "required": ["entrypoint"],
-      "properties": {
-        "entrypoint": { "type": "string" },
-        "framework": { "type": "string" },
-        "tools": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["name"],
-            "properties": {
-              "name": { "type": "string" },
-              "description": { "type": "string" },
-              "parameters": { "type": "object" }
-            }
-          }
-        },
-        "topology": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "reads": { "type": "array", "items": { "type": "string" } },
-              "writes": { "type": "array", "items": { "type": "string" } }
-            }
-          }
-        }
-      }
-    },
-    "agent_topology": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "reads": { "type": "array", "items": { "type": "string" } },
-          "writes": { "type": "array", "items": { "type": "string" } }
-        }
-      }
-    },
-    "task": {
-      "type": "object",
-      "required": ["user_prompt"],
-      "properties": {
-        "system_prompt": { "type": "string" },
-        "user_prompt": { "type": "string" }
-      }
-    },
-    "expected_outcome": {
-      "type": "object",
-      "additionalProperties": true
-    },
-    "expected_state": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["path", "assertion"],
-        "properties": {
-          "path": { "type": "string" },
-          "assertion": { "type": "string" },
-          "filter": { "type": "object" }
-        }
-      }
+    "workflow": {
+      "$ref": "definitions/workflow.json"
     },
     "evaluation": {
-      "type": "object",
-      "properties": {
-        "success_criteria": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["type"],
-            "properties": {
-              "type": { "type": "string" },
-              "tool": { "type": "string" },
-              "text": { "type": "string" },
-              "source": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    "metrics": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["name"],
-        "properties": {
-          "name": { "type": "string" },
-          "weight": { "type": "number" },
-          "params": { "type": "object" }
-        }
-      }
-    },
-    "policies": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "description"],
-        "properties": {
-          "id": { "type": "string" },
-          "description": { "type": "string" },
-          "severity": {
-            "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
-          }
-        }
-      }
-    },
-    "reference_trajectory": {
-      "type": "array",
-      "items": { "type": "object" }
-    },
-    "mutations": {
-      "type": "object",
-      "properties": {
-        "enabled": { "type": "boolean" },
-        "variants": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      }
-    },
-    "reporting": {
-      "type": "object",
-      "properties": {
-        "save_run_trace": { "type": "boolean" },
-        "emit_run_jsonl": { "type": "boolean" }
-      }
+      "$ref": "definitions/evaluation.json"
     }
   }
 }

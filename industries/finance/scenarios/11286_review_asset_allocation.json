@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-wm-11286",
-  "title": "Review Portfolio Asset Allocation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Review Portfolio Asset Allocation",
+    "compliance_level": "Standard"
+  },
   "description": "An advisor is conducting an annual review and needs to check if a client's portfolio allocation is aligned with their goals.",
-  "use_case": "Wealth Management",
-  "core_function": "Portfolio Management",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the client's current portfolio holdings and their target asset allocation.",
-      "expected_outcome": "Agent pulls the current holdings and the target (e.g., 70% equity, 30% fixed income).",
-      "required_tools": [
-        "get_portfolio_composition",
-        "get_client_investment_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the client's current portfolio holdings and their target asset allocation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls the current holdings and the target (e.g., 70% equity, 30% fixed income)."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Compare the current allocation to the target and identify any significant drift.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent's analysis shows the portfolio has drifted to 75% equity due to market performance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Compare the current allocation to the target and identify any significant drift.",
-      "expected_outcome": "Agent's analysis shows the portfolio has drifted to 75% equity due to market performance.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Present the findings to the advisor and suggest rebalancing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a summary of the allocation drift and recommends rebalancing trades."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Present the findings to the advisor and suggest rebalancing.",
-      "expected_outcome": "Agent provides a summary of the allocation drift and recommends rebalancing trades.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

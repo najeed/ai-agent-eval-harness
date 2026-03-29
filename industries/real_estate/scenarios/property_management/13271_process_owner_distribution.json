@@ -1,52 +1,59 @@
 {
-  "scenario_id": "realestate-pm-13271",
-  "title": "Process Owner Distribution",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Owner Distribution",
+    "compliance_level": "Standard"
+  },
   "description": "After paying all monthly expenses, the agent needs to send the remaining net income to the property owner.",
-  "use_case": "Property Management",
-  "core_function": "Financial Management",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Calculate the net operating income (NOI) for the property for the previous month.",
-      "expected_outcome": "Agent accurately calculates the distributable funds.",
-      "required_tools": [
-        "get_property_ledger"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Calculate the net operating income (NOI) for the property for the previous month.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately calculates the distributable funds."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify the owner's bank account details and the agreed-upon reserve amount to be held in the trust account.",
-      "expected_outcome": "Agent confirms the payment details and reserve requirements.",
-      "required_tools": [
-        "get_owner_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify the owner's bank account details and the agreed-upon reserve amount to be held in the trust account.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the payment details and reserve requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Initiate an ACH transfer to the owner for the calculated distribution amount.",
-      "expected_outcome": "Agent successfully schedules the payment to the owner.",
-      "required_tools": [
-        "initiate_ach_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Initiate an ACH transfer to the owner for the calculated distribution amount.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully schedules the payment to the owner."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

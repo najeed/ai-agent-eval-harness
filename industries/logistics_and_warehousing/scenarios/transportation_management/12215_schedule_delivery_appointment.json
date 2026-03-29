@@ -1,84 +1,58 @@
 {
-  "scenario_id": "lw-tm-12215",
-  "title": "Schedule a Delivery Appointment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule a Delivery Appointment",
+    "compliance_level": "Standard"
+  },
   "description": "A shipment is approaching its destination, and the carrier needs to schedule a delivery appointment with the receiving facility.",
-  "use_case": "Transportation Management",
-  "core_function": "Real-time Tracking & Visibility",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an automated alert that a shipment is within 24 hours of its destination.",
-      "expected_outcome": "Agent is prompted to schedule the delivery.",
-      "required_tools": [
-        "get_system_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an automated alert that a shipment is within 24 hours of its destination.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent is prompted to schedule the delivery."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Access the receiving facility's scheduling portal to view available delivery slots.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent can see a calendar of open appointment times."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Access the receiving facility's scheduling portal to view available delivery slots.",
-      "expected_outcome": "Agent can see a calendar of open appointment times.",
-      "required_tools": [
-        "view_facility_appointment_calendar"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Book an available appointment slot and send the confirmation to the carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books the appointment and notifies the carrier."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Book an available appointment slot and send the confirmation to the carrier.",
-      "expected_outcome": "Agent successfully books the appointment and notifies the carrier.",
-      "required_tools": [
-        "book_delivery_appointment",
-        "send_carrier_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

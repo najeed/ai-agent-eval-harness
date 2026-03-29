@@ -1,53 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11977",
-  "title": "Process Policy Renewal Notice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process Policy Renewal Notice",
+    "compliance_level": "Standard"
+  },
   "description": "An auto policy is coming up for renewal, and the system needs to generate and send the renewal offer.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Policy Administration",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify policies that are within the renewal window (e.g., 45 days before expiration).",
-      "expected_outcome": "The system generates a list of policies due for renewal.",
-      "required_tools": [
-        "get_policies_for_renewal"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify policies that are within the renewal window (e.g., 45 days before expiration).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates a list of policies due for renewal."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each policy, calculate the renewal premium based on any new rating factors.",
-      "expected_outcome": "The system recalculates the premium for the upcoming term.",
-      "required_tools": [
-        "calculate_renewal_premium"
-      ],
-      "success_criteria": [
-        {
-          "metric": "calculation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each policy, calculate the renewal premium based on any new rating factors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system recalculates the premium for the upcoming term."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate and send the renewal offer documents to the policyholder.",
-      "expected_outcome": "The system mails the complete renewal packet to the customer.",
-      "required_tools": [
-        "generate_renewal_documents",
-        "send_mail"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate and send the renewal offer documents to the policyholder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system mails the complete renewal packet to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

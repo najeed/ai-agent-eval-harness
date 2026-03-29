@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-cr-14405",
-  "title": "Provide Product UPC Codes to a Retailer",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provide Product UPC Codes to a Retailer",
+    "compliance_level": "Standard"
+  },
   "description": "A retailer needs a list of all Universal Product Codes (UPCs) for the products they carry to set them up in their point-of-sale system.",
-  "use_case": "Customer & Retailer Support",
-  "core_function": "Product & Catalog Inquiries",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the retailer and the list of products they have purchased.",
-      "expected_outcome": "Agent gets a list of all products the retailer stocks.",
-      "required_tools": [
-        "get_customer_purchase_history"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the retailer and the list of products they have purchased.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets a list of all products the retailer stocks."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "For each product, retrieve its UPC code from the product database.",
-      "expected_outcome": "Agent compiles a list of all the required UPCs.",
-      "required_tools": [
-        "get_product_upc_code"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "For each product, retrieve its UPC code from the product database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a list of all the required UPCs."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send the list of UPCs to the retailer.",
-      "expected_outcome": "Agent provides the retailer with the requested data.",
-      "required_tools": [
-        "send_data_to_customer"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send the list of UPCs to the retailer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides the retailer with the requested data."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

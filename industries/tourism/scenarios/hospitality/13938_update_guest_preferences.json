@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13938",
-  "title": "Update Guest Preferences",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update Guest Preferences",
+    "compliance_level": "Standard"
+  },
   "description": "A returning loyalty member wants to update their profile to always request a high-floor room away from the elevator.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Loyalty & Guest Relations",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the guest's loyalty profile using their member number.",
-      "expected_outcome": "Agent successfully locates the guest's profile.",
-      "required_tools": [
-        "get_loyalty_account"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the guest's loyalty profile using their member number.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully locates the guest's profile."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Navigate to the preferences section of the profile.",
-      "expected_outcome": "Agent finds the correct area to update preferences.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Navigate to the preferences section of the profile.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the correct area to update preferences."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add 'High floor' and 'Away from elevator' as permanent stay preferences.",
-      "expected_outcome": "Agent successfully saves the new preferences to the guest's profile.",
-      "required_tools": [
-        "update_guest_preferences"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add 'High floor' and 'Away from elevator' as permanent stay preferences.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully saves the new preferences to the guest's profile."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

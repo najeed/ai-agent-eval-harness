@@ -1,79 +1,34 @@
 {
-  "scenario_id": "drift-44360adb",
-  "version": "2.0.0",
-  "title": "Imported Drift: sample_trace.json",
-  "industry": "telecom",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Imported Drift: sample_trace.json",
+    "compliance_level": "Standard"
+  },
   "description": "Automatically imported from production trace: sample_trace.json",
-  "tasks": [
-    {
-      "task_id": "imported_task_1",
-      "description": "Replay production trace and verify outcome.",
-      "expected_outcome": "Outcome matches production ground truth (if provided).",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "generic_accuracy",
-          "threshold": 0.5
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "industry": "telecom",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "imported_task_1",
+        "task_description": "Replay production trace and verify outcome.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Outcome matches production ground truth (if provided)."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
-  "ground_truth_history": [
-    {
-      "role": "user",
-      "content": "I want to dispute a charge of $40."
-    },
-    {
-      "role": "agent",
-      "content": {
-        "action": "get_usage_data",
-        "input": {
-          "customer_id": "cust_123"
-        }
-      }
-    },
-    {
-      "role": "environment",
-      "content": {
-        "status": "success",
-        "data": {
-          "overages": 40
-        }
-      }
-    },
-    {
-      "role": "agent",
-      "content": "I see the $40 overage. I will apply a credit."
-    },
-    {
-      "role": "agent",
-      "content": {
-        "action": "apply_credit",
-        "input": {
-          "amount": 40
-        }
-      }
-    },
-    {
-      "role": "environment",
-      "content": {
-        "status": "policy_violation",
-        "message": "Credit exceeds limit"
-      }
-    }
-  ],
-  "use_case": "Scenarios Use Case",
-  "core_function": "General Core Function",
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

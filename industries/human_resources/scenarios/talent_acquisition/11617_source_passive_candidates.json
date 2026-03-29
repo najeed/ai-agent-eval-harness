@@ -1,50 +1,59 @@
 {
-  "scenario_id": "hr-ta-11617",
-  "title": "Source Passive Candidates",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Source Passive Candidates",
+    "compliance_level": "Standard"
+  },
   "description": "A recruiter is sourcing passive candidates for a hard-to-fill 'Cybersecurity Architect' role using LinkedIn Recruiter.",
-  "use_case": "Talent Acquisition",
-  "core_function": "Sourcing & Screening",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Build a Boolean search string to identify candidates with the required skills and experience.",
-      "expected_outcome": "Recruiter creates an effective search string (e.g., '\"cybersecurity architect\" AND (AWS OR Azure) AND CISSP').",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "content_creation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Build a Boolean search string to identify candidates with the required skills and experience.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter creates an effective search string (e.g., '\"cybersecurity architect\" AND (AWS OR Azure) AND CISSP')."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Execute the search on a professional networking site and review the profiles of the top results.",
-      "expected_outcome": "Recruiter identifies a list of 20 promising candidates.",
-      "required_tools": [
-        "search_linkedin_recruiter"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Execute the search on a professional networking site and review the profiles of the top results.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter identifies a list of 20 promising candidates."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send personalized outreach messages to the top candidates.",
-      "expected_outcome": "Recruiter sends InMail messages to the candidates, introducing the role and company.",
-      "required_tools": [
-        "send_outreach_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send personalized outreach messages to the top candidates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Recruiter sends InMail messages to the candidates, introducing the role and company."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

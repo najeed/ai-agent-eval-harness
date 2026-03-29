@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10600",
-  "title": "Check Chemical Storage Compatibility",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Chemical Storage Compatibility",
+    "compliance_level": "Standard"
+  },
   "description": "A warehouse operator needs to store a new chemical and must check if it is compatible to be stored near another chemical.",
-  "use_case": "EHS & Compliance",
-  "core_function": "Safety Data Sheet (SDS) Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the two chemicals in question.",
-      "expected_outcome": "Agent correctly identifies both materials.",
-      "required_tools": [
-        "get_sds_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the two chemicals in question.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies both materials."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve the storage and handling information from the SDS for both chemicals.",
-      "expected_outcome": "Agent finds the relevant sections in both SDSs.",
-      "required_tools": [
-        "get_sds_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve the storage and handling information from the SDS for both chemicals.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the relevant sections in both SDSs."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Use a chemical compatibility checker tool to determine if they can be stored together.",
-      "expected_outcome": "The tool indicates the two chemicals are incompatible (e.g., acid and base) and should be stored in separate areas.",
-      "required_tools": [
-        "check_chemical_compatibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Use a chemical compatibility checker tool to determine if they can be stored together.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool indicates the two chemicals are incompatible (e.g., acid and base) and should be stored in separate areas."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

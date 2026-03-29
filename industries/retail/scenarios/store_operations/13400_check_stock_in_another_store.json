@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ret-so-13400",
-  "title": "Check Stock in Another Store",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Stock in Another Store",
+    "compliance_level": "Standard"
+  },
   "description": "A customer wants an item that is out of stock. An associate needs to check if it's available at a nearby store.",
-  "use_case": "Store Operations",
-  "core_function": "In-Store Customer Assistance",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the product the customer wants by scanning a similar item or looking it up by name.",
-      "expected_outcome": "The associate finds the correct product SKU.",
-      "required_tools": [
-        "lookup_product"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the product the customer wants by scanning a similar item or looking it up by name.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate finds the correct product SKU."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use the inventory lookup tool to check stock levels for that item at other stores.",
-      "expected_outcome": "The tool shows that a nearby store has five units in stock.",
-      "required_tools": [
-        "check_multistore_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use the inventory lookup tool to check stock levels for that item at other stores.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The tool shows that a nearby store has five units in stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer of the nearby store's location and offer to call them to hold the item.",
-      "expected_outcome": "The associate provides a solution for the customer to get the out-of-stock item.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer of the nearby store's location and offer to call them to hold the item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate provides a solution for the customer to get the out-of-stock item."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

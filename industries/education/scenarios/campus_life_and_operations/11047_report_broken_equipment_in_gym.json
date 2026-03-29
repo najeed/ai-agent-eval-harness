@@ -1,50 +1,59 @@
 {
-  "scenario_id": "education-co-11047",
-  "title": "Report Broken Equipment in Campus Gym",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Broken Equipment in Campus Gym",
+    "compliance_level": "Standard"
+  },
   "description": "A student reports that a treadmill in the campus recreation center is broken.",
-  "use_case": "Campus Life & Operations",
-  "core_function": "Event & Facilities Management",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the user and the location (rec center) and specific piece of equipment.",
-      "expected_outcome": "Agent gathers the details of the issue.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the user and the location (rec center) and specific piece of equipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers the details of the issue."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a maintenance work order for the facilities team to inspect the equipment.",
-      "expected_outcome": "Agent successfully creates a work order.",
-      "required_tools": [
-        "create_maintenance_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a maintenance work order for the facilities team to inspect the equipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates a work order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Notify the recreation center front desk staff to put an 'Out of Order' sign on the machine.",
-      "expected_outcome": "Agent calls or messages the gym staff to take the machine out of service.",
-      "required_tools": [
-        "send_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Notify the recreation center front desk staff to put an 'Out of Order' sign on the machine.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent calls or messages the gym staff to take the machine out of service."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

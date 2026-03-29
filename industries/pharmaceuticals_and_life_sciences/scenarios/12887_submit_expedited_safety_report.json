@@ -1,66 +1,72 @@
 {
-  "scenario_id": "pharma-rc-12887",
-  "title": "Submit an Expedited Safety Report (e.g., 15-day report)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Submit an Expedited Safety Report (e.g., 15-day report)",
+    "compliance_level": "Standard"
+  },
   "description": "A serious, unexpected adverse event has been processed and must be submitted to the FDA within 15 calendar days.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Pharmacovigilance & Safety Reporting",
   "industry": "Pharmaceuticals and Life Sciences",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the case has been fully processed and medically reviewed.",
-      "expected_outcome": "Agent confirms the case is quality checked and ready for submission.",
-      "required_tools": [
-        "check_case_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the case has been fully processed and medically reviewed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the case is quality checked and ready for submission."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate the electronic submission file (e.g., an E2B XML file).",
-      "expected_outcome": "Agent successfully generates the E2B file from the safety database.",
-      "required_tools": [
-        "generate_e2b_file"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate the electronic submission file (e.g., an E2B XML file).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates the E2B file from the safety database."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Submit the file to the health authority via the electronic submission gateway.",
-      "expected_outcome": "Agent successfully submits the file to the FDA gateway.",
-      "required_tools": [
-        "submit_to_regulatory_gateway"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Submit the file to the health authority via the electronic submission gateway.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits the file to the FDA gateway."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Receive and archive the electronic acknowledgement from the health authority.",
-      "expected_outcome": "Agent receives the acknowledgement (MDN) and attaches it to the case record as proof of submission.",
-      "required_tools": [
-        "archive_submission_acknowledgement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Receive and archive the electronic acknowledgement from the health authority.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives the acknowledgement (MDN) and attaches it to the case record as proof of submission."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

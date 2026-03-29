@@ -1,67 +1,72 @@
 {
-  "scenario_id": "wholesale-om-14342",
-  "title": "Process a Credit Card Payment for an Invoice",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Process a Credit Card Payment for an Invoice",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to pay an outstanding invoice with a credit card.",
-  "use_case": "Order Management & Sales",
-  "core_function": "Invoicing & Payments",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and the specific invoice they wish to pay.",
-      "expected_outcome": "Agent retrieves the correct invoice.",
-      "required_tools": [
-        "get_customer_invoice"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and the specific invoice they wish to pay.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct invoice."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Securely take the customer's credit card details.",
-      "expected_outcome": "Agent uses a secure payment portal to enter the card information.",
-      "required_tools": [
-        "capture_payment_details_securely"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_protocol_adherence",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Securely take the customer's credit card details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent uses a secure payment portal to enter the card information."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the payment through the payment gateway.",
-      "expected_outcome": "The payment is approved.",
-      "required_tools": [
-        "process_payment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the payment through the payment gateway.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The payment is approved."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Mark the invoice as 'paid' and send a receipt to the customer.",
-      "expected_outcome": "The invoice is closed, and the customer receives a receipt.",
-      "required_tools": [
-        "update_invoice_status",
-        "send_payment_receipt"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "Mark the invoice as 'paid' and send a receipt to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The invoice is closed, and the customer receives a receipt."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

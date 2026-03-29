@@ -1,53 +1,59 @@
 {
-  "scenario_id": "airline-ago-10301",
-  "title": "Handle Aircraft Towing",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle Aircraft Towing",
+    "compliance_level": "Standard"
+  },
   "description": "An aircraft needs to be towed from a maintenance hangar to a departure gate. A ground crew member must manage the operation.",
-  "use_case": "Airport & Ground Operations",
-  "core_function": "Ramp & Turnaround Management",
   "industry": "Airline",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Request permission from airport ground control to tow the aircraft along a specific route.",
-      "expected_outcome": "Agent receives clearance from ground control.",
-      "required_tools": [
-        "contact_ground_control"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Request permission from airport ground control to tow the aircraft along a specific route.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent receives clearance from ground control."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Attach the towbar and tug to the aircraft's nose gear.",
-      "expected_outcome": "Agent ensures the equipment is securely attached.",
-      "required_tools": [
-        "attach_towbar"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Attach the towbar and tug to the aircraft's nose gear.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent ensures the equipment is securely attached."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Tow the aircraft to the designated gate, ensuring wing walkers are present to prevent collisions.",
-      "expected_outcome": "The aircraft is safely towed to the gate.",
-      "required_tools": [
-        "tow_aircraft"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Tow the aircraft to the designated gate, ensuring wing walkers are present to prevent collisions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The aircraft is safely towed to the gate."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

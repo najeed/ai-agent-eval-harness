@@ -1,50 +1,59 @@
 {
-  "scenario_id": "utils-cs-14120",
-  "title": "Report Water Main Break",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Water Main Break",
+    "compliance_level": "Standard"
+  },
   "description": "A driver calls to report a large amount of water bubbling up from a street, suspecting a water main break.",
-  "use_case": "Customer Service",
-  "core_function": "Service Orders",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the exact location of the suspected break.",
-      "expected_outcome": "Agent accurately records the address and cross-streets.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the exact location of the suspected break.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately records the address and cross-streets."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the network management system for any pressure alarms in that area.",
-      "expected_outcome": "Agent confirms low-pressure alarms on the corresponding water main.",
-      "required_tools": [
-        "query_water_network_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the network management system for any pressure alarms in that area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms low-pressure alarms on the corresponding water main."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dispatch an emergency water crew to the location to assess the situation and begin repairs.",
-      "expected_outcome": "Agent creates a high-priority work order for the water department.",
-      "required_tools": [
-        "dispatch_emergency_crew"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dispatch an emergency water crew to the location to assess the situation and begin repairs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a high-priority work order for the water department."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

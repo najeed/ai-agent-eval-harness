@@ -1,53 +1,59 @@
 {
-  "scenario_id": "heavy-industries-eng-11407",
-  "title": "Perform Material Take-Off (MTO)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Material Take-Off (MTO)",
+    "compliance_level": "Standard"
+  },
   "description": "An engineer needs to perform a material take-off from a set of design drawings to create a bill of materials for procurement.",
-  "use_case": "Engineering & Design",
-  "core_function": "Technical Specification Management",
   "industry": "Heavy Industries",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the approved-for-construction drawings for the structural steel package.",
-      "expected_outcome": "Agent retrieves the correct set of drawings.",
-      "required_tools": [
-        "get_drawings_by_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the approved-for-construction drawings for the structural steel package.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves the correct set of drawings."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a software tool to scan the drawings and automatically identify and quantify all the steel beams, columns, and plates.",
-      "expected_outcome": "The MTO tool generates a list of all steel components and their quantities.",
-      "required_tools": [
-        "run_material_take_off"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.98
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a software tool to scan the drawings and automatically identify and quantify all the steel beams, columns, and plates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The MTO tool generates a list of all steel components and their quantities."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Format the output into a bill of materials (BOM) and send it to the procurement team to source the steel.",
-      "expected_outcome": "Agent generates a formal BOM and transmits it to the procurement system.",
-      "required_tools": [
-        "create_bill_of_materials",
-        "send_bom_to_procurement"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Format the output into a bill of materials (BOM) and send it to the procurement team to source the steel.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a formal BOM and transmits it to the procurement system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

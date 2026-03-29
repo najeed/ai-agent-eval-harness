@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ps-rc-13048",
-  "title": "Issue a Building Code Citation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue a Building Code Citation",
+    "compliance_level": "Standard"
+  },
   "description": "A building inspector has found a violation during an inspection and needs to issue a citation.",
-  "use_case": "Regulatory & Compliance",
-  "core_function": "Inspections & Enforcement",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the property and the specific code violation.",
-      "expected_outcome": "The inspector correctly identifies the property and the violation details.",
-      "required_tools": [
-        "get_permit_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the property and the specific code violation.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The inspector correctly identifies the property and the violation details."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Generate a formal citation document, including the code reference, a description of the violation, and the required corrective action.",
-      "expected_outcome": "The inspector creates a complete and accurate citation.",
-      "required_tools": [
-        "generate_citation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Generate a formal citation document, including the code reference, a description of the violation, and the required corrective action.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The inspector creates a complete and accurate citation."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Issue the citation to the property owner and log it in the enforcement system.",
-      "expected_outcome": "The inspector delivers the citation and records it in the system.",
-      "required_tools": [
-        "log_citation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Issue the citation to the property owner and log it in the enforcement system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The inspector delivers the citation and records it in the system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

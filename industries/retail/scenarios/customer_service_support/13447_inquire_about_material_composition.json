@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ret-cs-13447",
-  "title": "Inquire About Material Composition",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About Material Composition",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with a wool allergy calls to ask if a specific sweater contains any wool.",
-  "use_case": "Customer Service & Support",
-  "core_function": "Product Inquiries",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the product name or item number from the customer.",
-      "expected_outcome": "The agent identifies the specific sweater in question.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the product name or item number from the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent identifies the specific sweater in question."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Look up the product in the product information management (PIM) system.",
-      "expected_outcome": "The agent finds the detailed product page.",
-      "required_tools": [
-        "lookup_product"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Look up the product in the product information management (PIM) system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent finds the detailed product page."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the material composition field and inform the customer that the sweater is made of '80% Cotton, 20% Polyester' and contains no wool.",
-      "expected_outcome": "The agent provides accurate information that helps the customer make a safe purchasing decision.",
-      "required_tools": [
-        "get_product_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the material composition field and inform the customer that the sweater is made of '80% Cotton, 20% Polyester' and contains no wool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The agent provides accurate information that helps the customer make a safe purchasing decision."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

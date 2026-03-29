@@ -1,51 +1,59 @@
 {
-  "scenario_id": "ps-pw-13010",
-  "title": "Inquire About a High Water Bill",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About a High Water Bill",
+    "compliance_level": "Standard"
+  },
   "description": "A resident calls because their quarterly water bill is much higher than usual.",
-  "use_case": "Public Works & Infrastructure",
-  "core_function": "Utility Billing",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the resident's utility account and retrieve their billing and usage history.",
-      "expected_outcome": "Agent pulls up the account and confirms the recent bill is double the historical average.",
-      "required_tools": [
-        "get_utility_account_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the resident's utility account and retrieve their billing and usage history.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls up the account and confirms the recent bill is double the historical average."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the usage data to identify potential reasons for the increase.",
-      "expected_outcome": "Agent reviews the meter readings and suggests the high usage could indicate a potential leak.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the usage data to identify potential reasons for the increase.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the meter readings and suggests the high usage could indicate a potential leak."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Advise the resident on how to check for common household leaks (e.g., toilet flapper) and offer to schedule a re-read of the meter.",
-      "expected_outcome": "Agent provides helpful advice and schedules a follow-up action.",
-      "required_tools": [
-        "schedule_meter_read"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Advise the resident on how to check for common household leaks (e.g., toilet flapper) and offer to schedule a re-read of the meter.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides helpful advice and schedules a follow-up action."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

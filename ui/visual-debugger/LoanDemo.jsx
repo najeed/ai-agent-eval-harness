@@ -136,8 +136,18 @@ const LoanDemo = () => {
         }
     }, [viewingFile]);
 
-    // Placeholder for agentCode, assuming it might be fetched or defined elsewhere
-    const agentCode = "SystemMessage"; 
+    // High-fidelity snippet representing the core agentic decision logic
+    const agentCode = `def check_loan_eligibility(user_data):
+    # Rule 1: Baseline Credit/DTI Check
+    if user_data['credit_score'] >= 700 and user_data['dti'] < 0.4:
+        return "APPROVED"
+    
+    # Rule 2: Hard Floor
+    if user_data['credit_score'] < 600:
+        return "REJECTED"
+
+    # Rule 3: Manual Intervention
+    return "MANUAL REVIEW"`;
 
     const renderStep = () => {
         if (loading) return <div className="flex-1 flex items-center justify-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>;

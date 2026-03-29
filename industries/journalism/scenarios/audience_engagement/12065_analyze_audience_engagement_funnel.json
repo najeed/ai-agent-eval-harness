@@ -1,50 +1,59 @@
 {
-  "scenario_id": "journalism-ae-12065",
-  "title": "Analyze Audience Engagement Funnel",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Audience Engagement Funnel",
+    "compliance_level": "Standard"
+  },
   "description": "An analyst wants to see how many people who see a story on social media actually click the link, and then how long they stay on the page.",
-  "use_case": "Audience Engagement & Analytics",
-  "core_function": "Performance Analysis",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the 'impressions' and 'clicks' data for a specific story from the social media platform's analytics.",
-      "expected_outcome": "Agent gets the top-of-funnel social media data.",
-      "required_tools": [
-        "get_social_media_analytics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the 'impressions' and 'clicks' data for a specific story from the social media platform's analytics.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the top-of-funnel social media data."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "In the web analytics platform, find the corresponding article and look at the 'average time on page' for traffic coming from that social media source.",
-      "expected_outcome": "Agent gets the on-site engagement data.",
-      "required_tools": [
-        "get_analytics_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "In the web analytics platform, find the corresponding article and look at the 'average time on page' for traffic coming from that social media source.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gets the on-site engagement data."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Combine the data to report on the full engagement funnel (e.g., '10,000 impressions led to 500 clicks, with an average time on page of 90 seconds').",
-      "expected_outcome": "A complete picture of the engagement funnel is created.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Combine the data to report on the full engagement funnel (e.g., '10,000 impressions led to 500 clicks, with an average time on page of 90 seconds').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete picture of the engagement funnel is created."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

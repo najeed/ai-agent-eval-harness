@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10961",
-  "title": "Generate a Shipping Label",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a Shipping Label",
+    "compliance_level": "Standard"
+  },
   "description": "A warehouse packer is ready to ship an order and needs to generate a shipping label.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Shipping & Logistics",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Scan the order's packing slip to identify the order.",
-      "expected_outcome": "System retrieves the correct order details, including the customer's shipping address.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Scan the order's packing slip to identify the order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System retrieves the correct order details, including the customer's shipping address."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Weigh the package and input its dimensions and weight.",
-      "expected_outcome": "System captures the package's physical characteristics.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Weigh the package and input its dimensions and weight.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System captures the package's physical characteristics."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Purchase and generate a shipping label from the appropriate carrier based on the selected shipping method.",
-      "expected_outcome": "System successfully generates a printable shipping label.",
-      "required_tools": [
-        "generate_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Purchase and generate a shipping label from the appropriate carrier based on the selected shipping method.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System successfully generates a printable shipping label."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

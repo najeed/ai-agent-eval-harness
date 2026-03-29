@@ -1,53 +1,59 @@
 {
-  "scenario_id": "cyber-so-10736",
-  "title": "Memory Forensics for Fileless Malware",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Memory Forensics for Fileless Malware",
+    "compliance_level": "Standard"
+  },
   "description": "An investigator suspects a host is compromised with fileless malware living only in memory. They must perform a memory analysis.",
-  "use_case": "Security Operations (SecOps)",
-  "core_function": "Forensics & Investigation",
   "industry": "Cybersecurity",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Capture a live memory image (RAM dump) from the running suspect host.",
-      "expected_outcome": "Investigator successfully acquires the memory image without crashing the system.",
-      "required_tools": [
-        "capture_memory_image"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Capture a live memory image (RAM dump) from the running suspect host.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Investigator successfully acquires the memory image without crashing the system."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the memory image for signs of malicious processes or injected code.",
-      "expected_outcome": "Investigator identifies a suspicious process that has no corresponding file on disk.",
-      "required_tools": [
-        "analyze_memory_image"
-      ],
-      "success_criteria": [
-        {
-          "metric": "artifact_discovery_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the memory image for signs of malicious processes or injected code.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Investigator identifies a suspicious process that has no corresponding file on disk."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Dump the suspicious process from memory and perform reverse engineering on it to understand its capabilities.",
-      "expected_outcome": "Investigator confirms the process is a malicious implant and understands its function.",
-      "required_tools": [
-        "dump_process_from_memory",
-        "reverse_engineer_binary"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_completeness",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-3",
+        "task_description": "Dump the suspicious process from memory and perform reverse engineering on it to understand its capabilities.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Investigator confirms the process is a malicious implant and understands its function."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

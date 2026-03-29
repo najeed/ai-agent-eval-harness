@@ -1,51 +1,59 @@
 {
-  "scenario_id": "mfg-qc-12341",
-  "title": "Calibrate a Measuring Instrument",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Calibrate a Measuring Instrument",
+    "compliance_level": "Standard"
+  },
   "description": "A quality technician needs to perform and log the calibration of a digital caliper.",
-  "use_case": "Quality Assurance & Control",
-  "core_function": "Quality Inspection & Testing",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the calibration procedure and specifications for the digital caliper from the document management system.",
-      "expected_outcome": "Agent finds the standard operating procedure (SOP) for calibration.",
-      "required_tools": [
-        "get_document_by_id"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the calibration procedure and specifications for the digital caliper from the document management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the standard operating procedure (SOP) for calibration."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Perform the calibration using gauge blocks and record the 'as-found' and 'as-left' measurements.",
-      "expected_outcome": "Technician performs the physical procedure.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Perform the calibration using gauge blocks and record the 'as-found' and 'as-left' measurements.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Technician performs the physical procedure."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Log the calibration event in the asset management system, update the next calibration due date, and print a new calibration sticker.",
-      "expected_outcome": "Agent successfully logs the event, and the system shows the new due date.",
-      "required_tools": [
-        "log_calibration_event",
-        "print_calibration_sticker"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Log the calibration event in the asset management system, update the next calibration due date, and print a new calibration sticker.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully logs the event, and the system shows the new due date."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

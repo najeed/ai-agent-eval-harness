@@ -1,52 +1,59 @@
 {
-  "scenario_id": "wholesale-sp-14352",
-  "title": "Track an International Shipment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track an International Shipment",
+    "compliance_level": "Standard"
+  },
   "description": "A manager needs to track the status of a critical international shipment from a supplier in Asia.",
-  "use_case": "Supplier & Procurement Management",
-  "core_function": "Inbound Logistics",
   "industry": "Wholesale",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the purchase order and get the container number or bill of lading.",
-      "expected_outcome": "Agent has the necessary tracking information.",
-      "required_tools": [
-        "get_purchase_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the purchase order and get the container number or bill of lading.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent has the necessary tracking information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Track the ocean freight to see the vessel's location and estimated arrival at port.",
-      "expected_outcome": "Agent finds the vessel is scheduled to arrive at the port in 3 days.",
-      "required_tools": [
-        "track_ocean_freight"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Track the ocean freight to see the vessel's location and estimated arrival at port.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the vessel is scheduled to arrive at the port in 3 days."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the status of the customs clearance.",
-      "expected_outcome": "Agent confirms that all customs paperwork has been pre-filed and is in good order.",
-      "required_tools": [
-        "check_customs_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the status of the customs clearance.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms that all customs paperwork has been pre-filed and is in good order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "finance-wm-11239",
-  "title": "Research a Specific Stock",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Research a Specific Stock",
+    "compliance_level": "Standard"
+  },
   "description": "An advisor asks for a summary report on a specific company before recommending it to a client.",
-  "use_case": "Wealth Management",
-  "core_function": "Portfolio Management",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the latest stock quote, market cap, and key financial ratios for the requested company.",
-      "expected_outcome": "Agent pulls the current market data for the stock.",
-      "required_tools": [
-        "get_stock_quote"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the latest stock quote, market cap, and key financial ratios for the requested company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls the current market data for the stock."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Pull the latest analyst ratings and price targets from third-party research providers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent gathers consensus analyst ratings for the stock."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Pull the latest analyst ratings and price targets from third-party research providers.",
-      "expected_outcome": "Agent gathers consensus analyst ratings for the stock.",
-      "required_tools": [
-        "get_analyst_ratings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Summarize the findings in a concise report for the advisor.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear, one-page summary of the company's financial health and market sentiment."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Summarize the findings in a concise report for the advisor.",
-      "expected_outcome": "Agent provides a clear, one-page summary of the company's financial health and market sentiment.",
-      "required_tools": [
-        "summarize_research_findings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_generation_quality",
-          "threshold": 0.95
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

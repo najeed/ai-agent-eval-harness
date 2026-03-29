@@ -1,50 +1,59 @@
 {
-  "scenario_id": "ret-im-13461",
-  "title": "Perform a Price Change",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform a Price Change",
+    "compliance_level": "Standard"
+  },
   "description": "A category manager has decided to permanently lower the price of an item. A store associate needs to update the shelf label.",
-  "use_case": "Inventory & Merchandising",
-  "core_function": "Pricing & Promotions",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a task to update the price for a specific item.",
-      "expected_outcome": "The associate gets a notification of a required price change.",
-      "required_tools": [
-        "get_task_list"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a task to update the price for a specific item.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The associate gets a notification of a required price change."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The new price has already been updated in the central system. The associate prints a new shelf label with the updated price.",
-      "expected_outcome": "A new, accurate shelf label is printed.",
-      "required_tools": [
-        "print_shelf_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The new price has already been updated in the central system. The associate prints a new shelf label with the updated price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new, accurate shelf label is printed."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Go to the item's location on the sales floor, remove the old label, and replace it with the new one.",
-      "expected_outcome": "The price displayed to the customer on the shelf now matches the price in the POS system.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Go to the item's location on the sales floor, remove the old label, and replace it with the new one.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The price displayed to the customer on the shelf now matches the price in the POS system."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

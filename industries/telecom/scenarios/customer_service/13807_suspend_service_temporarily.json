@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-cs-13807",
-  "title": "Temporarily Suspend Service",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Temporarily Suspend Service",
+    "compliance_level": "Standard"
+  },
   "description": "A customer is traveling for three months and wants to suspend their line to avoid charges.",
-  "use_case": "Customer Service",
-  "core_function": "Service Lifecycle",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and explain the terms of a temporary suspension (e.g., reduced fee, duration limits).",
-      "expected_outcome": "Agent clearly explains the vacation suspension policy.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and explain the terms of a temporary suspension (e.g., reduced fee, duration limits).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the vacation suspension policy."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Process the suspension request for the specified start and end dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully applies the suspension to the account for the correct date range."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Process the suspension request for the specified start and end dates.",
-      "expected_outcome": "Agent successfully applies the suspension to the account for the correct date range.",
-      "required_tools": [
-        "apply_service_suspension"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the suspension details and the automatic reactivation date with the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a clear summary of the action taken."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the suspension details and the automatic reactivation date with the customer.",
-      "expected_outcome": "Agent provides a clear summary of the action taken.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

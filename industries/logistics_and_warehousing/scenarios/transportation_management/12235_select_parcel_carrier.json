@@ -1,102 +1,71 @@
 {
-  "scenario_id": "lw-tm-12235",
-  "title": "Select Best Parcel Carrier",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Select Best Parcel Carrier",
+    "compliance_level": "Standard"
+  },
   "description": "When packing a small e-commerce order, the system must automatically select the cheapest parcel carrier for the required service level.",
-  "use_case": "Transportation Management",
-  "core_function": "Shipment Planning & Execution",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "The system gets the package weight, dimensions, destination, and required service level ('Standard Ground').",
-      "expected_outcome": "The system gathers all necessary rating data.",
-      "required_tools": [
-        "get_package_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "The system gets the package weight, dimensions, destination, and required service level ('Standard Ground').",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system gathers all necessary rating data."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system sends rate requests to all integrated parcel carriers (e.g., UPS, FedEx, USPS).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system receives rate responses from all carriers."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system sends rate requests to all integrated parcel carriers (e.g., UPS, FedEx, USPS).",
-      "expected_outcome": "The system receives rate responses from all carriers.",
-      "required_tools": [
-        "get_parcel_rates"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system compares the rates and selects the cheapest option.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system identifies USPS Ground Advantage as the lowest-cost option."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The system automatically generates the shipping label for the selected carrier.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A USPS shipping label is printed."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system compares the rates and selects the cheapest option.",
-      "expected_outcome": "The system identifies USPS Ground Advantage as the lowest-cost option.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "decision_making_accuracy",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-4",
-      "description": "The system automatically generates the shipping label for the selected carrier.",
-      "expected_outcome": "A USPS shipping label is printed.",
-      "required_tools": [
-        "generate_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }

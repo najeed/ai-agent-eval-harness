@@ -1,52 +1,59 @@
 {
-  "scenario_id": "chemicals-ehs-10555",
-  "title": "Track Employee Chemical Exposure",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Employee Chemical Exposure",
+    "compliance_level": "Standard"
+  },
   "description": "An industrial hygienist needs to review the exposure monitoring data for an employee who works with a hazardous chemical.",
-  "use_case": "EHS & Compliance",
-  "core_function": "Regulatory Compliance",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the employee and the chemical of concern.",
-      "expected_outcome": "Agent correctly identifies the employee and chemical.",
-      "required_tools": [
-        "get_employee_profile"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the employee and the chemical of concern.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the employee and chemical."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Retrieve all historical air monitoring data associated with that employee and chemical.",
-      "expected_outcome": "Agent pulls a report of the employee's exposure data for the last 5 years.",
-      "required_tools": [
-        "get_exposure_monitoring_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Retrieve all historical air monitoring data associated with that employee and chemical.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls a report of the employee's exposure data for the last 5 years."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Compare the exposure levels to the OSHA Permissible Exposure Limit (PEL) and confirm they are within acceptable limits.",
-      "expected_outcome": "Agent verifies that all historical data points are below the legal exposure limit.",
-      "required_tools": [
-        "compare_data_to_regulatory_limit"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Compare the exposure levels to the OSHA Permissible Exposure Limit (PEL) and confirm they are within acceptable limits.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that all historical data points are below the legal exposure limit."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

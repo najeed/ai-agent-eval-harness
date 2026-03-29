@@ -1,53 +1,59 @@
 {
-  "scenario_id": "real_estate-cre-13321",
-  "title": "Manage Investment Sale Marketing Campaign",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Investment Sale Marketing Campaign",
+    "compliance_level": "Standard"
+  },
   "description": "An agent is hired to sell a $10 million shopping center and must create a marketing campaign to attract qualified buyers.",
-  "use_case": "Commercial Real Estate",
-  "core_function": "Investment Sales",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Create a professional Offering Memorandum (OM) with property details, financial analysis, and market information.",
-      "expected_outcome": "A comprehensive and persuasive OM is produced.",
-      "required_tools": [
-        "generate_offering_memorandum"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Create a professional Offering Memorandum (OM) with property details, financial analysis, and market information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A comprehensive and persuasive OM is produced."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Develop a target list of potential buyers from the brokerage's internal database.",
-      "expected_outcome": "A list of 50-100 qualified investors is generated.",
-      "required_tools": [
-        "query_investor_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Develop a target list of potential buyers from the brokerage's internal database.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of 50-100 qualified investors is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Launch an email marketing campaign to the target list with the OM and track engagement (opens, clicks).",
-      "expected_outcome": "The email campaign is executed and its performance is monitored.",
-      "required_tools": [
-        "send_bulk_email",
-        "track_email_campaign_analytics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Launch an email marketing campaign to the target list with the OM and track engagement (opens, clicks).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The email campaign is executed and its performance is monitored."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

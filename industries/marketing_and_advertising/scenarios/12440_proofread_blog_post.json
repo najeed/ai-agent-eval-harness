@@ -1,52 +1,59 @@
 {
-  "scenario_id": "marketing-cc-12440",
-  "title": "Proofread a Blog Post",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Proofread a Blog Post",
+    "compliance_level": "Standard"
+  },
   "description": "Before publishing, a content manager needs to proofread a blog post for spelling, grammar, and adherence to brand voice.",
-  "use_case": "Content & Creative Development",
-  "core_function": "Copywriting & Content Creation",
   "industry": "Marketing and Advertising",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Read through the draft of the blog post.",
-      "expected_outcome": "Agent reviews the entire text.",
-      "required_tools": [
-        "document_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Read through the draft of the blog post.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent reviews the entire text."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Use a grammar and spell-checking tool to identify any errors.",
-      "expected_outcome": "Agent identifies and corrects all grammatical and spelling mistakes.",
-      "required_tools": [
-        "grammar_checker_tool"
-      ],
-      "success_criteria": [
-        {
-          "metric": "copywriting_quality",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Use a grammar and spell-checking tool to identify any errors.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies and corrects all grammatical and spelling mistakes."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Check the post against the brand voice guidelines to ensure the tone is appropriate.",
-      "expected_outcome": "Agent verifies that the writing style aligns with the brand's persona.",
-      "required_tools": [
-        "get_brand_guidelines"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Check the post against the brand voice guidelines to ensure the tone is appropriate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that the writing style aligns with the brand's persona."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "hr-er-11610",
-  "title": "Update the Employee Handbook",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Update the Employee Handbook",
+    "compliance_level": "Standard"
+  },
   "description": "Due to a new state law, HR needs to update the company's paid sick leave policy in the employee handbook.",
-  "use_case": "Employee & Labor Relations",
-  "core_function": "Policy & Compliance",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Draft the new policy language in consultation with the legal department.",
-      "expected_outcome": "HR drafts legally compliant language for the new policy.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "content_creation_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Draft the new policy language in consultation with the legal department.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR drafts legally compliant language for the new policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the employee handbook document with the new policy language.",
-      "expected_outcome": "HR successfully edits the handbook document.",
-      "required_tools": [
-        "edit_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the employee handbook document with the new policy language.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR successfully edits the handbook document."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Publish the updated handbook on the company intranet and send a notification to all employees about the change.",
-      "expected_outcome": "HR makes the new handbook available and communicates the update to all staff.",
-      "required_tools": [
-        "publish_to_intranet",
-        "send_mass_communication"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Publish the updated handbook on the company intranet and send a notification to all employees about the change.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "HR makes the new handbook available and communicates the update to all staff."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

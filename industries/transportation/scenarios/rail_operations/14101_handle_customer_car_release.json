@@ -1,52 +1,59 @@
 {
-  "scenario_id": "tr-ro-14101",
-  "title": "Handle a Customer's Railcar Release",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Customer's Railcar Release",
+    "compliance_level": "Standard"
+  },
   "description": "A customer has finished unloading a railcar at their facility and is releasing it back to the railroad, making it empty and available for its next load.",
-  "use_case": "Rail Operations",
-  "core_function": "Yard & Terminal Management",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive a notification from a customer, via a web portal or EDI, that a specific railcar is now empty and released.",
-      "expected_outcome": "The system receives the release notification.",
-      "required_tools": [
-        "get_customer_car_releases"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive a notification from a customer, via a web portal or EDI, that a specific railcar is now empty and released.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system receives the release notification."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Update the status of the railcar in the system from 'At Customer' to 'Empty, Available for Pickup'.",
-      "expected_outcome": "The car's status is correctly updated.",
-      "required_tools": [
-        "update_railcar_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Update the status of the railcar in the system from 'At Customer' to 'Empty, Available for Pickup'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The car's status is correctly updated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The system automatically creates a work order for a local train crew to go to the customer's facility and pull the empty car back to the yard.",
-      "expected_outcome": "A new switching work order is generated.",
-      "required_tools": [
-        "create_switching_work_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The system automatically creates a work order for a local train crew to go to the customer's facility and pull the empty car back to the yard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A new switching work order is generated."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

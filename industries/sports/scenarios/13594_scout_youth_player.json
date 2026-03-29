@@ -1,53 +1,59 @@
 {
-  "scenario_id": "sports-tm-13594",
-  "title": "Scout Youth Academy Player",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Scout Youth Academy Player",
+    "compliance_level": "Standard"
+  },
   "description": "A scout needs to analyze a promising youth academy player's performance data and game footage to determine if they should be offered a professional contract.",
-  "use_case": "Team & Player Management",
-  "core_function": "Player Scouting & Recruitment",
   "industry": "Sports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the player's performance statistics from the last two seasons.",
-      "expected_outcome": "Agent pulls a report showing the player's goals, assists, and physical metrics.",
-      "required_tools": [
-        "get_player_stats_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the player's performance statistics from the last two seasons.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls a report showing the player's goals, assists, and physical metrics."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze video footage from their last five games to assess technical skills and decision-making.",
-      "expected_outcome": "Agent identifies key strengths (e.g., dribbling) and weaknesses (e.g., defensive positioning).",
-      "required_tools": [
-        "analyze_game_footage"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze video footage from their last five games to assess technical skills and decision-making.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies key strengths (e.g., dribbling) and weaknesses (e.g., defensive positioning)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a comprehensive scouting report with a recommendation to offer a 3-year contract.",
-      "expected_outcome": "Agent produces a detailed report summarizing findings and providing a clear recommendation.",
-      "required_tools": [
-        "generate_scouting_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a comprehensive scouting report with a recommendation to offer a 3-year contract.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a detailed report summarizing findings and providing a clear recommendation."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

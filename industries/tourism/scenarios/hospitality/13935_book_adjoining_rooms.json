@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13935",
-  "title": "Book Adjoining Hotel Rooms",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book Adjoining Hotel Rooms",
+    "compliance_level": "Standard"
+  },
   "description": "A family requires two adjoining rooms for their stay.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Booking & Reservation Management",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Check the availability of two adjoining rooms for the requested dates.",
-      "expected_outcome": "Agent finds a pair of available adjoining rooms (one king, one double-double).",
-      "required_tools": [
-        "check_adjoining_room_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Check the availability of two adjoining rooms for the requested dates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds a pair of available adjoining rooms (one king, one double-double)."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a single reservation that links both rooms together.",
-      "expected_outcome": "Agent successfully creates one booking with two linked rooms.",
-      "required_tools": [
-        "create_linked_reservation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a single reservation that links both rooms together.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates one booking with two linked rooms."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Confirm the booking and the adjoining room guarantee with the customer.",
-      "expected_outcome": "Agent provides a confirmation number for the linked rooms.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Confirm the booking and the adjoining room guarantee with the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a confirmation number for the linked rooms."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

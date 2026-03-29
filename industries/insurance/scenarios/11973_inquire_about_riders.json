@@ -1,51 +1,59 @@
 {
-  "scenario_id": "insurance-la-11973",
-  "title": "Inquire About Policy Riders",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Inquire About Policy Riders",
+    "compliance_level": "Standard"
+  },
   "description": "A policyholder wants to know what optional riders they have on their life insurance policy.",
-  "use_case": "Life & Annuities",
-  "core_function": "Policy Servicing",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the policyholder and retrieve their policy details.",
-      "expected_outcome": "Agent locates the customer's policy.",
-      "required_tools": [
-        "get_policyholder_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the policyholder and retrieve their policy details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent locates the customer's policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the policy contract to identify any active riders.",
-      "expected_outcome": "Agent finds the policy has an Accidental Death Benefit rider and a Waiver of Premium rider.",
-      "required_tools": [
-        "review_policy_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the policy contract to identify any active riders.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the policy has an Accidental Death Benefit rider and a Waiver of Premium rider."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Explain each rider and what it covers to the policyholder.",
-      "expected_outcome": "Agent clearly explains the function of both riders in simple terms.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Explain each rider and what it covers to the policyholder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly explains the function of both riders in simple terms."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

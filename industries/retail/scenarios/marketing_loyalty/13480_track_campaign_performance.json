@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ret-ml-13480",
-  "title": "Track Campaign Performance",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Track Campaign Performance",
+    "compliance_level": "Standard"
+  },
   "description": "A marketing analyst wants to check the performance of an email campaign that was sent yesterday.",
-  "use_case": "Marketing & Loyalty",
-  "core_function": "Campaign Management",
   "industry": "Retail",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log into the marketing analytics platform.",
-      "expected_outcome": "The analyst accesses the reporting tools.",
-      "required_tools": [
-        "open_analytics_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log into the marketing analytics platform.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analyst accesses the reporting tools."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Locate the specific email campaign and open its performance dashboard.",
-      "expected_outcome": "The analyst finds the report for the correct campaign.",
-      "required_tools": [
-        "find_campaign"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Locate the specific email campaign and open its performance dashboard.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analyst finds the report for the correct campaign."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Review key metrics such as open rate, click-through rate, and revenue generated from the campaign.",
-      "expected_outcome": "The analyst can measure the effectiveness and ROI of the marketing campaign.",
-      "required_tools": [
-        "get_campaign_metrics"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_presentation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Review key metrics such as open rate, click-through rate, and revenue generated from the campaign.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The analyst can measure the effectiveness and ROI of the marketing campaign."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

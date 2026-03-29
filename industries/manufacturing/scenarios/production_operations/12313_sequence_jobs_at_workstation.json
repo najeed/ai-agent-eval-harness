@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mfg-po-12313",
-  "title": "Sequence Jobs at a Workstation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Sequence Jobs at a Workstation",
+    "compliance_level": "Standard"
+  },
   "description": "A supervisor needs to manually sequence the jobs queued at a specific workstation for the day to minimize setup time.",
-  "use_case": "Production & Operations",
-  "core_function": "Production Scheduling",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "List all work orders scheduled for the 'Painting' workstation for today.",
-      "expected_outcome": "Agent retrieves a list of 5 jobs with different color requirements.",
-      "required_tools": [
-        "get_workstation_queue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "List all work orders scheduled for the 'Painting' workstation for today.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of 5 jobs with different color requirements."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the setup time required for color changes between jobs.",
-      "expected_outcome": "Agent identifies the optimal sequence to minimize color changes (e.g., light to dark colors).",
-      "required_tools": [
-        "get_setup_matrix"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the setup time required for color changes between jobs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent identifies the optimal sequence to minimize color changes (e.g., light to dark colors)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Reorder the job sequence in the system and publish the new queue for the operator.",
-      "expected_outcome": "Agent successfully updates the job order in the MES queue.",
-      "required_tools": [
-        "update_workstation_queue"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Reorder the job sequence in the system and publish the new queue for the operator.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully updates the job order in the MES queue."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,48 +1,59 @@
 {
-  "scenario_id": "hr-os-11688",
-  "title": "Manage an HR System Integration",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage an HR System Integration",
+    "compliance_level": "Standard"
+  },
   "description": "The company is implementing a new LMS and it needs to be integrated with the existing HRIS.",
-  "use_case": "HR Operations & Strategy",
-  "core_function": "HRIS Management",
   "industry": "Human Resources",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Work with the vendors to map the data fields between the HRIS and the LMS (e.g., employee ID, name, manager).",
-      "expected_outcome": "The HRIS analyst defines the data mapping for the integration.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Work with the vendors to map the data fields between the HRIS and the LMS (e.g., employee ID, name, manager).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The HRIS analyst defines the data mapping for the integration."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Configure the API or file transfer process to sync employee data from the HRIS to the LMS daily.",
-      "expected_outcome": "Analyst sets up the scheduled data feed between the two systems.",
-      "required_tools": [
-        "configure_system_integration"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Configure the API or file transfer process to sync employee data from the HRIS to the LMS daily.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst sets up the scheduled data feed between the two systems."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Run a test sync and validate that employee data appears correctly in the LMS.",
-      "expected_outcome": "Analyst performs a test run and confirms that a test employee's data is synced correctly.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Run a test sync and validate that employee data appears correctly in the LMS.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Analyst performs a test run and confirms that a test employee's data is synced correctly."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

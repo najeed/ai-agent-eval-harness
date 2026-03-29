@@ -1,52 +1,59 @@
 {
-  "scenario_id": "education-mx-11082",
-  "title": "Advisor Approves Course Overload",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Advisor Approves Course Overload",
+    "compliance_level": "Standard"
+  },
   "description": "A high-achieving student wants to register for more than the maximum allowed credits for a semester and needs advisor approval.",
-  "use_case": "Mixed",
-  "core_function": "Tutoring & Academic Advising",
   "industry": "Education",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the student and their request to take 21 credits (max is 18).",
-      "expected_outcome": "Agent confirms the student's request.",
-      "required_tools": [
-        "get_student_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_gathering_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the student and their request to take 21 credits (max is 18).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the student's request."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the student's academic record, noting their high GPA.",
-      "expected_outcome": "Advisor confirms the student is in good academic standing and capable of the extra workload.",
-      "required_tools": [
-        "get_student_transcript"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the student's academic record, noting their high GPA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Advisor confirms the student is in good academic standing and capable of the extra workload."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process a credit limit override in the SIS, allowing the student to register for the additional course.",
-      "expected_outcome": "Advisor successfully grants the override, enabling the student to complete their registration.",
-      "required_tools": [
-        "grant_credit_limit_override"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process a credit limit override in the SIS, allowing the student to register for the additional course.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Advisor successfully grants the override, enabling the student to complete their registration."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

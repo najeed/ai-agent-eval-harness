@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13872",
-  "title": "Provision a Static Route",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Provision a Static Route",
+    "compliance_level": "Standard"
+  },
   "description": "A customer needs a static route added to the network to reach a private resource.",
-  "use_case": "Network Operations",
-  "core_function": "Network Provisioning",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Get the destination network and next-hop IP address from the service request.",
-      "expected_outcome": "Agent correctly identifies the required routing parameters.",
-      "required_tools": [
-        "get_service_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Get the destination network and next-hop IP address from the service request.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the required routing parameters."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Apply the static route configuration to the appropriate edge router.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully adds the static route."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Apply the static route configuration to the appropriate edge router.",
-      "expected_outcome": "Agent successfully adds the static route.",
-      "required_tools": [
-        "add_static_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Verify the route is present in the router's routing table.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent checks the routing table and confirms the new route is active."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Verify the route is present in the router's routing table.",
-      "expected_outcome": "Agent checks the routing table and confirms the new route is active.",
-      "required_tools": [
-        "get_routing_table"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

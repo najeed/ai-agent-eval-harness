@@ -1,54 +1,59 @@
 {
-  "scenario_id": "energy-pd-11152",
-  "title": "Wildlife Impact Assessment",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Wildlife Impact Assessment",
+    "compliance_level": "Standard"
+  },
   "description": "An environmental consultant needs to assess the potential impact of a new solar project on local wildlife, particularly protected bird species.",
-  "use_case": "Renewable Project Development",
-  "core_function": "Permitting & Compliance",
   "industry": "Energy",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Query federal and state databases to identify all protected or endangered species known to inhabit the project area.",
-      "expected_outcome": "Agent produces a list of 3 protected bird species.",
-      "required_tools": [
-        "query_wildlife_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Query federal and state databases to identify all protected or endangered species known to inhabit the project area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent produces a list of 3 protected bird species."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Analyze the project layout to determine its proximity to critical habitats or migratory routes identified for these species.",
-      "expected_outcome": "Agent finds the project site is adjacent to a known migratory flyway.",
-      "required_tools": [
-        "get_habitat_maps",
-        "analyze_project_layout"
-      ],
-      "success_criteria": [
-        {
-          "metric": "analysis_correctness",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Analyze the project layout to determine its proximity to critical habitats or migratory routes identified for these species.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the project site is adjacent to a known migratory flyway."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Recommend mitigation measures, such as adjusting the project boundary, using bird-friendly materials, and post-construction monitoring.",
-      "expected_outcome": "Agent provides a list of actionable mitigation strategies.",
-      "required_tools": [
-        "recommend_mitigation_measures"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.95,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Recommend mitigation measures, such as adjusting the project boundary, using bird-friendly materials, and post-construction monitoring.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent provides a list of actionable mitigation strategies."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

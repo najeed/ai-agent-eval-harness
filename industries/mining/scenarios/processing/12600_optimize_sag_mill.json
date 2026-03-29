@@ -1,52 +1,59 @@
 {
-  "scenario_id": "mining-proc-12600",
-  "title": "Optimize SAG Mill Throughput",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Optimize SAG Mill Throughput",
+    "compliance_level": "Standard"
+  },
   "description": "A control room operator for a processing plant adjusts the operation of a SAG mill to maximize throughput while avoiding overload.",
-  "use_case": "Processing & Metallurgy",
-  "core_function": "Crushing & Grinding",
   "industry": "Mining",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Review the real-time operating parameters of the SAG mill, including power draw, bearing pressure, and feed rate.",
-      "expected_outcome": "The operator has a clear view of the mill's current performance.",
-      "required_tools": [
-        "get_mill_sensor_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Review the real-time operating parameters of the SAG mill, including power draw, bearing pressure, and feed rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator has a clear view of the mill's current performance."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Notice that the power draw is below the optimal target, indicating the mill can take more feed.",
-      "expected_outcome": "The operator correctly identifies an opportunity to increase throughput.",
-      "required_tools": [
-        "analyze_mill_performance"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_identification_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Notice that the power draw is below the optimal target, indicating the mill can take more feed.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The operator correctly identifies an opportunity to increase throughput."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Slightly increase the speed of the conveyor belt feeding ore into the mill to increase the feed rate.",
-      "expected_outcome": "The feed rate is increased, and the mill's power draw moves closer to the optimal target, increasing throughput.",
-      "required_tools": [
-        "set_conveyor_speed"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Slightly increase the speed of the conveyor belt feeding ore into the mill to increase the feed rate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The feed rate is increased, and the mill's power draw moves closer to the optimal target, increasing throughput."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

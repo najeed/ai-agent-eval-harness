@@ -1,82 +1,61 @@
 {
-  "scenario_id": "finance-wm-11287",
-  "title": "Place a Good-'Til-Canceled (GTC) Trade Order",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Place a Good-'Til-Canceled (GTC) Trade Order",
+    "compliance_level": "Standard"
+  },
   "description": "A client wants to place a limit order to buy a stock, but wants the order to remain active until it's either filled or they cancel it.",
-  "use_case": "Wealth Management",
-  "core_function": "Trade Execution & Servicing",
   "industry": "Finance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Gather the trade details: buy, quantity, stock symbol, limit price, and time-in-force (GTC).",
-      "expected_outcome": "Agent accurately captures all parameters for the GTC limit order.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Gather the trade details: buy, quantity, stock symbol, limit price, and time-in-force (GTC).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately captures all parameters for the GTC limit order."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the client's account for sufficient buying power.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the account has enough funds to execute the trade if the limit price is hit."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the client's account for sufficient buying power.",
-      "expected_outcome": "Agent confirms the account has enough funds to execute the trade if the limit price is hit.",
-      "required_tools": [
-        "check_buying_power"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place the GTC limit order and confirm its details with the client.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully places the open order and provides a confirmation."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place the GTC limit order and confirm its details with the client.",
-      "expected_outcome": "Agent successfully places the open order and provides a confirmation.",
-      "required_tools": [
-        "execute_trade"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

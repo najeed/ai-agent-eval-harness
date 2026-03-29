@@ -1,53 +1,59 @@
 {
-  "scenario_id": "chemicals-com-10551",
-  "title": "Resolve Damaged Shipment Claim",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Resolve Damaged Shipment Claim",
+    "compliance_level": "Standard"
+  },
   "description": "A customer reports that a shipment arrived with several damaged drums. The company needs to process the claim and send a replacement.",
-  "use_case": "Commercial & Sales",
-  "core_function": "Customer Relationship Management",
   "industry": "Chemicals",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the customer complaint and ask for photos of the damage and a list of affected drums.",
-      "expected_outcome": "Agent creates a complaint record and attaches the customer's photos.",
-      "required_tools": [
-        "create_customer_complaint",
-        "upload_document_to_complaint"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the customer complaint and ask for photos of the damage and a list of affected drums.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a complaint record and attaches the customer's photos."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "File a claim with the freight carrier responsible for the shipment.",
-      "expected_outcome": "Agent successfully submits a freight claim with the supporting evidence.",
-      "required_tools": [
-        "file_freight_claim"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "File a claim with the freight carrier responsible for the shipment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully submits a freight claim with the supporting evidence."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a no-charge replacement sales order to ship the damaged quantity again to the customer.",
-      "expected_outcome": "Agent creates a new sales order for the replacement material with a zero-dollar value.",
-      "required_tools": [
-        "create_sales_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a no-charge replacement sales order to ship the damaged quantity again to the customer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a new sales order for the replacement material with a zero-dollar value."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "og-up-12767",
-  "title": "Geosteer a Horizontal Well",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Geosteer a Horizontal Well",
+    "compliance_level": "Standard"
+  },
   "description": "A geologist uses real-time LWD data to 'steer' a horizontal well, keeping it within a thin, high-quality reservoir layer.",
-  "use_case": "Upstream",
-  "core_function": "Geoscience & Exploration",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Display the real-time gamma ray log from the LWD tool on a cross-section view with the planned well path.",
-      "expected_outcome": "A live view shows the well's current position relative to the target reservoir.",
-      "required_tools": [
-        "get_realtime_lwd_data",
-        "display_geosteering_view"
-      ],
-      "success_criteria": [
-        {
-          "metric": "data_visualization_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Display the real-time gamma ray log from the LWD tool on a cross-section view with the planned well path.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A live view shows the well's current position relative to the target reservoir."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The gamma ray reading indicates the well is drilling too close to the upper shale layer. Interpret the new position of the reservoir.",
-      "expected_outcome": "The geologist determines the well needs to be steered downwards.",
-      "required_tools": [
-        "interpret_lwd_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "geological_interpretation_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "The gamma ray reading indicates the well is drilling too close to the upper shale layer. Interpret the new position of the reservoir.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The geologist determines the well needs to be steered downwards."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Send a new directional drilling target (inclination and azimuth) to the directional driller to steer the well back into the center of the reservoir.",
-      "expected_outcome": "New drilling targets are sent and acknowledged by the driller.",
-      "required_tools": [
-        "send_directional_drilling_target"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Send a new directional drilling target (inclination and azimuth) to the directional driller to steer the well back into the center of the reservoir.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "New drilling targets are sent and acknowledged by the driller."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

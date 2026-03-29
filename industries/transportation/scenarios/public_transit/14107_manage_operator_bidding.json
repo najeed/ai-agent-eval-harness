@@ -1,66 +1,72 @@
 {
-  "scenario_id": "tr-pt-14107",
-  "title": "Manage Operator Run Bidding",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Operator Run Bidding",
+    "compliance_level": "Standard"
+  },
   "description": "A new set of driver work assignments (runs) is available. Drivers must be allowed to bid on them in order of seniority.",
-  "use_case": "Public Transit Operations",
-  "core_function": "Service Planning & Scheduling",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "A planner finalizes a new run cut and opens it for bidding.",
-      "expected_outcome": "The new runs are available for drivers to view.",
-      "required_tools": [
-        "open_run_cut_for_bidding"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "A planner finalizes a new run cut and opens it for bidding.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The new runs are available for drivers to view."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "The system notifies the most senior driver that it is their turn to bid.",
-      "expected_outcome": "The top-seniority driver is notified.",
-      "required_tools": [
-        "notify_driver_to_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "The system notifies the most senior driver that it is their turn to bid.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The top-seniority driver is notified."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "The driver logs in and selects their preferred run from the list of available runs.",
-      "expected_outcome": "The driver's choice is recorded, and that run is removed from the available list.",
-      "required_tools": [
-        "process_driver_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "The driver logs in and selects their preferred run from the list of available runs.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The driver's choice is recorded, and that run is removed from the available list."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "The system then notifies the next most senior driver that it is their turn, repeating the process until all runs are assigned.",
-      "expected_outcome": "The entire bidding process is managed systematically by seniority.",
-      "required_tools": [
-        "notify_driver_to_bid"
-      ],
-      "success_criteria": [
-        {
-          "metric": "system_integration_check",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-4",
+        "task_description": "The system then notifies the next most senior driver that it is their turn, repeating the process until all runs are assigned.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The entire bidding process is managed systematically by seniority."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

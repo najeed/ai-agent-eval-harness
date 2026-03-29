@@ -1,52 +1,59 @@
 {
-  "scenario_id": "consulting-mc-106",
-  "title": "Create Statement of Work (SOW)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Create Statement of Work (SOW)",
+    "compliance_level": "Standard"
+  },
   "description": "Using an approved proposal and a standard SOW template, an agent must create a formal Statement of Work.",
-  "use_case": "Management Consulting",
-  "core_function": "Project Scoping & Proposal",
   "industry": "Consulting",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Extract the 'Scope', 'Deliverables', 'Timeline', and 'Fees' sections from the approved proposal.",
-      "expected_outcome": "Agent accurately extracts all the required information.",
-      "required_tools": [
-        "analyze_document"
-      ],
-      "success_criteria": [
-        {
-          "metric": "information_extraction_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Extract the 'Scope', 'Deliverables', 'Timeline', and 'Fees' sections from the approved proposal.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent accurately extracts all the required information."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Populate the standard SOW template with the extracted information.",
-      "expected_outcome": "Agent correctly fills in all the fields of the SOW template.",
-      "required_tools": [
-        "populate_template"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Populate the standard SOW template with the extracted information.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly fills in all the fields of the SOW template."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assign a version number and set the status to 'Draft for Review'.",
-      "expected_outcome": "Agent correctly sets the document metadata.",
-      "required_tools": [
-        "set_document_metadata"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assign a version number and set the status to 'Draft for Review'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly sets the document metadata."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

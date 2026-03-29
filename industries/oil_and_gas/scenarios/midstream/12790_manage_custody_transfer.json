@@ -1,52 +1,59 @@
 {
-  "scenario_id": "og-mid-12790",
-  "title": "Manage Custody Transfer Measurement",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Manage Custody Transfer Measurement",
+    "compliance_level": "Standard"
+  },
   "description": "An operator at a pipeline delivery point manages a custody transfer, where ownership of the oil passes from the pipeline to the refinery. Accurate measurement is critical.",
-  "use_case": "Midstream",
-  "core_function": "Terminal & Storage Management",
   "industry": "Oil and Gas",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify that the custody transfer meter (e.g., a Coriolis meter) has a valid and current calibration certificate.",
-      "expected_outcome": "The system confirms the meter is in calibration.",
-      "required_tools": [
-        "check_meter_calibration_status"
-      ],
-      "success_criteria": [
-        {
-          "metric": "compliance_check_accuracy",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify that the custody transfer meter (e.g., a Coriolis meter) has a valid and current calibration certificate.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system confirms the meter is in calibration."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Monitor the flow rate, temperature, and density in real-time during the transfer.",
-      "expected_outcome": "The transfer is monitored to ensure stable conditions for accurate measurement.",
-      "required_tools": [
-        "get_custody_transfer_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Monitor the flow rate, temperature, and density in real-time during the transfer.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The transfer is monitored to ensure stable conditions for accurate measurement."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "At the end of the transfer, generate a custody transfer ticket that shows the total net volume transferred, which is used for billing.",
-      "expected_outcome": "An official, auditable ticket is generated with the final measured volume.",
-      "required_tools": [
-        "generate_custody_transfer_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "document_generation_completeness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "At the end of the transfer, generate a custody transfer ticket that shows the total net volume transferred, which is used for billing.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "An official, auditable ticket is generated with the final measured volume."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

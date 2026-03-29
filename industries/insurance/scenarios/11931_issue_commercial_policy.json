@@ -1,53 +1,59 @@
 {
-  "scenario_id": "insurance-pc-11931",
-  "title": "Issue a Commercial Insurance Policy",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue a Commercial Insurance Policy",
+    "compliance_level": "Standard"
+  },
   "description": "An underwriter has approved an application for a small business owner's policy (BOP) and needs to issue it.",
-  "use_case": "Property & Casualty (P&C) Insurance",
-  "core_function": "Underwriting & Quoting",
   "industry": "Insurance",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve the approved application and final quote.",
-      "expected_outcome": "The underwriter has the final, approved terms for the policy.",
-      "required_tools": [
-        "get_application_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve the approved application and final quote.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The underwriter has the final, approved terms for the policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Bind coverage, making the policy officially active.",
-      "expected_outcome": "The underwriter successfully binds the policy.",
-      "required_tools": [
-        "bind_policy"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Bind coverage, making the policy officially active.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The underwriter successfully binds the policy."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the complete policy document package and send it to the new policyholder.",
-      "expected_outcome": "The system generates and sends the full policy packet to the customer.",
-      "required_tools": [
-        "generate_policy_documents",
-        "send_policy_packet"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the complete policy document package and send it to the new policyholder.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The system generates and sends the full policy packet to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,84 +1,61 @@
 {
-  "scenario_id": "hc-as-11371",
-  "title": "Protocol an Imaging Study",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Protocol an Imaging Study",
+    "compliance_level": "Standard"
+  },
   "description": "A radiologist needs to review an order for a 'CT Abdomen' and select the specific technical protocol for the CT technologist to use (e.g., with or without contrast).",
-  "use_case": "Ancillary Services",
-  "core_function": "Radiology & Imaging Services",
   "industry": "Healthcare",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Open the list of exams waiting to be protocoled.",
-      "expected_outcome": "Radiologist views their worklist of pending exams.",
-      "required_tools": [
-        "get_protocoling_worklist"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Open the list of exams waiting to be protocoled.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Radiologist views their worklist of pending exams."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Review the patient's clinical history and the reason for the exam.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Radiologist gathers clinical context to make the best decision."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Review the patient's clinical history and the reason for the exam.",
-      "expected_outcome": "Radiologist gathers clinical context to make the best decision.",
-      "required_tools": [
-        "review_patient_chart"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Select the appropriate protocol ('CT Abdomen/Pelvis with IV Contrast') and approve it.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The exam is now ready for the technologist to perform, with clear instructions on the specific imaging technique to use."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Select the appropriate protocol ('CT Abdomen/Pelvis with IV Contrast') and approve it.",
-      "expected_outcome": "The exam is now ready for the technologist to perform, with clear instructions on the specific imaging technique to use.",
-      "required_tools": [
-        "select_imaging_protocol"
-      ],
-      "success_criteria": [
-        {
-          "metric": "decision_making_logic",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

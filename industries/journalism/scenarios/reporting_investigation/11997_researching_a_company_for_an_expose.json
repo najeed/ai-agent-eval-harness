@@ -1,54 +1,59 @@
 {
-  "scenario_id": "journalism-ri-11997",
-  "title": "Researching a Company for an Expos\u00e9",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Researching a Company for an Expos\u00e9",
+    "compliance_level": "Standard"
+  },
   "description": "A reporter is starting an investigation into a local company suspected of environmental violations and needs to gather initial background information.",
-  "use_case": "Reporting & Investigation",
-  "core_function": "Story Research & Development",
   "industry": "Journalism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search public records for the company's corporate filings, permits, and any past fines or citations.",
-      "expected_outcome": "Agent retrieves a list of relevant legal and corporate documents.",
-      "required_tools": [
-        "search_public_records_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search public records for the company's corporate filings, permits, and any past fines or citations.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent retrieves a list of relevant legal and corporate documents."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Scan news archives and social media for any previous reporting or public discussion about the company.",
-      "expected_outcome": "Agent compiles a summary of prior coverage and public sentiment.",
-      "required_tools": [
-        "search_news_archives",
-        "search_social_media"
-      ],
-      "success_criteria": [
-        {
-          "metric": "comprehensiveness_of_summary",
-          "threshold": 0.9
+      },
+      {
+        "id": "task-2",
+        "task_description": "Scan news archives and social media for any previous reporting or public discussion about the company.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent compiles a summary of prior coverage and public sentiment."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Identify key executives and board members and search for their professional histories and potential conflicts of interest.",
-      "expected_outcome": "Agent creates a profile for each key person associated with the company.",
-      "required_tools": [
-        "search_professional_networks",
-        "search_public_records_database"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Identify key executives and board members and search for their professional histories and potential conflicts of interest.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a profile for each key person associated with the company."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

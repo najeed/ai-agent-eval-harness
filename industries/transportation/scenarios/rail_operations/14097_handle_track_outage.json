@@ -1,68 +1,72 @@
 {
-  "scenario_id": "tr-ro-14097",
-  "title": "Handle a Major Track Outage",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Handle a Major Track Outage",
+    "compliance_level": "Standard"
+  },
   "description": "A bridge washout has closed a main rail line for an extended period. A manager must re-route all affected trains.",
-  "use_case": "Rail Operations",
-  "core_function": "Network Control & Dispatch",
   "industry": "Transportation",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Log the track outage in the system for a specific segment of the network.",
-      "expected_outcome": "The main line is marked as out-of-service.",
-      "required_tools": [
-        "block_track_segment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Log the track outage in the system for a specific segment of the network.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "The main line is marked as out-of-service."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Identify all trains that were scheduled to use that track segment.",
-      "expected_outcome": "A list of affected trains is generated.",
-      "required_tools": [
-        "find_trains_by_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Identify all trains that were scheduled to use that track segment.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A list of affected trains is generated."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "For each affected train, find a viable detour route, potentially using trackage rights on another railroad's lines.",
-      "expected_outcome": "New, longer routes are found for all trains.",
-      "required_tools": [
-        "find_detour_route"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "For each affected train, find a viable detour route, potentially using trackage rights on another railroad's lines.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "New, longer routes are found for all trains."
         }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Update the schedule and routing for each train and notify the crews of their new instructions.",
-      "expected_outcome": "All affected trains are re-routed to bypass the outage.",
-      "required_tools": [
-        "update_train_route",
-        "send_crew_notification"
-      ],
-      "success_criteria": [
-        {
-          "metric": "problem_resolution_effectiveness",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Update the schedule and routing for each train and notify the crews of their new instructions.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "All affected trains are re-routed to bypass the outage."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

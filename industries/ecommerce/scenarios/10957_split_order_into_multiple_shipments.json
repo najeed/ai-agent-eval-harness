@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10957",
-  "title": "Split Order into Multiple Shipments",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Split Order into Multiple Shipments",
+    "compliance_level": "Standard"
+  },
   "description": "A customer's order contains one item that is on backorder. The agent needs to ship the in-stock items now and the backordered item later.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Order Processing",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the order containing both in-stock and backordered items.",
-      "expected_outcome": "Agent finds the order and confirms the stock status of each item.",
-      "required_tools": [
-        "get_order_details",
-        "check_inventory"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the order containing both in-stock and backordered items.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the order and confirms the stock status of each item."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Split the order into two separate shipments in the order management system.",
-      "expected_outcome": "Agent successfully creates two shipment records from the single order.",
-      "required_tools": [
-        "split_order_shipment"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Split the order into two separate shipments in the order management system.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully creates two shipment records from the single order."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the shipment for the in-stock items immediately.",
-      "expected_outcome": "Agent generates a shipping label for the first part of the order.",
-      "required_tools": [
-        "generate_shipping_label"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the shipment for the in-stock items immediately.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent generates a shipping label for the first part of the order."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

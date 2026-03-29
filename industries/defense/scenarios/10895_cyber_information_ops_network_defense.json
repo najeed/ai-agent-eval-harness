@@ -1,53 +1,59 @@
 {
-  "scenario_id": "defense-cy-10895",
-  "title": "Defensive Information Operations",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Defensive Information Operations",
+    "compliance_level": "Standard"
+  },
   "description": "An IO officer must protect a friendly unit's social media presence from being hijacked or spoofed by an adversary.",
-  "use_case": "Cybersecurity & Information Warfare",
-  "core_function": "Information Operations (IO) Planning",
   "industry": "Defense",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Audit the security settings of the unit's official social media accounts.",
-      "expected_outcome": "Officer identifies weak passwords and a lack of two-factor authentication.",
-      "required_tools": [
-        "audit_social_media_security"
-      ],
-      "success_criteria": [
-        {
-          "metric": "audit_completeness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Audit the security settings of the unit's official social media accounts.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer identifies weak passwords and a lack of two-factor authentication."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Implement stronger security measures, including complex passwords and mandatory two-factor authentication.",
-      "expected_outcome": "Officer successfully hardens the security of the accounts.",
-      "required_tools": [
-        "update_account_security_settings"
-      ],
-      "success_criteria": [
-        {
-          "metric": "security_improvement_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Implement stronger security measures, including complex passwords and mandatory two-factor authentication.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer successfully hardens the security of the accounts."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor for any unauthorized login attempts or spoofed accounts and report them for takedown.",
-      "expected_outcome": "Officer establishes a process for ongoing monitoring and defense of the accounts.",
-      "required_tools": [
-        "monitor_for_spoofing",
-        "report_to_platform"
-      ],
-      "success_criteria": [
-        {
-          "metric": "monitoring_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor for any unauthorized login attempts or spoofed accounts and report them for takedown.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Officer establishes a process for ongoing monitoring and defense of the accounts."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

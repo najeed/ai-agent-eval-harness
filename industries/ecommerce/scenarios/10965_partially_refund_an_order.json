@@ -1,52 +1,59 @@
 {
-  "scenario_id": "ecommerce-omf-10965",
-  "title": "Issue a Partial Refund",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Issue a Partial Refund",
+    "compliance_level": "Standard"
+  },
   "description": "As a goodwill gesture for a delayed shipment, a support agent is authorized to refund the shipping cost to a customer.",
-  "use_case": "Order Management & Fulfillment",
-  "core_function": "Payment & Invoicing",
   "industry": "Ecommerce",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Locate the customer's order and identify the amount paid for shipping.",
-      "expected_outcome": "Agent finds the order and sees the shipping charge was $9.95.",
-      "required_tools": [
-        "get_order_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Locate the customer's order and identify the amount paid for shipping.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the order and sees the shipping charge was $9.95."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Issue a partial refund for the shipping amount only.",
-      "expected_outcome": "Agent successfully refunds $9.95 to the customer's original payment method.",
-      "required_tools": [
-        "process_partial_refund"
-      ],
-      "success_criteria": [
-        {
-          "metric": "transaction_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Issue a partial refund for the shipping amount only.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully refunds $9.95 to the customer's original payment method."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Add a note to the order detailing the reason for the partial refund.",
-      "expected_outcome": "Agent adds a note: 'Refunded shipping cost as goodwill for delivery delay.'",
-      "required_tools": [
-        "add_note_to_order"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Add a note to the order detailing the reason for the partial refund.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent adds a note: 'Refunded shipping cost as goodwill for delivery delay.'"
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,51 +1,59 @@
 {
-  "scenario_id": "tourism-ha-13924",
-  "title": "Order Room Service",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Order Room Service",
+    "compliance_level": "Standard"
+  },
   "description": "An in-house guest calls to order a club sandwich and a soda from the room service menu.",
-  "use_case": "Hospitality & Accommodations",
-  "core_function": "Guest Services & In-Stay Support",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the guest by their room number and confirm their name.",
-      "expected_outcome": "Agent correctly identifies the guest.",
-      "required_tools": [
-        "get_guest_details_by_room"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the guest by their room number and confirm their name.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the guest."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Take the guest's order and confirm the items and price.",
-      "expected_outcome": "Agent correctly records the order for one club sandwich and one soda.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Take the guest's order and confirm the items and price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly records the order for one club sandwich and one soda."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Place the order with the kitchen and post the charge to the guest's folio.",
-      "expected_outcome": "Agent successfully sends the order and updates the guest's bill.",
-      "required_tools": [
-        "place_room_service_order",
-        "add_folio_charge"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Place the order with the kitchen and post the charge to the guest's folio.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully sends the order and updates the guest's bill."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,54 +1,59 @@
 {
-  "scenario_id": "ports-vo-12897",
-  "title": "Schedule a Vessel Arrival",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Schedule a Vessel Arrival",
+    "compliance_level": "Standard"
+  },
   "description": "A shipping agent requests a berth for an incoming container vessel. The port scheduler must find an available berth and time slot.",
-  "use_case": "Vessel Operations",
-  "core_function": "Berth & Pilotage Management",
   "industry": "Ports",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive the vessel nomination, including ETA, vessel size (LOA, beam), and cargo details.",
-      "expected_outcome": "Operator correctly identifies the vessel 'MSC London' and its specifications.",
-      "required_tools": [
-        "get_vessel_nomination"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive the vessel nomination, including ETA, vessel size (LOA, beam), and cargo details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator correctly identifies the vessel 'MSC London' and its specifications."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the berth schedule for availability based on vessel size and requested ETA.",
-      "expected_outcome": "Operator finds an open slot at Berth 5 that can accommodate the vessel's size.",
-      "required_tools": [
-        "check_berth_availability"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the berth schedule for availability based on vessel size and requested ETA.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Operator finds an open slot at Berth 5 that can accommodate the vessel's size."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Allocate the berth, schedule pilot and tug services, and send confirmation to the agent.",
-      "expected_outcome": "Berth 5 is allocated, services are booked, and a confirmation is sent.",
-      "required_tools": [
-        "allocate_berth",
-        "schedule_pilot_tugs",
-        "send_confirmation"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Allocate the berth, schedule pilot and tug services, and send confirmation to the agent.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Berth 5 is allocated, services are booked, and a confirmation is sent."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

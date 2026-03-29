@@ -1,52 +1,59 @@
 {
-  "scenario_id": "media-ae-12550",
-  "title": "Analyze Subscriber Churn Reasons",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Subscriber Churn Reasons",
+    "compliance_level": "Standard"
+  },
   "description": "An agent needs to analyze the reasons given by subscribers who cancelled their service in the last month.",
-  "use_case": "Audience Engagement & Subscriber Management",
-  "core_function": "Audience Analytics",
   "industry": "Media and Entertainment",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Retrieve all cancellation data from the last month, including the logged reasons.",
-      "expected_outcome": "Agent pulls a dataset of all churned subscribers and their stated reasons.",
-      "required_tools": [
-        "get_cancellation_data"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Retrieve all cancellation data from the last month, including the logged reasons.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent pulls a dataset of all churned subscribers and their stated reasons."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Categorize and quantify the cancellation reasons.",
-      "expected_outcome": "Agent finds the top reasons are 'Price' (40%), 'Lack of new content' (30%), and 'Technical issues' (15%).",
-      "required_tools": [
-        "analyze_churn_reasons"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Categorize and quantify the cancellation reasons.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent finds the top reasons are 'Price' (40%), 'Lack of new content' (30%), and 'Technical issues' (15%)."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate a report summarizing the findings for the executive team.",
-      "expected_outcome": "Agent creates a clear, concise report on the primary drivers of churn.",
-      "required_tools": [
-        "generate_churn_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate a report summarizing the findings for the executive team.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a clear, concise report on the primary drivers of churn."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

@@ -1,53 +1,59 @@
 {
-  "scenario_id": "utils-go-14139",
-  "title": "Analyze Pole Inspection Imagery",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Analyze Pole Inspection Imagery",
+    "compliance_level": "Standard"
+  },
   "description": "An asset manager uses an AI model to analyze drone imagery of thousands of utility poles to identify defects.",
-  "use_case": "Grid Operations",
-  "core_function": "Asset Management",
   "industry": "Utilities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Process and categorize a large batch of pole inspection images.",
-      "expected_outcome": "System ingests and organizes the imagery.",
-      "required_tools": [
-        "process_drone_imagery"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Process and categorize a large batch of pole inspection images.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System ingests and organizes the imagery."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a computer vision model on the images to detect and classify defects like rot, woodpecker damage, and cracked crossarms.",
-      "expected_outcome": "AI model flags 50 poles with potential defects requiring review.",
-      "required_tools": [
-        "run_defect_detection_ai"
-      ],
-      "success_criteria": [
-        {
-          "metric": "image_analysis_accuracy",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a computer vision model on the images to detect and classify defects like rot, woodpecker damage, and cracked crossarms.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "AI model flags 50 poles with potential defects requiring review."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Prioritize the flagged poles for follow-up physical inspection based on the severity of the detected defects.",
-      "expected_outcome": "System creates a prioritized list of poles for field crews to inspect.",
-      "required_tools": [
-        "prioritize_work_orders"
-      ],
-      "success_criteria": [
-        {
-          "metric": "recommendation_relevance",
-          "threshold": 0.98,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Prioritize the flagged poles for follow-up physical inspection based on the severity of the detected defects.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "System creates a prioritized list of poles for field crews to inspect."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

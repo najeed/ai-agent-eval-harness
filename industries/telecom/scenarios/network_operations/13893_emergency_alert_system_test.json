@@ -1,84 +1,61 @@
 {
-  "scenario_id": "telecom-no-13893",
-  "title": "Perform Emergency Alert System (EAS) Test",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Perform Emergency Alert System (EAS) Test",
+    "compliance_level": "Standard"
+  },
   "description": "An agent must perform a scheduled test of the Wireless Emergency Alert system for a specific region.",
-  "use_case": "Network Operations",
-  "core_function": "Security Operations",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Verify the scheduled time and geographic area for the EAS test.",
-      "expected_outcome": "Agent confirms the test parameters from the schedule.",
-      "required_tools": [
-        "get_eas_test_schedule"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Verify the scheduled time and geographic area for the EAS test.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the test parameters from the schedule."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Broadcast the standardized test message to all cell towers in the designated area.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully executes the broadcast command."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Broadcast the standardized test message to all cell towers in the designated area.",
-      "expected_outcome": "Agent successfully executes the broadcast command.",
-      "required_tools": [
-        "broadcast_eas_message"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Monitor the system logs to confirm successful transmission from all towers.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent verifies that all towers in the area successfully sent the test alert."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Monitor the system logs to confirm successful transmission from all towers.",
-      "expected_outcome": "Agent verifies that all towers in the area successfully sent the test alert.",
-      "required_tools": [
-        "check_eas_transmission_logs"
-      ],
-      "success_criteria": [
-        {
-          "metric": "verification_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

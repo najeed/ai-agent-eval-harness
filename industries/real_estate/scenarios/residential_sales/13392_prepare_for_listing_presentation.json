@@ -1,52 +1,59 @@
 {
-  "scenario_id": "real_estate-rs-13392",
-  "title": "Prepare for a Listing Presentation",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Prepare for a Listing Presentation",
+    "compliance_level": "Standard"
+  },
   "description": "An agent has an appointment with a potential seller and needs to prepare a compelling presentation to win the listing.",
-  "use_case": "Residential Sales",
-  "core_function": "Client Onboarding & Qualification",
   "industry": "Real Estate",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Prepare a detailed Comparative Market Analysis (CMA) for the property.",
-      "expected_outcome": "A data-driven CMA is ready.",
-      "required_tools": [
-        "generate_cma_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Prepare a detailed Comparative Market Analysis (CMA) for the property.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A data-driven CMA is ready."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Create a customized marketing plan for the property, detailing how it will be advertised.",
-      "expected_outcome": "A specific marketing strategy is outlined.",
-      "required_tools": [
-        "create_marketing_plan"
-      ],
-      "success_criteria": [
-        {
-          "metric": "planning_effectiveness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Create a customized marketing plan for the property, detailing how it will be advertised.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A specific marketing strategy is outlined."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Assemble a listing presentation package, including the CMA, marketing plan, your professional resume, and client testimonials.",
-      "expected_outcome": "A complete and persuasive presentation package is ready for the meeting.",
-      "required_tools": [
-        "compile_presentation_package"
-      ],
-      "success_criteria": [
-        {
-          "metric": "content_quality",
-          "threshold": 0.95
+      },
+      {
+        "id": "task-3",
+        "task_description": "Assemble a listing presentation package, including the CMA, marketing plan, your professional resume, and client testimonials.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "A complete and persuasive presentation package is ready for the meeting."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

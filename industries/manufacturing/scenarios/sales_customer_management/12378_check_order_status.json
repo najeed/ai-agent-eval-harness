@@ -1,53 +1,59 @@
 {
-  "scenario_id": "mfg-sc-12378",
-  "title": "Check Order Status",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Check Order Status",
+    "compliance_level": "Standard"
+  },
   "description": "A customer calls to ask for the latest status of their open order.",
-  "use_case": "Sales & Customer Management",
-  "core_function": "Order Status & Fulfillment Tracking",
   "industry": "Manufacturing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the customer and find their sales order using the PO number they provided.",
-      "expected_outcome": "Agent successfully retrieves the correct sales order.",
-      "required_tools": [
-        "find_sales_order_by_po"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the customer and find their sales order using the PO number they provided.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the correct sales order."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Check the current status of the linked production work order.",
-      "expected_outcome": "Agent sees the work order is currently in the 'Final Assembly' stage.",
-      "required_tools": [
-        "get_work_order_status_by_so"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Check the current status of the linked production work order.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent sees the work order is currently in the 'Final Assembly' stage."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Inform the customer that their order is in final assembly and provide an estimated completion date.",
-      "expected_outcome": "Agent clearly communicates the status and the ETA to the customer.",
-      "required_tools": [
-        "estimate_completion_time"
-      ],
-      "success_criteria": [
-        {
-          "metric": "communication_clarity",
-          "threshold": 1.0,
-          "requires_llm_judge": true
+      },
+      {
+        "id": "task-3",
+        "task_description": "Inform the customer that their order is in final assembly and provide an estimated completion date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent clearly communicates the status and the ETA to the customer."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

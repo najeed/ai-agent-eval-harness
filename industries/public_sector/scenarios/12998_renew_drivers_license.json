@@ -1,53 +1,59 @@
 {
-  "scenario_id": "ps-cs-12998",
-  "title": "Renew a Driver's License Online",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Renew a Driver's License Online",
+    "compliance_level": "Standard"
+  },
   "description": "A citizen needs to renew their driver's license and wants to complete the process online.",
-  "use_case": "Citizen Services & Case Management",
-  "core_function": "Licensing & Permitting",
   "industry": "Public Sector",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the citizen using their existing license number and date of birth.",
-      "expected_outcome": "Agent successfully retrieves the citizen's DMV record.",
-      "required_tools": [
-        "get_dmv_record"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the citizen using their existing license number and date of birth.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully retrieves the citizen's DMV record."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify that the citizen is eligible for online renewal (e.g., no outstanding violations, vision test not required).",
-      "expected_outcome": "Agent confirms the citizen's eligibility for online renewal.",
-      "required_tools": [
-        "check_renewal_eligibility"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify that the citizen is eligible for online renewal (e.g., no outstanding violations, vision test not required).",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the citizen's eligibility for online renewal."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Process the renewal payment and provide a temporary digital license.",
-      "expected_outcome": "Agent successfully takes payment and issues a temporary license pending mailing of the physical card.",
-      "required_tools": [
-        "process_payment",
-        "issue_temporary_license"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Process the renewal payment and provide a temporary digital license.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully takes payment and issues a temporary license pending mailing of the physical card."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

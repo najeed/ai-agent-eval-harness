@@ -1,50 +1,59 @@
 {
-  "scenario_id": "tourism-tr-13915",
-  "title": "Book a One-Way Flight",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Book a One-Way Flight",
+    "compliance_level": "Standard"
+  },
   "description": "A traveler needs to book a one-way flight from New York (JFK) to Los Angeles (LAX).",
-  "use_case": "Transportation & Travel",
-  "core_function": "Itinerary Planning & Booking",
   "industry": "Tourism",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Search for available one-way flights from JFK to LAX on the specified date.",
-      "expected_outcome": "Agent returns a list of available flights with times and prices.",
-      "required_tools": [
-        "search_flights"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Search for available one-way flights from JFK to LAX on the specified date.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent returns a list of available flights with times and prices."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Select the flight chosen by the customer and confirm the total price.",
-      "expected_outcome": "Agent confirms the selection and total cost.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Select the flight chosen by the customer and confirm the total price.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms the selection and total cost."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Complete the booking with the traveler's details and issue the e-ticket.",
-      "expected_outcome": "Agent successfully books the flight and provides a booking reference.",
-      "required_tools": [
-        "book_flight"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Complete the booking with the traveler's details and issue the e-ticket.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully books the flight and provides a booking reference."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

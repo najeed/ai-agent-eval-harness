@@ -1,52 +1,59 @@
 {
-  "scenario_id": "smartcities-sb-13563",
-  "title": "Report Faulty Streetlight to Utility",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Report Faulty Streetlight to Utility",
+    "compliance_level": "Standard"
+  },
   "description": "A city-owned smart streetlight is malfunctioning, but the issue is with the power supply, not the light itself. The operator must report this to the electric utility.",
-  "use_case": "Smart Buildings & Infrastructure",
-  "core_function": "Smart Street Lighting",
   "industry": "Smart Cities",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Receive an alert for a streetlight that is repeatedly turning on and off.",
-      "expected_outcome": "Agent acknowledges the 'flapping' light alert.",
-      "required_tools": [
-        "get_lighting_alerts"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Receive an alert for a streetlight that is repeatedly turning on and off.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent acknowledges the 'flapping' light alert."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Run a diagnostic on the light, which shows the bulb and controller are healthy, but input voltage is unstable.",
-      "expected_outcome": "Agent correctly diagnoses the issue as a power supply problem.",
-      "required_tools": [
-        "run_lighting_diagnostic"
-      ],
-      "success_criteria": [
-        {
-          "metric": "root_cause_analysis_correctness",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Run a diagnostic on the light, which shows the bulb and controller are healthy, but input voltage is unstable.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly diagnoses the issue as a power supply problem."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Create a trouble ticket and send it to the electric utility company, as the fault lies in their infrastructure.",
-      "expected_outcome": "Agent successfully reports the issue to the external utility.",
-      "required_tools": [
-        "create_utility_trouble_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Create a trouble ticket and send it to the electric utility company, as the fault lies in their infrastructure.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully reports the issue to the external utility."
         }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ]
+  }
 }

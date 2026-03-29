@@ -1,108 +1,74 @@
 {
-  "scenario_id": "telecom-ts-13817",
-  "title": "Advanced Diagnostics - Intermittent Packet Loss",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Advanced Diagnostics - Intermittent Packet Loss",
+    "compliance_level": "Standard"
+  },
   "description": "A customer with a business account reports intermittent packet loss affecting their VoIP service.",
-  "use_case": "Technical Support",
-  "core_function": "Advanced Diagnostics",
   "industry": "Telecom",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Identify the business customer and their service details.",
-      "expected_outcome": "Agent correctly identifies the account and service.",
-      "required_tools": [
-        "get_customer_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Identify the business customer and their service details.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the account and service."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-2",
+        "task_description": "Initiate a 15-minute remote line monitoring session to capture real-time quality metrics.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully starts the line monitoring tool."
         }
-      ]
-    },
-    {
-      "task_id": "task-2",
-      "description": "Initiate a 15-minute remote line monitoring session to capture real-time quality metrics.",
-      "expected_outcome": "Agent successfully starts the line monitoring tool.",
-      "required_tools": [
-        "run_extended_line_monitor"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Analyze the monitoring results to confirm packet loss and identify the network segment where it originates.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent analyzes the report and determines the packet loss is occurring at a specific network node."
         }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
+      },
+      {
+        "id": "task-4",
+        "task_description": "Create a high-priority trouble ticket for the network engineering team with the monitoring logs attached.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent creates a detailed ticket and assigns it to the correct engineering queue."
         }
-      ]
-    },
-    {
-      "task_id": "task-3",
-      "description": "Analyze the monitoring results to confirm packet loss and identify the network segment where it originates.",
-      "expected_outcome": "Agent analyzes the report and determines the packet loss is occurring at a specific network node.",
-      "required_tools": [
-        "analyze_line_monitor_report"
-      ],
-      "success_criteria": [
-        {
-          "metric": "factual_accuracy",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
-      ]
-    },
-    {
-      "task_id": "task-4",
-      "description": "Create a high-priority trouble ticket for the network engineering team with the monitoring logs attached.",
-      "expected_outcome": "Agent creates a detailed ticket and assigns it to the correct engineering queue.",
-      "required_tools": [
-        "create_trouble_ticket"
-      ],
-      "success_criteria": [
-        {
-          "metric": "policy_compliance",
-          "threshold": 1.0
-        },
-        {
-          "metric": "state_verification",
-          "threshold": 1.0
-        }
-      ],
-      "expected_state_changes": [
-        {
-          "path": "task_completed",
-          "value": true
-        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      },
+      {
+        "from": "task-3",
+        "to": "task-4"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
-  ],
+  },
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

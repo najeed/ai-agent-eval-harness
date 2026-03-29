@@ -1,81 +1,58 @@
 {
-  "scenario_id": "lw-om-12213",
-  "title": "Generate a Bill of Lading (BOL)",
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Generate a Bill of Lading (BOL)",
+    "compliance_level": "Standard"
+  },
   "description": "A shipment is ready to be picked up by a carrier. The shipping clerk must generate the legal Bill of Lading document.",
-  "use_case": "Order & Customer Management",
-  "core_function": "Reporting & Documentation",
   "industry": "Logistics and Warehousing",
-  "tasks": [
-    {
-      "task_id": "task-1",
-      "description": "Select the shipment that is ready for pickup.",
-      "expected_outcome": "Agent correctly identifies the shipment record in the TMS.",
-      "required_tools": [
-        "get_shipment_details"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Select the shipment that is ready for pickup.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent correctly identifies the shipment record in the TMS."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
+      },
+      {
+        "id": "task-2",
+        "task_description": "Verify all details, including addresses, piece count, weight, and freight class.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent confirms all data required for the BOL is accurate."
         }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-2",
-      "description": "Verify all details, including addresses, piece count, weight, and freight class.",
-      "expected_outcome": "Agent confirms all data required for the BOL is accurate.",
-      "required_tools": [],
-      "success_criteria": [
-        {
-          "metric": "data_validation_accuracy",
-          "threshold": 1.0
+      },
+      {
+        "id": "task-3",
+        "task_description": "Generate the BOL document in the standard format.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Agent successfully generates a printable, legally compliant BOL document."
         }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    },
-    {
-      "task_id": "task-3",
-      "description": "Generate the BOL document in the standard format.",
-      "expected_outcome": "Agent successfully generates a printable, legally compliant BOL document.",
-      "required_tools": [
-        "generate_bill_of_lading"
-      ],
-      "success_criteria": [
-        {
-          "metric": "tool_call_correctness",
-          "threshold": 1.0
-        }
-      ],
-      "crew_success_criteria": [
-        {
-          "metric": "delegation_loop_risk",
-          "threshold": 0.0
-        }
-      ],
-      "expected_delegations": 1
-    }
-  ],
-  "version": "2.0.0",
-  "agent_topology": {
-    "primary_agent": {
-      "reads": [
-        "*"
-      ],
-      "writes": [
-        "*"
+      }
+    ],
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
       ]
     }
   }
