@@ -38,11 +38,16 @@ python dataproc_engine/cli/main.py extract --industry [INDUSTRY] [FLAGS]
 | Flag | Description | Example |
 | :--- | :--- | :--- |
 | `--industry` | Target industrial sector (16 sectors available). | `finance`, `healthcare`, `media_entertainment` |
-| `--limit` | Maximum number of records to process. | `--limit 100` |
-| `--schema-type` | Specific gold-standard schema configuration. | `clinical`, `sec_edgar`, `policy_risk` |
-| `--input-uri` | Local path or Web URL to user-provided data (BYOD override). | `--input-uri https://example.com/data.csv` |
-| `--overwrite` | Bypasses the conflict prompt for existing output. | `--overwrite` |
-| `--max-backups` | Maximum number of rolling backups to keep. | `--max-backups 10` |
+| `--limit` | Maximum number of records to generate/process. | `--limit 100` |
+| `--format` | Output dataset format (`jsonl` or `csv`). | `--format csv` |
+| `--source` | Data acquisition mode (`api` for live or `file` for local ingestion). | `--source file` |
+| `--input-uri` | Local path or Web URL for `file` source ingestion (BYOD override). | `--input-uri https://example.com/data.csv` |
+| `--llm-strategy` | Transformation execution strategy (`auto`, `cloud`, `ollama`, `heuristic`, `mock`). | `--llm-strategy ollama` |
+| `--model` | Specific model identifier for the LLM provider. | `--model gemini-1.5-pro` |
+| `--overwrite` | Force-overwrite existing output files (also triggers safety backup). | `--overwrite` |
+| `--max-backups` | Maximum number of rolling rotational backups to maintain. | `--max-backups 10` |
+| `--allow-simulation`| V2.0-STABLE: explicit toggle for high-fidelity simulation fallbacks. | `--allow-simulation` |
+| `--schema-type` | Specific industry gold-standard schema configuration variant. | `clinical`, `sec_edgar`, `policy_risk` |
 
 ---
 
@@ -101,7 +106,7 @@ To use actual commercial/restricted benchmarks, follow these steps:
 1. **Apply for Access**: Use the links in the [Data Veracity Report](data_veracity_report.md) to download the data.
 2. **Execution**:
    ```bash
-   python dataproc_engine/cli/main.py extract --industry healthcare --schema-type clinical --input-uri ./my_clinical_data/labevents.csv
+   python dataproc_engine/cli/main.py extract --industry healthcare --source file --input-uri ./my_clinical_data/labevents.csv --schema-type clinical
    ```
 
 ### 📂 Default Output Layout

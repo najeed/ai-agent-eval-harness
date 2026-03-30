@@ -33,7 +33,11 @@ const Icon = ({ name, size = 20, className = "" }) => {
         audit: <> <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M7 8h10" /><path d="M7 12h10" /><path d="M7 16h10" /></>,
         drift: <> <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></>,
         triage: <> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /></>,
-        visualizer: <> <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></>
+        visualizer: <><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></>,
+        user: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>,
+        message: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
+        terminal: <><polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" /></>,
+        warning: <><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></>
     };
     const iconName = name === 'bar-chart-2' ? 'chart' :
         name === 'chevron-left' ? 'chevronLeft' :
@@ -264,10 +268,9 @@ const ScenarioEditor = () => {
         aes_version: 1.2,
         metadata: { name: 'New Scenario', compliance_level: 'Standard' },
         industry: 'generic',
-        workflow: {
-            nodes: [{ id: 'start_node', task_description: 'Agent should verify user identity' }],
-            edges: []
-        }
+        scenario_id: 'scenario-custom-1',
+        title: 'New Scenario',
+        tasks: [{ id: 'start_node', description: 'Agent should verify user identity' }]
     };
 
     const [scenario, setScenario] = useState(initialState);
@@ -300,11 +303,18 @@ const ScenarioEditor = () => {
         const aes = {
             aes_version: 1.2,
             metadata: {
-                name: scenario.metadata.name,
+                id: scenario.scenario_id,
+                name: scenario.title,
                 compliance_level: scenario.metadata.compliance_level
             },
             industry: scenario.industry,
-            workflow: scenario.workflow,
+            workflow: {
+                nodes: scenario.tasks.map((t, idx) => ({
+                    id: t.id || `task_${idx+1}`,
+                    task_description: t.description
+                })),
+                edges: []
+            },
             evaluation: {
                 consensus: {
                     strategy: "Majority_Vote",

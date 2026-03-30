@@ -191,9 +191,19 @@ class UnstructuredProvider(BaseProvider):
                 source_hint=source_hint
             )
             
+            # 2.1 V2: Heuristic Fallback — produce a minimal record if all LLM tiers fail
             if extracted_data is None:
-                logger.error(f"Extraction failed for {raw.id}")
-                continue
+                logger.warning(f"LLM extraction failed for {raw.id}. Applying heuristic fallback.")
+                # Derive basic signals from raw content text
+                content_str = safe_content if isinstance(safe_content, str) else str(safe_content)
+                extracted_data = {
+                    "entity_name": self.config.get("entity_name", "Unknown"),
+                    "revenue": 0.0,
+                    "assets": 0.0,
+                    "status": "unverified",
+                    "sentiment_score": self.llm_manager._heuristic_sentiment(content_str),
+                    "strategic_signals": self._derive_strategic_pivot(content_str),
+                }
                 
             # 2.5 V2: Deep Signal Layer (Sentiment & Signal Weighting)
             if "sentiment_score" not in extracted_data:

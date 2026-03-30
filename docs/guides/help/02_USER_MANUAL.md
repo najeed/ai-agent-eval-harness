@@ -67,11 +67,18 @@ multiagent-eval evaluate --path industries/telecom --format jsonl --output repor
 ```
 
 **Key options:**
-- `--path` (required): Scenario file or directory
-- `--format`: `jsonl` (default) or `csv`
-- `--output`: Output report path
-- `--limit`: Limit number of scenarios executed
-- `--attempts`: Run pass@k (multiple attempts per scenario)
+- `--path` (required): Path to scenario file, directory, or remote URI
+- `--format`: Input dataset format (`jsonl` or `csv`)
+- `--output`: Path to save the final evaluation results JSON
+- `--limit`: Limit the total number of scenarios executed during the batch
+- `--attempts` / `-k`: Run pass@k (execute multiple attempts per scenario)
+- `-f, --force`: Force evaluation by bypassing existing trace/completion checks
+- `-v, --verbose`: Enable high-fidelity verbose trace logging to the console
+- `--agent`: Specify the target agent endpoint or connection identifier
+- `--protocol`: Select communication protocol (`http`, `local`, `socket`, `autogen`, etc.)
+- `--seed`: Set a random seed for deterministic evaluation runs
+- `--per-run-logs`: Force creation of individual .jsonl traces for every attempt
+- `--master-log`: Append all results from the batch into a single `run.jsonl`
 
 **What happens during evaluation:**
 1. Loads each scenario
@@ -83,36 +90,50 @@ multiagent-eval evaluate --path industries/telecom --format jsonl --output repor
 
 ### ⚡ CLI Quick Reference
 
-| Command | Common options | What it does |
+| Command | Common Options | Purpose |
 |---|---|---|
-| `multiagent-eval evaluate` | `--path`, `--format`, `--output`, `--limit`, `--attempts` / `-k` | Run a set of scenarios (batch mode) |
-| `multiagent-eval run` | `-k` | Run a single scenario JSON file |
-| `multiagent-eval replay` | `--path` | Replay a recorded run trace |
-| `multiagent-eval aes validate` | `--path` | Validate AES benchmark YAML (v1.1) |
-| `multiagent-eval aes scaffold` | `--output` | Generate a starter AES v1.1 template |
-| `multiagent-eval console` | `--port` | Launch the Visual Debugger local API and interactive GUI (Integrated Visual Suite) |
-| `multiagent-eval quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). |
-| `multiagent-eval doctor` | (none) | Check environment, dependencies, and configuration |
-| `multiagent-eval init` | `--dir`, `--industry` | Scaffold a new benchmark environment and linked datasets |
-| `multiagent-eval report` | `--path` | Generate a **Premium HTML report** with reconstructed trajectories |
-| `multiagent-eval scenario generate` | (none) | Interactively bootstrap new scenarios |
-| `multiagent-eval record` | `--agent` | Capture real interactions into an executable trace |
-| `multiagent-eval playground` | `--agent` | Interactive REPL for rapid experimentation |
-| `multiagent-eval spec-to-eval` | `--input`, `--output` | Convert Markdown spec to scenario JSON |
-| `multiagent-eval auto-translate` | `--input`, `--model`, `--industry` | Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM |
-| `multiagent-eval import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
-| `multiagent-eval mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
-| `multiagent-eval list` | `--search` | Search and explore the scenario catalog |
-| `multiagent-eval lint` | `--path` | Score and validate scenario quality/compliance |
-| `multiagent-eval plugin` | `<plugin_name> <cmd>` | Secure namespace for executing 3rd-party plugin commands |
+| **Core Evaluation** | | |
+| `evaluate` | `--path`, `-k`, `-f`, `-v`, `--agent`, `--protocol` | Batch execution of scenarios across a dataset |
+| `run` | `--scenario`, `-k`, `-f`, `-v`, `--agent` | Execution of a single specific scenario file |
+| `playground` | `--agent`, `--protocol`, `-v` | Interactive REPL for real-time agent experimentation |
+| `record` | `--agent`, `--protocol`, `--agent-name` | Capture live interactions into an executable trace |
+| `replay` | `--path` | Replay a recorded trace via the Flight Recorder |
+| `verify` | `--path`, `--manifest` | Verify cryptographic integrity of a run trace |
+| `quickstart` | (none) | 60-second engine demonstration (spawns agent + eval) |
+| **Specifications** | | |
+| `aes validate` | `--path` | Validate a scenario against AES JSON schema |
+| `aes add-standard`| `--id`, `--industry`, `--description` | Register a new industry standard to local manifest |
+| **Scenario Management** | | |
+| `inspect` | `--scenario-path` | Display task breakdown and architecture for a scenario |
+| `lint` | `--path` | Score scenario for AES compliance and quality |
+| `list` | `--search`, `--refresh` | Search and explore the local industry registry |
+| `catalog-search` | `--query` | Search global and local scenario catalogs |
+| `mutate` | `--input`, `--type`, `-f` | Generate adversarial/edge-case scenario variants |
+| `spec-to-eval` | `--input`, `--output` | Convert Markdown PRD/Spec to Scenario JSON |
+| **Analysis & Reporting** | | |
+| `calibrate` | `--path`, `--plot` | Measure judge agreement against human labels |
+| `explain` | `--path` | Diagnose root causes from evaluation traces |
+| `leaderboard` | `--dir`, `--output` | Generate performance rankings from run traces |
+| `list-metrics` | (none) | Display all registered evaluation metrics |
+| `report` | `--path`, `--share` | Generate stylized HTML reports from run traces |
+| `taxonomy` | (none) | Display the official AEH failure taxonomy |
+| **Environment** | | |
+| `init` | `--dir`, `--industry`, `--registry` | Scaffold a new benchmark environment |
+| `doctor` | (none) | Audit local environment and dependencies |
+| `cleanup-runs` | `--days`, `-f` | Prune old traces and rotate log artifacts |
+| `export` | `--input`, `--output` | Export traces to HF, CSV, or custom formats |
+| `install` | `pack_name` | Install curated industrial scenario packs |
+| `plugin` | `list`, `register <path>` | Manage external and built-in plugins |
+| `registry` | `sync`, `add --url` | Synchronize industry scenario registries |
+| `ci generate` | (none) | Generate GitHub Actions workflows for the environment |
 
 ### 🧩 `run` — single scenario
 
 ```bash
-multiagent-eval run --scenario scenarios/your_scenario.json -k 2
+multiagent-eval run --scenario scenarios/your_scenario.json -k 2 -f -v
 ```
 
-Use this for rapid iteration and debugging.
+Use this for rapid iteration and debugging. It supports the same core execution flags as `evaluate` (e.g., `--agent`, `--protocol`, `--seed`).
 
 #### 📽️ Run Trace Management
 

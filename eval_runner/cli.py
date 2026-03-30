@@ -32,46 +32,47 @@ def get_parser(is_help=False):
 Usage: multiagent-eval <command> [options]
 
 Core Evaluation:
-  console        Launch the Visual Debugger (REST API & Frontend)
-  contribute     Launch interactive wizard to create/submit scenarios
-  evaluate       Run evaluation on scenarios
-  playground     Interactive REPL to experiment with an agent
-  quickstart     Run a 60-second demo (spawns agent + runs eval)
-  record         Record interactions with an agent
-  replay         Replay a run trace (Flight Recorder)
-  run            Execute evaluation on a single scenario
-  verify         Verify the integrity of a run trace
+  console        Launch the Visual Debugger (Web UI & REST API)
+  contribute     Start the interactive scenario contribution wizard
+  evaluate       Execute batch evaluation on a scenario dataset
+  playground     Launch an interactive REPL for agent experimentation
+  quickstart     Run the 60-second engine demonstration
+  record         Record live agent interactions to a session trace
+  replay         Replay a previously recorded run trace
+  run            Execute evaluation on a single specific scenario
+  verify         Verify the cryptographic integrity of a run trace
 
 Specification & Scenarios:
-  aes            Agent Eval Specification (AES) utilities
-  catalog-search Deep search across the scenario catalog
-  inspect        Show details for a specific scenario file
-  lint           Verify scenario quality and AES compliance
-  list           List and search available scenarios
-  mutate         Generate adversarial scenario variants
-  scenario       Scenario management utilities
-  spec-to-eval   Convert Markdown PRD/Spec to Scenario JSON
+  aes            AES Specification utilities (Validate/Register)
+  catalog-search Search the global and local scenario catalogs
+  inspect        Display task breakdown for a specific scenario
+  lint           Static analysis for AES compliance and quality
+  list           Filter and list available local scenarios
+  mutate         Generate adversarial/edge-case scenario variants
+  scenario       Generic scenario management (Generate/Inspect)
+  spec-to-eval   Convert Markdown PRD/Specs into Scenario JSON
 
 Analysis & Reporting:
   calibrate      Measure judge agreement against human labels
-  explain        Analyze trace logs to diagnose root causes
-  leaderboard    Generate performance comparison from run traces
+  explain        Diagnose root causes from evaluation traces
+  leaderboard    Generate performance rankings from run traces
   list-metrics   List all registered evaluation metrics
-  report         Generate HTML report from a run trace
-  taxonomy       Show the official failure taxonomy
+  report         Generate stylized HTML reports from run traces
+  taxonomy       Display the official AEH failure taxonomy
 
 Utilities & Environment:
-  analyze        Scan GitHub repo to auto-generate scenarios
-  auto-translate Translate raw documents to JSON via local LLM
-  ci             CI/CD utility commands (e.g. GitHub Actions)
-  cleanup-runs   Housekeeping: Remove old trace files
-  doctor         Check environment and dependencies
-  export         Export run traces to external formats (e.g. HF)
-  failures       Failure Corpus search utilities
-  import-drift   Import production traces as scenarios
-  init           Scaffold a new benchmark environment
-  install        Install curated scenario packs
-  plugin         Execute plugin-specific subcommands
+  analyze        Auto-generate scenarios from GitHub repositories
+  auto-translate Use local LLMs to translate docs to AES JSON
+  ci             GitHub Actions / CI/CD pipeline integration
+  cleanup-runs   Prune old traces and rotate log artifacts
+  doctor         Audit the local environment and dependencies
+  export         Export traces to external formats (HF, CSV)
+  failures       Search the global Failure Corpus and patterns
+  import-drift   Convert production traces to evaluation scenarios
+  init           Initialize a new benchmark environment
+  install        Install curated industry scenario packs
+  plugin         Manage external and built-in plugins
+  registry       Synchronize industry scenario registries
 """
     parser = argparse.ArgumentParser(
         description="MultiAgentEval (OpenCore)",
@@ -81,45 +82,47 @@ Utilities & Environment:
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # --- CORE EVALUATION ---
-    console_parser = subparsers.add_parser("console", help="Launch the Visual Debugger")
-    console_parser.add_argument("--host", default="127.0.0.1")
-    console_parser.add_argument("--port", type=int, default=5000)
-    console_parser.add_argument("--debug", action="store_true")
+    console_parser = subparsers.add_parser("console", help="Launch the Visual Debugger (REST API & Frontend)")
+    console_parser.add_argument("--host", default="127.0.0.1", help="Host address for the debugger server")
+    console_parser.add_argument("--port", type=int, default=5000, help="Port for the debugger server")
+    console_parser.add_argument("--debug", action="store_true", help="Enable Flask debug mode")
 
     subparsers.add_parser("contribute", help="Interactive wizard")
 
-    eval_parser = subparsers.add_parser("evaluate", help="Run evaluation")
-    eval_parser.add_argument("--path", required=True)
-    eval_parser.add_argument("--format", default="jsonl", choices=["jsonl", "csv"])
-    eval_parser.add_argument("--output", default="reports/latest_results.json")
-    eval_parser.add_argument("--limit", type=int)
-    eval_parser.add_argument("--attempts", type=int, default=1)
-    eval_parser.add_argument("--run-log-dir")
-    eval_parser.add_argument("--agent")
-    eval_parser.add_argument("--protocol", default="http", choices=available_protocols)
-    eval_parser.add_argument("--agent-cmd")
-    eval_parser.add_argument("--agent-socket")
-    eval_parser.add_argument("--agent-name")
-    eval_parser.add_argument("--per-run-logs", action="store_true", default=None)
-    eval_parser.add_argument("--master-log", action="store_true", default=None)
-    eval_parser.add_argument("--seed", type=int)
+    eval_parser = subparsers.add_parser("evaluate", help="Run evaluation on a dataset of scenarios")
+    eval_parser.add_argument("--path", required=True, help="Path to scenario JSONL/folder or URI")
+    eval_parser.add_argument("--format", default="jsonl", choices=["jsonl", "csv"], help="Input dataset format")
+    eval_parser.add_argument("--output", default="reports/latest_results.json", help="Path to save the evaluation results")
+    eval_parser.add_argument("--limit", type=int, help="Limit the number of scenarios to process")
+    eval_parser.add_argument("--attempts", type=int, default=1, help="Number of pass@k attempts per scenario")
+    eval_parser.add_argument("--run-log-dir", help="Directory for storing execution traces")
+    eval_parser.add_argument("--agent", help="Agent endpoint/command for execution")
+    eval_parser.add_argument("--protocol", default="http", choices=available_protocols, help="Communication protocol for the agent")
+    eval_parser.add_argument("--agent-cmd", help="Subprocess command (for protocol=local)")
+    eval_parser.add_argument("--agent-socket", help="Socket identifier (for protocol=socket)")
+    eval_parser.add_argument("--agent-name", help="Human-readable name for the evaluator agent")
+    eval_parser.add_argument("--per-run-logs", action="store_true", default=None, help="Force creation of individual .jsonl traces per attempt")
+    eval_parser.add_argument("--master-log", action="store_true", default=None, help="Append all results to a master run.jsonl log")
+    eval_parser.add_argument("--seed", type=int, help="Random seed for deterministic evaluation")
+    eval_parser.add_argument("-f", "--force", action="store_true", help="Force evaluation (bypass existing trace checks)")
+    eval_parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose trace logging")
 
-    playground_parser = subparsers.add_parser("playground", help="Interactive REPL")
-    playground_parser.add_argument("--agent")
-    playground_parser.add_argument("--protocol", default="http", choices=available_protocols)
-    playground_parser.add_argument("--agent-name")
-    playground_parser.add_argument("--verbose", action="store_true")
+    playground_parser = subparsers.add_parser("playground", help="Interactive REPL to experiment with an agent")
+    playground_parser.add_argument("--agent", help="Agent endpoint or connection identifier")
+    playground_parser.add_argument("--protocol", default="http", choices=available_protocols, help="Protocol for REPL interaction")
+    playground_parser.add_argument("--agent-name", help="Name to display in the interactive session")
+    playground_parser.add_argument("--verbose", action="store_true", help="Enable verbose debug output")
 
     subparsers.add_parser("quickstart", help="60-second demo")
 
-    record_parser = subparsers.add_parser("record", help="Record interactions")
-    record_parser.add_argument("--agent")
-    record_parser.add_argument("--protocol", default="http", choices=available_protocols)
-    record_parser.add_argument("--agent-name")
-    record_parser.add_argument("--verbose", action="store_true")
+    record_parser = subparsers.add_parser("record", help="Record interactions with an agent to a trace file")
+    record_parser.add_argument("--agent", help="Target agent for recording")
+    record_parser.add_argument("--protocol", default="http", choices=available_protocols, help="Recording protocol")
+    record_parser.add_argument("--agent-name", help="Agent name for the trace metadata")
+    record_parser.add_argument("--verbose", action="store_true", help="Log recording steps to console")
 
-    replay_parser = subparsers.add_parser("replay", help="Replay run trace")
-    replay_parser.add_argument("--path", default="runs/run.jsonl")
+    replay_parser = subparsers.add_parser("replay", help="Replay a previously recorded run trace (Flight Recorder)")
+    replay_parser.add_argument("--path", default="runs/run.jsonl", help="Path to the .jsonl trace file to replay")
 
     run_parser = subparsers.add_parser("run", help="Single scenario eval")
     run_parser.add_argument("--scenario", required=True)
@@ -128,43 +131,45 @@ Utilities & Environment:
     run_parser.add_argument("--protocol", default="http", choices=available_protocols)
     run_parser.add_argument("--seed", type=int)
     run_parser.add_argument("--agent-name")
-    run_parser.add_argument("--verbose", action="store_true")
+    run_parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose trace logging")
+    run_parser.add_argument("-f", "--force", action="store_true", help="Force single scenario evaluation")
     run_parser.add_argument("--output")
     run_parser.add_argument("--run-log-dir")
 
-    verify_parser = subparsers.add_parser("verify", help="Verify trace integrity")
-    verify_parser.add_argument("--path", required=True)
-    verify_parser.add_argument("--manifest")
+    verify_parser = subparsers.add_parser("verify", help="Verify the cryptographic integrity of a run trace")
+    verify_parser.add_argument("--path", required=True, help="Path to the trace file to verify")
+    verify_parser.add_argument("--manifest", help="Optional path to the .manifest.json for the trace")
 
     # --- SPECIFICATION & SCENARIOS ---
-    aes_parser = subparsers.add_parser("aes", help="AES utilities")
+    aes_parser = subparsers.add_parser("aes", help="Agent Eval Specification (AES) utility suite")
     aes_sub = aes_parser.add_subparsers(dest="aes_command")
-    aes_val = aes_sub.add_parser("validate")
-    aes_val.add_argument("--path", required=True)
+    aes_val = aes_sub.add_parser("validate", help="Validate a scenario file against the AES JSON schema")
+    aes_val.add_argument("--path", required=True, help="Path to the scenario JSON file to validate")
 
-    aes_add = aes_sub.add_parser("add-standard")
-    aes_add.add_argument("--id", required=True)
-    aes_add.add_argument("--name", required=True)
-    aes_add.add_argument("--industry", required=True)
-    aes_add.add_argument("--description", required=True)
+    aes_add = aes_sub.add_parser("add-standard", help="Register a new industry standard to the local AES manifest")
+    aes_add.add_argument("--id", required=True, help="Unique identifier for the standard (e.g., standard-v2)")
+    aes_add.add_argument("--name", required=True, help="Human-readable name for the standard")
+    aes_add.add_argument("--industry", required=True, help="Target industry sector (e.g., finance, healthcare)")
+    aes_add.add_argument("--description", required=True, help="Detailed description of the standard's scope")
 
-    inspect_parser = subparsers.add_parser("inspect", help="Inspect scenario")
-    inspect_parser.add_argument("--scenario-path", required=True)
+    inspect_parser = subparsers.add_parser("inspect", help="Display architectural details and task breakdown for a scenario")
+    inspect_parser.add_argument("--scenario-path", required=True, help="Path to the scenario file to inspect")
+    
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and AES V1.2 compliance")
+    lint_parser.add_argument("--path", dest="target", required=True, help="Target scenario file or directory to lint")
+    
+    list_parser = subparsers.add_parser("list", help="List and filter available scenarios in the local industry registry")
+    list_parser.add_argument("--search", help="Search string for scenario titles or descriptions")
+    list_parser.add_argument("--refresh", action="store_true", help="Force a refresh of the local scenario cache")
 
-    lint_parser = subparsers.add_parser("lint", help="Lint scenario")
-    lint_parser.add_argument("--path", dest="target", required=True)
+    subparsers.add_parser("catalog-search", help="Deep search across the scenario catalog").add_argument("--query", required=True, help="Search query for global scenarios")
+    subparsers.add_parser("catalog-refresh", help="Refresh and re-index the global scenario catalog")
 
-    list_parser = subparsers.add_parser("list", help="List scenarios")
-    list_parser.add_argument("--search")
-    list_parser.add_argument("--refresh", action="store_true")
-
-    subparsers.add_parser("catalog-search", help="Search catalog").add_argument("--query", required=True)
-    subparsers.add_parser("catalog-refresh", help="Refresh catalog")
-
-    mutate_parser = subparsers.add_parser("mutate", help="Mutate scenario")
-    mutate_parser.add_argument("--input", required=True)
-    mutate_parser.add_argument("--type", required=True, choices=["typo", "injection", "ambiguity"])
-    mutate_parser.add_argument("--output")
+    mutate_parser = subparsers.add_parser("mutate", help="Generate adversarial or edge-case variants of a base scenario")
+    mutate_parser.add_argument("--input", required=True, help="Path to the base scenario file")
+    mutate_parser.add_argument("--type", required=True, choices=["typo", "injection", "ambiguity"], help="Type of mutation to apply")
+    mutate_parser.add_argument("-f", "--force", action="store_true", help="Force mutation (overwrite existing scenario variants)")
+    mutate_parser.add_argument("--output", help="Optional path to save the mutated scenario")
 
     scenario_parser = subparsers.add_parser("scenario", help="Scenario management")
     scenario_sub = scenario_parser.add_subparsers(dest="scenario_command")
@@ -177,80 +182,80 @@ Utilities & Environment:
     spec_parser.add_argument("--output")
 
     # --- ANALYSIS & REPORTING ---
-    calibrate_parser = subparsers.add_parser("calibrate", help="Judge calibration")
-    calibrate_parser.add_argument("--path", required=True)
-    calibrate_parser.add_argument("--plot", action="store_true")
+    calibrate_parser = subparsers.add_parser("calibrate", help="Measure and visualize judge agreement against human-labeled ground truth")
+    calibrate_parser.add_argument("--path", required=True, help="Path to the calibrated run trace or results file")
+    calibrate_parser.add_argument("--plot", action="store_true", help="Generate a visualization of the calibration results")
 
     subparsers.add_parser("explain", help="Explain trace").add_argument("--path", required=True)
     
-    leaderboard_parser = subparsers.add_parser("leaderboard", help="Generate leaderboard")
-    leaderboard_parser.add_argument("--dir", default="runs")
-    leaderboard_parser.add_argument("--output", default="LEADERBOARD.md")
+    leaderboard_parser = subparsers.add_parser("leaderboard", help="Generate a performance comparison leaderboard from multiple run traces")
+    leaderboard_parser.add_argument("--dir", default="runs", help="Directory containing run traces to aggregate")
+    leaderboard_parser.add_argument("--output", default="LEADERBOARD.md", help="Output path for the generated leaderboard")
 
-    subparsers.add_parser("list-metrics", help="List metrics")
+    subparsers.add_parser("list-metrics", help="Display descriptions for all registered evaluation metrics")
 
-    report_parser = subparsers.add_parser("report", help="Generate report")
-    report_parser.add_argument("--path", required=True)
-    report_parser.add_argument("--share", action="store_true")
+    report_parser = subparsers.add_parser("report", help="Generate a stylized HTML report from a specific evaluation run")
+    report_parser.add_argument("--path", required=True, help="Path to the results or trace file")
+    report_parser.add_argument("--share", action="store_true", help="Generate a shareable report link (if configured)")
 
-    subparsers.add_parser("taxonomy", help="Show taxonomy")
+    subparsers.add_parser("taxonomy", help="Show the official AEH failure taxonomy for categorization")
 
     # --- UTILITIES ---
-    analyze_parser = subparsers.add_parser("analyze", help="Analyze GitHub repo")
-    analyze_parser.add_argument("url")
+    analyze_parser = subparsers.add_parser("analyze", help="Scan a GitHub repository to auto-generate evaluation scenarios")
+    analyze_parser.add_argument("url", help="URL of the GitHub repository to analyze")
+ 
+    translate_parser = subparsers.add_parser("auto-translate", help="Translate raw technical documents to AES JSON via local LLM")
+    translate_parser.add_argument("--input", required=True, help="Path to the raw document (PDF, MD, TXT)")
+    translate_parser.add_argument("--output", help="Optional path for the translated JSON output")
+    translate_parser.add_argument("--industry", help="Target industry sector for context-aware translation")
+    translate_parser.add_argument("--model", default="llama3", help="Local model identifier for the translation task")
 
-    translate_parser = subparsers.add_parser("auto-translate", help="Translate doc")
-    translate_parser.add_argument("--input", required=True)
-    translate_parser.add_argument("--output")
-    translate_parser.add_argument("--industry")
-    translate_parser.add_argument("--model", default="llama3")
-
-    ci_parser = subparsers.add_parser("ci", help="CI utilities")
+    ci_parser = subparsers.add_parser("ci", help="CI/CD utility suite for automated pipeline integration")
     ci_sub = ci_parser.add_subparsers(dest="ci_command")
-    ci_sub.add_parser("generate")
+    ci_sub.add_parser("generate", help="Generate a GitHub Actions workflow for the current environment")
 
-    cleanup_parser = subparsers.add_parser("cleanup-runs", help="Cleanup traces")
-    cleanup_parser.add_argument("--days", type=int, default=7)
-    cleanup_parser.add_argument("--force", action="store_true")
+    cleanup_parser = subparsers.add_parser("cleanup-runs", help="Housekeeping: Remove old run traces and log artifacts")
+    cleanup_parser.add_argument("--days", type=int, default=7, help="Remove files older than N days")
+    cleanup_parser.add_argument("--force", action="store_true", help="Bypass confirmation prompt for deletion")
 
-    subparsers.add_parser("doctor", help="Check env")
+    subparsers.add_parser("doctor", help="Audit the local environment for configuration markers and dependencies")
 
-    export_parser = subparsers.add_parser("export", help="Export trace")
-    export_parser.add_argument("--input", required=True)
-    export_parser.add_argument("--output", required=True)
+    export_parser = subparsers.add_parser("export", help="Export run traces to external formats (e.g., HuggingFace datasets)")
+    export_parser.add_argument("--input", required=True, help="Path to the local trace file")
+    export_parser.add_argument("--output", required=True, help="Target path/identifier for the exported data")
 
-    failures_parser = subparsers.add_parser("failures", help="Failure utilities")
+    failures_parser = subparsers.add_parser("failures", help="Failure Corpus search and analysis utilities")
     failures_sub = failures_parser.add_subparsers(dest="failures_command")
-    failures_sub.add_parser("search").add_argument("query")
+    failures_sub.add_parser("search", help="Search for similar failures across the global corpus").add_argument("query", help="Search query string")
 
-    drift_parser = subparsers.add_parser("import-drift", help="Import production traces")
-    drift_parser.add_argument("--input", required=True)
-    drift_parser.add_argument("--industry", required=True)
+    drift_parser = subparsers.add_parser("import-drift", help="Import production traces as new evaluation scenarios")
+    drift_parser.add_argument("--input", required=True, help="Path to production log or trace")
+    drift_parser.add_argument("--industry", required=True, help="Assume sector-specific schema for the import")
 
-    init_parser = subparsers.add_parser("init", help="Init environment")
-    init_parser.add_argument("--dir")
-    init_parser.add_argument("--industry")
-    init_parser.add_argument("--protocol", default="http")
-    init_parser.add_argument("--standard")
-    init_parser.add_argument("--registry")
+    init_parser = subparsers.add_parser("init", help="Scaffold a new benchmark environment and local industry registry")
+    init_parser.add_argument("--dir", help="Target directory for initialization")
+    init_parser.add_argument("--industry", help="Primary industry sector to initialize")
+    init_parser.add_argument("--protocol", default="http", help="Default agent communication protocol")
+    init_parser.add_argument("--standard", help="Initial AES standard to adopt")
+    init_parser.add_argument("--registry", help="Remote registry URL for scenario synchronization")
 
-    subparsers.add_parser("install", help="Install pack").add_argument("pack")
+    subparsers.add_parser("install", help="Install curated scenario packs for specific industrial benchmarks").add_argument("pack", help="Name of the scenario pack to install")
 
-    plugin_parser = subparsers.add_parser("plugin", help="Plugin management")
+    plugin_parser = subparsers.add_parser("plugin", help="Execute and manage plugin-specific subcommands")
     plugin_sub = plugin_parser.add_subparsers(dest="plugin_command")
-    plugin_sub.add_parser("list")
-    plugin_reg = plugin_sub.add_parser("register")
-    plugin_reg.add_argument("path")
-    plugin_unreg = plugin_sub.add_parser("unregister")
-    plugin_unreg.add_argument("name")
+    plugin_sub.add_parser("list", help="List all registered and active plugins")
+    plugin_reg = plugin_sub.add_parser("register", help="Register a new external plugin by path")
+    plugin_reg.add_argument("path", help="File system path to the plugin directory")
+    plugin_unreg = plugin_sub.add_parser("unregister", help="Unregister an existing plugin by name")
+    plugin_unreg.add_argument("name", help="Identifier of the plugin to remove")
 
-    registry_parser = subparsers.add_parser("registry", help="Registry management")
+    registry_parser = subparsers.add_parser("registry", help="Industry scenario registry management")
     registry_sub = registry_parser.add_subparsers(dest="registry_command")
-    registry_sub.add_parser("sync")
-    registry_add = registry_sub.add_parser("add")
-    registry_add.add_argument("--id", required=True)
-    registry_add.add_argument("--url", required=True)
-    registry_sub.add_parser("search").add_argument("query")
+    registry_sub.add_parser("sync", help="Synchronize the local registry with remote industry standards")
+    registry_add = registry_sub.add_parser("add", help="Add a new scenario manifest to the local registry")
+    registry_add.add_argument("--id", required=True, help="Unique ID for the registry entry")
+    registry_add.add_argument("--url", required=True, help="Source URL or path for the manifest")
+    registry_sub.add_parser("search", help="Search the local and remote registries").add_argument("query", help="Search string")
 
     return parser
 

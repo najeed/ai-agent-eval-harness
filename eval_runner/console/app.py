@@ -3,6 +3,7 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from .routes import register_core_routes, core_bp
 from .auth import auth_bp
+from .demo_agent import demo_bp
 from eval_runner.plugins import manager
 
 
@@ -13,6 +14,8 @@ def create_app():
     CORS(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(core_bp)
+    app.register_blueprint(demo_bp)
+
 
     # Load external hooks for zero-touch discovery
     manager.load_plugins()

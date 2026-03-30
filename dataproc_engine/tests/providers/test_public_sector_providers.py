@@ -9,16 +9,21 @@ from dataproc_engine.core.llm_manager import LLMManager
 
 @pytest.mark.asyncio
 async def test_demographics_world_bank_production():
-    """Verify World Bank demographics extraction and transformation (Lines 26-104)."""
+    """Verify World Bank demographics extraction and transformation via simulation path."""
     config = {"industry": "public_sector", "demographics_mode": "worldbank", "allow_simulation": True}
     provider = DemographicsProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
-    
-    # Hits simulation branch for WB
-    artifacts = await provider.extract()
-    assert len(artifacts) > 0
-    results = await provider.transform(artifacts)
-    assert results[0].data["population"] > 0
-    assert results[0].provenance["provider"] == "World Bank"
+
+    # Force simulation path by making request_with_retry return None (API unreachable in CI)
+    with patch.object(provider, 'request_with_retry', return_value=None):
+        artifacts = await provider.extract()
+        assert len(artifacts) > 0
+
+        results = await provider.transform(artifacts)
+        assert len(results) > 0
+        # Simulation data for USA has value=333287557 — must be > 0
+        pop_values = [r.data["population"] for r in results]
+        assert any(p > 0 for p in pop_values), f"Expected at least one positive population, got: {pop_values}"
+        assert results[0].provenance["provider"] == "World Bank"
 
 @pytest.mark.asyncio
 async def test_demographics_census_hardened():

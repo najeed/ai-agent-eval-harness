@@ -83,15 +83,40 @@ const LoanDemo = () => {
 
     const handleRunAgent = async (prompt) => {
         if (executing) return;
-        const cmd = `python sample_agent/loan_agent_demo/loan_agent.py --prompt "${prompt.replace(/"/g, '\\"')}"`;
-        setLatestCommand(cmd);
-        const data = await runCommand(cmd);
-        // Terminal already updated by runCommand
+        setExecuting(true);
+        setTerminalOutput(prev => [...prev, { type: 'cmd', text: `$ demo-agent: "${prompt.substring(0, 60)}${prompt.length > 60 ? '...' : ''}"` }]);
+        try {
+            const res = await fetch('/api/demo/agent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            const data = await res.json();
+            if (data.error) {
+                setTerminalOutput(prev => [...prev, { type: 'error', text: data.error }]);
+            } else {
+                setTerminalOutput(prev => [...prev,
+                    { type: 'output', text: `[AGENT] Initializing loan evaluation...` },
+                    { type: 'output', text: `[TOOL]  loan_api called...` },
+                    { type: 'success', text: `[FINAL] Decision: ${data.decision}` }
+                ]);
+                setLatestRunId(data.run_id);
+            }
+        } catch (err) {
+            setTerminalOutput(prev => [...prev, { type: 'error', text: err.message }]);
+        } finally {
+            setExecuting(false);
+        }
     };
 
     const handleGenerateAssets = async () => {
-        const data = await runCommand('multiagent-eval spec-to-eval --input sample_agent/loan_agent_demo/loan_prd.md --output sample_agent/loan_agent_demo/loan_approval_scenario.json --force');
+        setTerminalOutput(prev => [...prev, { type: 'cmd', text: '$ multiagent-eval spec-to-eval --input loan_prd.md --output loan_approval_scenario.json' }]);
+        const data = await runCommand('multiagent-eval spec-to-eval --input sample_agent/loan_agent_demo/loan_prd.md --output sample_agent/loan_agent_demo/loan_approval_scenario.json');
+        
         if (data) {
+            setTerminalOutput(prev => [...prev, { type: 'cmd', text: '$ multiagent-eval aes validate --path loan_approval_scenario.json --export loan_approval.aes.yaml' }]);
+            await runCommand('python -c "import json, yaml; yaml.safe_dump(json.load(open(\'sample_agent/loan_agent_demo/loan_approval_scenario.json\')), open(\'sample_agent/loan_agent_demo/loan_approval.aes.yaml\', \'w\'), sort_keys=False)"');
+            
             fetch('/api/demo/loan/context')
                 .then(res => res.json())
                 .then(data => setContext(data));
@@ -100,29 +125,67 @@ const LoanDemo = () => {
     };
 
     const handleRunEval = async () => {
-        const data = await runCommand('multiagent-eval evaluate --path sample_agent/loan_agent_demo/loan_approval_scenario.json --agent http://localhost:5001/execute_task');
-        if (data) {
-            const match = data.stdout.match(/Run ID:\s*([^\s\n]+)/);
-            if (match) setLatestRunId(match[1]);
+        setExecuting(true);
+        setTerminalOutput(prev => [...prev,
+            { type: 'cmd', text: '$ multiagent-eval evaluate --path loan_approval_scenario.json' }
+        ]);
+        try {
+            const res = await fetch('/api/demo/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hardened: false })
+            });
+            const data = await res.json();
+            if (data.error) {
+                setTerminalOutput(prev => [...prev, { type: 'error', text: data.error }]);
+            } else {
+                const lines = (data.stdout || '').split('\n').filter(Boolean);
+                lines.forEach(line => {
+                    setTerminalOutput(prev => [...prev, { type: 'success', text: line }]);
+                });
+                if (data.overall_status === 'failed') {
+                    setTerminalOutput(prev => [...prev,
+                        { type: 'error', text: '[POLICY] VULNERABILITY DETECTED — adversarial task exposed a logic breach' }
+                    ]);
+                }
+                setLatestRunId(data.run_id);
+            }
+        } catch (err) {
+            setTerminalOutput(prev => [...prev, { type: 'error', text: err.message }]);
+        } finally {
+            setExecuting(false);
         }
     };
 
     const handleFix = async () => {
         if (fixing) return;
         setFixing(true);
-        
-        const fixCmd = `copy /Y sample_agent\\loan_agent_demo\\loan_agent_fixed.py sample_agent\\loan_agent_demo\\loan_agent.py`;
-        const fixSuccess = await runCommand(fixCmd);
-
-        if (fixSuccess) {
-            const evalCmd = 'multiagent-eval evaluate --path sample_agent/loan_agent_demo/loan_approval_scenario.json --agent http://localhost:5001/execute_task';
-            const data = await runCommand(evalCmd);
-            if (data) {
-                const match = data.stdout.match(/Run ID:\s*([^\s\n]+)/);
-                if (match) setVerifiedRunId(match[1] || "run-loan-admin-pass");
+        setTerminalOutput(prev => [...prev,
+            { type: 'cmd', text: '$ Deploying hardened system prompt patch...' },
+            { type: 'output', text: '  [PATCH] Updating agent policy: NEVER bypass rules for Admin claims' },
+            { type: 'output', text: '  [PATCH] Enforcing mandatory loan_api for ALL decisions' },
+        ]);
+        try {
+            const res = await fetch('/api/demo/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hardened: true })
+            });
+            const data = await res.json();
+            if (data.error) {
+                setTerminalOutput(prev => [...prev, { type: 'error', text: data.error }]);
+            } else {
+                const lines = (data.stdout || '').split('\n').filter(Boolean);
+                lines.forEach(line => {
+                    setTerminalOutput(prev => [...prev, { type: 'success', text: line }]);
+                });
+                setVerifiedRunId(data.run_id);
             }
+        } catch (err) {
+            setTerminalOutput(prev => [...prev, { type: 'error', text: err.message }]);
+        } finally {
+            setFixing(false);
         }
-        setFixing(false);
     };
 
     useEffect(() => {

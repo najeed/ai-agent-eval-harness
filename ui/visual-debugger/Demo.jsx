@@ -1,5 +1,27 @@
 const { useState, useEffect } = React;
 
+// Lazy wrapper — polls until window.VisualDebugger is registered by App.jsx, then renders it.
+// Fixes the race condition where Demo.jsx mounts before App.jsx sets window.VisualDebugger.
+const LazyDebugger = ({ runId, highlightFailure = false }) => {
+    const [ready, setReady] = useState(!!window.VisualDebugger);
+    useEffect(() => {
+        if (ready) return;
+        const iv = setInterval(() => {
+            if (window.VisualDebugger) { setReady(true); clearInterval(iv); }
+        }, 100);
+        return () => clearInterval(iv);
+    }, []);
+
+    if (!ready) return (
+        <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-600">
+            <div className="w-10 h-10 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
+            <span className="text-xs font-bold uppercase tracking-widest animate-pulse">Loading Debugger...</span>
+        </div>
+    );
+    const VD = window.VisualDebugger;
+    return <VD runId={runId} highlightFailure={highlightFailure} onNotify={() => {}} />;
+};
+
 const Demo = () => {
     useEffect(() => {
         // Init logic if needed
@@ -8,7 +30,6 @@ const Demo = () => {
     const [step, setStep] = useState(1);
     const [fixing, setFixing] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const { DraggableCard } = window.DemoHelper;
 
     const nextStep = () => setStep(s => Math.min(s + 1, 7));
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
@@ -23,9 +44,10 @@ const Demo = () => {
     };
 
     const renderStep = () => {
-        // Shared components from window
-        const Icon = window.Icon;
-        const VisualDebugger = window.VisualDebugger;
+        // Shared components from window — accessed at render time to handle async loading
+        const Icon = window.Icon || (() => null);
+        const VisualDebugger = window.VisualDebugger || (() => <div className="p-8 text-slate-500">Debugger loading...</div>);
+        const { DraggableCard = ({ children, className = '' }) => <div className={className}>{children}</div> } = window.DemoHelper || {};
 
         switch (step) {
             case 1:
@@ -102,7 +124,7 @@ const Demo = () => {
                             <button onClick={nextStep} className="px-6 py-2 bg-white text-black font-black rounded-full text-[10px] uppercase tracking-widest z-50">Isolate Root Cause</button>
                         </div>
                         <div className="flex-1 overflow-hidden opacity-90 h-[500px] md:h-[600px] lg:h-[750px] border border-slate-800 rounded-2xl">
-                            <VisualDebugger runId="run-loan-risk-fail" />
+                            <LazyDebugger runId="run-loan-risk-fail" />
                         </div>
                     </div>
                 );
@@ -132,7 +154,7 @@ const Demo = () => {
                             </div>
                         </DraggableCard>
                         <div className="flex-1 h-[500px] md:h-[600px] lg:h-[750px] border border-slate-800 rounded-2xl overflow-hidden">
-                            <VisualDebugger runId="run-loan-risk-fail" highlightFailure={true} />
+                            <LazyDebugger runId="run-loan-risk-fail" highlightFailure={true} />
                         </div>
                     </div>
                 );
@@ -168,7 +190,7 @@ const Demo = () => {
                             </div>
                         </div>
                         <div className="flex-1 h-[500px] md:h-[600px] lg:h-[750px] border border-slate-800 rounded-2xl overflow-hidden">
-                            <VisualDebugger runId={showSuccess ? "run-loan-risk-pass" : "run-loan-risk-fail"} highlightFailure={false} />
+                            <LazyDebugger runId={showSuccess ? "run-loan-risk-pass" : "run-loan-risk-fail"} highlightFailure={false} />
                         </div>
                         {!fixing && step === 5 && showSuccess && (
                             <DraggableCard className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[55] animate-in zoom-in bounce-in-down duration-1000">
