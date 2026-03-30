@@ -10,8 +10,8 @@ async def test_education_hegemony():
     """Exhaustive coverage for every EducationProvider branch."""
     llm = LLMManager({"llm_strategy": "heuristic"})
     modes = [
-        {"level": "Higher"}, {"level": "K-12"}, 
-        {"schema_type": "unesco"}, {"schema_type": "mooc"}, {"schema_type": "kaggle"}
+        {"education_mode": "nces"}, {"education_mode": "unesco"}, 
+        {"education_mode": "mooc"}, {"education_mode": "kaggle"}
     ]
     for mode in modes:
         config = {"industry": "education", "allow_simulation": True}
@@ -28,10 +28,10 @@ async def test_energy_hegemony():
     """Exhaustive coverage for every EnergyProvider branch."""
     llm = LLMManager({"llm_strategy": "heuristic"})
     modes = [
-        {"schema_type": "eia", "series_id": "TEST"},
-        {"schema_type": "energy_balances"},
-        {"schema_type": "opsd"},
-        {"schema_type": "balances"}
+        {"eia_mode": "opsd", "series_id": "TEST"},
+        {"eia_mode": "energy_balances"},
+        {"eia_mode": "opsd"},
+        {"eia_mode": "balances"}
     ]
     for mode in modes:
         config = {"industry": "energy", "allow_simulation": True}

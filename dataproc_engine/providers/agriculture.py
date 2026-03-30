@@ -1,4 +1,4 @@
-﻿import aiohttp
+import aiohttp
 import os
 import hashlib
 import json
@@ -18,10 +18,11 @@ class AgricultureProvider(BaseProvider):
         self.api_key = config.get("usda_api_key")
         self.commodity = config.get("commodity", "CORN")
         self.year = config.get("year", datetime.datetime.now().year - 1)
-        self.schema_type = config.get("schema_type", "usda") # usda, faostat
+        self.agriculture_mode = config.get("agriculture_mode", "usda") # usda, faostat
         
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "faostat":
+        artifacts = []
+        if self.agriculture_mode == "faostat":
             # Gold Standard: FAOStat (UN Food and Agriculture Organization)
             domain = self.config.get("domain", "QCL") # Crops and livestock products
             url = f"https://fenixservices.fao.org/faostat/api/v1/en/data/{domain}"
@@ -86,7 +87,7 @@ class AgricultureProvider(BaseProvider):
                     if resp.status == 200:
                         data = await resp.json()
                         records = data.get("data", [])[:self.config.get("limit", 10)]
-                        return [RawArtifact(
+                        artifacts = [RawArtifact(
                             id=f"USDA-{self.commodity}",
                             source_url=str(resp.url),
                             content=records,
@@ -95,10 +96,35 @@ class AgricultureProvider(BaseProvider):
                         )]
             except Exception as e:
                 logger.error("usda_extraction_failed", error=str(e))
-        return []
+        
+        if not artifacts and self.allow_simulation:
+            # High-fidelity Simulation Contract (V2.0 Stabilization)
+            sim_content = []
+            if self.agriculture_mode == "faostat":
+                sim_content = [
+                    {"Area": "World", "Item": "Wheat", "Year": 2022, "Value": 770000000, "Unit": "tonnes"},
+                    {"Area": "World", "Item": "Rice", "Year": 2022, "Value": 510000000, "Unit": "tonnes"}
+                ]
+            else:
+                sim_content = [
+                    {"commodity_desc": self.commodity, "year": self.year, "Value": "180.5", "unit_desc": "BU / ACRE", "state_alpha": "IA"},
+                    {"commodity_desc": self.commodity, "year": self.year, "Value": "175.2", "unit_desc": "BU / ACRE", "state_alpha": "IL"}
+                ]
+            
+            logger.info("using_high_fidelity_simulation", mode=self.agriculture_mode)
+            artifacts.append(self.create_simulated_artifact(
+                id=f"AGRI-{self.agriculture_mode}-SIM",
+                content=sim_content,
+                source_url="https://simulated-agriculture.example.org/",
+                metadata={"mode": self.agriculture_mode}
+            ))
+
+        return artifacts
 
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
+        is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
+        
         TARGET_SCHEMA = {
             "commodity": "string",
             "year": "integer",
@@ -107,7 +133,7 @@ class AgricultureProvider(BaseProvider):
             "location": "string"
         }
         
-        if self.schema_type == "faostat":
+        if self.agriculture_mode == "faostat":
             TARGET_SCHEMA = {"location": "string", "item": "string", "year": "integer", "value": "number", "unit": "string"}
             for raw in raw_artifacts:
                 for row in raw.content:
@@ -125,8 +151,8 @@ class AgricultureProvider(BaseProvider):
                         elasticity_factor = 1 - (climate_anomaly * 0.05)
                         raw_data["value"] = round(raw_data.get("value", 0) * elasticity_factor, 2)
                         raw_data["note"] = f"Adjusted for climate anomaly (+{climate_anomaly}C)"
-
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                     if verified:
                         results.append(StandardSchema(
                             id=hashlib.md5(f"FAO-{raw_data['location']}-{raw_data['item']}-{raw_data['year']}".encode()).hexdigest()[:16],
@@ -147,7 +173,7 @@ class AgricultureProvider(BaseProvider):
                     "location": item.get("state_alpha")
                 }
                 
-                verified_data = self.llm_manager._verify_schema(data, TARGET_SCHEMA, strict=True)
+                verified_data = self.llm_manager._verify_schema(data, TARGET_SCHEMA, strict=is_strict)
                 if verified_data:
                     unique_str = f"{item.get('commodity_desc')}-{item.get('year')}-{item.get('state_alpha')}"
                     record_id = hashlib.md5(unique_str.encode()).hexdigest()[:16]

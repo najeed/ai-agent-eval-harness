@@ -21,25 +21,24 @@ async def test_llm_manager_v2_cost_tracking():
     config = {"llm_strategy": "cloud", "llm_provider": "openai"}
     manager = LLMManager(config)
     
-    mock_usage = {
-        "prompt_tokens": 1000,
-        "completion_tokens": 500
-    }
+    # Use a standard async function instead of AsyncMock to avoid protocol errors
+    async def mock_call(*args, **kwargs):
+        return {"revenue": 1000.0}
+    
+    mock_usage = {"prompt_tokens": 1000, "completion_tokens": 500}
     
     with patch.dict("os.environ", {"OPENAI_API_KEY": "fake-key"}):
-        with patch("dataproc_engine.core.llm_manager.LLMManager._call_openai", new_callable=AsyncMock) as mock_call:
-            mock_call.return_value = {"revenue": 1000.0}
-            
-            # Manually trigger record_usage since we are mocking the call
+        with patch("dataproc_engine.core.llm_manager.LLMManager._call_openai", side_effect=mock_call):
+            # Manually trigger record_usage
             manager._record_usage(mock_usage, "gpt-4o")
             
-            # gpt-4o: ($0.50 * 1) + ($1.50 * 0.5) = 0.5 + 0.75 = 1.25 cents
+            # gpt-4o: ($0.50 * 1) + ($1.50 * 0.5) = 1.25 cents
             economics = manager.get_session_economics()
             assert economics["total_cost_cents"] == 1.25
             assert economics["roi_status"] == "positive"
 
 def test_parity_synthesizer_conservative_logic():
-    from dataproc_engine.core.synthesis_engine import ParitySynthesizer
+    from dataproc_engine.core.paritygen.parity_synthesizer import ParitySynthesizer
     engine = ParitySynthesizer()
     
     # 1. Test Public Domain (SEC)

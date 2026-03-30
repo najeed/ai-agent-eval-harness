@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import asyncio
 import aiohttp
@@ -15,11 +15,11 @@ class MediaProvider(BaseProvider):
     """
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
-        self.schema_type = config.get("schema_type", "imdb") # imdb, spotify
+        self.media_mode = config.get("media_mode", "imdb") # imdb, spotify
         self.api_key = config.get("spotify_api_client_id")
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "imdb":
+        if self.media_mode == "imdb":
             # Gold Standard: IMDb Datasets (Subset)
             # URI: https://datasets.imdbws.com/
             url = "https://datasets.imdbws.com/"
@@ -57,7 +57,7 @@ class MediaProvider(BaseProvider):
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
         
-        if self.schema_type == "imdb":
+        if self.media_mode == "imdb":
             TARGET_SCHEMA = {"title": "string", "rating": "number", "votes": "integer"}
             for raw in raw_artifacts:
                 for row in raw.content:

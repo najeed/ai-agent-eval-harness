@@ -11,10 +11,11 @@ High-fidelity crop production and global trade metrics for AI agents. This secto
 - **FAO**: Food and Agriculture Organization (FAOStat Global).
 
 ## 🛠️ Schema (`StandardSchema`)
-- `commodity`: Crop name, LiveStock ID, or Product category.
-- `metric`: `production_volume_tons`, `yield_per_acre`, or `export_value_usd`.
-- `value`: Numerical reading.
-- `region`: Global or state-level granularity.
+- `commodity` / `item`: Crop name (e.g., CORN) or Global item.
+- `year`: Integer reading (e.g., 2023).
+- `yield_value` / `value`: Numerical reading (e.g., 180.5).
+- `unit`: Unit of measure (e.g., BU / ACRE, tonnes).
+- `location`: Geographic granularity (e.g., IA, World).
 
 ---
 [**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)

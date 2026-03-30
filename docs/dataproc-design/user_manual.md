@@ -91,8 +91,10 @@ The engine supports **16 standard industrial sectors** with specialized gold-sta
 
 ## 🛡️ 4. Gold Standards & BYOD (Bring Your Own Data)
 
-### Compliance-First Architecture
-For restricted datasets (CC BY-NC-SA 4.0, Restricted Clinical Repository, Energy Provider Agency), the engine defaults to **High-Fidelity Simulations** to ensure 100% Apache 2.0 compliance for redistribution.
+### Compliance-First Architecture (Zero-Input Simulation)
+For all 16 sectors, the engine implements a mission-critical **Zero-Input Fallback**. If no `--input-uri` is provided and API keys are absent, the engine defaults to **High-Fidelity Simulations**. 
+- **Parity Guarantee**: 100% of the industrial suite will produce `StandardSchema` records even in air-gapped or mock environments.
+- **Contract**: Every simulation is industry-aware (e.g., Olist/UCI for Ecommerce, USDA/FAOStat for Agriculture).
 
 ### Unlocking Live Processing
 To use actual commercial/restricted benchmarks, follow these steps:

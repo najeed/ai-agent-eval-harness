@@ -27,7 +27,7 @@ async def test_agriculture_api_deep_hit():
 @pytest.mark.asyncio
 async def test_finance_credit_risk_hit():
     """Mock UCI Credit Risk XLS loading."""
-    config = {"industry": "finance", "schema_type": "credit_risk", "allow_simulation": False}
+    config = {"industry": "finance", "finance_mode": "credit_risk", "allow_simulation": False}
     provider = FinanceProvider(config, llm_manager=LLMManager({}))
     
     # Mock load_raw_data to return a DataFrame
@@ -41,7 +41,7 @@ async def test_finance_credit_risk_hit():
 @pytest.mark.asyncio
 async def test_healthcare_cms_hit_hardened():
     """Mock CMS API with correct schema keys for HealthcareProvider."""
-    config = {"industry": "healthcare", "schema_type": "cms", "allow_simulation": True}
+    config = {"industry": "healthcare", "healthcare_mode": "cms", "allow_simulation": True}
     provider = HealthcareProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     # CMS expected keys: "Hospital Name", "Provider ID"

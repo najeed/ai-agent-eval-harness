@@ -1,13 +1,22 @@
 import pytest
 import pandas as pd
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch, MagicMock
 from dataproc_engine.providers.telecom import TelecomProvider
 from dataproc_engine.core.llm_manager import LLMManager
+
+class MockResponse:
+    """Explicit Async Context Manager for aiohttp mocks."""
+    def __init__(self, status, json_data=None):
+        self.status = status
+        self._json = json_data or {}
+    async def json(self): return self._json
+    async def __aenter__(self): return self
+    async def __aexit__(self, *args): pass
 
 @pytest.mark.asyncio
 async def test_telecom_itu_production_loop():
     """Verify ITU ICT Statistics transformation (Lines 147-166)."""
-    config = {"industry": "telecom", "schema_type": "itu", "allow_simulation": True}
+    config = {"industry": "telecom", "telecom_mode": "itu", "allow_simulation": True}
     provider = TelecomProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()
@@ -27,7 +36,7 @@ async def test_telecom_ookla_production_loop(tmp_path):
     csv_path = str(tmp_path / "ookla.csv")
     df.to_csv(csv_path, index=False)
     
-    config = {"industry": "telecom", "schema_type": "ookla", "input_uri": csv_path}
+    config = {"industry": "telecom", "telecom_mode": "ookla", "input_uri": csv_path}
     provider = TelecomProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()
@@ -40,15 +49,11 @@ async def test_telecom_ookla_production_loop(tmp_path):
 @pytest.mark.asyncio
 async def test_telecom_fcc_api_retry_and_simulation():
     """Verify FCC API failure and simulation fallbacks (Lines 103-140)."""
-    config = {"industry": "telecom", "schema_type": "fcc", "allow_simulation": True}
+    config = {"industry": "telecom", "telecom_mode": "fcc", "allow_simulation": True}
     provider = TelecomProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     # 1. API Failure triggers simulated fallback within fetch_fcc
-    with patch("aiohttp.ClientSession.get") as mock_get:
-        mock_resp = AsyncMock()
-        mock_resp.status = 500 # Fail
-        mock_get.return_value.__aenter__.return_value = mock_resp
-        
+    with patch("aiohttp.ClientSession.get", return_value=MockResponse(500)):
         artifacts = await provider.extract()
         assert len(artifacts) > 0
         assert "fcc-stream" in artifacts[0].id
@@ -58,10 +63,10 @@ async def test_telecom_fcc_api_retry_and_simulation():
 @pytest.mark.asyncio
 async def test_telecom_validation_branches():
     """Exercise Ookla/ITU validation logic (Lines 241-252)."""
-    provider = TelecomProvider({"schema_type": "ookla"}, llm_manager=LLMManager({}))
+    provider = TelecomProvider({"telecom_mode": "ookla"}, llm_manager=LLMManager({}))
     bad_record = MagicMock(data={"avg_download_speed": -10.0})
     assert provider.validate([bad_record]) is False
     
-    provider.schema_type = "itu"
+    provider.telecom_mode = "itu"
     bad_record_itu = MagicMock(data={"usage_value": -1.0})
     assert provider.validate([bad_record_itu]) is False

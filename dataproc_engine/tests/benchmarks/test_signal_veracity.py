@@ -31,15 +31,16 @@ async def test_correlator_edge_branches():
 @pytest.mark.asyncio
 async def test_telecom_ookla_hit():
     """Mock Ookla performance extraction for TelecomProvider."""
-    config = {"industry": "telecom", "mode": "ookla", "allow_simulation": False}
+    config = {"industry": "telecom", "telecom_mode": "ookla", "allow_simulation": False}
     provider = TelecomProvider(config, llm_manager=LLMManager({}))
     
     df = pd.DataFrame([{"quadkey": "123", "avg_d_kbps": 50000, "avg_u_kbps": 20000, "avg_lat_ms": 15, "tests": 10, "devices": 5}])
     with patch.object(provider, "load_raw_data", return_value=df):
         artifacts = await provider.extract()
         assert len(artifacts) > 0
+        assert any("OOKLA" in a.id for a in artifacts)
         transformed = await provider.transform(artifacts)
-        assert len(transformed) > 0 # Hits 116-126
+        assert len(transformed) > 0
 
 @pytest.mark.asyncio
 async def test_unstructured_common_crawl_hit():
@@ -51,7 +52,7 @@ async def test_unstructured_common_crawl_hit():
     with patch("os.path.exists", return_value=True):
         artifacts = await provider.extract()
         assert len(artifacts) > 0
-    # CALL TRANSFORM TO HIT LINES 136-153
-    transformed = await provider.transform(artifacts)
+        assert any("doc-" in a.id for a in artifacts) or any("CC-" in a.id for a in artifacts)
+        transformed = await provider.transform(artifacts)
     assert len(transformed) > 0
     assert transformed[0].industry == "unstructured"

@@ -20,7 +20,7 @@ async def test_agriculture_exception_handler():
 @pytest.mark.asyncio
 async def test_finance_sec_parsing_error():
     """Trigger the catch block in FinanceProvider.extract (Lines 129-131)."""
-    config = {"industry": "finance", "schema_type": "sec_edgar", "ciks": ["0000320193"], "allow_simulation": False}
+    config = {"industry": "finance", "finance_mode": "sec_edgar", "ciks": ["0000320193"], "allow_simulation": False}
     provider = FinanceProvider(config, llm_manager=LLMManager({}))
     
     with patch("aiohttp.ClientSession.get") as mock_get:
@@ -36,7 +36,7 @@ async def test_finance_sec_parsing_error():
 @pytest.mark.asyncio
 async def test_healthcare_api_error_branches():
     """Trigger various error branches in HealthcareProvider."""
-    config = {"industry": "healthcare", "schema_type": "cms", "allow_simulation": False}
+    config = {"industry": "healthcare", "healthcare_mode": "cms", "allow_simulation": False}
     provider = HealthcareProvider(config, llm_manager=LLMManager({}))
     
     with patch("aiohttp.ClientSession.get") as mock_get:

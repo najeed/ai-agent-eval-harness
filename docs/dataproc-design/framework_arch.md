@@ -15,9 +15,10 @@ The central controller that:
 Each industry pilot implements a `Provider` that follows a standardized 4-stage lifecycle:
 
 1.  **Extract**: Fetches raw data from external APIs or files. Supports PDF/Web/REST.
-2.  **Transform (Async)**: Maps raw data into `StandardSchema` using Tiered LLM extraction (Cloud -> Local -> Heuristic).
-3.  **Validate**: Performs integrity checks and domain-specific consistency verification.
-4.  **Correlate**: Establishes cross-industry links and enriches records with fuzzy-matched identity resolution.
+2.  **Simulate (Fallback)**: When source data is unavailable, generates high-fidelity, industry-aware mock artifacts using the `BaseProvider` simulation factory.
+3.  **Transform (Async)**: Maps raw data into `StandardSchema` using Tiered LLM extraction (Cloud -> Local -> Heuristic).
+4.  **Validate**: Performs integrity checks and domain-specific consistency verification.
+5.  **Correlate**: Establishes cross-industry links and enriches records with fuzzy-matched identity resolution.
 
 ## Deep Hardening Layers
 
@@ -38,7 +39,9 @@ graph TD
     A[Dataset Engine] -->|Register| D{Provider Instance}
     D --> Resiliency[Circuit Breaker/Retry]
     Resiliency --> E[Async Extractor]
-    D --> Security[PII Scrubber]
+    E -->|Empty Result| sim[High-Fidelity Simulation]
+    sim --> Security[PII Scrubber]
+    E --> Security
     Security --> F[Async Transformer]
     F -->|Tiered Fallback| LLM[LLMManager]
     D --> G[Validator]

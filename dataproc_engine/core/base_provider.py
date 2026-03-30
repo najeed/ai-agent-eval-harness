@@ -102,8 +102,9 @@ class BaseProvider(ABC):
         import datetime
         final_metadata = metadata or {}
         final_metadata["simulation"] = True
+        final_id = id if id.startswith("sim-") else f"sim-{id}"
         return RawArtifact(
-            id=f"sim-{id}",
+            id=final_id,
             source_url=source_url,
             content=content,
             metadata=final_metadata,

@@ -10,7 +10,7 @@ from dataproc_engine.core.llm_manager import LLMManager
 @pytest.mark.asyncio
 async def test_demographics_world_bank_production():
     """Verify World Bank demographics extraction and transformation (Lines 26-104)."""
-    config = {"industry": "public_sector", "schema_type": "world_bank", "allow_simulation": True}
+    config = {"industry": "public_sector", "demographics_mode": "worldbank", "allow_simulation": True}
     provider = DemographicsProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     # Hits simulation branch for WB
@@ -23,7 +23,7 @@ async def test_demographics_world_bank_production():
 @pytest.mark.asyncio
 async def test_demographics_census_hardened():
     """Verify US Census transformation logic (Lines 107-127)."""
-    config = {"industry": "public_sector", "schema_type": "census", "allow_simulation": True}
+    config = {"industry": "public_sector", "demographics_mode": "census", "allow_simulation": True}
     provider = DemographicsProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()
@@ -57,7 +57,7 @@ async def test_public_sector_local_load_boost(tmp_path):
 async def test_housing_fhfa_transformation():
     """Verify FHFA/HUD housing transformation (Lines 61-79)."""
     # Create raw artifact mimicking FHFA structure
-    provider = HousingProvider({"industry": "public_sector", "schema_type": "fhfa"}, llm_manager=LLMManager({"llm_provider": "heuristic"}))
+    provider = HousingProvider({"industry": "public_sector", "housing_mode": "hud"}, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     sim_data = [{"region": "West", "index_value": 250.5, "year": 2023}]
     artifact = provider.create_simulated_artifact(id="FHFA-SIM", content=sim_data)
     

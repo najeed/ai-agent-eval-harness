@@ -15,7 +15,12 @@ async def test_ecommerce_olist_production_loop(tmp_path):
     csv_path = str(tmp_path / "olist.csv")
     df.to_csv(csv_path, index=False)
     
-    config = {"industry": "ecommerce", "schema_type": "olist", "input_uris": [csv_path], "allow_simulation": False}
+    config = {
+        "industry": "ecommerce",
+        "ecommerce_mode": "olist",
+        "input_uris": [csv_path],
+        "allow_simulation": False
+    }
     llm = LLMManager({"llm_provider": "heuristic"})
     provider = EcommerceProvider(config, llm_manager=llm)
     
@@ -37,7 +42,7 @@ async def test_ecommerce_uci_production_loop(tmp_path):
     csv_path = str(tmp_path / "uci.csv")
     df.to_csv(csv_path, index=False)
     
-    config = {"industry": "ecommerce", "schema_type": "uci", "input_uris": [csv_path]}
+    config = {"industry": "ecommerce", "ecommerce_mode": "uci", "input_uris": [csv_path]}
     provider = EcommerceProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()
@@ -48,7 +53,7 @@ async def test_ecommerce_uci_production_loop(tmp_path):
 @pytest.mark.asyncio
 async def test_ecommerce_cpi_inflation_impact():
     """Verify CPI-impact weighting for sentiment (Lines 143-147)."""
-    config = {"industry": "ecommerce", "schema_type": "standard", "cpi_impact": 0.1} # 10% inflation
+    config = {"industry": "ecommerce", "ecommerce_mode": "standard", "cpi_impact": 0.1} # 10% inflation
     llm = LLMManager({"llm_provider": "heuristic"})
     provider = EcommerceProvider(config, llm_manager=llm)
     
@@ -65,7 +70,7 @@ async def test_ecommerce_cpi_inflation_impact():
 @pytest.mark.asyncio
 async def test_ecommerce_web_stream_hit():
     """Verify web-streaming/text extraction (Lines 43-67)."""
-    config = {"industry": "ecommerce", "schema_type": "standard", "input_uris": ["https://example.com/reviews.txt"]}
+    config = {"industry": "ecommerce", "ecommerce_mode": "standard", "input_uris": ["https://example.com/reviews.txt"]}
     provider = EcommerceProvider(config, llm_manager=LLMManager({}))
     
     with patch("aiohttp.ClientSession.get") as mock_get:

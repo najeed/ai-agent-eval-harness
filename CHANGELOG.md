@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Stabilization & Hardening
 - **Zero-Touch Core**: Transitioned to dynamic plugin and adapter discovery, removing manual registration overhead.
-- **Data Externalization**: Decoupled mock data from core providers; industry-specific collections are now managed via the `industries/` directory.
+- **Data Externalization**: Decoupled mock data from core providers; industry-specific collections are now managed via the `/industries` directory.
 - **Path Hardening**: Eliminated all absolute path dependencies in favor of project-local, environment-agnostic relative paths.
 - **Distribution Manifest**: Refined `pyproject.toml` to ensure full coverage of engine assets and industry data providers in package builds.
 - **Documentation Audit**: Reconciled and hardened all architectural and specification guides for full AES v1.2 compliance.

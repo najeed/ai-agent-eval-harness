@@ -1,0 +1,7 @@
+[
+  {"subject_id": "1001", "hadm_id": "210001", "lab_item": "Glucose", "value": 112, "uom": "mg/dL", "flag": "normal", "module": "hosp"},
+  {"subject_id": "1002", "hadm_id": "210002", "lab_item": "Creatinine", "value": 1.4, "uom": "mg/dL", "flag": "abnormal", "module": "hosp"},
+  {"subject_id": "1003", "hadm_id": "210003", "lab_item": "Potassium", "value": 4.2, "uom": "mEq/L", "flag": "normal", "module": "hosp"},
+  {"subject_id": "1004", "hadm_id": "210004", "lab_item": "Sodium", "value": 138, "uom": "mEq/L", "flag": "normal", "module": "hosp"},
+  {"subject_id": "1005", "hadm_id": "210005", "lab_item": "Hemoglobin", "value": 13.5, "uom": "g/dL", "flag": "normal", "module": "hosp"}
+]

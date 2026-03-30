@@ -9,7 +9,7 @@ from dataproc_engine.core.llm_manager import LLMManager
 @pytest.mark.asyncio
 async def test_manufacturing_industrial_production():
     """Verify industrial stats manufacturing transformation."""
-    config = {"industry": "manufacturing", "schema_type": "industrial_stats", "allow_simulation": True}
+    config = {"industry": "manufacturing", "manufacturing_mode": "industrial_stats", "allow_simulation": True}
     provider = ManufacturingProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()
@@ -21,7 +21,7 @@ async def test_manufacturing_industrial_production():
 @pytest.mark.asyncio
 async def test_manufacturing_asm_production():
     """Verify US Census ASM transformation (Lines 85-107)."""
-    config = {"industry": "manufacturing", "schema_type": "asm", "allow_simulation": True}
+    config = {"industry": "manufacturing", "manufacturing_mode": "asm", "allow_simulation": True}
     provider = ManufacturingProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()
@@ -33,7 +33,7 @@ async def test_manufacturing_asm_production():
 @pytest.mark.asyncio
 async def test_media_entertainment_production():
     """Verify Media & Entertainment extraction and transformation (High-fidelity)."""
-    config = {"industry": "media_entertainment", "schema_type": "imdb", "allow_simulation": True}
+    config = {"industry": "media_entertainment", "media_mode": "imdb", "allow_simulation": True}
     provider = MediaProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()

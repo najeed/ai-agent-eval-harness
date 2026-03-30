@@ -93,11 +93,13 @@ The `PluginManager` triggers these hooks synchronously, ensuring a deterministic
 ## Regulatory Enforcement Layer: AES v1.2
 
 AES v1.2 elevates the harness into a **Verification OS** for mission-critical industries:
-- **State-Machine DAG**: Scenarios no longer use linear `tasks`. They define a directed acyclic graph of `nodes` and `edges`, enabling non-linear state transitions and dependency gating.
+- **Modular Data Extraction**: The `dataproc_engine` is now completely data-driven. Simulation data for Healthcare, Telecom, and Finance is stored in external `.json` and `.csv` files within the `industries/` directory, ensuring code cleanliness and easy dataset updates.
+- **Dynamic Provider Discovery**: Replaced hardcoded registries with a "Zero-Touch" discovery system. The `DatasetEngine` automatically scans the `providers/` package for classes inheriting from `BaseProvider`, enabling instant support for new sectors.
+- **Robust AES Serialization**: Integrated a specialized `AESJsonEncoder` across the flight recorder and session history. This handles non-standard types (Mocks, Paths, Datetimes) safely, preventing runtime crashes during complex multi-agent simulations.
+- **State-Machine DAG**: Scenarios define a directed acyclic graph of `nodes` and `edges`, enabling non-linear state transitions and dependency gating.
 - **Typed Outcomes (Standards Registry)**: Mandates adherence to industrial gold standards (e.g., ISO-20022, HL7 FHIR) using typed result schemas.
-- **Pluralistic Judging (IJA)**: Implements Inter-Judge Agreement metrics. Critical evaluations require a "Judge Panel" consensus (at least 3 judges) with a configurable `ija_threshold` to ensure non-repudiable audit records.
-- **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior without re-running the actual models.
-- **Scenario Editor**: A visual drag-and-drop tool integrated into the Visual Suite, fully updated to support v1.2 DAG orchestration.
+- **Pluralistic Judging (IJA)**: Implements Inter-Judge Agreement metrics. Critical evaluations require a "Judge Panel" consensus (at least 3 judges) with a configurable `ija_threshold`.
+- **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior.
 
 ## Semantic Bridge & Drift Management
 

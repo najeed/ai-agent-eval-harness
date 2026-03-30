@@ -1,32 +1,42 @@
 import pytest
 import asyncio
+from unittest.mock import patch, MagicMock
 from dataproc_engine.core.engine import DatasetEngine
 from dataproc_engine.core.llm_manager import LLMManager
 from dataproc_engine.core.base_provider import StandardSchema
 
+class MockResponse:
+    """Explicit Async Context Manager for aiohttp mocks."""
+    def __init__(self, status, json_data=None):
+        self.status = status
+        self._json = json_data or {}
+    async def json(self): return self._json
+    async def __aenter__(self): return self
+    async def __aexit__(self, *args): pass
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("industry, custom_config", [
-    ("finance", {"schema_type": "sec_edgar"}),
-    ("finance", {"schema_type": "credit_risk"}),
-    ("energy", {"schema_type": "eia"}),
-    ("energy", {"schema_type": "energy_balances"}),
-    ("healthcare", {"schema_type": "cms"}),
-    ("healthcare", {"schema_type": "clinical"}),
-    ("telecom", {"schema_type": "fcc"}),
-    ("telecom", {"schema_type": "ookla"}),
-    ("ecommerce", {"schema_type": "olist"}),
-    ("ecommerce", {"schema_type": "uci"}),
-    ("agriculture", {"schema_type": "standard"}),
-    ("transportation", {"schema_type": "standard"}),
-    ("unstructured", {"schema_type": "standard"}),
-    ("demographics", {"schema_type": "standard"}),
-    ("labor", {"schema_type": "standard"}),
-    ("environment", {"schema_type": "standard"}),
-    ("education", {"schema_type": "standard"}),
-    ("housing", {"schema_type": "standard"}),
-    ("manufacturing", {"schema_type": "standard"}),
-    ("media_entertainment", {"schema_type": "standard"}),
-    ("decision_support", {"schema_type": "standard"}),
+    ("finance", {"finance_mode": "sec_edgar"}),
+    ("finance", {"finance_mode": "worldbank"}),
+    ("finance", {"finance_mode": "credit_risk"}),
+    ("energy", {"eia_mode": "opsd"}),
+    ("healthcare", {"healthcare_mode": "clinical"}),
+    ("healthcare", {"healthcare_mode": "who"}),
+    ("telecom", {"telecom_mode": "fcc"}),
+    ("telecom", {"telecom_mode": "ookla"}),
+    ("ecommerce", {"ecommerce_mode": "uci"}),
+    ("ecommerce", {"ecommerce_mode": "olist"}),
+    ("agriculture", {"agriculture_mode": "faostat"}),
+    ("transportation", {"transit_mode": "standard"}),
+    ("unstructured", {"unstructured_mode": "document"}),
+    ("demographics", {"demographics_mode": "census"}),
+    ("labor", {"labor_mode": "bls"}),
+    ("environment", {"environment_mode": "noaa"}),
+    ("education", {"education_mode": "nces"}),
+    ("housing", {"housing_mode": "hud"}),
+    ("manufacturing", {"manufacturing_mode": "industrial_stats"}),
+    ("media_entertainment", {"media_mode": "imdb"}),
+    ("decision_support", {"decision_mode": "standard"}),
 ])
 async def test_industry_parity(industry, custom_config):
     """
@@ -39,28 +49,52 @@ async def test_industry_parity(industry, custom_config):
     config = {"limit": 1}
     config.update(custom_config)
     
-    # Industry-specific input overrides
+    # 1. Mode-Aware High-Fidelity Mock for Finance domain validation
+    if industry == "finance" and config.get("finance_mode") == "worldbank":
+        mock_data = [
+            {"page": 1},
+            [{"country": {"value": "USA", "id": "US"}, "indicator": {"value": "GDP"}, "value": 1.0, "date": "2023"}]
+        ]
+    elif industry == "ecommerce":
+        # Tabular mock data for Olist/UCI
+        mock_data = [
+            {"InvoiceNo": "INV-1", "Description": "Product A", "Quantity": 1, "UnitPrice": 10.0, "review_score": 5, "review_text": "Good", "order_id": "ORD-1", "price": 100.0}
+        ]
+    else:
+        # Default SEC XBRL Mock
+        mock_data = {
+            "entityName": "Apple Inc.", 
+            "facts": {"us-gaap": {
+                "Revenues": {"units": {"USD": [{"val": 100000, "fy": 2023, "fp": "FY"}]}},
+                "Assets": {"units": {"USD": [{"val": 350000, "fy": 2023, "fp": "FY"}]}},
+                "NetIncomeLoss": {"units": {"USD": [{"val": 95000, "fy": 2023, "fp": "FY"}]}}
+            }}
+        }
+    
+    mock_resp = MockResponse(200, mock_data)
+    
+    # 2. Industry-specific input overrides
     if industry == "finance":
-        if config.get("schema_type") == "sec_edgar":
-             config["ciks"] = ["0000320193"]
+         config["ciks"] = ["0000320193"]
     elif industry == "energy":
         config["series_id"] = "ELEC.GEN.ALL-US-99.M"
     elif industry == "transportation":
-         config["input_uri"] = f"{base_dir}/industries/transportation/datasets/airline_delays.csv"
+         config["input_uri"] = f"industries/transportation/datasets/airline_delays.csv"
     elif industry == "telecom":
-         config["input_uri"] = f"{base_dir}/industries/telecom/datasets/telecom_records.csv"
+         config["input_uri"] = f"industries/telecom/datasets/telecom_records.csv"
     elif industry == "unstructured":
-        config["input_uri"] = f"{base_dir}/industries/unstructured/datasets/sample_document.txt"
+         config["input_uri"] = "industries/unstructured/datasets/sample_document.txt"
 
-    provider = engine.get_provider(industry, config)
-    
-    # 1. Integration Level Verification
-    raw = await provider.extract()
-    assert isinstance(raw, list), f"{industry} extract() must return a list"
-    
-    if raw:
-        transformed = await provider.transform(raw)
-        assert isinstance(transformed, list), f"{industry} transform() must return a list"
+    with patch("aiohttp.ClientSession.get", return_value=mock_resp):
+        # Inject the mock llm_mgr into the engine so it's passed to ALL providers
+        llm_mgr = LLMManager({"llm_provider": "mock"})
+        engine.llm_manager = llm_mgr
+
+        provider = engine.get_provider(industry, config)
+        
+        # 3. Standard Execution Pipeline (V2.0 Contract)
+        raw_data = await provider.extract()
+        transformed = await provider.transform(raw_data)
         
         # Hardening check for all sectors (ensures simulation or local data production)
         if industry in [

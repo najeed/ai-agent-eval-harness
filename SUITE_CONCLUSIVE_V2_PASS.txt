@@ -1,0 +1,325 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, langsmith-0.7.22, aiohttp-1.1.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 138 items
+
+dataproc_engine\tests\test_boundary_conditions.py ..                     [  1%]
+dataproc_engine\tests\test_cli_safety.py ....                            [  4%]
+dataproc_engine\tests\test_correlator.py ...                             [  6%]
+dataproc_engine\tests\test_correlator_exhaustion.py ...                  [  8%]
+dataproc_engine\tests\test_correlator_prod.py ...                        [ 10%]
+dataproc_engine\tests\test_coverage_final_push.py .....                  [ 14%]
+dataproc_engine\tests\test_cross_sector_signal_veracity.py ...           [ 16%]
+dataproc_engine\tests\test_ecommerce_industrial_parity.py ..F.           [ 19%]
+dataproc_engine\tests\test_education_prod.py .                           [ 20%]
+dataproc_engine\tests\test_error_surge.py ....                           [ 23%]
+dataproc_engine\tests\test_final_gap_mastery.py ...                      [ 25%]
+dataproc_engine\tests\test_finance_world_bank_prod.py ..                 [ 26%]
+dataproc_engine\tests\test_industrial_deep_verification.py ....          [ 29%]
+dataproc_engine\tests\test_industrial_excellence_final.py F.             [ 31%]
+dataproc_engine\tests\test_industrial_excellence_mastery.py ....         [ 34%]
+dataproc_engine\tests\test_industrial_hegemony.py ...                    [ 36%]
+dataproc_engine\tests\test_industrial_parity.py ........FF.............. [ 53%]
+                                                                         [ 53%]
+dataproc_engine\tests\test_infra_extraction_resiliency.py ..             [ 55%]
+dataproc_engine\tests\test_llm_manager.py ....                           [ 57%]
+dataproc_engine\tests\test_llm_manager_strategic_fallbacks.py ........   [ 63%]
+dataproc_engine\tests\test_llm_tiers.py .....                            [ 67%]
+dataproc_engine\tests\test_manufacturing_media_specialized.py ...        [ 69%]
+dataproc_engine\tests\test_omega_industrial_excellence.py ....           [ 72%]
+dataproc_engine\tests\test_public_sector_cross_data_hardened.py ....     [ 75%]
+dataproc_engine\tests\test_public_sector_resiliency.py .                 [ 76%]
+dataproc_engine\tests\test_telecom_multi_schema_veracity.py ....         [ 78%]
+dataproc_engine\tests\test_ultimate_coverage.py ..................       [ 92%]
+dataproc_engine\tests\test_ultimate_sector_zenith.py ....                [ 94%]
+dataproc_engine\tests\test_unstructured_extra.py ..                      [ 96%]
+dataproc_engine\tests\test_unstructured_multi_format_hardened.py .       [ 97%]
+dataproc_engine\tests\test_v2_intelligence_core.py ....                  [100%]
+
+================================== FAILURES ===================================
+_____________________ test_ecommerce_cpi_inflation_impact _____________________
+
+    @pytest.mark.asyncio
+    async def test_ecommerce_cpi_inflation_impact():
+        """Verify CPI-impact weighting for sentiment (Lines 143-147)."""
+        config = {"industry": "ecommerce", "ecommerce_mode": "standard", "cpi_impact": 0.1} # 10% inflation
+        llm = LLMManager({"llm_provider": "heuristic"})
+        provider = EcommerceProvider(config, llm_manager=llm)
+    
+        # Mock LLM returning 1.0 (Positive)
+        with patch.object(LLMManager, "analyze_sentiment", AsyncMock(return_value=1.0)):
+            sim_data = [{"review_text": "Good", "rating": 5.0, "category": "Home"}]
+            artifacts = [provider.create_simulated_artifact(id="test", content=sim_data)]
+            results = await provider.transform(artifacts)
+    
+            # 1.0 * (1 - 0.1) = 0.9
+            assert results[0].data["sentiment"] == 0.9
+>           assert "inflation pressure" in results[0].data["note"]
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'note'
+
+dataproc_engine\tests\test_ecommerce_industrial_parity.py:68: KeyError
+____________________ test_industrial_excellence_final_push ____________________
+
+    @pytest.mark.asyncio
+    async def test_industrial_excellence_final_push():
+        """Target the remaining logic gaps in industrial providers for 95%+."""
+        llm = LLMManager({"llm_strategy": "heuristic"})
+    
+        # 1. Environment: NOAA Fallback (Lines 24-38)
+        env_config = {"industry": "public_sector", "environment_mode": "noaa", "allow_simulation": True}
+        env_provider = EnvironmentProvider(env_config, llm_manager=llm)
+        with patch("aiohttp.ClientSession.get") as m_get:
+            m_get.return_value.__aenter__.return_value.status = 500
+            arts = await env_provider.extract()
+            assert len(arts) > 0 # Hits 24-38
+    
+        # 2. Labor: BLS Fallback (Lines 24-38)
+        lab_config = {"industry": "public_sector", "labor_mode": "bls", "allow_simulation": True}
+        lab_provider = LaborProvider(lab_config, llm_manager=llm)
+        with patch("aiohttp.ClientSession.get") as m_get:
+            m_get.return_value.__aenter__.return_value.status = 500
+            arts = await lab_provider.extract()
+            assert len(arts) > 0 # Hits 24-38
+    
+        # 3. Agriculture: FAOSTAT Fallback (Lines 69-81)
+        agr_config = {"industry": "agriculture", "agriculture_mode": "faostat", "allow_simulation": True}
+        agr_provider = AgricultureProvider(agr_config, llm_manager=llm)
+        with patch("aiohttp.ClientSession.get") as m_get:
+            m_get.return_value.__aenter__.return_value.status = 500
+            arts = await agr_provider.extract()
+            assert len(arts) > 0 # Hits 69-81
+    
+        # 4. Healthcare: Clinical Local Path Gap
+        hc_config = {"industry": "healthcare", "healthcare_mode": "clinical", "input_uri": "test.csv"}
+        hc_provider = HealthcareProvider(hc_config, llm_manager=llm)
+        with patch("os.path.exists", return_value=True):
+            with patch("pandas.read_csv", return_value=MagicMock(empty=False)):
+                arts = await hc_provider.extract()
+                # Hits 40-48
+    
+        # 5. Transportation: Eurostat Logic Zenith (Lines 33, 38-46, 55, 73, 90-103)
+        # Already partially hit, but ensuring all paths are clean
+        trans_config = {
+            "industry": "transportation",
+            "transit_mode": "air",
+            "allow_simulation": True
+        }
+        trans_provider = TransportationProvider(trans_config, llm_manager=llm)
+        with patch("os.path.exists", return_value=False):
+            arts = await trans_provider.extract()
+>           assert len(arts) == 0 # Hits 102 (No source found error)
+            ^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert 1 == 0
+E            +  where 1 = len([RawArtifact(id='sim-BTS-airline', source_url='https://www.transtats.bts.gov/', content=[{'carrier': 'AA', 'on_time_pc...023-01'}], metadata={'mode': 'airline_performance', 'simulation': True}, timestamp='2026-03-30T06:22:58.930428+00:00')])
+
+dataproc_engine\tests\test_industrial_excellence_final.py:60: AssertionError
+_______________ test_industry_parity[ecommerce-custom_config8] ________________
+
+industry = 'ecommerce', custom_config = {'ecommerce_mode': 'uci'}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("industry, custom_config", [
+        ("finance", {"finance_mode": "sec_edgar"}),
+        ("finance", {"finance_mode": "worldbank"}),
+        ("finance", {"finance_mode": "credit_risk"}),
+        ("energy", {"eia_mode": "opsd"}),
+        ("healthcare", {"healthcare_mode": "clinical"}),
+        ("healthcare", {"healthcare_mode": "who"}),
+        ("telecom", {"telecom_mode": "fcc"}),
+        ("telecom", {"telecom_mode": "ookla"}),
+        ("ecommerce", {"ecommerce_mode": "uci"}),
+        ("ecommerce", {"ecommerce_mode": "olist"}),
+        ("agriculture", {"agriculture_mode": "faostat"}),
+        ("transportation", {"transit_mode": "standard"}),
+        ("unstructured", {"unstructured_mode": "document"}),
+        ("demographics", {"demographics_mode": "census"}),
+        ("labor", {"labor_mode": "bls"}),
+        ("environment", {"environment_mode": "noaa"}),
+        ("education", {"education_mode": "nces"}),
+        ("housing", {"housing_mode": "hud"}),
+        ("manufacturing", {"manufacturing_mode": "industrial_stats"}),
+        ("media_entertainment", {"media_mode": "imdb"}),
+        ("decision_support", {"decision_mode": "standard"}),
+    ])
+    async def test_industry_parity(industry, custom_config):
+        """
+        Ensure all industrial providers adhere to the mission-critical architectural standards.
+        """
+        llm = LLMManager({"llm_strategy": "mock"})
+        engine = DatasetEngine(llm_manager=llm)
+    
+        base_dir = "."
+        config = {"limit": 1}
+        config.update(custom_config)
+    
+        # 1. Mode-Aware High-Fidelity Mock for Finance domain validation
+        if industry == "finance" and config.get("finance_mode") == "worldbank":
+            mock_data = [
+                {"page": 1},
+                [{"country": {"value": "USA", "id": "US"}, "indicator": {"value": "GDP"}, "value": 1.0, "date": "2023"}]
+            ]
+        else:
+            # Default SEC XBRL Mock
+            mock_data = {
+                "entityName": "Apple Inc.",
+                "facts": {"us-gaap": {
+                    "Revenues": {"units": {"USD": [{"val": 100000, "fy": 2023, "fp": "FY"}]}},
+                    "Assets": {"units": {"USD": [{"val": 350000, "fy": 2023, "fp": "FY"}]}},
+                    "NetIncomeLoss": {"units": {"USD": [{"val": 95000, "fy": 2023, "fp": "FY"}]}}
+                }}
+            }
+    
+        mock_resp = MockResponse(200, mock_data)
+    
+        # 2. Industry-specific input overrides
+        if industry == "finance":
+             config["ciks"] = ["0000320193"]
+        elif industry == "energy":
+            config["series_id"] = "ELEC.GEN.ALL-US-99.M"
+        elif industry == "transportation":
+             config["input_uri"] = f"industries/transportation/datasets/airline_delays.csv"
+        elif industry == "telecom":
+             config["input_uri"] = f"industries/telecom/datasets/telecom_records.csv"
+        elif industry == "unstructured":
+             config["input_uri"] = "industries/unstructured/datasets/sample_document.txt"
+    
+        with patch("aiohttp.ClientSession.get", return_value=mock_resp):
+            # Inject the mock llm_mgr into the engine so it's passed to ALL providers
+            llm_mgr = LLMManager({"llm_provider": "mock"})
+            engine.llm_manager = llm_mgr
+    
+            provider = engine.get_provider(industry, config)
+            raw = await provider.extract()
+            assert isinstance(raw, list), f"{industry} extract() must return a list"
+    
+            transformed = []
+            if raw:
+                transformed = await provider.transform(raw)
+            assert isinstance(transformed, list), f"{industry} transform() must return a list"
+    
+            # Hardening check for all sectors (ensures simulation or local data production)
+            if industry in [
+                "transportation", "agriculture", "unstructured", "demographics",
+                "labor", "environment", "education", "housing", "manufacturing",
+                "media_entertainment", "decision_support", "finance", "energy", "healthcare", "telecom", "ecommerce"
+            ]:
+>                assert len(transformed) > 0, f"{industry} failed to produce records from dummy data."
+E                AssertionError: ecommerce failed to produce records from dummy data.
+E                assert 0 > 0
+E                 +  where 0 = len([])
+
+dataproc_engine\tests\test_industrial_parity.py:103: AssertionError
+_______________ test_industry_parity[ecommerce-custom_config9] ________________
+
+industry = 'ecommerce', custom_config = {'ecommerce_mode': 'olist'}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("industry, custom_config", [
+        ("finance", {"finance_mode": "sec_edgar"}),
+        ("finance", {"finance_mode": "worldbank"}),
+        ("finance", {"finance_mode": "credit_risk"}),
+        ("energy", {"eia_mode": "opsd"}),
+        ("healthcare", {"healthcare_mode": "clinical"}),
+        ("healthcare", {"healthcare_mode": "who"}),
+        ("telecom", {"telecom_mode": "fcc"}),
+        ("telecom", {"telecom_mode": "ookla"}),
+        ("ecommerce", {"ecommerce_mode": "uci"}),
+        ("ecommerce", {"ecommerce_mode": "olist"}),
+        ("agriculture", {"agriculture_mode": "faostat"}),
+        ("transportation", {"transit_mode": "standard"}),
+        ("unstructured", {"unstructured_mode": "document"}),
+        ("demographics", {"demographics_mode": "census"}),
+        ("labor", {"labor_mode": "bls"}),
+        ("environment", {"environment_mode": "noaa"}),
+        ("education", {"education_mode": "nces"}),
+        ("housing", {"housing_mode": "hud"}),
+        ("manufacturing", {"manufacturing_mode": "industrial_stats"}),
+        ("media_entertainment", {"media_mode": "imdb"}),
+        ("decision_support", {"decision_mode": "standard"}),
+    ])
+    async def test_industry_parity(industry, custom_config):
+        """
+        Ensure all industrial providers adhere to the mission-critical architectural standards.
+        """
+        llm = LLMManager({"llm_strategy": "mock"})
+        engine = DatasetEngine(llm_manager=llm)
+    
+        base_dir = "."
+        config = {"limit": 1}
+        config.update(custom_config)
+    
+        # 1. Mode-Aware High-Fidelity Mock for Finance domain validation
+        if industry == "finance" and config.get("finance_mode") == "worldbank":
+            mock_data = [
+                {"page": 1},
+                [{"country": {"value": "USA", "id": "US"}, "indicator": {"value": "GDP"}, "value": 1.0, "date": "2023"}]
+            ]
+        else:
+            # Default SEC XBRL Mock
+            mock_data = {
+                "entityName": "Apple Inc.",
+                "facts": {"us-gaap": {
+                    "Revenues": {"units": {"USD": [{"val": 100000, "fy": 2023, "fp": "FY"}]}},
+                    "Assets": {"units": {"USD": [{"val": 350000, "fy": 2023, "fp": "FY"}]}},
+                    "NetIncomeLoss": {"units": {"USD": [{"val": 95000, "fy": 2023, "fp": "FY"}]}}
+                }}
+            }
+    
+        mock_resp = MockResponse(200, mock_data)
+    
+        # 2. Industry-specific input overrides
+        if industry == "finance":
+             config["ciks"] = ["0000320193"]
+        elif industry == "energy":
+            config["series_id"] = "ELEC.GEN.ALL-US-99.M"
+        elif industry == "transportation":
+             config["input_uri"] = f"industries/transportation/datasets/airline_delays.csv"
+        elif industry == "telecom":
+             config["input_uri"] = f"industries/telecom/datasets/telecom_records.csv"
+        elif industry == "unstructured":
+             config["input_uri"] = "industries/unstructured/datasets/sample_document.txt"
+    
+        with patch("aiohttp.ClientSession.get", return_value=mock_resp):
+            # Inject the mock llm_mgr into the engine so it's passed to ALL providers
+            llm_mgr = LLMManager({"llm_provider": "mock"})
+            engine.llm_manager = llm_mgr
+    
+            provider = engine.get_provider(industry, config)
+            raw = await provider.extract()
+            assert isinstance(raw, list), f"{industry} extract() must return a list"
+    
+            transformed = []
+            if raw:
+                transformed = await provider.transform(raw)
+            assert isinstance(transformed, list), f"{industry} transform() must return a list"
+    
+            # Hardening check for all sectors (ensures simulation or local data production)
+            if industry in [
+                "transportation", "agriculture", "unstructured", "demographics",
+                "labor", "environment", "education", "housing", "manufacturing",
+                "media_entertainment", "decision_support", "finance", "energy", "healthcare", "telecom", "ecommerce"
+            ]:
+>                assert len(transformed) > 0, f"{industry} failed to produce records from dummy data."
+E                AssertionError: ecommerce failed to produce records from dummy data.
+E                assert 0 > 0
+E                 +  where 0 = len([])
+
+dataproc_engine\tests\test_industrial_parity.py:103: AssertionError
+============================== warnings summary ===============================
+dataproc_engine/tests/test_coverage_final_push.py::test_cli_confirmation_branches
+  C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\dataproc_engine\cli\main.py:151: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    results = asyncio.run(engine.run_industry_pipeline(industry, target_dir=target_dir))
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED dataproc_engine/tests/test_ecommerce_industrial_parity.py::test_ecommerce_cpi_inflation_impact
+FAILED dataproc_engine/tests/test_industrial_excellence_final.py::test_industrial_excellence_final_push
+FAILED dataproc_engine/tests/test_industrial_parity.py::test_industry_parity[ecommerce-custom_config8]
+FAILED dataproc_engine/tests/test_industrial_parity.py::test_industry_parity[ecommerce-custom_config9]
+================== 4 failed, 134 passed, 1 warning in 29.98s ==================

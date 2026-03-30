@@ -23,18 +23,18 @@ class EnergyProvider(BaseProvider):
         # Support multiple series IDs
         default_series = ["PET.RWTC.D", "PET.RBRTE.D", "NG.RNGC1.D"] # WTI, Brent, Henry Hub
         self.series_ids = config.get("series_ids", default_series)
-        self.schema_type = config.get("schema_type", "eia") # eia, energy_balances, opsd
+        self.energy_mode = config.get("energy_mode", "eia") # eia, energy_balances, opsd
         
         # Alias mapping for better usability
         ALIASES = {"balances": "energy_balances", "power": "opsd"}
-        if self.schema_type in ALIASES:
-            self.schema_type = ALIASES[self.schema_type]
+        if self.energy_mode in ALIASES:
+            self.energy_mode = ALIASES[self.energy_mode]
         
-        if not self.api_key and self.schema_type == "eia":
+        if not self.api_key and self.energy_mode == "eia":
             logger.warning("api_key_missing", status="Extraction will use local mock logic if available")
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "opsd":
+        if self.energy_mode == "opsd":
             # Gold Standard: Open Power System Data (OPSD) - European Grid Balances
             region = self.config.get("region", "DE") # Germany default
             url = f"https://data.open-power-system-data.org/time_series/latest/time_series_60min_singleindex.csv"
@@ -52,7 +52,7 @@ class EnergyProvider(BaseProvider):
                 )]
             return []
 
-        if self.schema_type == "energy_balances":
+        if self.energy_mode == "energy_balances":
             # Gold Standard: Global Energy Balances (Simulated)
             
             # Unified Data Acquisition (Local or Web URL)
@@ -182,7 +182,7 @@ class EnergyProvider(BaseProvider):
         import hashlib
         results = []
 
-        if self.schema_type == "opsd":
+        if self.energy_mode == "opsd":
             TARGET_SCHEMA = {"region": "string", "utc_timestamp": "string", "load": "number", "solar": "number", "wind": "number"}
             for raw in raw_artifacts:
                 for row in raw.content:
@@ -197,7 +197,7 @@ class EnergyProvider(BaseProvider):
                         ))
             return results
 
-        if self.schema_type == "energy_balances":
+        if self.energy_mode == "energy_balances":
             TARGET_SCHEMA = {
                 "country_code": "string",
                 "energy_flow": "string",
@@ -277,9 +277,9 @@ class EnergyProvider(BaseProvider):
 
     def validate(self, normalized_data: List[StandardSchema]) -> bool:
         for record in normalized_data:
-            if self.schema_type == "energy_balances":
+            if self.energy_mode == "energy_balances":
                 if record.data.get("flow_value", 0) < 0: return False
-            elif self.schema_type == "opsd":
+            elif self.energy_mode == "opsd":
                 if record.data.get("load", 0) < 0: return False
             else:
                 # Basic industrial sanity check

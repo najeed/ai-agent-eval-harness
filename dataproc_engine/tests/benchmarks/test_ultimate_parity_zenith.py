@@ -49,7 +49,7 @@ async def test_unstructured_path_traversal_gap():
     from dataproc_engine.providers.unstructured_provider import UnstructuredProvider
     from dataproc_engine.core.llm_manager import LLMManager
     
-    config = {"industry": "unstructured", "input_uri": "test_dir", "allow_simulation": True}
+    config = {"industry": "unstructured", "unstructured_mode": "document", "input_uri": "test_dir", "allow_simulation": True}
     provider = UnstructuredProvider(config, llm_manager=LLMManager({}))
     
     with patch("os.path.isdir", return_value=True):

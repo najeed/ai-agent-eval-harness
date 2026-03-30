@@ -12,7 +12,7 @@ import inspect
 from pathlib import Path
 from typing import List, Type, Any
 
-def discover_classes_in_module(module, base_class: Type) -> List[Any]:
+def discover_classes_in_module(module, base_class: Type, instantiate: bool = True) -> List[Any]:
     """Finds all classes in a module that inherit from a base class."""
     found = []
     for name, obj in inspect.getmembers(module):
@@ -22,7 +22,7 @@ def discover_classes_in_module(module, base_class: Type) -> List[Any]:
             and obj is not base_class
             and obj.__module__ == module.__name__
         ):
-            found.append(obj())
+            found.append(obj() if instantiate else obj)
     return found
 
 def discover_plugins_in_directory(directory: Path, base_class: Type, package_prefix: str = "") -> List[Any]:
@@ -51,6 +51,31 @@ def discover_plugins_in_directory(directory: Path, base_class: Type, package_pre
             pass
             
     return plugins
+
+def discover_classes_in_package(package, base_class: Type, instantiate: bool = False, recursive: bool = True) -> Dict[str, Any]:
+    """
+    Scans a package for submodules and returns a dictionary mapping module stems to their discovered classes.
+    """
+    results = {}
+    package_path = package.__path__
+    package_name = package.__name__
+    
+    # pkgutil.walk_packages allows recursive traversal
+    walker = pkgutil.walk_packages(package_path, f"{package_name}.") if recursive else pkgutil.iter_modules(package_path, f"{package_name}.")
+    
+    for info in walker:
+        try:
+            full_module_name = info.name
+            module_stem = full_module_name.split(".")[-1]
+            
+            module = importlib.import_module(full_module_name)
+            classes = discover_classes_in_module(module, base_class, instantiate=instantiate)
+            if classes:
+                # Store by stem (e.g. 'demographics')
+                results[module_stem] = classes[0]
+        except Exception:
+            pass
+    return results
 
 def scan_package_for_adapters(package, registry_func):
     """

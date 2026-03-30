@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import asyncio
 import aiohttp
@@ -17,11 +17,11 @@ class DemographicsProvider(BaseProvider):
     """
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
-        self.schema_type = config.get("schema_type", "census") # census, world_bank
+        self.demographics_mode = config.get("demographics_mode", "census")
         self.api_key = config.get("census_api_key")
         
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "world_bank":
+        if self.demographics_mode == "worldbank":
             # Gold Standard: World Bank Population Data
             indicator = self.config.get("indicator", "SP.POP.TOTL") # Total Population
             country = self.config.get("country", "all")
@@ -81,8 +81,9 @@ class DemographicsProvider(BaseProvider):
 
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
+        is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
         
-        if self.schema_type == "world_bank":
+        if self.demographics_mode == "worldbank":
             TARGET_SCHEMA = {"country": "string", "year": "integer", "population": "number"}
             for raw in raw_artifacts:
                 for row in raw.content:
@@ -103,17 +104,28 @@ class DemographicsProvider(BaseProvider):
                         ))
             return results
 
-        # US Census Transformation
+        # US Census (Tabular Census API format)
         TARGET_SCHEMA = {"state": "string", "population": "number", "year": "integer"}
         for raw in raw_artifacts:
-            header = raw.content[0]
-            data_rows = raw.content[1:]
+            # Census API and Parity Mocks use different formats (List-of-Lists vs List-of-Dicts)
+            is_list_format = isinstance(raw.content, list) and len(raw.content) > 0 and isinstance(raw.content[0], list)
+            data_rows = raw.content[1:] if is_list_format else raw.content
+            
             for row in data_rows:
-                raw_data = {
-                    "state": row[0],
-                    "population": float(row[1]),
-                    "year": int(raw.metadata.get("year", 2022))
-                }
+                if is_list_format:
+                    raw_data = {
+                        "state": str(row[0]),
+                        "population": float(row[1]),
+                        "year": int(raw.metadata.get("year", 2022))
+                    }
+                else:
+                    # Defensive mapping for dictionary results
+                    raw_data = {
+                        "state": str(row.get("NAME") or row.get("state") or "Unknown"),
+                        "population": float(row.get("B01001_001E") or row.get("population") or 0),
+                        "year": int(raw.metadata.get("year") or row.get("year", 2022))
+                    }
+                
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
                     record_id = hashlib.md5(f"CENSUS-{raw_data['state']}-{raw_data['year']}".encode()).hexdigest()[:16]

@@ -1,0 +1,7 @@
+[
+  {"Country": "USA", "Year": 2022, "Value": 91.8, "Unit": "%"},
+  {"Country": "CHN", "Year": 2022, "Value": 75.6, "Unit": "%"},
+  {"Country": "JPN", "Year": 2022, "Value": 90.2, "Unit": "%"},
+  {"Country": "DEU", "Year": 2022, "Value": 88.5, "Unit": "%"},
+  {"Country": "GBR", "Year": 2022, "Value": 96.7, "Unit": "%"}
+]

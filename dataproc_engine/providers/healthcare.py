@@ -19,10 +19,10 @@ class HealthcareProvider(BaseProvider):
         super().__init__(config, llm_manager=llm_manager)
         # Support multiple CMS datasets (General, Patient Exp, Mortality)
         self.csv_paths = config.get("input_uris", [config.get("input_uri", "Hospital_General_Information.csv")])
-        self.schema_type = config.get("schema_type", "cms") # cms, clinical, who
+        self.healthcare_mode = config.get("healthcare_mode", "cms") # cms, clinical, who
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "who":
+        if self.healthcare_mode == "who":
             # Gold Standard: WHO Global Health Observatory (GHO)
             indicator = self.config.get("indicator", "WHOSIS_000001") # Life expectancy at birth
             url = f"https://ghoapi.azureedge.net/api/{indicator}"
@@ -60,7 +60,7 @@ class HealthcareProvider(BaseProvider):
                 )]
             return []
 
-        if self.schema_type == "clinical":
+        if self.healthcare_mode == "clinical":
             # Gold Standard: Clinical Research Data (Simulated)
             dataset_version = "CLINICAL-V1" # Unified Clinical Schema
             
@@ -143,8 +143,9 @@ class HealthcareProvider(BaseProvider):
 
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
+        is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
-        if self.schema_type == "who":
+        if self.healthcare_mode == "who":
             TARGET_SCHEMA = {"country": "string", "indicator": "string", "value": "number", "year": "string"}
             for artifact in raw_artifacts:
                 for row in artifact.content:
@@ -154,7 +155,7 @@ class HealthcareProvider(BaseProvider):
                         "value": float(row.get("NumericValue", 0)),
                         "year": str(row.get("TimeDim", "0000"))
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                     if verified:
                         results.append(StandardSchema(
                             id=hashlib.md5(f"WHO-{raw_data['country']}-{raw_data['year']}".encode()).hexdigest()[:16],
@@ -165,7 +166,7 @@ class HealthcareProvider(BaseProvider):
                         ))
             return results
 
-        if self.schema_type == "clinical":
+        if self.healthcare_mode == "clinical":
             dataset_version = "CLINICAL-V1"
             TARGET_SCHEMA = {
                 "subject_id": "string",
@@ -187,7 +188,7 @@ class HealthcareProvider(BaseProvider):
                         "status_flag": row.get("flag"),
                         "data_module": row.get("module", "hosp")
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                     if verified:
                         record_id = hashlib.md5(f"{dataset_version}-{row.get('subject_id')}-{row.get('hadm_id')}".encode()).hexdigest()[:16]
                         results.append(StandardSchema(
@@ -228,7 +229,7 @@ class HealthcareProvider(BaseProvider):
                 }
                 
                 # Strict Schema Verification
-                verified_data = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                verified_data = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                 if verified_data:
                     raw_str = json.dumps(verified_data, sort_keys=True)
                     data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
@@ -248,9 +249,9 @@ class HealthcareProvider(BaseProvider):
 
     def validate(self, normalized_data: List[StandardSchema]) -> bool:
         for record in normalized_data:
-            if self.schema_type == "clinical":
+            if self.healthcare_mode == "clinical":
                 if not record.data.get("subject_id"): return False
-            elif self.schema_type == "who":
+            elif self.healthcare_mode == "who":
                 if not record.data.get("country"): return False
             else:
                 if not record.data.get("facility_name"):

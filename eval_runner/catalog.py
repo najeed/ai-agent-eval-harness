@@ -49,6 +49,10 @@ class ScenarioCatalog:
                 with open(p, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
+                if not isinstance(data, dict):
+                    # Skip mock data files or other non-scenario JSON lists
+                    continue
+
                 meta = data.get("metadata", {})
                 scenario_id = data.get("scenario_id", p.stem)
                 industry = data.get(

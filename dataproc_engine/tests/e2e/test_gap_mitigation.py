@@ -11,7 +11,7 @@ async def test_unstructured_common_crawl_protocol_hit():
     """Target Unstructured lines 26-31, 140-158 (Common Crawl)."""
     config = {
         "industry": "unstructured",
-        "schema_type": "common_crawl",
+        "unstructured_mode": "common_crawl",
         "allow_simulation": True
     }
     provider = UnstructuredProvider(config, llm_manager=LLMManager({}))
@@ -51,7 +51,7 @@ async def test_transportation_overpass_error_fallback():
     """Target Transportation lines 33, 45, 55, 73 (Error Fallbacks)."""
     config = {
         "industry": "transportation",
-        "schema_type": "osm",
+        "transit_mode": "osm",
         "allow_simulation": True
     }
     provider = TransportationProvider(config, llm_manager=LLMManager({}))

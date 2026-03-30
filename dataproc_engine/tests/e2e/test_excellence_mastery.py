@@ -34,7 +34,7 @@ async def test_telecom_fcc_retry_and_e911_hardened():
     """Target Telecom lines 45, 63-78, 124-126, 133, 250-251."""
     config = {
         "industry": "telecom",
-        "schema_type": "fcc",
+        "telecom_mode": "fcc",
         "fcc_urls": ["https://api.fcc.gov/test"],
         "allow_simulation": True
     }
@@ -60,7 +60,7 @@ async def test_transportation_osm_quadkey_hit_hardened():
     """Target Transportation lines 33, 38-46, 55, 73, 90-103."""
     config = {
         "industry": "transportation",
-        "schema_type": "osm",
+        "transit_mode": "osm",
         "allow_simulation": True
     }
     provider = TransportationProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))

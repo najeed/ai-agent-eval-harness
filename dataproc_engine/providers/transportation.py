@@ -1,4 +1,4 @@
-﻿import aiohttp
+import aiohttp
 import os
 import hashlib
 import json

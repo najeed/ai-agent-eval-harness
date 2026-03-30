@@ -1,0 +1,79 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, langsmith-0.7.22, aiohttp-1.1.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 138 items
+
+dataproc_engine\tests\test_boundary_conditions.py ..                     [  1%]
+dataproc_engine\tests\test_cli_safety.py ....                            [  4%]
+dataproc_engine\tests\test_correlator.py ...                             [  6%]
+dataproc_engine\tests\test_correlator_exhaustion.py ...                  [  8%]
+dataproc_engine\tests\test_correlator_prod.py ...                        [ 10%]
+dataproc_engine\tests\test_coverage_final_push.py .....                  [ 14%]
+dataproc_engine\tests\test_cross_sector_signal_veracity.py ...           [ 16%]
+dataproc_engine\tests\test_ecommerce_industrial_parity.py ..F.           [ 19%]
+dataproc_engine\tests\test_education_prod.py .                           [ 20%]
+dataproc_engine\tests\test_error_surge.py ....                           [ 23%]
+dataproc_engine\tests\test_final_gap_mastery.py ...                      [ 25%]
+dataproc_engine\tests\test_finance_world_bank_prod.py ..                 [ 26%]
+dataproc_engine\tests\test_industrial_deep_verification.py ....          [ 29%]
+dataproc_engine\tests\test_industrial_excellence_final.py F.             [ 31%]
+dataproc_engine\tests\test_industrial_excellence_mastery.py ....         [ 34%]
+dataproc_engine\tests\test_industrial_hegemony.py ...                    [ 36%]
+dataproc_engine\tests\test_industrial_parity.py ........FF.............. [ 53%]
+                                                                         [ 53%]
+dataproc_engine\tests\test_infra_extraction_resiliency.py ..             [ 55%]
+dataproc_engine\tests\test_llm_manager.py ....                           [ 57%]
+dataproc_engine\tests\test_llm_manager_strategic_fallbacks.py ........   [ 63%]
+dataproc_engine\tests\test_llm_tiers.py .....                            [ 67%]
+dataproc_engine\tests\test_manufacturing_media_specialized.py ...        [ 69%]
+dataproc_engine\tests\test_omega_industrial_excellence.py ....           [ 72%]
+dataproc_engine\tests\test_public_sector_cross_data_hardened.py ....     [ 75%]
+dataproc_engine\tests\test_public_sector_resiliency.py .                 [ 76%]
+dataproc_engine\tests\test_telecom_multi_schema_veracity.py ....         [ 78%]
+dataproc_engine\tests\test_ultimate_coverage.py ..................       [ 92%]
+dataproc_engine\tests\test_ultimate_sector_zenith.py ....                [ 94%]
+dataproc_engine\tests\test_unstructured_extra.py ..                      [ 96%]
+dataproc_engine\tests\test_unstructured_multi_format_hardened.py .       [ 97%]
+dataproc_engine\tests\test_v2_intelligence_core.py ....                  [100%]
+
+================================== FAILURES ===================================
+_____________________ test_ecommerce_cpi_inflation_impact _____________________
+dataproc_engine\tests\test_ecommerce_industrial_parity.py:68: in test_ecommerce_cpi_inflation_impact
+    assert "inflation pressure" in results[0].data["note"]
+                                   ^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'note'
+____________________ test_industrial_excellence_final_push ____________________
+dataproc_engine\tests\test_industrial_excellence_final.py:60: in test_industrial_excellence_final_push
+    assert len(arts) == 0 # Hits 102 (No source found error)
+    ^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 1 == 0
+E    +  where 1 = len([RawArtifact(id='sim-BTS-airline', source_url='https://www.transtats.bts.gov/', content=[{'carrier': 'AA', 'on_time_pc...023-01'}], metadata={'mode': 'airline_performance', 'simulation': True}, timestamp='2026-03-30T06:23:59.869164+00:00')])
+_______________ test_industry_parity[ecommerce-custom_config8] ________________
+dataproc_engine\tests\test_industrial_parity.py:103: in test_industry_parity
+    assert len(transformed) > 0, f"{industry} failed to produce records from dummy data."
+E   AssertionError: ecommerce failed to produce records from dummy data.
+E   assert 0 > 0
+E    +  where 0 = len([])
+_______________ test_industry_parity[ecommerce-custom_config9] ________________
+dataproc_engine\tests\test_industrial_parity.py:103: in test_industry_parity
+    assert len(transformed) > 0, f"{industry} failed to produce records from dummy data."
+E   AssertionError: ecommerce failed to produce records from dummy data.
+E   assert 0 > 0
+E    +  where 0 = len([])
+============================== warnings summary ===============================
+dataproc_engine/tests/test_coverage_final_push.py::test_cli_confirmation_branches
+  C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\dataproc_engine\cli\main.py:151: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    results = asyncio.run(engine.run_industry_pipeline(industry, target_dir=target_dir))
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED dataproc_engine/tests/test_ecommerce_industrial_parity.py::test_ecommerce_cpi_inflation_impact
+FAILED dataproc_engine/tests/test_industrial_excellence_final.py::test_industrial_excellence_final_push
+FAILED dataproc_engine/tests/test_industrial_parity.py::test_industry_parity[ecommerce-custom_config8]
+FAILED dataproc_engine/tests/test_industrial_parity.py::test_industry_parity[ecommerce-custom_config9]
+================== 4 failed, 134 passed, 1 warning in 26.62s ==================

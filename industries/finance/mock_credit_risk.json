@@ -1,0 +1,7 @@
+[
+  {"ID": 1, "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 24, "PAY_0": 2, "BILL_AMT1": 3913, "PAY_AMT1": 0, "default": 1},
+  {"ID": 2, "LIMIT_BAL": 120000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 26, "PAY_0": -1, "BILL_AMT1": 2682, "PAY_AMT1": 0, "default": 1},
+  {"ID": 3, "LIMIT_BAL": 90000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 34, "PAY_0": 0, "BILL_AMT1": 29239, "PAY_AMT1": 1518, "default": 0},
+  {"ID": 4, "LIMIT_BAL": 50000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 37, "PAY_0": 0, "BILL_AMT1": 46990, "PAY_AMT1": 2000, "default": 0},
+  {"ID": 5, "LIMIT_BAL": 50000, "SEX": 1, "EDUCATION": 1, "MARRIAGE": 1, "AGE": 57, "PAY_0": -1, "BILL_AMT1": 10929, "PAY_AMT1": 2000, "default": 0}
+]

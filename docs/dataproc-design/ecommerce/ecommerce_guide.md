@@ -11,10 +11,10 @@ High-fidelity transactional and behavioral metrics for AI agents. This sector po
 - **UCI**: Online Retail datasets (Behavioral modeling).
 
 ## 🛠️ Schema (`StandardSchema`)
-- `entity_id`: Order ID, Product ID, or Customer ID.
-- `metric`: `order_value_usd`, `delivery_delay_hours`, or `sentiment_score`.
-- `value`: Numerical reading.
-- `category`: Product category (standardized).
+- `order_id` / `customer_id` / `product_id`: Deterministic identifiers.
+- `price`: Numerical reading (standardized USD).
+- `score`: Review score (1-5 or sentiment 0-1).
+- `product_category`: Olist/UCI category label.
 
 ---
 [**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)

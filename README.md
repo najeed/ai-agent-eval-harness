@@ -67,12 +67,12 @@ multiagent-eval quickstart
 
 ## Mission
 
-Our goal is to create a standardized, community-driven benchmark for AI agent performance. By providing a rich set of industry-specific scenarios and a flexible evaluation runner, we aim to help developers, researchers, and businesses measure and improve their agent-based systems.
+Our goal is to create a standardized, community-driven benchmark for AI agent performance. By providing a rich set of industry-specific starter scenarios and a flexible evaluation runner, we aim to help developers, researchers, and businesses measure and improve their agent-based systems.
 
 The harness is organized into the following key components:
 
 -   `/dataproc_engine`: High-fidelity industrial data extraction engine (8 Sectors, Gold Standards).
--   `/industries`: Evaluation assets (5,000+ scenarios) categorized by 45+ industries.
+-   `/industries`: Evaluation assets (5,000+ starter scenarios) categorized by 45+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
 -   `/eval_runner/console`: Flask-based REST API for the Integrated Visual Suite.
 -   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
@@ -85,7 +85,11 @@ The harness is organized into the following key components:
 -   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
 -   `/sample_agent`: Reference implementation for benchmark testing.
 
-MultiAgentEval has transitioned to the Regulatory-Hardened AES v1.2 specification. This framework now provides the "Big Iron" standard for autonomous agent governance.
+### 🏗️ Modular Architecture Highlights (v1.2)
+- **Data-Driven Providers**: Industry-specific extractors (Healthcare, Telecom, Finance) now load simulation data from externalized `.json` and `.csv` files in the `industries/` directory.
+- **Zero-Touch Extensibility**: Dynamic discovery enables automatic registration of new agent adapters and dataset providers without modifying core registries.
+- **Robust Serialization**: Integrated `AESJsonEncoder` ensures stable logging and trace recording even when dealing with Mock objects or complex Path types.
+- **Universal Portability**: Eliminated hardcoded system paths, ensuring the harness runs seamlessly across Windows, macOS, and Linux.
 - **Deterministic Outcomes**: Validation against industrial standards (ISO-20022, HL7, SWIFT).
 - **State-Machine DAGs**: Non-linear `workflow` execution with Pre-condition Gating for multi-step safety.
 - **Pluralistic Judging**: Non-repudiable audit records via Inter-Judge Agreement (IJA) panel consensus.
@@ -351,7 +355,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | Feature Module | Community Edition (OSS) | Enterprise Edition |
 | :--- | :--- | :--- |
 | **Core Architecture** | ✅ Eval Engine, Hooks, JSON Schemas | ✅ Enterprise Service Bus Integration |
-| **Industry Benchmark Set** | ✅ 5,000+ Scenarios | ✅ Prioritized Scenario Updates |
+| **Industry Benchmark Set** | ✅ 5,000+ Starter Scenarios | ✅ Prioritized Scenario Updates |
 | **Reliability Metrics** | ✅ `pass@k` multi-attempt scoring | ✅ Persistent Leaderboards & Consensus |
 | **Scenario Mutations** | 🔶 Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
 | **Execution Security** | 🔶 Basic Path/Shell Gating | ✅ Context Payload Caps & Overflow Guards |

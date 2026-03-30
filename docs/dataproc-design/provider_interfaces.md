@@ -9,11 +9,29 @@ from abc import ABC, abstractmethod
 class BaseProvider(ABC):
     def __init__(self, config: dict):
         self.config = config
+        self.allow_simulation = config.get("allow_simulation", True)
         self.rate_limit = config.get("rate_limit", 1) # Default 1 req/s
         
     @abstractmethod
     async def extract(self) -> list[RawArtifact]:
-        """Fetch raw documents from external source."""
+        """
+        Fetch raw documents from external source. 
+        MUST trigger simulate() if source is unreachable and allow_simulation is True.
+        """
+        pass
+        
+    async def simulate(self, artifacts: list[RawArtifact]) -> list[RawArtifact]:
+        """
+        Global fallback: Creates high-fidelity artifacts using the internal factory.
+        Injected automatically when the primary extraction returns an empty set.
+        """
+        if not artifacts and self.allow_simulation:
+             # Implementation-specific simulation logic
+             pass
+        return artifacts
+
+    def create_simulated_artifact(self, id: str, content: Any, source_url: str, metadata: dict) -> RawArtifact:
+        """Standardized factory for high-fidelity mock artifact creation."""
         pass
         
     @abstractmethod

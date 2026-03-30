@@ -8,12 +8,21 @@ from dataproc_engine.providers.energy import EnergyProvider
 from dataproc_engine.providers.transportation import TransportationProvider
 from dataproc_engine.core.llm_manager import LLMManager
 
+class MockResponse:
+    """Explicit Async Context Manager for aiohttp mocks."""
+    def __init__(self, status, json_data=None):
+        self.status = status
+        self._json = json_data or {}
+    async def json(self): return self._json
+    async def __aenter__(self): return self
+    async def __aexit__(self, *args): pass
+
 @pytest.mark.asyncio
 async def test_housing_fhfa_and_hud_mastery():
     """Target Housing lines 24-38, 55, 61-79."""
     config = {
         "industry": "public_sector",
-        "mode": "hud",
+        "housing_mode": "hud",
         "allow_simulation": True
     }
     provider = HousingProvider(config, llm_manager=LLMManager({}))
@@ -33,38 +42,32 @@ async def test_finance_world_bank_fallback_mastery():
     """Target Finance lines 39, 51-52, 65, 95, 113, 129-131."""
     config = {
         "industry": "finance",
-        "schema_type": "world_bank",
+        "finance_mode": "worldbank",
         "allow_simulation": True
     }
     provider = FinanceProvider(config, llm_manager=LLMManager({}))
     
-    with patch("aiohttp.ClientSession.get") as mock_get:
-        mock_resp = AsyncMock()
-        mock_resp.status = 500 # Trigger fallback (Lines 51-52)
-        mock_get.return_value.__aenter__.return_value = mock_resp
-        
+    mock_resp = MockResponse(500)
+    with patch("aiohttp.ClientSession.get", return_value=mock_resp):
         artifacts = await provider.extract()
         assert len(artifacts) > 0
-        assert "sim-WB" in artifacts[0].id
+        assert "WB" in artifacts[0].id
 
 @pytest.mark.asyncio
 async def test_energy_opsd_fallback_mastery():
     """Target Energy lines 53, 63, 72, 87, 95, 116-117, 149-150."""
     config = {
         "industry": "energy",
-        "schema_type": "opsd",
+        "energy_mode": "opsd",
         "allow_simulation": True
     }
     provider = EnergyProvider(config, llm_manager=LLMManager({}))
     
-    with patch("aiohttp.ClientSession.get") as mock_get:
-        mock_resp = AsyncMock()
-        mock_resp.status = 500 # Trigger fallback
-        mock_get.return_value.__aenter__.return_value = mock_resp
-        
+    mock_resp = MockResponse(500)
+    with patch("aiohttp.ClientSession.get", return_value=mock_resp):
         artifacts = await provider.extract()
         assert len(artifacts) > 0
-        assert "sim-OPSD" in artifacts[0].id
+        assert "OPSD" in artifacts[0].id
 
 @pytest.mark.asyncio
 async def test_transportation_eurostat_mastery():

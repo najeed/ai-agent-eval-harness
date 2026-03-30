@@ -39,8 +39,9 @@ class LLMManager:
         if source_hint and self.strategy != "mock":
              interception = self._token_guard_intercept(content, source_hint)
              if interception:
-                 logger.info(f"V2: TokenGuard intercepted request for {source_hint}. Routing current call to Tier 3 (Heuristic).")
-                 effective_strategy = "heuristic" # Bypass for this call only
+                  logger.info(f"V2: TokenGuard intercepted request for {source_hint}. Routing to Tier 3 (Heuristic).")
+                  self.strategy = "heuristic" # Persist state for visibility/lifecycle
+                  effective_strategy = "heuristic"
         
         # 0.5 Tier 0: Mock
         if effective_strategy == "mock":
@@ -358,8 +359,12 @@ class LLMManager:
                         break
                 
                 if key not in corrected_data:
-                    logger.error(f"Inference failed for required key '{key}'.")
-                    return None
+                    if strict:
+                        logger.error(f"Inference failed for required key '{key}'.")
+                        return None
+                    else:
+                        logger.warning(f"Inference failed for key '{key}'. Skipping property enforcement.")
+                        continue
             
             # Type Enforcement
             val = corrected_data[key]
@@ -383,6 +388,8 @@ class LLMManager:
                 except (ValueError, TypeError):
                     logger.error(f"Type failure for '{key}': {val} is not a valid integer.")
                     return None
+        
+        return corrected_data
 
 
     def _token_guard_intercept(self, content: str, source_hint: str) -> bool:

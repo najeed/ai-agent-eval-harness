@@ -1,0 +1,7 @@
+[
+  {"SpatialDim": "USA", "NumericValue": 78.5, "TimeDim": "2021", "IndicatorCode": "WHOSIS_000001"},
+  {"SpatialDim": "JPN", "NumericValue": 84.6, "TimeDim": "2021", "IndicatorCode": "WHOSIS_000001"},
+  {"SpatialDim": "CAN", "NumericValue": 82.1, "TimeDim": "2021", "IndicatorCode": "WHOSIS_000001"},
+  {"SpatialDim": "GBR", "NumericValue": 80.9, "TimeDim": "2021", "IndicatorCode": "WHOSIS_000001"},
+  {"SpatialDim": "FRA", "NumericValue": 82.4, "TimeDim": "2021", "IndicatorCode": "WHOSIS_000001"}
+]

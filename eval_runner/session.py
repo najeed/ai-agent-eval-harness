@@ -414,17 +414,22 @@ class SessionManager:
 
     def _sanitize_for_history(self, obj: Any) -> Any:
         """Coerces objects (especially Mocks) into plain serializable types for history safety."""
-        if hasattr(obj, "__dict__") and "unittest.mock" in str(type(obj)):
-            # It's a Mock! Convert to a string representation or a placeholder
-            return f"<Mock {type(obj).__name__}>"
-            
+        from .trace_utils import AESJsonEncoder
+        encoder = AESJsonEncoder()
+
         if isinstance(obj, dict):
             return {str(k): self._sanitize_for_history(v) for k, v in obj.items()}
         elif isinstance(obj, list):
             return [self._sanitize_for_history(i) for i in obj]
         elif isinstance(obj, (str, int, float, bool, type(None))):
             return obj
-        return str(obj)
+        
+        try:
+            # Leverage the specialized encoder's default logic for leaf values
+            return encoder.default(obj)
+        except TypeError:
+            # Fallback to string representation for anything else
+            return str(obj)
 
     def fork(self, history: List[Dict[str, Any]], sandbox_state: Dict[str, Any]) -> SessionManager:
         """

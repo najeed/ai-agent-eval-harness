@@ -18,10 +18,10 @@ class UnstructuredProvider(BaseProvider):
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
         self.input_uri = config.get("input_uri")
-        self.schema_type = config.get("schema_type", "document") # document, common_crawl
+        self.unstructured_mode = config.get("unstructured_mode", "document") # document, common_crawl
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "common_crawl":
+        if self.unstructured_mode == "common_crawl":
             # Gold Standard: Common Crawl (Web Archive)
             snapshot = self.config.get("snapshot", "2023-50")
             url = f"https://data.commoncrawl.org/crawl-data/CC-MAIN-{snapshot}/"
@@ -63,6 +63,9 @@ class UnstructuredProvider(BaseProvider):
                 content = await self.request_with_retry(fetch_url)
                 if not content:
                     if self.allow_simulation:
+                        # Ensure snapshot and url are defined for the simulation fallback
+                        snapshot = self.config.get("snapshot", "2023-50")
+                        url = f"https://data.commoncrawl.org/crawl-data/CC-MAIN-{snapshot}/"
                         return [self.create_simulated_artifact(
                             id=f"CC-{snapshot}",
                             content="<html><body><h1>Global AI Trends 2024</h1></body></html>",
@@ -156,7 +159,7 @@ class UnstructuredProvider(BaseProvider):
             "strategic_signals": "string"
         })
         
-        if self.schema_type == "common_crawl":
+        if self.unstructured_mode == "common_crawl":
             TARGET_SCHEMA = {"web_title": "string", "web_source": "string", "web_domain": "string"}
             for raw in raw_artifacts:
                 # Basic HTML-to-Text simulation for transformation

@@ -10,28 +10,31 @@ _TEMP_DIR_CACHE = None
 
 def get_safe_tmp_dir() -> Path:
     """
-    Returns a writable temporary directory.
-    Prioritizes C:\tmp on Windows (per user request) or /tmp on Unix.
-    Falls back to PROJECT_ROOT / ".tmp" if C:\tmp is not writable.
+    Returns a writable temporary directory within the PROJECT_ROOT.
+    Ensures environment portability by avoiding system-wide absolute paths.
     """
     global _TEMP_DIR_CACHE
     if _TEMP_DIR_CACHE:
         return _TEMP_DIR_CACHE
 
-    # 1. Primary path (local .tmp within PROJECT_ROOT)
+    # 1. Primary path: Git-ignored .tmp directory within the project
     primary = PROJECT_ROOT / ".tmp"
     
-    # 2. Verify write permission
     try:
-        primary.mkdir(parents=True, exist_ok=True)
-        test_file = primary / ".multiagent_eval_perm_test"
+        if not primary.exists():
+            primary.mkdir(parents=True, exist_ok=True)
+        
+        # Verify write permission
+        test_file = primary / ".aes_perm_test"
         test_file.write_text("perm_test", encoding="utf-8")
         test_file.unlink()
+        
         _TEMP_DIR_CACHE = primary
         return primary
     except Exception:
-        # 3. Fallback to gitignored project-local .tmp
-        fallback = PROJECT_ROOT / ".tmp"
+        # 2. Fallback to OS default if project root is read-only (unlikely in dev)
+        import tempfile
+        fallback = Path(tempfile.gettempdir()) / "aes_eval"
         fallback.mkdir(parents=True, exist_ok=True)
         _TEMP_DIR_CACHE = fallback
         return fallback
