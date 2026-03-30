@@ -123,12 +123,17 @@ multiagent-eval verify --path <run.jsonl> [--manifest <manifest.json>]
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
 ```bash
-multiagent-eval spec-to-eval --input <prd.md> [--output <scenario.json>] [--fill-defaults]
+multiagent-eval spec-to-eval --input <prd.md> [--output <scenario.json>]
 ```
-- `--input`: Path to the Markdown specification file.
-- `--output`: Optional. Custom output path for the generated JSON.
-- `--fill-defaults`: Optional. Automatically populates mandatory AES fields.
-- Intelligent Classification: The command includes a Semantic Similarity Classifier (using `sentence-transformers`) that automatically identifies `industry`, `use_case`, and `core_function` from the spec's conceptual context (e.g., distinguishing between `finance` and `legal` based on the nature of the request).
+- `--input` (or `--path`): Path to the Markdown specification file.
+- `--output`: Optional. Custom output path for the generated JSON (defaults to `scenario.json`).
+
+**Dual-Mode Parsing Logic:**
+1. **Deterministic Static Parsing**: The command first attempt to parse the Markdown using regex. It identifies:
+    - **Metadata**: Title (H1), Industry, Use Case, and Core Function (via `**Field:**` patterns).
+    - **Manual Tasks**: If `###` headers are found within a `## Tasks` section, they are parsed as individual nodes with sequential dependency edges.
+    - **Topology & Policies**: Sections defined with `## Topology` and `## Policies` are mapped to the AES metadata.
+2. **LLM-Augmented Synthesis**: If no structured tasks are found, the harness triggers an internal LLM (e.g., Gemini) to derive a balanced suite of 3-5 tasks (Positive, Negative, and Adversarial flows) based on the PRD's business rules and tool definitions.
 
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.

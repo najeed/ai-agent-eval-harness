@@ -7,6 +7,32 @@ from pathlib import Path
 REGISTRY_PATH = Path("spec/aes/standards.json")
 METADATA_SCHEMA_PATH = Path("spec/aes/definitions/metadata.json")
 
+def load_registry():
+    """Returns the categorized standards registry as a nested dictionary."""
+    if not REGISTRY_PATH.exists():
+        return {"industries": {}}
+    
+    with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    # Map disk structure (categories/list) to scaffold expectations (industries/dict)
+    transformed = {"industries": {}}
+    categories = data.get("categories", {})
+    for cat_name, cat_data in categories.items():
+        transformed["industries"][cat_name] = {
+            "description": cat_data.get("description", ""),
+            "standards": {s["id"]: s for s in cat_data.get("standards", [])}
+        }
+        # Add subcategories as flattened top-level industries for simplicity in scaffold lookup
+        for subcat in cat_data.get("subcategories", []):
+            sub_name = f"{cat_name} - {subcat.get('name', 'Sub')}"
+            transformed["industries"][sub_name] = {
+                "description": subcat.get("description", ""),
+                "standards": {s["id"]: s for s in subcat.get("standards", [])}
+            }
+            
+    return transformed
+
 def get_registry_ids():
     """Extracts all standard IDs from the categorized registry."""
     if not REGISTRY_PATH.exists():

@@ -47,7 +47,8 @@ def discover_plugins_in_directory(directory: Path, base_class: Type, package_pre
             module = importlib.import_module(full_module_name)
             plugins.extend(discover_classes_in_module(module, base_class))
         except Exception as e:
-            # Silent fail for broken external plugins to prevent engine crash
+            # Prevent engine crash but log the error for visibility
+            print(f"   [Discovery] Warning: Failed to load plugin '{full_module_name}': {e}")
             pass
             
     return plugins
@@ -73,7 +74,8 @@ def discover_classes_in_package(package, base_class: Type, instantiate: bool = F
             if classes:
                 # Store by stem (e.g. 'demographics')
                 results[module_stem] = classes[0]
-        except Exception:
+        except Exception as e:
+            print(f"   [Discovery] Warning: Failed to load module '{full_module_name}' in package: {e}")
             pass
     return results
 
@@ -91,5 +93,6 @@ def scan_package_for_adapters(package, registry_func):
             
             if hasattr(module, "adapter") and callable(module.adapter):
                 registry_func(module_name, module.adapter)
-        except Exception:
+        except Exception as e:
+            print(f"   [Discovery] Warning: Failed to load adapter module '{full_module_name}': {e}")
             pass

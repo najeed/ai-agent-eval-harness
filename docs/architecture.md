@@ -90,16 +90,31 @@ The `PluginManager` triggers these hooks synchronously, ensuring a deterministic
 | Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |
 | Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
 
-## Regulatory Enforcement Layer: AES v1.2
+## Regulatory Enforcement Layer: AES v1.2 & Dataproc Engine
 
-AES v1.2 elevates the harness into a **Verification OS** for mission-critical industries:
-- **Modular Data Extraction**: The `dataproc_engine` is now completely data-driven. Simulation data for Healthcare, Telecom, and Finance is stored in external `.json` and `.csv` files within the `industries/` directory, ensuring code cleanliness and easy dataset updates.
-- **Dynamic Provider Discovery**: Replaced hardcoded registries with a "Zero-Touch" discovery system. The `DatasetEngine` automatically scans the `providers/` package for classes inheriting from `BaseProvider`, enabling instant support for new sectors.
-- **Robust AES Serialization**: Integrated a specialized `AESJsonEncoder` across the flight recorder and session history. This handles non-standard types (Mocks, Paths, Datetimes) safely, preventing runtime crashes during complex multi-agent simulations.
+AES v1.2 elevates the harness into a **Verification OS** for mission-critical industries, powered by the `dataproc_engine` simulation backbone:
+
+- **Industrial Simulation Backbone (`dataproc_engine`)**: A high-fidelity data extraction and synthesis engine that powers 8 core industrial sectors:
+    - **Finance**: ISO-20022 compliant transaction streams and credit risk models.
+    - **Healthcare**: HL7 FHIR-mapped EHR simulations and PII-masked clinical records.
+    - **Telecom**: Network topology logs and CDR (Call Detail Record) troubleshooting data.
+    - **Energy**: Grid load signals and renewable energy optimization telemetry.
+    - **Ecommerce**: SKU inventory states and multi-stage fulfillment workflows.
+    - **Transportation**: Logistics routing manifests and real-time fleet telemetry.
+    - **Agriculture**: IoT soil sensor data and supply chain traceability logs.
+    - **Unstructured**: Raw document pools for testing "bare metal" extraction capabilities.
+
+- **Zero-Touch Provider Discovery**: The `dataproc_engine` utilizes a dynamic discovery system. By placing a new provider in the `dataproc_engine/providers/` directory, it is automatically registered with the `DatasetEngine`, allowing scenarios to access new industrial data instantly without core modifications.
+
+- **Modular Data Extraction**: Simulation data is completely decoupled from logic. Industry-specific datasets are stored in externalized `.json` and `.csv` files within the `industries/` directory, ensuring auditability and ease of updates.
+
+- **Robust AES Serialization**: Integrated a specialized `AESJsonEncoder` across the flight recorder and session history. This handles non-standard types (Mocks, Paths, Datetimes) safely, preventing runtime crashes during high-concurrency industrial simulations.
+
 - **State-Machine DAG**: Scenarios define a directed acyclic graph of `nodes` and `edges`, enabling non-linear state transitions and dependency gating.
-- **Typed Outcomes (Standards Registry)**: Mandates adherence to industrial gold standards (e.g., ISO-20022, HL7 FHIR) using typed result schemas.
-- **Pluralistic Judging (IJA)**: Implements Inter-Judge Agreement metrics. Critical evaluations require a "Judge Panel" consensus (at least 3 judges) with a configurable `ija_threshold`.
-- **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior.
+
+- **Pluralistic Judging (IJA)**: Implements Inter-Judge Agreement metrics. Critical industrial evaluations require a "Judge Panel" consensus (at least 3 judges) with a configurable `ija_threshold`.
+
+- **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior in regulated environments.
 
 ## Semantic Bridge & Drift Management
 

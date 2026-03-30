@@ -17,10 +17,10 @@ multiagent-eval quickstart
 ```
 
 **What happens:**
-1. Spawns a sample agent server in the background.
+1. Spawns a **deterministic in-process** sample agent (requires no API keys).
 2. Executes a telecom troubleshooting evaluation.
 3. Generates a **Premium HTML report** in `reports/` (with Mermaid trajectories).
-4. Shuts down the agent automatically.
+4. Shuts down the agent automatically. 100% offline-ready.
 
 ---
 
@@ -67,7 +67,7 @@ multiagent-eval evaluate --path industries/telecom
 ```
 
 ### 4. Validate Benchmarks
-Ensure your custom benchmarks are AES v0.2 compliant.
+Ensure your custom benchmarks are AES v1.2 compliant.
 ```bash
 multiagent-eval aes validate --path my_benchmarks
 ```

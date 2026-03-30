@@ -9,7 +9,9 @@ This guide is for users who want to run and understand evaluations without divin
 2. [Running Evaluations (CLI)](#running-evaluations-cli)
 3. [Scenario Structure](#scenario-structure-example)
 4. [Metrics Explained](#metrics-explained)
-5. [Drift & Triage (Advanced)](#drift-triage-advanced)
+5. [Integrated Visual Suite](#-integrated-visual-suite)
+6. [Drift & Triage (Advanced)](#-drift-triage-advanced)
+7. [Advanced Setup (Docker)](#-advanced-setup-docker)
 
 ---
 
@@ -167,18 +169,33 @@ multiagent-eval quickstart
 *   Generates a **Premium HTML report** (Mermaid trajectories enabled) in `reports/`.
 *   **Note:** This command is designed for CLI-only instant feedback; use `multiagent-eval console` for the visual experience.
 
-### 🖥️ `console` — React Visual Debugger GUI
-Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.
-
-#### Key Features:
-- **Scenario Explorer**: Browse the catalog with search filters. View real-time **Lint Scores** and quality status badges.
-- **Background Execution**: Trigger evaluations directly from the UI; monitor progress in real-time.
-- **Visual DNA Debugger**: Live trajectory playback, state inspection, and trace export via the `DebuggerStateStore` hook.
-- **API Reference**: Integrated technical documentation drawer for one-click access to guides.
-
 ```bash
 multiagent-eval console --port 5000
 ```
+
+---
+
+## 🖥️ Integrated Visual Suite
+
+The **Integrated Visual Suite** is a unified React-powered SPA that provides a premium, high-density interface for managing the entire evaluation lifecycle.
+
+### 🧩 Visual AES Builder
+Located within the **Builder** tab, this tool allows you to design complex, multi-turn agentic evaluation logic without writing a single line of JSON.
+- **Drag-and-Drop Nodes**: Construct sequences of tasks and tool-call expectations.
+- **Real-time Validation**: The builder prevents structural errors before saving.
+- **One-Click Export**: Save production-ready AES v1.2 JSON directly to your industry catalog.
+
+### 🔍 Interactive Visual Debugger
+Replay agent trajectories with professional-grade precision:
+- **Trajectory Maps**: Fluid React Flow-powered graphs showing every agent response and tool call.
+- **Isolate Root Cause**: A single click focuses the timeline on the exact point of failure (Patient Zero).
+- **State Inspection**: Drill down into the Sandbox VFS state at any specific turn to see exactly what changed in the environment.
+
+### 🗂️ Scenario Explorer & Reports
+- **Quality Badges**: All scenarios are automatically linted, displaying a real-time compliance score.
+- **Historical Analysis**: Review every past run with instant access to trajectories and triage summaries.
+
+---
 
 ### 🔍 `doctor` — Environment Validator
 Troubleshoot your installation and connectivity.
@@ -433,6 +450,28 @@ By combining these layers, AgentEval can distinguish between an agent that *hall
 > - **Speed**: Simulated responses are near-instant vs. real network latency.
 
 📖 See the full technical deep-dive: [`06_TRIAGE_ENGINE_AND_VFS.md`](06_TRIAGE_ENGINE_AND_VFS.md)
+
+---
+
+---
+
+## 🚀 Advanced Setup (Docker)
+
+For environments requiring full process isolation or a localized enterprise stack, MultiAgentEval supports deployment via Docker Compose.
+
+### Launching the Lab Mode Stack
+```bash
+docker compose up --build
+```
+
+**Services included:**
+*   **Flask API**: Core evaluation engine and console backend (Port 5000).
+*   **React SPA**: The Integrated Visual Suite (served via the backend).
+*   **Streamlit Dashboard**: Advanced statistical analytics and parity gauges (Port 8501).
+
+### Troubleshooting Docker
+*   **Permission Denied**: Ensure your user is in the `docker` group (Linux).
+*   **Port Collision**: If port 5000 is occupied, update the mapping in `docker-compose.yml`.
 
 ---
 

@@ -10,11 +10,19 @@
 - [ ] Phase 2: Robust JSON Serialization
     - [ ] Implement `AESJsonEncoder` in `eval_runner/trace_utils.py`
     - [ ] Update `Session._serialize_log` in `eval_runner/session.py`
-- [ ] Phase 3: Configurable LLM Endpoints
-    - [ ] Update `llm_providers.py` to support `api_base` / `base_url`
-- [ ] Phase 4: Dynamic Plugin Discovery
-    - [ ] Create `eval_runner/discovery.py`
-    - [ ] Update `eval_runner/engine.py` to use discovery
+- [x] Phase 3: Coverage Strike (Target 4, 5, 6)
+    - [x] Target 4: `simulators.py` (**100% Coverage**)
+    - [x] Target 5: `spec_parser.py` (**99% Coverage**)
+    - [x] Target 6: `plugins.py` (**89% Coverage**)
+
+- [x] Phase 4: Coverage Strike (Target 7, 8, 9)
+    - [x] Target 7: `session.py` (SessionManager, DAG execution, state hygiene)
+    - [x] Target 8: `handlers/environment.py` (Framework detection, plugin management)
+    - [x] Target 9: `console/routes.py` (Flask API, background dispatching, trace loading)
+- [ ] Phase 4: Dynamic Discovery Hardening (Target 10)
+    - [ ] Implement `tests/unit/core/test_discovery_all.py`
+    - [ ] Reach >95% coverage for `discovery.py` (Zero-Touch scanning)
+    - [ ] Update `walkthrough.md` with final results
 - [ ] Phase 5: Package Manifest Update
     - [ ] Update `pyproject.toml` to include `industries/`
 - [ ] Phase 6: Absolute Path Elimination

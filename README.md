@@ -98,15 +98,12 @@ The harness is organized into the following key components:
 
 ### Prerequisites
 
--   **Python 3.8+**
+-   **Python 3.11+**
 -   **pip**
--   **Docker & Docker Compose (optional, for Lab Mode)**:
-    -   **Windows/Mac**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-    -   **Linux**: Install [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 > [!IMPORTANT]
-> ### 60-Second Quickstart (Get Running Now)
-> The fastest way to see the harness in action:
+> ### 🚀 Zero-Key Quickstart (Get Running Now)
+> The fastest way to see the harness in action - **no API keys or LLM setup required**:
 >
 > ```bash
 > # 1. Clone the repository
@@ -121,14 +118,14 @@ The harness is organized into the following key components:
 > # 3. Install the package in editable mode
 > pip install -e .
 >
-> # 4. Run the Quickstart Demo (CLI)
+> # 4. Run the Deterministic Quickstart (CLI)
 > multiagent-eval quickstart
 > ```
 >
-> **What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`.
+> **What it does:** Spawns a deterministic in-process mock agent, executes a telecom troubleshooting evaluation, and generates a rich HTML report in `reports/`. 100% offline-ready.
 
 > [!TIP]
-> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `multiagent-eval console`.
+> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `multiagent-eval console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs/guides/help/02_USER_MANUAL.md#visual-suite) for details.
 
 ## 📂 The Global Scenario Corpus (v1.1)
 
@@ -147,8 +144,6 @@ Comprehensive coverage for **50+ sectors** including:
 - **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
 
 *All scenarios are 100% compliant with the [AES Specification](docs/guides/04_AES_SPECIFICATION.md).*
-
-*(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker compose up --build`. If you don't have Docker, you can run services manually (see [Troubleshooting](#troubleshooting)).
 
 ### Manual Evaluation (Running the Sample Agent)
 
@@ -315,12 +310,30 @@ All evaluation execution logs are appended to `runs/run.jsonl`. Because this act
 - **`ConnectionRefusedError`**: The harness cannot reach the agent. Ensure `AGENT_API_URL` is set correctly and the agent API is running.
 - **`PluginTimeoutError`**: A registered plugin took too long to execute a hook. Check your plugin logic or increase the timeout.
 - **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama3`) is running and capable of JSON mode.
-- **`docker: command not found`**: You need to install Docker. Follow the [Official Installation Guide](https://docs.docker.com/get-docker/).
-- **Running Lab Mode without Docker**:
-    If you cannot install Docker, run these 3 commands in separate terminals:
-    1. `python sample_agent/agent_app.py`
-    2. `multiagent-eval console`
-    3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
+- **`docker: command not found`**: You need to install Docker if you intend to use Lab Mode.
+
+---
+
+## 🚀 Advanced Setup (Docker & Lab Mode)
+
+For researchers needing full isolation or enterprise-grade local dashboards, we provide a containerized stack.
+
+### Prerequisites
+- **Docker & Docker Compose**:
+    - **Windows/Mac**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+    - **Linux**: Install [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+
+### Launching the Stack
+```bash
+docker compose up --build
+```
+This orchestrates the Flask backend, the React frontend, and the Streamlit analytics dashboard in a secure, isolated network.
+
+### Running Lab Mode without Docker
+If you cannot install Docker, run these 3 commands in separate terminals:
+1. `python sample_agent/agent_app.py`
+2. `multiagent-eval console`
+3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
 
 ## How to Contribute
 

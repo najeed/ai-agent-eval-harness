@@ -14,8 +14,35 @@ Replace hardcoded dictionaries in industry providers with external file loading.
 
 #### [NEW] [mock_datasets](file:///c:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/industries/mock_data)
 - Create `industries/healthcare/mock_cms.csv`
-- Create `industries/telecom/mock_ookla.json`
-- Create `industries/finance/mock_worldbank.json`
+- Test persistent registration/unregistration to `.aes/plugins.json`.
+- Test `trigger_interceptor` ensuring correct boolean aggregation.
+
+### Coverage Enhancement Target 7: Session Lifecycle & Execution Loop
+The `SessionManager` is the core execution engine of the harness.
+
+#### [NEW] `tests/unit/core/test_session.py`
+- Test `execute_tasks`: workflow DAG traversal, topological sort (including cycle detection), and empty workflow handling.
+- Test turn-loop logic: Agent adapters calls, tool handling (single/multiple), and HITL (CI vs TTY vs Non-interactive).
+- Test `_calculate_metrics`: Comprehensive validation of state hygiene (eq, exists, not_exists, contains) and metric function invocation.
+- Test `fork`: Verified fork depth limits and state cloning.
+
+### Coverage Enhancement Target 8: CLI Handlers (Environment)
+Handlers in `eval_runner/handlers/environment.py` bridge the CLI to core logic.
+
+#### [NEW] `tests/unit/handlers/test_environment_handlers.py`
+- Test all command wrappers (`handle_init`, `handle_analyze`, `handle_registry_sync`, etc.) with dependency mocking.
+- Test `detect_framework` with various project structures (LangGraph, CrewAI, Custom) in temporary directories.
+- Test plugin registration persistence handlers.
+
+### Coverage Enhancement Target 9: Console Backend (Flask Routes)
+The REST API in `eval_runner/console/routes.py` powers the web interface.
+
+#### [NEW] `tests/unit/console/test_routes.py`
+- Utilize `flask.Flask.test_client()` for full endpoint verification.
+- Test `execute_demo_command` with subprocess mocking and prefix whitelist validation.
+- Test `list_scenarios` and `save_scenario` (v1.2 compliant JSON generation).
+- Test `debugger/state` lifecycle and historical trace loading from `.jsonl`.
+- Test `docs` retrieval and path traversal protection.
 
 #### [MODIFY] [healthcare.py](file:///c:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/dataproc_engine/providers/healthcare.py)
 #### [MODIFY] [telecom.py](file:///c:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/dataproc_engine/providers/telecom.py)

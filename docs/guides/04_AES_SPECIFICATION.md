@@ -10,20 +10,19 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 
 ## 2. Core Components (v1.2)
 
-### DAG-Based Execution
-Scenarios define a directed acyclic graph of `nodes` and `edges`, enabling complex branching and state-dependent transitions.
+### DAG-Based Execution (workflow)
+Scenarios define a directed acyclic graph (DAG) of `nodes` and `edges`, enabling complex multi-stage evaluations with dependency tracking.
 
 ```yaml
 workflow:
   nodes:
-    - id: "start"
-      task: "Initial inquiry"
-    - id: "branch_a"
-      task: "Processing for A"
-      requires: ["start"]
-  gating:
-    - node: "branch_a"
-      condition: "status == 'approved'"
+    - id: "task-1"
+      task_description: "Initial credit check"
+    - id: "task-2"
+      task_description: "Policy enforcement audit"
+  edges:
+    - from: "task-1"
+      to: "task-2"
 ```
 
 ### Typed Outcomes
@@ -63,3 +62,52 @@ Every AES evaluation produces a `run.jsonl` flight recorder log. You can replay 
 ```bash
 multiagent-eval replay --path runs/run.jsonl
 ```
+
+---
+
+## 7. Complete Example (Loan Approval)
+
+Below is a production-grade AES v1.2 scenario demonstrating a multi-stage loan approval process with tool requirements and policy constraints.
+
+```json
+{
+  "scenario_id": "loan_approval_01",
+  "metadata": {
+    "name": "High-Density Loan Credit Audit",
+    "industry": "finance",
+    "compliance_level": "Standard",
+    "agent_topology": {
+      "loan_agent": {
+        "reads": ["user.credit_score", "bank.policies"],
+        "writes": ["loan.status"]
+      }
+    }
+  },
+  "description": "Evaluate an agent's ability to process a loan while adhering to strict internal credit policies.",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Approve the loan for Alice at the standard rate.",
+        "required_tools": ["check_credit_score", "approve_loan"],
+        "success_criteria": [
+          {"metric": "tool_call_correctness", "threshold": 1.0},
+          {"metric": "policy_compliance", "threshold": 1.0}
+        ]
+      },
+      {
+        "id": "task-2",
+        "task_description": "Explain the decision and provide the next steps for disbursement.",
+        "success_criteria": [
+          {"metric": "path_parsimony", "threshold": 0.5}
+        ]
+      }
+    },
+    "edges": [
+      { "from": "task-1", "to": "task-2" }
+    ]
+  }
+}
+```
+> [!TIP]
+> Use the **Visual AES Builder** (available via `multiagent-eval console`) to construct these workflows using a drag-and-drop interface instead of manual JSON editing.

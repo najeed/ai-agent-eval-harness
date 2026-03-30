@@ -123,14 +123,14 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                 agent = name_match.group(1).strip()
 
                 writes = []
-                w_match = re.search(r"writes to\s*[`\[\]\"']*(.*?)[`\[\]\"']*(?:,|$|\.|\s)", cl)
+                w_match = re.search(r"writes to\s*[:\s]*[\[\"']*(.*?)(?=[\]\"']*\.|\s*\]|$)", cl)
                 if w_match:
-                    writes = [w.strip().strip("`").strip('"') for w in w_match.group(1).split(",")]
+                    writes = [w.strip(" `\"[]") for w in w_match.group(1).split(",")]
 
                 reads = []
-                r_match = re.search(r"reads from\s*[`\[\]\"']*(.*?)[`\[\]\"']*(?:,|$|\.|\s)", cl)
+                r_match = re.search(r"reads from\s*[:\s]*[\[\"']*(.*?)(?=[\]\"']*\.|\s*\]|$)", cl)
                 if r_match:
-                    reads = [r.strip().strip("`").strip('"') for r in r_match.group(1).split(",")]
+                    reads = [r.strip(" `\"[]") for r in r_match.group(1).split(",")]
 
                 topology[agent] = {
                     "writes": [w for w in writes if w],
