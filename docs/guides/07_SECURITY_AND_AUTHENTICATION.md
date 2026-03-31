@@ -8,10 +8,15 @@ The `DASHBOARD_API_KEY` is a mandatory security credential required to access pr
 
 ### 🔐 1. Generating a Secure Key
 
-For production or sensitive environments, you should use a cryptographically strong, random string. You can generate one using `openssl`:
+For production or sensitive environments, you should use a cryptographically strong, random string. You can generate one using **OpenSSL** or **Python** (no install required):
 
+**Using Python (Native & Cross-Platform):**
 ```bash
-# Generate a 64-character hex key
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+**Using OpenSSL:**
+```bash
 openssl rand -hex 32
 ```
 
