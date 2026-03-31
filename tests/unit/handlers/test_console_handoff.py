@@ -2,14 +2,19 @@ import pytest
 from eval_runner.console.auth import generate_handoff_token, SECRET_KEY
 from eval_runner.console.app import create_app
 import jwt
+from unittest.mock import patch
 
 
 @pytest.fixture
 def client():
     app = create_app()
     app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
+    # Mock API Key for console tests
+    api_key = "test-session-key"
+    with patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key):
+        with app.test_client() as client:
+            client.environ_base["HTTP_X_AES_API_KEY"] = api_key
+            yield client
 
 
 def test_handoff_token_generation():

@@ -36,13 +36,45 @@ def search_tool(query: str) -> str:
     return "No results found."
 
 
+import ast
+import operator as op
+
+# -----------------------------
+# SAFE EVALUATOR (R0.3 remediation)
+# -----------------------------
+operators = {
+    ast.Add: op.add,
+    ast.Sub: op.sub,
+    ast.Mult: op.mul,
+    ast.Div: op.truediv,
+    ast.Pow: op.pow,
+    ast.USub: op.neg,
+}
+
+def safe_eval_node(node):
+    if isinstance(node, ast.Constant):  # Python 3.8+
+        return node.value
+    elif isinstance(node, ast.Num):  # Support for older versions
+        return node.n
+    elif isinstance(node, ast.BinOp):
+        return operators[type(node.op)](safe_eval_node(node.left), safe_eval_node(node.right))
+    elif isinstance(node, ast.UnaryOp):
+        return operators[type(node.op)](safe_eval_node(node.operand))
+    else:
+        raise TypeError(f"Unsupported operation: {type(node)}")
+
+def restricted_eval(expr: str):
+    """Safely evaluates a mathematical expression using AST."""
+    try:
+        tree = ast.parse(expr, mode='eval')
+        return safe_eval_node(tree.body)
+    except Exception as e:
+        return f"calculation error: {str(e)}"
+
 @tool
 def calculator(expr: str) -> str:
-    """Evaluate a mathematical expression."""
-    try:
-        return str(eval(expr))
-    except:
-        return "calculation error"
+    """Evaluate a mathematical expression. Supports +, -, *, /, **."""
+    return str(restricted_eval(expr))
 
 
 @tool

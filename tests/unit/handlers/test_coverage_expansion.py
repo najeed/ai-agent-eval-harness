@@ -66,9 +66,10 @@ def test_get_loan_demo_context():
     """Hits get_loan_demo_context in routes.py."""
     from flask import Flask
     app = Flask(__name__)
-    with app.app_context():
-        ctx = get_loan_demo_context()
-        assert ctx.status_code == 200
+    with patch("eval_runner.config.DASHBOARD_API_KEY", "test-key"):
+        with app.test_request_context(headers={"X-AES-API-KEY": "test-key"}):
+            ctx = get_loan_demo_context()
+            assert ctx.status_code == 200
 
 # --- Engine Gaps ---
 

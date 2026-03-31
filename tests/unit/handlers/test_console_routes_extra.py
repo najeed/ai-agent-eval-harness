@@ -5,23 +5,34 @@ from flask import Flask
 from eval_runner.console.routes import core_bp
 from eval_runner import config
 
+from eval_runner.console.app import create_app
+
 @pytest.fixture
 def app(tmp_path, monkeypatch):
     """Fixture for local Flask app with isolated routes."""
-    app = Flask(__name__)
-    app.register_blueprint(core_bp)
+    app = create_app()
+    app.config["TESTING"] = True
     
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
-    (tmp_path / "runs").mkdir()
+    if not (tmp_path / "runs").exists():
+        (tmp_path / "runs").mkdir()
     
     return app
 
 @pytest.fixture
-def client(app):
-    return app.test_client()
+def client(app, monkeypatch):
+    api_key = "test-key-123"
+    monkeypatch.setattr(config, "DASHBOARD_API_KEY", api_key)
+    with app.test_client() as client:
+        client.environ_base["HTTP_X_AES_API_KEY"] = api_key
+        yield client
 
-def test_list_runs_with_query(client, tmp_path):
+@pytest.fixture
+def auth_headers():
+    return {"X-AES-API-KEY": "test-key-123"}
+
+def test_list_runs_with_query(client, tmp_path, auth_headers):
     """Verifies 'runs' search filter logic in Console API."""
     run_log = tmp_path / "runs" / "run.jsonl"
     events = [
@@ -33,24 +44,24 @@ def test_list_runs_with_query(client, tmp_path):
             f.write(json.dumps(ev) + "\n")
             
     # Search for Alpha
-    resp = client.get("/api/runs?q=alpha")
+    resp = client.get("/api/runs?q=alpha", headers=auth_headers)
     data = resp.get_json()
     assert len(data["runs"]) == 1
     assert data["runs"][0]["run_id"] == "run-alpha"
     
     # Search for nothing
-    resp = client.get("/api/runs?q=xyz")
+    resp = client.get("/api/runs?q=xyz", headers=auth_headers)
     data = resp.get_json()
     assert len(data["runs"]) == 0
 
-def test_get_debugger_state_invalid_run(client):
+def test_get_debugger_state_invalid_run(client, auth_headers):
     """Verifies 404 error handling for missing trace lookups."""
-    resp = client.get("/api/debugger/state?run_id=invalid-id")
+    resp = client.get("/api/debugger/state?run_id=invalid-id", headers=auth_headers)
     assert resp.status_code == 404
     data = resp.get_json()
     assert "Trace file not found" in data["message"]
 
-def test_list_scenarios_filtering(client, monkeypatch, tmp_path):
+def test_list_scenarios_filtering(client, monkeypatch, tmp_path, auth_headers):
     """Verifies Console API scenarios filtering."""
     # Mock catalog search to avoid full indexing
     from eval_runner.catalog import ScenarioCatalog
@@ -60,7 +71,7 @@ def test_list_scenarios_filtering(client, monkeypatch, tmp_path):
     monkeypatch.setattr(ScenarioCatalog, "load_index", lambda x: None)
     monkeypatch.setattr(ScenarioCatalog, "search", mock_search)
     
-    resp = client.get("/api/scenarios?industry=telecom")
+    resp = client.get("/api/scenarios?industry=telecom", headers=auth_headers)
     data = resp.get_json()
     assert data["scenarios"][0]["industry"] == "telecom"
 

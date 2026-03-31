@@ -8,6 +8,7 @@ Also acts as a package container for ecosystem-specific adapters.
 
 import json
 import asyncio
+import shlex
 from typing import Dict, Any, Optional
 from .. import config
 
@@ -31,8 +32,11 @@ async def local_subprocess_adapter(payload: dict, command: str):
     Call an agent by spawning a local subprocess.
     Sends JSON payload to stdin and reads JSON response from stdout.
     """
-    process = await asyncio.create_subprocess_shell(
-        command,
+    # Secure Remediation (R0.2): Eliminate shell=True/shell=True context
+    # shlex.split transforms "python agent.py --arg" into ["python", "agent.py", "--arg"]
+    cmd_args = shlex.split(command)
+    process = await asyncio.create_subprocess_exec(
+        *cmd_args,
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,

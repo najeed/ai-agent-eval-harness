@@ -2,12 +2,34 @@ from flask import Blueprint, jsonify, request
 import os
 from pathlib import Path
 import json
+import subprocess
+import shlex
 from datetime import datetime
 from .. import config
 
+from functools import wraps
+
 core_bp = Blueprint("core", __name__, url_prefix="/api")
 
+def require_api_key(f):
+    """Decorator to enforce X-AES-API-KEY authentication."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        api_key = request.headers.get("X-AES-API-KEY")
+        # In development/demo mode, a missing key might be allowed if explicitly configured,
+        # but here we enforce strict compliance as per Phase 3 rules.
+        if not config.DASHBOARD_API_KEY:
+             # If no key is configured in env, we allow it ONLY if in explicit insecure mode
+             # (not implemented yet, defaulting to block for safety)
+             return jsonify({"error": "Unauthorized: No secure API key configured on server."}), 501
+        
+        if api_key != config.DASHBOARD_API_KEY:
+            return jsonify({"error": "Unauthorized: Invalid or missing API Key"}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
 @core_bp.route("/demo/loan/context", methods=["GET"])
+@require_api_key
 def get_loan_demo_context():
     """Retrieve dynamic context files for the Loan Approval Demo."""
     demo_dir = config.PROJECT_ROOT / "sample_agent" / "loan_agent_demo"
@@ -25,9 +47,9 @@ def get_loan_demo_context():
     return jsonify(context)
 
 @core_bp.route("/demo/execute", methods=["POST"])
+@require_api_key
 def execute_demo_command():
     """Execute a CLI command for the demo and return results."""
-    import subprocess
     data = request.json or {}
     cmd = data.get("command")
     if not cmd:
@@ -37,32 +59,33 @@ def execute_demo_command():
     allowed_prefixes = ["multiagent-eval spec-to-eval", "multiagent-eval evaluate", "multiagent-eval triage", "python ", "copy ", "cp ", "type ", "cat ", "type", "cat"]
     allowed_files = ["loan_agent.py", "loan_agent_fixed.py", "loan_approval.aes.yaml", "loan_prd.md", "loan_approval_scenario.json"]
     
+    # Secure Remediation (R2.1): Robust Path Traversal Protection
+    def is_path_safe(target_str, base_dir):
+        try:
+            target = Path(target_str).resolve()
+            base = Path(base_dir).resolve()
+            return base in target.parents or target == base
+        except Exception:
+            return False
+
+    demo_dir = Path(__file__).parent.parent.parent / "sample_agent" / "loan_agent_demo"
+    
     # Check prefixes
     if not any(cmd.lower().startswith(a.lower()) for a in allowed_prefixes):
          return jsonify({"error": f"Command not allowed: {cmd}"}), 403
     
-    # Secondary check: ensure we only touch demo files in reading/writing commands
-    check_cmds = ["type", "cat", "python", "copy", "cp"]
-    if any(c in cmd.lower() for c in check_cmds):
-        # For reading commands (type, cat), allow any file in the demo directory
-        if cmd.lower().startswith(("type", "cat")):
-            demo_dir = Path(__file__).parent.parent.parent / "sample_agent" / "loan_agent_demo"
-            # Get the filename from the command - simple split and check existence
-            parts = cmd.split()
-            if len(parts) > 1:
-                target_path = Path(parts[-1].replace("\\", "/"))
-                # If it's a relative path to the demo dir or a full path within it
-                if any(f.lower() in str(target_path).lower() for f in allowed_files):
-                    pass # Explicitly allowed
-                else:
-                    return jsonify({"error": f"Access to this file path is not permitted: {cmd}"}), 403
-        elif not any(f.lower() in cmd.lower() for f in allowed_files):
-             return jsonify({"error": f"Access to this file path is not permitted: {cmd}"}), 403
+    # Secure Validation of paths
+    parts = cmd.split()
+    for part in parts:
+        if "/" in part or "\\" in part or "." in part:
+             # If it looks like a path, resolve and check jail
+             if not is_path_safe(part, demo_dir) and not any(f.lower() in part.lower() for f in allowed_files):
+                  return jsonify({"error": f"Security: Access outside demo jail denied: {part}"}), 403
 
     try:
-        # Run the command and capture output
-        # We use shell=True because multiagent-eval is a script/entry point
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=60)
+        # Secure Remediation (R0.1): Eliminate shell=True RCE
+        cmd_args = shlex.split(cmd)
+        result = subprocess.run(cmd_args, shell=False, capture_output=True, text=True, timeout=60)
         return jsonify({
             "status": "success" if result.returncode == 0 else "error",
             "stdout": result.stdout,
@@ -162,6 +185,7 @@ def register_core_routes(app, nav_registry):
 
 
 @core_bp.route("/scenarios", methods=["GET"])
+@require_api_key
 def list_scenarios():
     """Returns a faceted list of all scenarios."""
     from ..catalog import ScenarioCatalog
@@ -187,6 +211,7 @@ def list_scenarios():
 
 
 @core_bp.route("/runs", methods=["GET"])
+@require_api_key
 def list_runs():
     """Returns a list of recent run traces."""
     query = request.args.get("q", "").lower()
@@ -238,6 +263,7 @@ def list_runs():
 
 
 @core_bp.route("/evaluate", methods=["POST"])
+@require_api_key
 def evaluate_scenario():
     """Trigger an evaluation in the background."""
     data = request.json or {}
@@ -282,6 +308,7 @@ def evaluate_scenario():
 
 
 @core_bp.route("/scenarios", methods=["POST"])
+@require_api_key
 def save_scenario():
     """Saves or updates a scenario JSON file."""
     data = request.json or {}
@@ -296,7 +323,17 @@ def save_scenario():
         return jsonify({"error": "Invalid scenario_id"}), 400
 
     industry = data.get("industry", "generic")
-    output_dir = config.PROJECT_ROOT / "industries" / industry / "scenarios"
+    # Secure Remediation (R2.2): Sanitize industry path to prevent traversal
+    safe_industry = "".join(c for c in industry if c.isalnum() or c in ("-", "_")).strip()
+    if not safe_industry:
+        safe_industry = "generic"
+
+    output_dir = config.PROJECT_ROOT / "industries" / safe_industry / "scenarios"
+    
+    # Final jail check
+    if not str(output_dir.resolve()).startswith(str((config.PROJECT_ROOT / "industries").resolve())):
+        return jsonify({"error": "Security: Invalid industry path"}), 403
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
     file_path = output_dir / f"{safe_id}.json"
@@ -417,14 +454,13 @@ def ping():
     return jsonify(
         {
             "status": "pong",
-            "version": "v1.6-verified",
-            "cwd": os.getcwd(),
-            "file": __file__,
+            "version": "v1.6-verified"
         }
     )
 
 
 @core_bp.route("/debugger/state", methods=["GET", "POST"])
+@require_api_key
 def get_debugger_state():
     """Retrieve or update realtime or latest interactive debugger state."""
     if request.method == "POST":
@@ -600,6 +636,7 @@ def list_docs():
 
 
 @core_bp.route("/docs/<path:doc_path>", methods=["GET"])
+@require_api_key
 def read_doc(doc_path):
     """Read a specific documentation markdown file."""
     base = config.PROJECT_ROOT / "docs"
@@ -675,6 +712,7 @@ def get_info():
 
 
 @core_bp.route("/scenarios/refresh", methods=["POST"])
+@require_api_key
 def refresh_index():
     """Manually re-builds the scenario catalog index."""
     try:

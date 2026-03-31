@@ -72,16 +72,21 @@ class ScenarioLinter:
             results["tier"] = "UNRANKED"
             return results
 
-        aes_version = data.get("aes_version", 1.1)
+        aes_version = data.get("aes_version")
         results["aes_version"] = aes_version
+        
+        if aes_version != 1.2:
+            results["errors"].append(f"Invalid aes_version: {aes_version} (Requires 1.2-STABLE)")
+            results["status"] = "fail"
+            results["score"] -= 50
 
-        # Mandatory Top-Level Fields
-        mandatory_fields = ["aes_version", "scenario_id", "workflow", "description", "industry"]
+        # Mandatory Top-Level Fields (v1.2-STABLE)
+        mandatory_fields = ["aes_version", "metadata", "workflow", "industry"]
         for field in mandatory_fields:
             if field not in data or not data[field]:
                 results["errors"].append(f"Missing mandatory field: '{field}'")
                 results["status"] = "fail"
-                results["score"] -= 15
+                results["score"] -= 20
 
         # Metadata Compliance (v1.2 requirement)
         metadata = data.get("metadata", {})

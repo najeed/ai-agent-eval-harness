@@ -38,11 +38,40 @@ def search_tool(query: str) -> str:
 
 @tool
 def calculator(expr: str) -> str:
-    """Evaluate a mathematical expression."""
+    """Evaluate a mathematical expression safely."""
+    import ast
+    import operator
+
+    # Supported operators
+    ops = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.Pow: operator.pow,
+        ast.BitXor: operator.xor,
+        ast.USub: operator.neg,
+    }
+
+    def _eval(node):
+        if isinstance(node, ast.Num):  # <3.8
+            return node.n
+        elif isinstance(node, ast.Constant):  # >=3.8
+            return node.value
+        elif isinstance(node, ast.BinOp):
+            return ops[type(node.op)](_eval(node.left), _eval(node.right))
+        elif isinstance(node, ast.UnaryOp):
+            return ops[type(node.op)](_eval(node.operand))
+        else:
+            raise TypeError(f"Unsupported node type: {type(node)}")
+
     try:
-        return str(eval(expr))
-    except:
-        return "calculation error"
+        # Secure Remediation (R4.1): Safe Math Evaluation
+        tree = ast.parse(expr, mode='eval')
+        result = _eval(tree.body)
+        return str(result)
+    except Exception as e:
+        return f"calculation error: {str(e)}"
 
 
 @tool

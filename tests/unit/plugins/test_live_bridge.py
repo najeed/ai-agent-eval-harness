@@ -15,17 +15,28 @@ class MockContext:
 
 @pytest.fixture
 def plugin():
-    with patch("requests.get") as mock_get:
+    with patch("requests.get") as mock_get, \
+         patch("eval_runner.live_bridge_plugin.is_safe_url", return_value=True):
         mock_get.return_value.status_code = 200
         p = RemoteBridgePlugin(endpoint="http://mock-console/api/debugger/state")
+        # In lazy mode, we don't call check yet, but for test consistency 
+        # we can trigger it in the fixture or handle it in tests.
         return p
 
 
 def test_plugin_check_console_active(plugin):
     """Verify that plugin correctly identifies if console is active."""
-    assert plugin.active is True
+    # Initially unknown in lazy mode
+    assert plugin.active is None
 
     with patch("requests.get") as mock_get:
+        mock_get.return_value.status_code = 200
+        plugin._check_console_active()
+        assert plugin.active is True
+
+    with patch("requests.get") as mock_get:
+        # Reset and force failure
+        plugin.active = None
         mock_get.side_effect = Exception("Down")
         plugin._check_console_active()
         assert plugin.active is False
@@ -35,7 +46,9 @@ def test_plugin_posts_events(plugin):
     """Verify that plugin posts events to the endpoint when active."""
     context = MockContext()
 
-    with patch("requests.post") as mock_post:
+    with patch("requests.get") as mock_get, \
+         patch("requests.post") as mock_post:
+        mock_get.return_value.status_code = 200
         plugin.before_evaluation(context)
 
         # Verify call
@@ -48,6 +61,9 @@ def test_plugin_posts_events(plugin):
 def test_plugin_disables_on_failure(plugin):
     """Verify that plugin disables itself if a POST fails."""
     context = MockContext()
+
+    # Ensure it's active first
+    plugin.active = True
 
     with patch("requests.post") as mock_post:
         mock_post.side_effect = Exception("Console died")

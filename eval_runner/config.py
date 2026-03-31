@@ -138,3 +138,10 @@ LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "1024"))
 
 # --- UI & Demo Persistence ---
 ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"
+
+# --- Security R3 Best Practices ---
+# Dashboard API Key for sensitive execution.
+# REQUIRED: Must be set via environment variable in production.
+DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
+# Throttle between agent turns (seconds) to prevent resource exhaustion
+EVAL_TURN_THROTTLE = float(os.getenv("EVAL_TURN_THROTTLE", "0.0"))

@@ -54,7 +54,7 @@ class ScenarioCatalog:
                     continue
 
                 meta = data.get("metadata", {})
-                scenario_id = data.get("scenario_id", p.stem)
+                scenario_id = meta.get("id") or data.get("scenario_id") or p.stem
                 industry = data.get(
                     "industry",
                     p.parent.parent.name if p.parent.name == "scenarios" else "generic",
@@ -65,7 +65,7 @@ class ScenarioCatalog:
                 new_scenarios.append(
                     {
                         "id": scenario_id,
-                        "title": data.get("title", scenario_id),
+                        "title": meta.get("name") or data.get("title") or scenario_id,
                         "industry": industry,
                         "difficulty": meta.get("difficulty", 1),
                         "tags": meta.get("tags", []),
@@ -159,7 +159,7 @@ def list_scenarios(query: str = None):
         return
 
     # Print table-like output
-    print(f"{'ID':<30} | {'Industry':<15} | {'Diff':<4} | {'Title'}")
+    print(f"{'ID':<30} | {'Industry':<15} | {'Diff':<4} | {'Name'}")
     print("-" * 80)
     for s in results[:50]:  # Cap at 50 for CLI readability
         print(f"{s['id']:<30} | {s['industry']:<15} | {s['difficulty']:<4} | {s['title']}")

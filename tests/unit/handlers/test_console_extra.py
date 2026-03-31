@@ -10,8 +10,14 @@ def client(tmp_path):
     # Pass tmp_path as testing directory if needed in future
     app = create_app()
     app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
+    # Mock API Key for all console tests in this file
+    api_key = "test-session-key"
+    headers = {"X-AES-API-KEY": api_key}
+    with patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key):
+        with app.test_client() as client:
+            # Inject headers into the client for convenience or use them explicitly
+            client.environ_base["HTTP_X_AES_API_KEY"] = api_key
+            yield client
 
 # Fixtures
 

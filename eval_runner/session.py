@@ -106,6 +106,10 @@ class SessionManager:
                 conversation_history.append({"role": "user", "content": current_message})
 
                 for turn in range(1, self.max_turns + 1):
+                    # R3.2 Remediation: Turn-Based Throttling
+                    if config.EVAL_TURN_THROTTLE > 0:
+                        await asyncio.sleep(config.EVAL_TURN_THROTTLE)
+
                     turn_ctx = TurnContext(
                         task_id=node_id,
                         turn_number=turn,
@@ -126,7 +130,6 @@ class SessionManager:
                         protocol = self.session_metadata.get("protocol", "http")
                         endpoint = self.session_metadata.get("agent")
                         if not endpoint:
-                            from . import config
                             if protocol == "http":
                                 endpoint = config.AGENT_API_URL
                             elif protocol == "local":
@@ -135,7 +138,7 @@ class SessionManager:
                         agent_response = await AgentAdapterRegistry.call_agent(
                             payload, protocol=protocol, endpoint=endpoint
                         )
-                        turns_taken += 1
+                        turns_taken = turn
 
                         if not agent_name:
                              # Discover name...

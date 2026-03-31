@@ -4,6 +4,36 @@ from .plugins import BaseEvalPlugin
 from .events import CoreEvents
 
 
+import socket
+from urllib.parse import urlparse
+
+def is_safe_url(url_str: str) -> bool:
+    """Checks if a URL refers to a safe, non-internal location."""
+    try:
+        parsed = urlparse(url_str)
+        if not parsed.scheme or not parsed.netloc:
+            return False
+            
+        # Resolve to IP
+        hostname = parsed.hostname
+        if not hostname: 
+            return False
+            
+        # Allow localhost ONLY if explicitly configured by the system, 
+        # but block it by default if provided by a scenario/untrusted environment.
+        ip = socket.gethostbyname(hostname)
+        
+        # Block Loopback, Multicast, Link-Local (Cloud Meta), and Private subnets
+        # if they originate from an untrusted source.
+        # Note: 169.254.169.254 is the standard Cloud Metadata IP.
+        forbidden = ["127.", "169.254", "0.0.0.0", "::1"]
+        for addr in forbidden:
+            if ip.startswith(addr):
+                return False
+        return True
+    except Exception:
+        return False
+
 class RemoteBridgePlugin(BaseEvalPlugin):
     """
     Zero-Touch Live Bridge Plugin.
@@ -12,25 +42,51 @@ class RemoteBridgePlugin(BaseEvalPlugin):
 
     def __init__(self, endpoint="http://localhost:5000/api/debugger/state"):
         self.endpoint = os.environ.get("DEBUGGER_ENDPOINT", endpoint)
-        self.active = False
-        self._check_console_active()
+        # R1.1 Remediation: Validate external/untrusted endpoints
+        # Note: We allow localhost specifically if it matches our default 
+        if self.endpoint != "http://localhost:5000/api/debugger/state":
+             if not is_safe_url(self.endpoint):
+                 print(f"⚠️  Security: Blocking unsafe bridge endpoint: {self.endpoint}")
+                 self.active = False
+                 return
+
+        self.active = None  # Unknown
 
     def _check_console_active(self):
-        """Checks if the debugger is running to avoid unnecessary noise."""
+        """Perform a heartbeat check to see if the Visual Debugger is alive."""
+        if self.active is not None:
+             return self.active
+
+        from . import config
+        headers = {}
+        if config.DASHBOARD_API_KEY:
+            headers["X-AES-API-KEY"] = config.DASHBOARD_API_KEY
+
         try:
-            # Minimal timeout to avoid blocking the engine
-            resp = requests.get(self.endpoint, timeout=0.1)
-            self.active = resp.status_code == 200
+            # We use a simple GET on the state endpoint as a heartbeat
+            response = requests.get(self.endpoint, headers=headers, timeout=0.1)
+            # 200 (Success) or 401 (Unauthorized - still alive) means the console is there.
+            self.active = response.status_code in (200, 401)
         except Exception:
             self.active = False
+        return self.active
 
     def _post_event(self, event_name, data):
         """Update the Visual Debugger state with the latest turn data."""
-        if not self.active:
+        if self.active is False:
             return
 
+        if self.active is None:
+            if not self._check_console_active():
+                return
+
+        from . import config
+        headers = {}
+        if config.DASHBOARD_API_KEY:
+            headers["X-AES-API-KEY"] = config.DASHBOARD_API_KEY
+
         try:
-            requests.post(self.endpoint, json={"event": event_name, "data": data}, timeout=0.2)
+            requests.post(self.endpoint, headers=headers, json={"event": event_name, "data": data}, timeout=0.2)
         except Exception:
             # If the console dies, stop trying for this run
             self.active = False

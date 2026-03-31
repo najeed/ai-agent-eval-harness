@@ -24,8 +24,8 @@ def handle_report(args):
     
     scenario = {
         "metadata": {
-            "id": run_start.get("scenario", "unknown"),
-            "name": metadata.get("name") or metadata.get("title") or "Untitled Report",
+            "id": metadata.get("id") or run_start.get("scenario", "unknown"),
+            "name": metadata.get("name", "Untitled Report"),
             "industry": metadata.get("industry", "N/A"),
         },
         "description": metadata.get("description", ""),

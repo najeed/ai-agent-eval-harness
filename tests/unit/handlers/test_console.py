@@ -40,7 +40,12 @@ def client():
     app = create_app()
     app.config["TESTING"] = True
 
-    yield app.test_client()
+    # Mock API Key for console tests
+    api_key = "test-session-key"
+    with patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key):
+        with app.test_client() as client:
+            client.environ_base["HTTP_X_AES_API_KEY"] = api_key
+            yield client
 
     # Clean up via slice assignment to preserve Singleton identity
     manager.plugins[:] = mgr_plugins
@@ -109,7 +114,8 @@ def test_plugin_blueprint_registration(client):
 
 def test_evaluate_endpoint(client):
     """Test that the evaluation endpoint is functional."""
-    response = client.post("/api/evaluate", json={"path": "scenarios/research_verification.json"})
+    # Use the sample agent demo scenario which is guaranteed to exist
+    response = client.post("/api/evaluate", json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"})
     assert response.status_code == 200
     data = response.get_json()
     assert data["status"] == "started"

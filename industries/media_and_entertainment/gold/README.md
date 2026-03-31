@@ -1,6 +1,6 @@
-# Gold Standard: MEDIA AND ENTERTAINMENT
+# Gold Standard: MEDIA ENTERTAINMENT
 
-This directory contains the **Regulatory-Grade** autonomous agent scenarios for the media and entertainment sector, strictly adhering to the **AES v1.2 Regulatory Enforcement Layer** specification.
+This directory contains the **Regulatory-Grade** autonomous agent scenarios for the media entertainment sector, strictly adhering to the **AES v1.2 Regulatory Enforcement Layer** specification.
 
 ##  Verification OS Compliance
 - **State-Machine DAG**: All scenarios implement a non-linear `workflow` with explicit `nodes` and `edges`, ensuring deterministic state transitions and dependency gating.
@@ -13,5 +13,5 @@ Scenarios in this directory are structured as deterministic state-transition map
 ## 🧪 Execution
 To run the gold standard evaluation for this industry:
 ```bash
-multiagent-eval evaluate --path industries/media_and_entertainment/gold --attempts 3 --ija-threshold 0.85
+multiagent-eval evaluate --path industries/media_entertainment/gold --attempts 3 --ija-threshold 0.85
 ```

@@ -34,9 +34,10 @@ class TraceVerifier:
         return sha256.hexdigest()
 
     @staticmethod
-    def sign_trace(trace_path: str, metadata: Optional[Dict[str, Any]] = None) -> Path:
+    def sign_trace(trace_path: str, metadata: Optional[Dict[str, Any]] = None, private_key_path: Optional[str] = None) -> Path:
         """
-        Signs a trace file by generating a manifest.json with its SHA-256 signature.
+        Signs a trace file. If private_key_path is provided, generates an ED25519 signature.
+        Otherwise, generates a standard SHA-256 manifest.
         """
         p = Path(trace_path)
         if not p.exists():
@@ -52,6 +53,12 @@ class TraceVerifier:
             "metadata": metadata or {}
         }
 
+        # R1.2 Remediation: Add Asymmetric Signature if key is provided
+        if private_key_path:
+            # We sign the SHA-256 hash of the trace for efficiency
+            manifest["signature_ed25519"] = TraceVerifier.sign_asymmetric(signature.encode(), private_key_path)
+            manifest["signing_algorithm"] = "ED25519"
+
         # Save manifest in the same directory as the trace
         manifest_path = p.parent / f"{p.stem}_manifest.json"
         with open(manifest_path, "w", encoding="utf-8") as f:
@@ -60,9 +67,9 @@ class TraceVerifier:
         return manifest_path
 
     @staticmethod
-    def verify_trace(trace_path: str, manifest_path: str) -> bool:
+    def verify_trace(trace_path: str, manifest_path: str, public_key_path: Optional[str] = None) -> bool:
         """
-        Verifies a trace file against its manifest signature (SHA-256).
+        Verifies a trace file against its manifest. Supports both SHA-256 and ED25519.
         """
         tp = Path(trace_path)
         mp = Path(manifest_path)
@@ -74,10 +81,22 @@ class TraceVerifier:
             with open(mp, "r", encoding="utf-8") as f:
                 manifest = json.load(f)
             
-            expected_sig = manifest.get("sha256")
-            actual_sig = TraceVerifier.compute_signature(tp)
+            expected_hash = manifest.get("sha256")
+            actual_hash = TraceVerifier.compute_signature(tp)
             
-            return expected_sig == actual_sig
+            # 1. Base Integrity Check
+            if expected_hash != actual_hash:
+                return False
+            
+            # 2. Cryptographic Proof (R1.2)
+            sig_hex = manifest.get("signature_ed25519")
+            if sig_hex and public_key_path:
+                return TraceVerifier.verify_asymmetric(actual_hash.encode(), sig_hex, public_key_path)
+            elif sig_hex and not public_key_path:
+                # If signed but no key provided, we mark as "Integrity Only" but technically valid
+                return True
+                
+            return True
         except Exception:
             return False
 

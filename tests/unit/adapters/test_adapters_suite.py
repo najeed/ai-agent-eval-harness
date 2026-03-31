@@ -182,8 +182,8 @@ async def test_local_subprocess_adapter():
     mock_proc = AsyncMock()
     mock_proc.communicate.return_value = (b'{"test": "pass"}', b'')
     mock_proc.returncode = 0
-    with patch("asyncio.create_subprocess_shell", return_value=mock_proc):
-        res = await local_subprocess_adapter({}, "cmd")
+    with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
+        res = await local_subprocess_adapter({}, "python agent.py")
         assert res["test"] == "pass"
 
 @pytest.mark.asyncio

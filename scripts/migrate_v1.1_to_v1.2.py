@@ -13,11 +13,17 @@ def migrate_scenario(file_path: Path) -> bool:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        # Skip if already migrated or doesn't need it
-        if "workflow" in data and data.get("aes_version") == 1.2:
+        if not isinstance(data, dict):
             return False
-        
-        if "tasks" not in data:
+        # Check if version upgrade is needed
+        version = data.get("aes_version", 1.1)
+        has_workflow = "workflow" in data
+        has_tasks = "tasks" in data
+
+        if version == 1.2 and has_workflow:
+            return False
+            
+        if not has_tasks and not has_workflow:
             return False
 
         logger.info(f"Migrating {file_path.name} to AES v1.2...")

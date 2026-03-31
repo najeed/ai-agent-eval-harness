@@ -49,6 +49,17 @@ async def record_interaction(agent_url: str):
                     async with session.post(agent_url, json={"task_description": task}, timeout=10) as response:
                         if response.status == 200:
                             data = await response.json()
+                            # R2.2 Remediation: Simple sensitive data masking
+                            def mask_data(val):
+                                if isinstance(val, dict):
+                                    return {k: mask_data(v) for k, v in val.items()}
+                                if isinstance(val, list):
+                                    return [mask_data(v) for v in val]
+                                if isinstance(val, str) and (len(val) > 20 and any(x in val.lower() for x in ["key", "secret", "token"])):
+                                    return f"{val[:4]}...[MASKED]"
+                                return val
+
+                            data = mask_data(data)
                             print(f"  Agent: {data.get('summary', 'No summary provided')}")
 
                             # Record response
