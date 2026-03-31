@@ -1,0 +1,27 @@
+# requirements.txt
+# Core runtime dependencies for MultiAgentEval.
+# Install with: pip install -r requirements.txt
+
+# --- Web Framework ---
+Flask>=2.0.0
+flask-cors>=3.0.0
+
+# --- HTTP & Async ---
+requests>=2.0.0
+aiohttp>=3.8.0
+
+# --- Data & Schemas ---
+jsonschema>=4.0.0
+PyYAML>=6.0
+
+# --- ML / Embeddings (optional, for benchmark loaders) ---
+sentence-transformers
+numpy
+datasets
+
+# --- Security & Auth ---
+PyJWT>=2.0.0
+cryptography>=41.0.0
+
+# --- Environment ---
+python-dotenv
