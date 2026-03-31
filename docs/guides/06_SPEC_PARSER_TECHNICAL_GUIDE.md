@@ -37,7 +37,7 @@ If the structural parser finds **no tasks** (indicating a non-standard or highly
 
 ---
 
-## 🛡️ 3. Robustness Features (v1.1+)
+## 🛡️ 3. Robustness Features
 *   **Synonym Recognition**: Headers like "Test Cases" are automatically treated as "Tasks".
 *   **Global Tool Injection**: Tools defined in a global `## Tools` section are automatically added to the `required_tools` of every task if not specifically overridden.
 *   **Force Overwrite**: Use `--force` to skip the overwrite confirmation prompt for rapid iteration.

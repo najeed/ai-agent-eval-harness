@@ -41,6 +41,7 @@ Core Evaluation:
   replay         Replay a previously recorded run trace
   run            Execute evaluation on a single specific scenario
   verify         Verify the cryptographic integrity of a run trace
+  gate           CI/CD "Hard Gate": Enforce verification and signature checks
 
 Specification & Scenarios:
   aes            AES Specification utilities (Validate/Register)
@@ -139,6 +140,11 @@ Utilities & Environment:
     verify_parser = subparsers.add_parser("verify", help="Verify the cryptographic integrity of a run trace")
     verify_parser.add_argument("--path", required=True, help="Path to the trace file to verify")
     verify_parser.add_argument("--manifest", help="Optional path to the .manifest.json for the trace")
+
+    gate_parser = subparsers.add_parser("gate", help="CI/CD Hard Gate: Enforce verification and signature checks")
+    gate_parser.add_argument("--vc", required=True, help="Path to the Verification Certificate (manifest.json)")
+    gate_parser.add_argument("--hash", help="Expected git commit hash for the verified run")
+    gate_parser.add_argument("--public-key", help="Path to the ED25519 public key for signature validation")
 
     # --- SPECIFICATION & SCENARIOS ---
     aes_parser = subparsers.add_parser("aes", help="Agent Eval Specification (AES) utility suite")
@@ -295,7 +301,7 @@ def main():
             return
 
         # Dynamic imports for handlers to minimize footprint
-        if args.command in ["evaluate", "run", "record", "playground", "replay", "verify", "quickstart"]:
+        if args.command in ["evaluate", "run", "record", "playground", "replay", "verify", "gate", "quickstart"]:
             from .handlers import evaluation as h
             if args.command == "evaluate": asyncio.run(h.handle_evaluate(args))
             elif args.command == "run": asyncio.run(h.handle_run(args))
@@ -303,6 +309,7 @@ def main():
             elif args.command == "playground": asyncio.run(h.handle_playground(args))
             elif args.command == "replay": h.handle_replay(args)
             elif args.command == "verify": h.handle_verify(args)
+            elif args.command == "gate": h.handle_gate(args)
             elif args.command == "quickstart": asyncio.run(h.handle_quickstart(args))
 
         elif args.command in ["aes", "inspect", "lint", "list", "catalog-search", "catalog-refresh", "mutate", "scenario", "spec-to-eval", "import-drift"]:

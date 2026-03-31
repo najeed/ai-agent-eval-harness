@@ -60,7 +60,7 @@ class AgentAdapterRegistry:
 
         # 3. Register default human adapter
         if "human" not in cls._adapters:
-            cls._adapters["human"] = cls._human_adapter
+            cls._adapters["human"] = AgentAdapterRegistry._human_adapter
 
         cls._discovered = True
         
@@ -68,8 +68,8 @@ class AgentAdapterRegistry:
         from eval_runner import plugins
         plugins.manager.trigger("on_discover_adapters", cls)
 
-    @classmethod
-    async def _human_adapter(cls, payload: dict, endpoint: Optional[str] = None):
+    @staticmethod
+    async def _human_adapter(payload: dict, endpoint: Optional[str] = None):
         """Standard adapter for Human-In-The-Loop intervention."""
         # Provides structured metadata to the session loop
         return {

@@ -148,6 +148,70 @@ def handle_verify(args):
     else:
         print(f"[CRITICAL] FAILED: Trace integrity compromised!")
 
+def handle_gate(args):
+    """
+    CI/CD Hard Gate: Verifies a certificate and optionally matches a commit hash.
+    Exits with 1 on verification failure.
+    """
+    import sys
+    from .. import verifier
+    
+    vc_path = Path(args.vc)
+    if not vc_path.exists():
+        print(f"[GATE] FAILURE: Verification Certificate not found: {vc_path}")
+        sys.exit(1)
+
+    try:
+        with open(vc_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+        
+        # 1. Basic Integrity Check (SHA-256)
+        trace_name = manifest.get("trace_file")
+        trace_path = vc_path.parent / trace_name
+        
+        if not trace_path.exists():
+            print(f"[GATE] FAILURE: Associated trace file missing: {trace_name}")
+            sys.exit(1)
+            
+        if not verifier.TraceVerifier.verify_trace(str(trace_path), str(vc_path)):
+            print("[GATE] FAILURE: SHA-256 integrity check failed!")
+            sys.exit(1)
+
+        # 2. Asymmetric Signature Check (Wait for optional public key)
+        if args.public_key:
+            pk_path = Path(args.public_key)
+            if not pk_path.exists():
+                print(f"[GATE] FAILURE: Public key not found: {pk_path}")
+                sys.exit(1)
+                
+            sig = manifest.get("signature")
+            if not sig:
+                 print("[GATE] FAILURE: Manifest missing asymmetric signature!")
+                 sys.exit(1)
+                 
+            # Verify the manifest data itself (excluding the signature field)
+            manifest_copy = manifest.copy()
+            del manifest_copy["signature"]
+            data_to_verify = json.dumps(manifest_copy, sort_keys=True).encode()
+            
+            if not verifier.TraceVerifier.verify_asymmetric(data_to_verify, sig, str(pk_path)):
+                print("[GATE] FAILURE: ED25519 signature verification failed!")
+                sys.exit(1)
+
+        # 3. Commit Hash Check (Audit Alignment)
+        if args.hash:
+            actual_hash = manifest.get("metadata", {}).get("git_hash")
+            if actual_hash != args.hash:
+                print(f"[GATE] FAILURE: Commit mismatch! Expected {args.hash}, found {actual_hash}")
+                sys.exit(1)
+
+        print(f"[GATE] SUCCESS: Verification Certificate '{vc_path.name}' is valid and signed.")
+        sys.exit(0)
+
+    except Exception as e:
+        print(f"[GATE] ERROR: Unexpected failure during gating: {e}")
+        sys.exit(1)
+
 async def handle_quickstart(args):
     """Handler for 'quickstart' command."""
     from .. import quickstart

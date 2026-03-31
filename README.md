@@ -93,6 +93,8 @@ The harness is organized into the following key components:
 - **Deterministic Outcomes**: Validation against industrial standards (ISO-20022, HL7, SWIFT).
 - **State-Machine DAGs**: Non-linear `workflow` execution with Pre-condition Gating for multi-step safety.
 - **Pluralistic Judging**: Non-repudiable audit records via Inter-Judge Agreement (IJA) panel consensus.
+- **Asymmetric Trust Protocol (ED25519)**: Open Core support for trace signing and asymmetric verification, ensuring non-repudiation in the base harness.
+- **CI/CD Hard Gating**: Built-in CLI `gate` command for enforcing cryptographic integrity and trace success in automated pipelines.
 
 ## Getting Started
 
@@ -376,8 +378,8 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Simulation** | 🔶 Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
 | **Compliance Suites** | ❌ No | ✅ Production-Ready (HIPAA, FINRA, GDPR, PCI) |
 | **Observability** | 🔶 Terminal output | ✅ OTEL Drift Gauges & Dashboard Feed |
-| **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Cryptographic Sealing|
-| **Integrity Checks** | ❌ No | ✅ AES Scenario Merkle Sync (Root Verify) |
+| **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Chained Integrity |
+| **Integrity Checks** | ✅ ED25519 Trace Validation | ✅ AES Scenario Merkle Sync (Root Verify) |
 | **Visual Debugger & GUI** | ✅ Local React Native App | ✅ Enterprise Dashboard & Secure Handoff |
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |

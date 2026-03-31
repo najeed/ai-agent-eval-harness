@@ -63,13 +63,18 @@ def test_linter_tasks_validation(tmp_path):
 def test_linter_zero_tasks(tmp_path):
     p = tmp_path / "zero.json"
     data = {
-        "aes_version": 1.2, "industry": "i", "description": "d",
+        "aes_version": 1.2,
+        "scenario_id": "test_zero",
+        "industry": "i",
+        "description": "d",
         "complexity_level": "low",
+        "metadata": {"attribution": "test", "version": "1.0"},
         "workflow": {"nodes": [], "edges": []}
     }
     p.write_text(json.dumps(data), encoding="utf-8")
     res = ScenarioLinter().lint(str(p))
-    assert "0 nodes" in res["warnings"][0]
+    # It should have the warning about 0 nodes
+    assert any("0 nodes" in w for w in res["warnings"])
 
 def test_linter_find_duplicates_exception(tmp_path):
     p1 = tmp_path / "bad.json"

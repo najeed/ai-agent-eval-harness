@@ -89,6 +89,7 @@ The `PluginManager` triggers these hooks synchronously, ensuring a deterministic
 | Visual Suite | `ui/visual-debugger/` | React Flow powered dashboard for real-time trajectory analysis |
 | Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |
 | Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
+| Trace Verifier | `eval_runner/verifier.py` | Asymmetric signing and integrity verification (ED25519) |
 
 ## Regulatory Enforcement Layer: AES v1.2 & Dataproc Engine
 
@@ -115,6 +116,8 @@ AES v1.2 elevates the harness into a **Verification OS** for mission-critical in
 - **Pluralistic Judging (IJA)**: Implements Inter-Judge Agreement metrics. Critical industrial evaluations require a "Judge Panel" consensus (at least 3 judges) with a configurable `ija_threshold`.
 
 - **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior in regulated environments.
+
+- **Asymmetric Trust Protocol (ED25519)**: Transitioning from simple SHA-256 integrity to full asymmetric cryptographic sealing. Traces are signed with private keys and verified via public keys, enabling non-repudiable audit trails across different environments.
 
 ## Semantic Bridge & Drift Management
 

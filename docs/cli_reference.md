@@ -120,6 +120,17 @@ Verify the integrity of a run trace against an optional manifest.
 multiagent-eval verify --path <run.jsonl> [--manifest <manifest.json>]
 ```
 
+### `gate`
+Enforce cryptographic integrity and trace success as a "Hard Gate" in CI/CD pipelines. Returns exit code `0` on success, `1` on failure.
+```bash
+multiagent-eval gate --path <run.jsonl> [--vc <fingerprint.json>] [--hash <commit_hash>] [--public-key <path>]
+```
+- `--path`: Path to the execution trace (`run.jsonl`).
+- `--vc`: (Optional) Path to the Verification Certificate (Fingerprint V1). If provided, triggers asymmetric signature validation.
+- `--hash`: (Optional) Expected Git commit hash to verify against the trace's metadata.
+- `--public-key`: (Optional) Path to the ED25519 public key. Defaults to `~/.aes/keys/public_key.pem`.
+- **Validation**: Enforces both SHA-256 binary integrity and (if enabled) asymmetric cryptographic sealing. Also checks that the trace ended in a `SUCCESS` state.
+
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
 ```bash

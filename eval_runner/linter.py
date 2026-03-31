@@ -76,12 +76,25 @@ class ScenarioLinter:
         results["aes_version"] = aes_version
 
         # Mandatory Top-Level Fields
-        mandatory_fields = ["aes_version", "workflow", "description", "industry"]
+        mandatory_fields = ["aes_version", "scenario_id", "workflow", "description", "industry"]
         for field in mandatory_fields:
             if field not in data or not data[field]:
                 results["errors"].append(f"Missing mandatory field: '{field}'")
                 results["status"] = "fail"
                 results["score"] -= 15
+
+        # Metadata Compliance (v1.2 requirement)
+        metadata = data.get("metadata", {})
+        if not isinstance(metadata, dict):
+             results["errors"].append("Metadata must be a JSON object")
+             results["status"] = "fail"
+        else:
+            if "attribution" not in metadata:
+                results["warnings"].append("Missing recommended field: 'metadata.attribution' (v2.0-STABLE requirement)")
+                results["score"] -= 10
+            if "version" not in metadata:
+                results["warnings"].append("Missing recommended field: 'metadata.version'")
+                results["score"] -= 5
 
         # Recommend complexity_level instead of difficulty
         if "complexity_level" not in data:

@@ -46,6 +46,9 @@ tests/
 ├── test_session_advanced.py        # Advanced session and forking logic
 ├── test_tool_sandbox.py            # Tool execution and state permissions
 ├── test_trace_recorder.py          # Real-time interaction recording
+├── test_verifier_asymmetric.py     # ED25519 signature and Trust Protocol tests
+├── test_gate_cli.py                # CI/CD gatekeeper and CLI integrity tests
+├── test_fintech_pack.py            # Industrial hardening scenarios validation
 ├── test_playground.py              # Interactive playground tests
 ├── test_quickstart.py              # Quickstart flow automation
 ├── test_security_audit.py          # Security guardrail verification
@@ -74,6 +77,16 @@ tests/
 ### 3. Integration Testing
 - **Purpose**: Test component interactions
 - **Coverage**: End-to-end workflows, API integration
+
+### 4. Trust Protocol & Hard Gating
+- **Files**: `tests/test_verifier_asymmetric.py`, `tests/test_gate_cli.py`
+- **Purpose**: Verify non-repudiation and CI/CD gatekeeping logic.
+- **Coverage**: ED25519 key generation, trace signing, and binary integrity enforcement.
+
+### 5. Industrial Hardening (Fintech)
+- **File**: `tests/test_fintech_pack.py`
+- **Purpose**: Ensure 100% schema compliance for high-risk industrial scenarios.
+- **Coverage**: Series 11198-11207 scenario quality and complex recovery logic.
 
 ## Coverage Requirements
 

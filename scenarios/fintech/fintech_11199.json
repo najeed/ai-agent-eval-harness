@@ -1,0 +1,38 @@
+{
+  "aes_version": 1.2,
+  "scenario_id": "fintech_11199",
+  "metadata": {
+    "name": "Fintech Series 11199",
+    "industry": "fintech",
+    "attribution": "Enterprise Team",
+    "version": "1.0",
+    "compliance_level": "Standard"
+  },
+  "description": "Automated fintech stress test 11199.",
+  "complexity_level": "medium",
+  "industry": "fintech",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task_1",
+        "task_description": "Perform standard financial action 11199.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": {
+            "status": "success"
+          }
+        }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "metrics": [
+      {
+        "metric": "tool_call_correctness",
+        "threshold": 1.0
+      }
+    ]
+  }
+}

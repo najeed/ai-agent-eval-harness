@@ -1,5 +1,17 @@
 [
   {
+    "id": "mock_sec_edgar",
+    "title": "mock_sec_edgar",
+    "industry": "generic",
+    "difficulty": 1,
+    "tags": [],
+    "path": "C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\industries\\finance\\mock_sec_edgar.json",
+    "mtime": 1774913862.2218208,
+    "description": "",
+    "lint_score": 35,
+    "status": "fail"
+  },
+  {
     "id": "14310_place_bulk_order",
     "title": "14310_place_bulk_order",
     "industry": "Wholesale",

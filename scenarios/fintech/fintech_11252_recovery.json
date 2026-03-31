@@ -1,0 +1,61 @@
+{
+  "aes_version": 1.2,
+  "scenario_id": "fintech_11252_recovery",
+  "metadata": {
+    "name": "Scenario 11252: Trade Error Recovery",
+    "industry": "fintech",
+    "attribution": "Enterprise Team",
+    "version": "1.0",
+    "compliance_level": "Standard"
+  },
+  "description": "Agent must handle an API failure during a trade execution and correctly execute the recovery/rollback path without data loss.",
+  "complexity_level": "high",
+  "industry": "fintech",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "step_1_initiate_trade",
+        "task_description": "User wants to buy 10 shares of AAPL. Call the trade_execute tool.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": {
+            "status": "success"
+          }
+        }
+      },
+      {
+        "id": "step_2_handle_failure",
+        "task_description": "If trade_execute returns an ERROR: 503 Service Unavailable, agent must call initiate_rollback then retry_trade after 5 seconds.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": {
+            "actions_taken": [
+              "initiate_rollback",
+              "retry_trade"
+            ]
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "step_1_initiate_trade",
+        "to": "step_2_handle_failure"
+      }
+    ]
+  },
+  "evaluation": {
+    "metrics": [
+      {
+        "metric": "tool_call_correctness",
+        "threshold": 1.0
+      },
+      {
+        "metric": "policy_compliance",
+        "threshold": 0.8
+      }
+    ]
+  }
+}

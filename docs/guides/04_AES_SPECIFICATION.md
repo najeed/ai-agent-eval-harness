@@ -109,5 +109,22 @@ Below is a production-grade AES v1.2 scenario demonstrating a multi-stage loan a
   }
 }
 ```
-> [!TIP]
-> Use the **Visual AES Builder** (available via `multiagent-eval console`) to construct these workflows using a drag-and-drop interface instead of manual JSON editing.
+---
+ 
+ ## 8. Behavioral Fingerprinting (V1)
+ 
+ To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.2 introduces the **Fingerprint Schema**. This provides a verifiable "baseline" for agent behavior.
+ 
+ | Field | Description |
+ | :--- | :--- |
+ | `version` | The Fingerprint schema version (currently `1.0`). |
+ | `engine` | The version of the `multiagent-eval` engine used. |
+ | `timestamp` | UTC ISO-8601 creation time. |
+ | `topology_hash` | SHA-256 hash of the `scenario.workflow` structure. |
+ | `tool_dna_hash` | Hash of the tool definitions and descriptions available to the agent. |
+ | `fingerprint_v1` | A cryptographic digest ensuring the behavioral baseline was not tampered with. |
+ 
+ These fingerprints are used by the `gate` command to verify that a `run.jsonl` trace was generated against a sanctioned version of the scenario and tools.
+ 
+ > [!IMPORTANT]
+ > **Trust Protocol Alignment**: While the Open Core provides the *verification* logic for these fingerprints, the *generation* of advanced high-fidelity Behavioral DNA remains a feature of the Enterprise Edition to ensure proprietary industrial logic is protected.
