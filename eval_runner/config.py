@@ -141,7 +141,9 @@ ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"
 
 # --- Security R3 Best Practices ---
 # Dashboard API Key for sensitive execution.
-# REQUIRED: Must be set via environment variable in production.
+# REQUIRED for production. If not set, protected routes will return 501.
+# See: docs/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 # Throttle between agent turns (seconds) to prevent resource exhaustion
+# and satisfy rate-limiting requirements in sensitive industrial sectors.
 EVAL_TURN_THROTTLE = float(os.getenv("EVAL_TURN_THROTTLE", "0.0"))

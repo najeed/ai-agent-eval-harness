@@ -289,6 +289,8 @@ All configurable parameters are centralized in `eval_runner/config.py`. You can 
 | `ANTHROPIC_API_KEY`| *(None)* | API key for Anthropic/Claude provider |
 | `GOOGLE_API_KEY` | *(None)* | API key for Google/Gemini provider |
 | `XAI_API_KEY` | *(None)* | API key for xAI/Grok provider |
+| `DASHBOARD_API_KEY`| *(None)* | Mandatory key for Visual Debugger & REST API security |
+| `EVAL_TURN_THROTTLE`| `0.0` | Artificial delay (seconds) between agent turns |
 | `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
 | `PLUGIN_TIMEOUT` | `5.0` | Execution timeout for plugin hooks |
 | `REPORTS_DIR` | `reports` | Base directory for generated reports |
@@ -303,6 +305,8 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **Tool Sandboxing**: Path traversal protection and shell-character neutralization for all tool executions.
 - **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
 - **Audit Points**: 100% compliance with the 8-point Enterprise Security Audit (DoS caps, Fork Bomb prevention, RCE guards).
+- **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
+See the [Security and Authentication Guide](docs/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
 
 ### Run Trace Warning
 All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `multiagent-eval cleanup-runs --days 7`.
