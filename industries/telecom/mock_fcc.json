@@ -1,0 +1,18 @@
+[
+    {
+        "id": "SIM_FCC_1",
+        "technology_type": "Fiber",
+        "max_ad_down": 1000,
+        "max_ad_up": 1000,
+        "provider_name": "Simulated Fiber Co",
+        "location": "Nationwide"
+    },
+    {
+        "id": "SIM_FCC_2",
+        "technology_type": "Cable",
+        "max_ad_down": 300,
+        "max_ad_up": 20,
+        "provider_name": "Simulated Cable Corp",
+        "location": "Regional"
+    }
+]

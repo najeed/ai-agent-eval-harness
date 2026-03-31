@@ -32,10 +32,15 @@ class TelecomProvider(BaseProvider):
             url = f"https://www.itu.int/itu-d/sites/ictdata/api/v1/indicators/{indicator}"
             
             if self.allow_simulation:
-                simulated_itu = [
-                    {"Country": "USA", "Year": 2022, "Value": 91.8, "Unit": "%"},
-                    {"Country": "CHN", "Year": 2022, "Value": 75.6, "Unit": "%"}
-                ]
+                mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "telecom", "mock_itu.json")
+                if os.path.exists(mock_path):
+                    with open(mock_path, "r") as f:
+                        simulated_itu = json.load(f)
+                else:
+                    simulated_itu = [
+                        {"Country": "USA", "Year": 2022, "Value": 91.8, "Unit": "%"},
+                        {"Country": "CHN", "Year": 2022, "Value": 75.6, "Unit": "%"}
+                    ]
                 return [self.create_simulated_artifact(
                     id=f"ITU-{indicator}",
                     content=simulated_itu,
@@ -109,8 +114,10 @@ class TelecomProvider(BaseProvider):
                             data = await resp.json()
                             return data.get("features", [])[:limit]
                         
-                        # Simulated Fallback for FCC (Strictly Isolated)
-                        logger.warning("fcc_api_failure_using_sim", url=url)
+                        mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "telecom", "mock_fcc.json")
+                        if os.path.exists(mock_path):
+                            with open(mock_path, "r") as f:
+                                return json.load(f)
                         return [{
                             "id": "SIM_FCC_1", 
                             "technology_type": "Fiber", 
@@ -141,9 +148,16 @@ class TelecomProvider(BaseProvider):
             artifacts = [r for r in results if r]
             
         if not artifacts and self.allow_simulation:
+            mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "telecom", "mock_fcc.json")
+            if os.path.exists(mock_path):
+                with open(mock_path, "r") as f:
+                    content = json.load(f)
+            else:
+                content = [{"id": "sim_fcc_1", "technology_type": "Fiber", "max_ad_down": 1000, "max_ad_up": 1000, "provider_name": "Simulated Fiber Co"}]
+            
             return [self.create_simulated_artifact(
                 id="sim-FCC-broadband",
-                content=[{"id": "sim_fcc_1", "technology_type": "Fiber", "max_ad_down": 1000, "max_ad_up": 1000, "provider_name": "Simulated Fiber Co"}],
+                content=content,
                 source_url="https://opendata.fcc.gov/",
                 metadata={"source": "FCC-Simulation"}
             )]

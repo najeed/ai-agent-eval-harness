@@ -1,0 +1,32 @@
+{
+    "0000320193": {
+        "entityName": "Apple Inc.",
+        "facts": {
+            "us-gaap": {
+                "Assets": { "units": { "USD": [{ "val": 352755000000, "fy": 2023, "fp": "FY" }] } },
+                "Revenues": { "units": { "USD": [{ "val": 383285000000, "fy": 2023, "fp": "FY" }] } },
+                "NetIncomeLoss": { "units": { "USD": [{ "val": 96995000000, "fy": 2023, "fp": "FY" }] } }
+            }
+        }
+    },
+    "0000789019": {
+        "entityName": "Microsoft Corp",
+        "facts": {
+            "us-gaap": {
+                "Assets": { "units": { "USD": [{ "val": 411976000000, "fy": 2023, "fp": "FY" }] } },
+                "Revenues": { "units": { "USD": [{ "val": 211915000000, "fy": 2023, "fp": "FY" }] } },
+                "NetIncomeLoss": { "units": { "USD": [{ "val": 72361000000, "fy": 2023, "fp": "FY" }] } }
+            }
+        }
+    },
+    "default": {
+        "entityName": "Simulated Corp",
+        "facts": {
+            "us-gaap": {
+                "Assets": { "units": { "USD": [{ "val": 100000000, "fy": 2023, "fp": "FY" }] } },
+                "Revenues": { "units": { "USD": [{ "val": 50000000, "fy": 2023, "fp": "FY" }] } },
+                "NetIncomeLoss": { "units": { "USD": [{ "val": 10000000, "fy": 2023, "fp": "FY" }] } }
+            }
+        }
+    }
+}

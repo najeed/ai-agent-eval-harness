@@ -48,10 +48,15 @@ class HealthcareProvider(BaseProvider):
                     logger.error("who_extraction_failed", indicator=indicator, error=str(e))
             
             if self.allow_simulation:
-                simulated_who = [
-                    {"SpatialDim": "USA", "NumericValue": 78.5, "TimeDim": "2021", "IndicatorCode": indicator},
-                    {"SpatialDim": "JPN", "NumericValue": 84.6, "TimeDim": "2021", "IndicatorCode": indicator}
-                ]
+                mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "healthcare", "mock_who.json")
+                if os.path.exists(mock_path):
+                    with open(mock_path, "r") as f:
+                        simulated_who = json.load(f)
+                else:
+                    simulated_who = [
+                        {"SpatialDim": "USA", "NumericValue": 78.5, "TimeDim": "2021", "IndicatorCode": indicator},
+                        {"SpatialDim": "JPN", "NumericValue": 84.6, "TimeDim": "2021", "IndicatorCode": indicator}
+                    ]
                 return [self.create_simulated_artifact(
                     id=f"WHO-{indicator}",
                     content=simulated_who,
@@ -78,10 +83,15 @@ class HealthcareProvider(BaseProvider):
                 )]
             
             if self.allow_simulation:
-                sim_content = [
-                    {"subject_id": "1001", "hadm_id": "210001", "lab_item": "Glucose", "value": 112, "uom": "mg/dL", "flag": "normal", "module": "hosp"},
-                    {"subject_id": "1002", "hadm_id": "210002", "lab_item": "Creatinine", "value": 1.4, "uom": "mg/dL", "flag": "abnormal", "module": "hosp"}
-                ]
+                mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "healthcare", "mock_clinical.json")
+                if os.path.exists(mock_path):
+                    with open(mock_path, "r") as f:
+                        sim_content = json.load(f)
+                else:
+                    sim_content = [
+                        {"subject_id": "1001", "hadm_id": "210001", "lab_item": "Glucose", "value": 112, "uom": "mg/dL", "flag": "normal", "module": "hosp"},
+                        {"subject_id": "1002", "hadm_id": "210002", "lab_item": "Creatinine", "value": 1.4, "uom": "mg/dL", "flag": "abnormal", "module": "hosp"}
+                    ]
                 return [self.create_simulated_artifact(
                     id=f"{dataset_version}",
                     content=sim_content,

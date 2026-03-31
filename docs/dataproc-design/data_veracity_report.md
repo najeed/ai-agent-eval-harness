@@ -49,7 +49,7 @@ To unlock the full "Gold Standard" evaluation, download the following datasets a
 - **FRED**: Open (Attribution required) macro data. Live API integration.
 
 ## 2. Housing
-- **HUD User**: Public Domain¹ rental trends. Synthetic parity embedded.
+- **HUD User**: Public Domain rental trends. Synthetic parity embedded.
 - **Zillow Research**: Non-Commercial macro housing metrics. Live download required.
 
 ## 3. Environment
@@ -70,12 +70,30 @@ To unlock the full "Gold Standard" evaluation, download the following datasets a
 
 ---
 
+## 6. Education
+- **UNESCO (UIS)**: CC BY-SA 3.0 IGO. Global literacy and enrollment metrics. **LIVE/SIMULATED**.
+- **NCES**: Public Domain. U.S. institutional data. **LIVE/SIMULATED**.
+
+## 7. Energy
+- **EIA**: Public Domain. U.S. sectoral balances. **LIVE** (API required).
+- **OPSD**: CC BY 4.0. European grid time-series. **Logic-only** synthesis templates.
+
+## 8. Transport
+- **Eurostat**: Open Data. Regional logistics statistics. **LIVE**.
+- **OSM**: ODbL. Geospatial node/way parity. **Logic-only** synth through Overpass API.
+
+## 9. Unstructured
+- **Common Crawl**: Terms of Use. WARC-based general knowledge. **Scrubbed** local ingest only.
+
+---
+
 ## 🏛️ Comprehensive Registry (Citations)
 
 | Industry | Primary Source / Citation URL | Format | License |
 | :--- | :--- | :---: | :--- |
 | **Finance** | [SEC EDGAR (Fundamentals)](https://www.sec.gov/edgar/searchedgar/companysearch.html) | XBRL/CSV | Public Domain |
 | **Finance** | [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.org/) | API/CSV | Public Domain |
+| **Finance** | [World Bank Open Data](https://data.worldbank.org/) | API/CSV | CC BY 4.0 |
 | **Environment** | [NOAA Climate Data Online](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) | API/CSV | Public Domain |
 | **Environment** | [Copernicus Climate Change Service](https://climate.copernicus.eu/data) | GRIB/NetCDF | CC BY 4.0 |
 | **Healthcare** | [CMS Hospital General Information](https://data.cms.gov/provider-data/dataset/x7fx-mvoc) | CSV/API | Public Domain |
@@ -89,8 +107,17 @@ To unlock the full "Gold Standard" evaluation, download the following datasets a
 | **Housing** | [Zillow Research (Economic Data)](https://www.zillow.com/research/data/) | CSV | Non-Commercial |
 | **Media** | [IMDb Dataset Interface](https://www.imdb.com/interfaces/) | TSV | Non-Commercial |
 | **Telecom** | [Ookla Open Data (Speedtest Intelligence)](https://www.ookla.com/ookla-for-good/open-data) | Parquet | CC BY-NC-SA 4.0 |
+| **Telecom** | [ITU (International Telecommunication Union)](https://datahub.itu.int/) | API | CC BY-NC-SA 3.0 |
 | **Telecom** | [FCC Fixed Broadband Deployment](https://www.fcc.gov/economics-analytics/broadband-insights-data/fixed-broadband-deployment-data) | CSV/API | Public Domain |
 | **Manufact.** | [U.S. Census Bureau (ASM)](https://www.census.gov/programs-surveys/asm.html) | CSV/API | Public Domain |
+| **Transport** | [Eurostat Database](https://ec.europa.eu/eurostat/data/database) | API/CSV | Open Data |
+| **Transport** | [OpenStreetMap (OSM) Geography](https://www.openstreetmap.org/copyright) | PBF/XML | ODbL |
+| **Energy** | [U.S. Energy Information Admin (EIA)](https://www.eia.gov/opendata/) | API/CSV | Public Domain |
+| **Energy** | [Open Power System Data (OPSD)](https://open-power-system-data.org/) | CSV | CC BY 4.0 |
+| **Education** | [UNESCO Institute for Statistics (UIS)](https://uis.unesco.org/) | API | CC BY-SA 3.0 |
+| **Education** | [NCES (National Center for Education Statistics)](https://nces.ed.gov/) | API | Public Domain |
+| **Unstructured**| [Common Crawl Datasets](https://commoncrawl.org/the-data/) | S3/WARC | CC TOU |
+
 
 ---
-*Last Updated: 2026-03-24 (Hardened)* ⚖️🛡️🏁
+*Last Updated: 2026-03-31 (Hardened)* 

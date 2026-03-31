@@ -54,14 +54,18 @@ class FinanceProvider(BaseProvider):
                     logger.error("wb_extraction_failed", indicator=indicator, error=str(e))
                 
                 if self.allow_simulation:
-                    logger.warning("wb_api_failure_using_sim")
-                    simulated_wb = [
-                        {"page": 1},
-                        [
-                            {"country": {"value": "United States", "id": "US"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
-                            {"country": {"value": "China", "id": "CN"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"}
+                    mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "finance", "mock_worldbank.json")
+                    if os.path.exists(mock_path):
+                        with open(mock_path, "r") as f:
+                            simulated_wb = json.load(f)
+                    else:
+                        simulated_wb = [
+                            {"page": 1},
+                            [
+                                {"country": {"value": "United States", "id": "US"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
+                                {"country": {"value": "China", "id": "CN"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"}
+                            ]
                         ]
-                    ]
                     return [self.create_simulated_artifact(
                         id=f"WB-{indicator}",
                         content=simulated_wb,
@@ -85,10 +89,15 @@ class FinanceProvider(BaseProvider):
                 )]
 
             if self.allow_simulation:
-                simulated_data = [
-                    {"ID": 1, "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 24, "PAY_0": 2, "BILL_AMT1": 3913, "PAY_AMT1": 0, "default.payment.next.month": 1},
-                    {"ID": 2, "LIMIT_BAL": 120000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 26, "PAY_0": -1, "BILL_AMT1": 2682, "PAY_AMT1": 0, "default.payment.next.month": 1}
-                ]
+                mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "finance", "mock_credit_risk.json")
+                if os.path.exists(mock_path):
+                    with open(mock_path, "r") as f:
+                        simulated_data = json.load(f)
+                else:
+                    simulated_data = [
+                        {"ID": 1, "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 24, "PAY_0": 2, "BILL_AMT1": 3913, "PAY_AMT1": 0, "default.payment.next.month": 1},
+                        {"ID": 2, "LIMIT_BAL": 120000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 26, "PAY_0": -1, "BILL_AMT1": 2682, "PAY_AMT1": 0, "default.payment.next.month": 1}
+                    ]
                 return [self.create_simulated_artifact(
                     id="UCI-CREDIT",
                     content=simulated_data,
@@ -136,17 +145,27 @@ class FinanceProvider(BaseProvider):
                 artifacts.extend([r for r in results if r])
                 
                 if not artifacts and self.allow_simulation:
-                    logger.warning("sec_api_failure_using_sim")
+                    mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "finance", "mock_sec_edgar.json")
+                    mock_data = {}
+                    if os.path.exists(mock_path):
+                        with open(mock_path, "r") as f:
+                            mock_data = json.load(f)
+
                     for cik in target_ciks:
-                        sim_content = {
-                            "entityName": f"SIM Company {cik}",
-                            "facts": {self.taxonomy: {"Revenues": {"units": {self.currency: [{"val": 100, "fy": 2023, "fp": "FY"}]}}}}
-                        }
+                        padded_cik = cik.zfill(10)
+                        sim_content = mock_data.get(padded_cik) or mock_data.get(cik) or mock_data.get("default")
+                        
+                        if not sim_content:
+                            sim_content = {
+                                "entityName": f"SIM Company {cik}",
+                                "facts": {self.taxonomy: {"Revenues": {"units": {self.currency: [{"val": 100, "fy": 2023, "fp": "FY"}]}}}}
+                            }
+                        
                         artifacts.append(self.create_simulated_artifact(
                             id=f"SEC-{cik}-FACTS",
                             content=sim_content,
                             source_url="https://sim-sec.example.org/",
-                            metadata={"company": f"SIM Company {cik}", "cik": cik}
+                            metadata={"company": sim_content.get("entityName", f"SIM Company {cik}"), "cik": cik}
                         ))
             return artifacts
         return []
