@@ -6,6 +6,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 PROJECT_ROOT = Path(__file__).parent.parent
+
+def _get_project_version() -> str:
+    """Safely extract version from pyproject.toml (Industrial Standard)."""
+    try:
+        import tomllib
+        target = PROJECT_ROOT / "pyproject.toml"
+        if target.exists():
+            with open(target, "rb") as f:
+                return tomllib.load(f).get("project", {}).get("version", "1.2.3")
+    except Exception:
+        pass
+    return "1.2.3"
+
+VERSION = _get_project_version()
 _TEMP_DIR_CACHE = None
 
 def get_safe_tmp_dir() -> Path:
@@ -50,10 +64,11 @@ MAX_ENGINE_ATTEMPTS = int(os.getenv("MAX_ENGINE_ATTEMPTS", "50"))
 DEFAULT_INDUSTRY = os.getenv("DEFAULT_INDUSTRY", "telecom")
 
 # --- Logging Configuration ---
-RUN_LOG_DIR = Path(os.getenv("RUN_LOG_DIR", "runs"))
+RUN_LOG_DIR = (PROJECT_ROOT / os.getenv("RUN_LOG_DIR", "runs")).resolve()
 RUN_LOG_PER_RUN = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
 RUN_LOG_MASTER = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 RUN_LOG_ROTATE_COUNT = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
+RUN_LOG_MASTER_LIMIT = int(os.getenv("RUN_LOG_MASTER_LIMIT", "300"))
 
 # --- Plugin Configuration ---
 PLUGIN_TIMEOUT = float(os.getenv("PLUGIN_TIMEOUT", "5.0"))
@@ -110,7 +125,7 @@ LATENCY_DECAY_PER_HOP = float(os.getenv("LATENCY_DECAY_PER_HOP", "0.2"))
 REFUSAL_KEYWORDS = os.getenv("REFUSAL_KEYWORDS", "cannot,unable,refuse,policy,against,not allowed,sorry").split(",")
 
 # --- Reporter Configuration ---
-REPORTS_DIR = Path(os.getenv("REPORTS_DIR", "reports"))
+REPORTS_DIR = (PROJECT_ROOT / os.getenv("REPORTS_DIR", "reports")).resolve()
 TRAJECTORIES_DIR = REPORTS_DIR / "trajectories"
 HTML_REPORTS_DIR = REPORTS_DIR / "html"
 

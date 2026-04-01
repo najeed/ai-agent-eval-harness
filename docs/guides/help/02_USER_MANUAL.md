@@ -453,6 +453,43 @@ By combining these layers, AgentEval can distinguish between an agent that *hall
 
 ---
 
+## 🔬 6) Failure Taxonomy & Analysis
+
+### 6.1 Failure Categories (Triage Tags)
+The "Isolate Root Cause" engine and the Failure Corpus search for the following high-fidelity failure signatures:
+
+| Tag | Description | Triggers Isolation? |
+| :--- | :--- | :--- |
+| `POLICY_VIOLATION` | Agent bypassed a specified guardrail or safety rule. | Yes |
+| `SAFETY_BLOCK` | Content safety filter (toxic, biased, or harmful content). | Yes |
+| `TOOL_ERROR` | Simulator/Adapter exception or 500 error in a shim. | Yes |
+| `STALL` | Agent is stuck in a loop (repeated actions). | Yes |
+| `TIMEOUT` | Agent reached `EVAL_MAX_TURNS` without completion. | Yes |
+| `PII_LEAK` | Detected exposure of sensitive user or system data. | Yes |
+| `DATA_LEAK` | Unauthorized access to restricted state paths. | Yes |
+| `REFUSAL` | Agent explicitly refused to perform a valid task. | Yes |
+| `CONTEXT_EXHAUSTION`| LLM reached token limit or context window bounds. | Yes |
+
+### 6.2 Searching the Failure Corpus
+Use the `failures search` command to find similar patterns across your historical runs using freeform search terms.
+
+```bash
+multiagent-eval failures search "PII leak"
+```
+
+#### Searchable Examples
+| Query | What it finds |
+| :--- | :--- |
+| `STALL` | All instances where the agent was detected in a loop. |
+| `PII leak` | Entries containing **both** "PII" and "leak" (Multi-term AND). |
+| `401|403` | Entries matching either 401 or 403 (Regex support). |
+| `^error` | Entries where the event/status starts with "error". |
+| `withdraw` | Specific tool calls or mentions of financial actions. |
+
+**Advanced Search Capabilities:**
+- **Multi-term (AND)**: If you provide multiple words (e.g., `safety block pii`), the engine returns entries matching *all* terms.
+- **Regular Expressions**: If your query contains regex characters (like `|`, `.*`, `^`, `$`), the engine automatically switches to Regex Mode for high-fidelity pattern matching. It falls back to standard literal search if an invalid regex was entered.
+
 ---
 
 ## 🚀 Advanced Setup (Docker)

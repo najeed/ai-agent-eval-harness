@@ -1,3 +1,4 @@
+console.log("[System] App.jsx entry point reached.");
 const { useState, useEffect, useMemo } = React;
 const ReactFlowRenderer = window.ReactFlow || {};
 const { ReactFlow, Controls, Background, useReactFlow, ReactFlowProvider } = ReactFlowRenderer;
@@ -137,26 +138,33 @@ const Sidebar = ({ activeTab, setActiveTab, navItems, systemInfo }) => (
     </div>
 );
 
-const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
+const ScenarioExplorer = ({ onNotify, searchQuery = "", apiFetch }) => {
     const [scenarios, setScenarios] = useState([]);
     const [query, setQuery] = useState('');
     const [industryFilter, setIndustryFilter] = useState('all');
     const [loading, setLoading] = useState(true);
-    
+
     const industries = useMemo(() => {
-         const set = new Set(scenarios.map(s => s.industry));
-         return ['all', ...Array.from(set)].sort();
+        const set = new Set(scenarios.map(s => s.industry).filter(Boolean));
+        return ['all', ...Array.from(set)].sort();
     }, [scenarios]);
 
     const fetchScenarios = () => {
         setLoading(true);
-        fetch(`/api/scenarios?q=${query}`)
-            .then(res => res.json())
+        apiFetch(`/api/scenarios?q=${query}`)
             .then(data => {
-                setScenarios(data.scenarios || []);
-                setLoading(false);
+                console.group(`[API Response] /api/scenarios?q=${query}`);
+                console.log("Data received:", data);
+                console.log("Scenarios count:", data?.scenarios?.length);
+                console.groupEnd();
+                if (data) {
+                    setScenarios(data.scenarios || []);
+                }
             })
             .catch(err => {
+                console.error(`[API Error] /api/scenarios:`, err);
+            })
+            .finally(() => {
                 setLoading(false);
             });
     };
@@ -169,25 +177,28 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
     }, [query]);
 
     const filteredScenarios = scenarios.filter(s => {
-        const matchesQuery = !query || 
-            s.title.toLowerCase().includes(query.toLowerCase()) ||
-            s.id.toLowerCase().includes(query.toLowerCase()) ||
-            s.industry.toLowerCase().includes(query.toLowerCase());
-        
+        if (!s) return false;
+        const q = (searchQuery || "").trim().toLowerCase();
+        const matchesQuery = !q ||
+            (s.title?.toLowerCase() || '').includes(q) ||
+            (s.id?.toString().toLowerCase() || '').includes(q) ||
+            (s.industry?.toLowerCase() || '').includes(q) ||
+            (s.description?.toLowerCase() || '').includes(q);
+
         const matchesIndustry = industryFilter === 'all' || s.industry === industryFilter;
-        
+
         return matchesQuery && matchesIndustry;
     });
 
     const handleRunEval = (scenario) => {
-        fetch('/api/evaluate', {
+        apiFetch('/api/evaluate', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: scenario.path, id: scenario.id })
         })
-            .then(res => res.json())
             .then(data => {
-                onNotify(`${data.message || 'Evaluation queued successfully!'}`);
+                if (data) {
+                    onNotify(`${data.message || 'Evaluation queued successfully!'}`);
+                }
             })
             .catch(err => {
                 onNotify(`Error: ${err.message}`, 'error');
@@ -218,7 +229,7 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                         className="bg-slate-900 border border-slate-800 rounded-xl py-2 px-4 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all appearance-none cursor-pointer hover:bg-slate-800"
                     >
                         {industries.map(ind => (
-                            <option key={ind} value={ind}>{ind === 'all' ? 'All Industries' : ind.charAt(0).toUpperCase() + ind.slice(1)}</option>
+                            <option key={ind} value={ind}>{ind === 'all' ? 'All Industries' : (ind?.charAt(0).toUpperCase() + ind?.slice(1))}</option>
                         ))}
                     </select>
                 </div>
@@ -310,7 +321,7 @@ const ScenarioEditor = () => {
             industry: scenario.industry,
             workflow: {
                 nodes: scenario.tasks.map((t, idx) => ({
-                    id: t.id || `task_${idx+1}`,
+                    id: t.id || `task_${idx + 1}`,
                     task_description: t.description
                 })),
                 edges: []
@@ -632,8 +643,10 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, 
         const SPACING_X = 250;
         const SPACING_Y = 180;
 
-        events.forEach((idx_e, idx) => {
+        (events || []).forEach((idx_e, idx) => {
             const e = events[idx];
+            if (!e) return;
+
             const row = Math.floor(idx / COLS);
             const col = idx % COLS;
 
@@ -667,9 +680,9 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, 
                     label: (
                         <div className="flex flex-col items-center gap-1 text-center">
                             <span className="text-[10px] font-black text-white leading-tight">
-                                {e.tool || (e.event === 'agent_response' ? (e.response?.action || 'Thoughts') : e.payload?.task_description || (typeof e.content === 'string' ? e.content.substring(0, 24) : (e.content?.response || e.content?.thought || e.event.replace('_', ' '))))}
+                                {e.tool || (e.event === 'agent_response' ? (e.response?.action || 'Thoughts') : e.payload?.task_description || (typeof e.content === 'string' ? e.content.substring(0, 24) : (e.content?.response || e.content?.thought || (e.event?.replace('_', ' ') || 'event'))))}
                             </span>
-                            <span className="text-[7px] uppercase opacity-60 font-bold tracking-tighter">{e.event.replace('_', ' ')}</span>
+                            <span className="text-[7px] uppercase opacity-60 font-bold tracking-tighter">{(e.event?.replace('_', ' ') || 'event')}</span>
                         </div>
                     )
                 },
@@ -750,7 +763,7 @@ const FlowView = ({ events, selectedEvent, onNodeSelect, highlightFailure = fals
     );
 };
 
-const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTimeline = false, highlightFailure = false }) => {
+const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTimeline = false, highlightFailure = false, apiFetch }) => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -770,9 +783,14 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
             ? `/api/debugger/state?run_id=${targetId}`
             : `/api/debugger/state`;
 
-        fetch(url)
-            .then(res => res.json())
+        const fetchFn = apiFetch || window.apiFetch || fetch;
+        fetchFn(url)
             .then(data => {
+                console.group(`[API Response] ${url}`);
+                console.log("Data received:", data);
+                console.groupEnd();
+
+                if (!data) return;
                 const eventsList = data.events || (data.data && data.data.timeline) || (Array.isArray(data) ? data : []);
                 const rc = data.data && data.data.root_cause;
                 setEvents(eventsList);
@@ -790,8 +808,11 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                             const failureNode = eventsList.find(e =>
                                 e.is_root_cause === true ||
                                 e.event === 'policy_violation' ||
+                                e.event === 'safety_trigger' ||
+                                e.event === 'refusal' ||
+                                e.event === 'error' ||
                                 e.error ||
-                                (e.response && e.response.status === 'error')
+                                (e.response && (e.response.status === 'error' || e.response.status === 'refusal'))
                             );
                             if (failureNode) {
                                 targetEvent = failureNode;
@@ -807,9 +828,11 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                     }
                     setSelectedEvent(targetEvent);
                 }
-                setLoading(false);
             })
             .catch(err => {
+                console.error("Trace load failed:", err);
+            })
+            .finally(() => {
                 setLoading(false);
             });
     };
@@ -822,13 +845,13 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
         if (!isLive) return;
 
         const interval = setInterval(() => {
-            fetch('/api/debugger/state')
-                .then(res => res.json())
+            apiFetch('/api/debugger/state')
                 .then(data => {
-                    if (data.data && data.data.timeline) {
+                    if (data && data.data && data.data.timeline) {
                         setEvents(data.data.timeline);
                     }
-                });
+                })
+                .catch(() => { }); // Suppress background errors in live mode
         }, 1000);
 
         return () => clearInterval(interval);
@@ -868,44 +891,55 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                 <Icon name="box" size={14} />
                             </button>
                             <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
-                            {(rootCause?.index >= 0 || events.some(e => e.is_root_cause || e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error'))) && (
-                                <button
-                                    onClick={() => {
-                                        if (rootCause?.index >= 0 && events[rootCause.index]) {
-                                            setSelectedEvent(events[rootCause.index]);
-                                            const confidencePercent = Math.round(rootCause.confidence * 100);
-                                            onNotify(`Isolated root cause (${confidencePercent}% confidence): ${rootCause.reason}`);
-                                        } else {
-                                            // Fallback to local heuristic
-                                            const failureNode = events.find(e =>
-                                                e.is_root_cause === true ||
-                                                e.event === 'policy_violation' ||
-                                                e.error ||
-                                                (e.response && e.response.status === 'error')
-                                            );
-                                            if (failureNode) {
-                                                setSelectedEvent(failureNode);
-                                                onNotify("Focused on isolated root cause");
+                            {(rootCause?.index >= 0 || events.some(e =>
+                                e.is_root_cause ||
+                                e.event === 'policy_violation' ||
+                                e.event === 'safety_trigger' ||
+                                e.event === 'refusal' ||
+                                e.event === 'error' ||
+                                e.error ||
+                                (e.response && (e.response.status === 'error' || e.response.status === 'refusal'))
+                            )) && (
+                                    <button
+                                        onClick={() => {
+                                            if (rootCause?.index >= 0 && events[rootCause.index]) {
+                                                setSelectedEvent(events[rootCause.index]);
+                                                const confidencePercent = Math.round(rootCause.confidence * 100);
+                                                onNotify(`Isolated root cause (${confidencePercent}% confidence): ${rootCause.reason}`);
                                             } else {
-                                                const runEnd = events.find(e => e.event === 'run_end' && e.status === 'failed');
-                                                if (runEnd) {
-                                                    const lastAction = [...events].reverse().find(e => e.event === 'agent_response' || e.event === 'tool_call');
-                                                    if (lastAction) {
-                                                        setSelectedEvent(lastAction);
-                                                        onNotify("Isolated probable root cause (heuristic)");
-                                                        return;
+                                                // Fallback to local heuristic
+                                                const failureNode = events.find(e =>
+                                                    e.is_root_cause === true ||
+                                                    e.event === 'policy_violation' ||
+                                                    e.event === 'safety_trigger' ||
+                                                    e.event === 'refusal' ||
+                                                    e.event === 'error' ||
+                                                    e.error ||
+                                                    (e.response && (e.response.status === 'error' || e.response.status === 'refusal'))
+                                                );
+                                                if (failureNode) {
+                                                    setSelectedEvent(failureNode);
+                                                    onNotify("Focused on isolated root cause");
+                                                } else {
+                                                    const runEnd = events.find(e => e.event === 'run_end' && e.status === 'failed');
+                                                    if (runEnd) {
+                                                        const lastAction = [...events].reverse().find(e => e.event === 'agent_response' || e.event === 'tool_call');
+                                                        if (lastAction) {
+                                                            setSelectedEvent(lastAction);
+                                                            onNotify("Isolated probable root cause (heuristic)");
+                                                            return;
+                                                        }
                                                     }
+                                                    onNotify("No clear root cause detected in trace", "error");
                                                 }
-                                                onNotify("No clear root cause detected in trace", "error");
                                             }
-                                        }
-                                    }}
-                                    title="Isolate Root Cause"
-                                    className="p-1.5 text-red-400 hover:text-red-300 bg-red-400/10 rounded-lg border border-red-400/20"
-                                >
-                                    <Icon name="alert" size={14} />
-                                </button>
-                            )}
+                                        }}
+                                        title="Isolate Root Cause"
+                                        className="p-1.5 text-red-400 hover:text-red-300 bg-red-400/10 rounded-lg border border-red-400/20"
+                                    >
+                                        <Icon name="alert" size={14} />
+                                    </button>
+                                )}
                         </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -994,22 +1028,19 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
     );
 };
 
-const ReportsView = ({ onViewReport, searchQuery = "" }) => {
+const ReportsView = ({ onViewReport, searchQuery = "", apiFetch }) => {
     const [runs, setRuns] = useState([]);
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
 
     const fetchRuns = () => {
         setLoading(true);
-        fetch(`/api/runs?q=${query}`)
-            .then(res => res.json())
+        apiFetch(`/api/runs?q=${query}`)
             .then(data => {
-                setRuns(data.runs || []);
+                if (data) setRuns(data.runs || []);
                 setLoading(false);
             })
-            .catch(err => {
-                setLoading(false);
-            });
+            .catch(() => setLoading(false));
     };
 
     useEffect(() => {
@@ -1097,16 +1128,16 @@ const ReportsView = ({ onViewReport, searchQuery = "" }) => {
     );
 };
 
-const DocsView = ({ categoryFilter, searchQuery = "" }) => {
+const DocsView = ({ categoryFilter, searchQuery = "", apiFetch }) => {
     const [docs, setDocs] = useState([]);
     const [selectedDoc, setSelectedDoc] = useState(null);
     const [docContent, setDocContent] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/docs')
-            .then(res => res.json())
+        apiFetch('/api/docs')
             .then(data => {
+                if (!data) return;
                 const filtered = categoryFilter
                     ? data.docs.filter(d => d.category === categoryFilter)
                     : data.docs;
@@ -1131,9 +1162,8 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
     const readDoc = (id) => {
         setDocContent('');
         setSelectedDoc(id);
-        fetch(`/api/docs/${encodeURIComponent(id)}`)
-            .then(res => res.json())
-            .then(data => setDocContent(data.content || ''));
+        apiFetch(`/api/docs/${encodeURIComponent(id)}`)
+            .then(data => data && setDocContent(data.content || ''));
     };
 
     if (selectedDoc) {
@@ -1204,17 +1234,18 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
 };
 
 
-const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo }) => {
+const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo, apiFetch }) => {
     const [search, setSearch] = useState('');
     const [scenarioCount, setScenarioCount] = useState('0');
     const [lastSync, setLastSync] = useState(new Date().toLocaleTimeString());
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     const fetchState = () => {
-        fetch('/api/scenarios')
-            .then(res => res.json())
+        apiFetch('/api/scenarios')
             .then(data => {
-                setScenarioCount((data.total_count || data.scenarios.length).toLocaleString());
+                if (!data) return;
+                const count = data.total_count || (data.scenarios ? data.scenarios.length : 0);
+                setScenarioCount(count.toLocaleString());
                 setLastSync(new Date().toLocaleTimeString());
             })
             .catch(() => setScenarioCount('Err'));
@@ -1222,16 +1253,12 @@ const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo }) => {
         if (onRefreshInfo) onRefreshInfo();
     };
 
-    useEffect(() => {
-        fetchState();
-    }, []);
-
     const refreshIndex = (e) => {
         e.stopPropagation();
         if (isRefreshing) return;
         setIsRefreshing(true);
         setScenarioCount('...');
-        fetch('/api/scenarios/refresh', { method: 'POST' })
+        apiFetch('/api/scenarios/refresh', { method: 'POST' })
             .then(() => {
                 fetchState();
                 setIsRefreshing(false);
@@ -1254,8 +1281,8 @@ const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo }) => {
     ];
 
     const filteredStatus = statusItems.filter(item =>
-        item.label.toLowerCase().includes(search.toLowerCase()) ||
-        item.value.toLowerCase().includes(search.toLowerCase())
+        item.label?.toLowerCase().includes(search.toLowerCase()) ||
+        (item.value?.toString().toLowerCase() || '').includes(search.toLowerCase())
     );
 
     const filteredNav = navItems.filter(item =>
@@ -1386,29 +1413,122 @@ const App = () => {
     const [globalSearch, setGlobalSearch] = useState('');
     const [toast, setToast] = useState(null);
     const [selectedRunId, setSelectedRunId] = useState(null);
-    const [isDemoReady, setIsDemoReady] = useState(!!window.Demo);
+    const [isDemoReady, setIsDemoReady] = useState(false);
+    const [isLoanDemoReady, setIsLoanDemoReady] = useState(false);
+    const [authRequired, setAuthRequired] = useState(false);
+    const [apiHistory, setApiHistory] = useState([]);
+    const [showDiagnostics, setShowDiagnostics] = useState(false);
+
+    // Initialize global reference for JIT Story Modules (Adversarial/Compliance Layers)
+    useEffect(() => {
+        window.apiFetch = apiFetch;
+        // Also ensure VisualDebugger is available immediately for Lazy Loaders
+    }, []);
+
+    // Hardened PBAC Fetch Utility (Industrial-Grade)
+    const apiFetch = async (url, options = {}) => {
+        const start = Date.now();
+        const entry = { url, method: options.method || 'GET', timestamp: start };
+
+        try {
+            const response = await fetch(url, {
+                ...options,
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                },
+            });
+
+            const duration = Date.now() - start;
+            entry.status = response.status;
+            entry.duration = duration;
+
+            if (response.status === 401 || response.status === 403) {
+                console.warn(`[Security] ${response.status} detected on ${url}. Triggering Auth Gateway.`);
+                setAuthRequired(true);
+                setApiHistory(prev => [entry, ...prev].slice(0, 50));
+                return null;
+            }
+
+            const data = await response.json();
+            entry.ok = response.ok;
+            entry.size = JSON.stringify(data).length;
+            setApiHistory(prev => [entry, ...prev].slice(0, 50));
+
+            if (!response.ok) {
+                throw new Error(data.error || `HTTP ${response.status}`);
+            }
+
+            return data;
+        } catch (err) {
+            entry.ok = false;
+            entry.error = err.message;
+            setApiHistory(prev => [entry, ...prev].slice(0, 50));
+            console.error(`[API Error] ${url}:`, err);
+            throw err;
+        }
+    };
+
+    // JIT Script Loader for Babel-based modules
+    const loadBabelScript = (src, checkGlobal) => {
+        return new Promise((resolve, reject) => {
+            if (window[checkGlobal]) return resolve();
+
+            console.log(`[JIT Loader] Loading module: ${src}`);
+            const script = document.createElement('script');
+            script.type = 'text/babel';
+            script.dataset.presets = 'env,react';
+            script.src = src;
+            script.async = true;
+
+            script.onload = () => {
+                // Babel transpiles script tags asynchronously. 
+                // We poll for the global to become available.
+                const interval = setInterval(() => {
+                    if (window[checkGlobal]) {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, 50);
+                setTimeout(() => { clearInterval(interval); reject(new Error(`Timeout loading ${src}`)); }, 10000);
+            };
+            script.onerror = () => reject(new Error(`Failed to load ${src}`));
+            document.body.appendChild(script);
+        });
+    };
+
+    const handleAuthSuccess = () => {
+        setAuthRequired(false);
+        fetchSystemInfo();
+        fetchNavItems();
+    };
 
     const fetchSystemInfo = () => {
-        fetch('/api/info')
-            .then(res => res.json())
-            .then(data => setSystemInfo(data))
+        apiFetch('/api/info')
+            .then(data => data && setSystemInfo(data))
+            .catch(() => { });
+    };
+
+    const fetchNavItems = () => {
+        apiFetch(`/api/nav?t=${Date.now()}`)
+            .then(data => data && setNavItems(data.nav || []))
             .catch(() => { });
     };
 
     useEffect(() => {
-        fetchSystemInfo();
-    }, []);
-
-    useEffect(() => {
-        if (isDemoReady) return;
-        const interval = setInterval(() => {
-            if (window.Demo) {
-                setIsDemoReady(true);
-                clearInterval(interval);
-            }
-        }, 100);
-        return () => clearInterval(interval);
-    }, [isDemoReady]);
+        if (activeTab === 'demo' && !isDemoReady) {
+            loadBabelScript('/DemoHelper.jsx', 'DemoHelper')
+                .then(() => loadBabelScript('/Demo.jsx', 'Demo'))
+                .then(() => setIsDemoReady(true))
+                .catch(err => showToast(`Demo hydration failed: ${err.message}`, 'error'));
+        }
+        if (activeTab === 'loan_demo' && !isLoanDemoReady) {
+            loadBabelScript('/LoanDemo.jsx', 'LoanDemo')
+                .then(() => setIsLoanDemoReady(true))
+                .catch(err => showToast(`Loan Demo hydration failed: ${err.message}`, 'error'));
+        }
+    }, [activeTab]);
 
     const showToast = (message, type = 'success') => {
         setToast({ message, type });
@@ -1416,6 +1536,7 @@ const App = () => {
     };
 
     const handleNavClick = React.useCallback((item) => {
+        if (!item) return;
         if (item.type === 'external') {
             window.open(item.path, '_blank');
         } else {
@@ -1426,10 +1547,11 @@ const App = () => {
     }, [navItems]);
 
     useEffect(() => {
-        fetch(`/api/nav?t=${Date.now()}`)
-            .then(res => res.json())
-            .then(data => setNavItems(data.nav || []));
-    }, []);
+        if (!authRequired) {
+            fetchNavItems();
+            fetchSystemInfo();
+        }
+    }, [authRequired]);
 
     useEffect(() => {
         const handleMessage = (event) => {
@@ -1458,6 +1580,74 @@ const App = () => {
         return () => window.removeEventListener('message', handleMessage);
     }, [navItems, handleNavClick]);
 
+    // --- Security Gateway ---
+
+    const AuthOverlay = ({ onAuthSuccess }) => {
+        const [apiKey, setApiKey] = useState('');
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState(null);
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            setError(null);
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ apiKey })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Identity verification failed');
+
+                onAuthSuccess();
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        return (
+            <div className="max-w-md w-full bg-[#161b22]/80 backdrop-blur-2xl border border-slate-800 rounded-[32px] p-10 shadow-2xl animate-in zoom-in-95 duration-500">
+                <div className="flex flex-col items-center text-center space-y-6">
+                    <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 mb-2">
+                        <Icon name="shield" size={32} />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black text-white">Security Gateway</h2>
+                        <p className="text-slate-500 text-sm mt-1">Industrial-grade PBAC Protection Active</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="w-full space-y-4 pt-4">
+                        <div className="space-y-2 text-left">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Dashboard API Key</label>
+                            <input
+                                autoFocus
+                                type="password"
+                                placeholder="••••••••••••••••"
+                                className={`w-full bg-slate-900/50 border ${error ? 'border-red-500/50' : 'border-slate-800'} rounded-xl py-4 px-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono`}
+                                value={apiKey}
+                                onChange={(e) => setApiKey(e.target.value)}
+                            />
+                            {error && <p className="text-[10px] text-red-500 font-bold pl-1">{error}</p>}
+                        </div>
+                        <button
+                            disabled={loading}
+                            className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
+                        >
+                            {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Icon name="check" size={18} /> Authenticate Session</>}
+                        </button>
+                        <p className="text-[9px] text-slate-600 font-medium">Verify your identity to hydrate the evaluation harness.</p>
+                    </form>
+                </div>
+            </div>
+        );
+    };
+
     const handleViewReport = (runId) => {
         setSelectedRunId(runId);
         setActiveTab('debugger');
@@ -1482,35 +1672,35 @@ const App = () => {
         }
 
         switch (activeTab) {
-            case 'dashboard': return <Dashboard onNavigate={handleNavClick} navItems={navItems} systemInfo={systemInfo || {}} onRefreshInfo={fetchSystemInfo} />;
-            case 'scenarios': return <ScenarioExplorer onNotify={showToast} searchQuery={globalSearch} />;
-            case 'reports': return <ReportsView onViewReport={handleViewReport} searchQuery={globalSearch} />;
+            case 'dashboard': return <Dashboard onNavigate={handleNavClick} navItems={navItems} systemInfo={systemInfo || {}} onRefreshInfo={fetchSystemInfo} apiFetch={apiFetch} />;
+            case 'scenarios': return <ScenarioExplorer onNotify={showToast} searchQuery={globalSearch} apiFetch={apiFetch} />;
+            case 'reports': return <ReportsView onViewReport={handleViewReport} searchQuery={globalSearch} apiFetch={apiFetch} />;
             case 'editor': return <ScenarioEditor />;
-            case 'debugger': return <VisualDebugger runId={selectedRunId} onNotify={showToast} />;
+            case 'debugger': return <VisualDebugger runId={selectedRunId} onNotify={showToast} apiFetch={apiFetch} />;
             case 'demo':
-                if (!window.Demo) {
+                if (!isDemoReady) {
                     return (
                         <div className="h-full flex flex-col items-center justify-center space-y-4">
                             <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                            <p className="text-slate-500 font-medium animate-pulse">Loading Demo Module...</p>
+                            <p className="text-slate-500 font-medium">Loading Story Module...</p>
                         </div>
                     );
                 }
                 const DemoComp = window.Demo;
-                return <DemoComp />;
+                return <DemoComp apiFetch={apiFetch} />;
             case 'loan_demo':
-                if (!window.LoanDemo) {
+                if (!isLoanDemoReady) {
                     return (
                         <div className="h-full flex flex-col items-center justify-center space-y-4">
                             <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                            <p className="text-slate-500 font-medium animate-pulse">Loading Loan Demo Module...</p>
+                            <p className="text-slate-500 font-medium">Loading Adversarial Demo Module...</p>
                         </div>
                     );
                 }
                 const LoanDemoComp = window.LoanDemo;
-                return <LoanDemoComp />;
-            case 'docs': return <DocsView searchQuery={globalSearch} />;
-            case 'api_docs': return <DocsView categoryFilter="API Reference" searchQuery={globalSearch} />;
+                return <LoanDemoComp apiFetch={apiFetch} />;
+            case 'docs': return <DocsView searchQuery={globalSearch} apiFetch={apiFetch} />;
+            case 'api_docs': return <DocsView categoryFilter="API Reference" searchQuery={globalSearch} apiFetch={apiFetch} />;
             default: return (
                 <div className="h-full flex flex-col items-center justify-center opacity-30 italic">
                     <h2 className="text-5xl font-black mb-4">404</h2>
@@ -1520,35 +1710,37 @@ const App = () => {
         }
     };
 
+    if (authRequired) {
+        return (
+            <div className="h-screen w-screen flex items-center justify-center bg-[#0b0e14] p-12">
+                <AuthOverlay onAuthSuccess={handleAuthSuccess} />
+            </div>
+        );
+    }
+
     return (
         <React.Fragment>
-            <Sidebar activeTab={activeTab} setActiveTab={(id) => handleNavClick(navItems.find(n => n.id === id))} navItems={navItems} systemInfo={systemInfo} />
+            <Sidebar activeTab={activeTab} setActiveTab={(id) => {
+                const item = navItems.find(n => n.id === id);
+                if (item) handleNavClick(item);
+                else setActiveTab(id);
+            }} navItems={navItems} systemInfo={systemInfo} />
             <main className="flex-1 flex flex-col overflow-hidden bg-[#0b0e14]">
                 <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0b0e14]/50 backdrop-blur-xl sticky top-0 z-20">
                     <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{activeTab.replace('_', ' ')}</span>
                     </div>
-                    <div className="flex gap-4">
-                        {(activeTab === 'docs' || activeTab === 'api_docs') && (
-                            <>
-                                {searching && (
-                                    <input
-                                        autoFocus
-                                        type="text"
-                                        placeholder="Search specifications, guides and API reference..."
-                                        value={globalSearch}
-                                        onChange={(e) => setGlobalSearch(e.target.value)}
-                                        onBlur={() => !globalSearch && setSearching(false)}
-                                        className="bg-slate-900 border border-slate-800 rounded-lg px-3 py-1 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 w-48"
-                                    />
-                                )}
-                                <button
-                                    onClick={() => setSearching(!searching)}
-                                    className={`p-2 rounded-lg transition-colors ${searching ? 'text-blue-400 bg-blue-400/10' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'}`}
-                                >
-                                    <Icon name="search" size={18} />
-                                </button>
-                            </>
+                    <div className="flex items-center gap-4">
+                        {/* Global Search or other header items */}
+                        {systemInfo?.debug_mode && (
+                            <button
+                                onClick={() => setShowDiagnostics(!showDiagnostics)}
+                                className={`p-2 rounded-xl flex items-center justify-center transition-all ${showDiagnostics ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+                                title="System Diagnostics"
+                            >
+                                <Icon name="activity" size={18} />
+                                <span className="ml-2 text-[10px] font-bold uppercase tracking-widest hidden md:inline">Diagnostics</span>
+                            </button>
                         )}
                     </div>
                 </header>
@@ -1566,6 +1758,32 @@ const App = () => {
                         }`}>
                         <Icon name={toast.type === 'error' ? 'alert' : 'check'} size={18} />
                         <span className="text-sm font-bold tracking-tight">{toast.message}</span>
+                    </div>
+                </div>
+            )}
+            {/* Diagnostic Overlay (DEBUG=true only) */}
+            {systemInfo?.debug_mode && showDiagnostics && (
+                <div className="fixed top-20 right-8 z-[100] w-96 max-h-[80vh] bg-[#161b22]/95 backdrop-blur-2xl border border-slate-800 rounded-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col animate-in slide-in-from-top-4 duration-300">
+                    <div className="p-4 border-b border-slate-800 bg-slate-900/50 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                            <Icon name="activity" size={14} className="text-amber-500" />
+                            <h3 className="text-xs font-bold text-white uppercase tracking-widest">Entry Path Diagnostics</h3>
+                        </div>
+                        <span className="text-[10px] font-mono text-emerald-500">DEBUG_MODE ACTIVE</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-[10px]">
+                        {apiHistory.map((h, i) => (
+                            <div key={i} className={`p-3 rounded-xl border ${h.ok ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-200' : 'bg-red-500/5 border-red-500/10 text-red-200'}`}>
+                                <div className="flex justify-between mb-1">
+                                    <span className={h.ok ? 'text-emerald-400' : 'text-red-400 font-bold'}>{h.method} {h.status || 'ERR'}</span>
+                                    <span className="text-slate-600 font-bold">{h.duration}ms</span>
+                                </div>
+                                <div className="text-slate-400 truncate mb-1">{h.url}</div>
+                                {h.size && <div className="text-slate-500 italic">Payload: {(h.size / 1024).toFixed(1)}KB</div>}
+                                {h.error && <div className="text-red-500 mt-1 uppercase text-[8px] font-black">{h.error}</div>}
+                            </div>
+                        ))}
+                        {apiHistory.length === 0 && <div className="py-12 text-center text-slate-600 italic">Listening for hydration events...</div>}
                     </div>
                 </div>
             )}

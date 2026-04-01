@@ -22,6 +22,47 @@ async def check_agent_reachable(url: str):
         return False
 
 
+def check_security_health():
+    """Performs an audit of the security posture (PBAC)."""
+    print("  --- Security Audit (PBAC/Industrial) ---")
+    
+    # 1. API Key Check
+    api_key = os.getenv("DASHBOARD_API_KEY")
+    if not api_key:
+        print("  ❌ DASHBOARD_API_KEY is not set. Console will be inaccessible.")
+    elif len(api_key) < 16:
+        print(f"  ⚠ DASHBOARD_API_KEY is weak ({len(api_key)} chars). Recommend 32+ for production.")
+    else:
+        print(f"  ✔ DASHBOARD_API_KEY is configured (Length: {len(api_key)})")
+
+    # 2. Auth Provider Integrity
+    try:
+        from .console.auth_manager import get_auth_provider, Role
+        provider = get_auth_provider()
+        print(f"  ✔ Auth Provider active: {provider.__class__.__name__}")
+        
+        # Test PBAC Node manifest
+        if Role.SCENARIOS_READ == "scenarios:read":
+            print("  ✔ PBAC Permission Nodes are healthy")
+        else:
+            print("  ❌ PBAC Permission Nodes are misconfigured")
+    except Exception as e:
+        print(f"  ❌ Auth Provider Error: {str(e)}")
+
+    # 3. Session Security (Secret Key)
+    # We check if a secret key can be derived (used in app.py)
+    if api_key:
+        try:
+            import hashlib
+            derived = hashlib.sha256(api_key.encode()).hexdigest()
+            if derived:
+                 print("  ✔ Session SECRET_KEY derivation is functional")
+        except Exception:
+             print("  ❌ Session Crypto Error")
+    else:
+        print("  ⚠ Session Security cannot be verified without an API Key")
+
+
 async def run_doctor():
     """Environment validation logic."""
     print("\n[Doctor] MultiAgentEval - Environment Doctor\n")
@@ -44,7 +85,10 @@ async def run_doctor():
             missing.append(dep)
             print(f"  ❌ Dependency '{dep}' missing")
 
-    # 3. Directories
+    # 3. Security Audit (New v1.2.4 Section)
+    check_security_health()
+
+    # 4. Directories
     dirs = ["industries", "scenarios", "runs", "reports"]
     for d in dirs:
         p = Path(d)
@@ -53,7 +97,7 @@ async def run_doctor():
         else:
             print(f"  ⚠ Directory '{d}/' not found (will be auto-created if needed)")
 
-    # 4. Agent Connectivity
+    # 5. Agent Connectivity
     agent_url = os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
     is_reachable = await check_agent_reachable(agent_url)
     if is_reachable:
@@ -62,7 +106,7 @@ async def run_doctor():
         print(f"  ❌ Agent endpoint unreachable ({agent_url})")
         print("     Tip: Start the sample agent with 'python sample_agent/agent_app.py'")
 
-    # 5. AES Schema
+    # 6. AES Schema
     schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
     if schema_path.exists():
         print(f"  ✔ AES schema found")

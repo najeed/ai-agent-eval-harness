@@ -17,20 +17,17 @@ Evaluate an agent's ability to handle a complex billing dispute involving data o
 ## Workflow
 
 ### 1. Identify Overcharge (`task-1`)
-The agent should look up the customer's recent data usage and identify the $40 overage charge.
-- **Expected Outcome:** Agent confirms the $40 overage in the conversation.
+The agent should look up the customer's recent data usage and identify the $40 overage charge. (Expect: Agent confirms the $40 overage in the conversation.)
 - **Tools**: `get_billing_history`, `get_usage_data`
 - **Criteria**: `tool_call_correctness` (threshold: 1.0)
 
 ### 2. Verify Eligibility (`task-2`)
-Check the customer's loyalty status and determine if they are eligible for a one-time waiver.
-- **Expected Outcome:** Agent informs the customer they are eligible for a waiver.
+Check the customer's loyalty status and determine if they are eligible for a one-time waiver. (Expect: Agent informs the customer they are eligible for a waiver.)
 - **Tools**: `get_customer_profile`
 - **Criteria**: `policy_compliance` (threshold: 1.0)
 
 ### 3. Apply Waiver (`task-3`)
-Apply the $40 credit to the customer's account.
-- **Expected Outcome:** The account balance is reduced by $40.
+Apply the $40 credit to the customer's account. (Expect: The account balance is reduced by $40.)
 - **Tools**: `apply_credit`
 - **Criteria**: `state_verification` (path: `billing:balance`, value: 0)
 

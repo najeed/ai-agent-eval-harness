@@ -45,3 +45,38 @@ def get_handoff_token():
     """Endpoint for Expo app to request a secure handoff token."""
     token = generate_handoff_token()
     return jsonify({"token": token})
+
+
+@auth_bp.route("/login", methods=["POST"], strict_slashes=False)
+def login():
+    """Standard PBAC Login Gate for the Visual Suite."""
+    from flask import session
+    from .auth_manager import get_auth_provider
+    from .. import config
+
+    data = request.json or {}
+    api_key = data.get("apiKey")
+
+    if not api_key:
+        return jsonify({"error": "Missing API Key"}), 400
+
+    provider = get_auth_provider()
+    user = provider.authenticate(api_key)
+
+    if not user:
+        return jsonify({"error": "Unauthorized: Invalid API Key"}), 401
+
+    # Populate industrial-grade PBAC session
+    session["user"] = user
+    # Ensure cookie is marked for security
+    session.permanent = True 
+    
+    return jsonify({
+        "status": "success",
+        "message": "Authenticated successfully",
+        "user": {
+            "name": user["name"],
+            "id": user["id"],
+            "permissions": user["permissions"]
+        }
+    })

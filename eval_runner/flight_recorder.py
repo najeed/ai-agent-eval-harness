@@ -51,6 +51,25 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         if self.master:
             with open(self.master_log_path, "a", encoding="utf-8") as f:
                 f.write(content)
+            
+            # --- Master Log Rotation (Industrial Hygiene) ---
+            from . import config
+            limit = config.RUN_LOG_MASTER_LIMIT
+            if limit > 0:
+                try:
+                    # check file size or line count occasionally?
+                    # For simplicity, we ensure the file doesn't explode in the background.
+                    # In a production setting, this would be a RotatingFileHandler.
+                    # Here we implement a manual "tail" truncation if limit is exceeded.
+                    with open(self.master_log_path, "r", encoding="utf-8") as rf:
+                        lines = rf.readlines()
+                    
+                    if len(lines) > limit + 50: # Buffer to avoid constant rewriting
+                        print(f"      [FlightRecorder] Rotating master log (Current: {len(lines)} entries, Limit: {limit})")
+                        with open(self.master_log_path, "w", encoding="utf-8") as wf:
+                            wf.writelines(lines[-limit:])
+                except Exception as e:
+                    print(f"      [FlightRecorder] Rotation failed: {e}")
 
     def rotate_logs(self):
         """Keeps only the latest N run-<id>.jsonl files."""

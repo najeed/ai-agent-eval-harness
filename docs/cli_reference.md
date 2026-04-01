@@ -10,11 +10,12 @@ Run evaluations on one or more scenarios.
 multiagent-eval evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
 - `--agent`: Unified agent target. Can be a URL (for `http`, `autogen`, `langgraph`), a shell command (for `local`), or an address (for `socket`).
-- `--protocol`: Agent protocol (e.g., `http`, `local`, `socket`, `autogen`, `langgraph`, etc.). **Note:** Core protocols are always available; ecosystem adapters are discovery-driven.
-- `--agent-cmd`: Shell command to start the agent (required for `local` protocol).
+- `--protocol`: Communication protocol for the agent (`http`, `local`, `socket`, `autogen`, `crewai`, etc.).
+- `--agent-cmd`: Local agent executable command (required for `local` protocol).
 - `--agent-socket`: Socket address (required for `socket` protocol).
 - `--agent-name`: Human-readable name for the agent (for reports and leaderboards). Priority: CLI Flag > Zero-Touch Identity > Endpoint URL.
 - `--format`: Dataset format (`jsonl` or `csv`).
+- `--seed`: Random seed for deterministic evaluation. Ensures reproducibility of agent trajectories and judge scores.
 
 **Environment Variables (.env Priority):**
 | Variable | Default | Description |
@@ -54,6 +55,8 @@ multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent-name <name>
 - `--agent-name`: Human-readable name for reporting.
 - `--verbose`: Enable detailed logging.
 - `--output`: Save results to a specific JSON file.
+- `--seed`: Random seed for deterministic evaluation.
+- `--protocol`: Communication protocol override.
 - **Example (Benchmark):** `multiagent-eval run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
 
 ### `list`

@@ -81,8 +81,43 @@ For high-integrity environments, the harness supports signing evaluation traces 
 
 ---
 
-## Troubleshooting
 
-- **`401 Unauthorized`**: The `X-AES-API-KEY` header is missing or incorrect.
-- **`501 Not Implemented`**: The `DASHBOARD_API_KEY` is not configured on the server. Check your `.env` file.
-- **CORS Errors**: Ensure the `DASHBOARD_API_KEY` is correctly shared between the frontend and backend if running custom UI components.
+---
+
+### 🔑 5. Enterprise Identity & PBAC Integration
+
+For professional and high-compliance environments, the harness uses a **Permission-Based Access Control (PBAC)** system, which replaces rigid roles with granular, string-based permission nodes.
+
+#### Permission Nodes
+- **`READ_ONLY`**: Access to `scenarios:read`, `runs:read`, `docs:read`, `debugger:read`.
+- **`OPERATOR`**: Adds `eval:trigger`, `index:refresh`, `demo:execute`, and `debugger:event`.
+- **`ADMIN`**: Full control including `scenarios:write`, `scenarios:delete`, `debugger:reset`, and `system:config`.
+
+#### SSO Implementation (SAML/OIDC)
+Plugins can subclass `AuthManager` to integrate with **Okta**, **Azure AD**, or other OIDC providers. This allows you to:
+1. Map custom OIDC groups (e.g., `Harness-SuperUser`) to granular permission nodes (e.g., `EVAL_TRIGGER`).
+2. Define enterprise-specific permission strings (e.g., `governance:audit:export`) for protected plugin routes.
+3. Enforce multi-factor authentication (MFA).
+
+For technical details on extending authentication, see the [Developer Guide](help/03_DEVELOPER_GUIDE.md#11-extending-authentication--rbac).
+
+---
+
+## 🛠️ Troubleshooting 401 Unauthorized Errors
+
+If you encounter a `401 Unauthorized` error when accessing the Visual Debugger or API, follow these steps:
+
+### 1. Visual Debugger (Browser)
+- **Security Gateway**: Ensure you have entered the correct `DASHBOARD_API_KEY` in the login modal. The harness uses secure, server-side sessions; if your session expires, you must re-authenticate.
+- **Cookies Enabled**: The console relies on **HttpOnly session cookies**. Ensure your browser is not blocking cookies for the harness domain.
+- **CORS Issues**: If hosting the UI and API on different subdomains, ensure `CORS(app, supports_credentials=True)` is configured in `app.py`.
+
+### 2. Programmatic Access (CLI/curl)
+- **Header Check**: Ensure you are passing the key in the `X-AES-API-KEY` header, not as a query parameter.
+- **Exact Match**: The key is case-sensitive and must exactly match the value in your `.env` file or environment.
+
+### 3. Server Configuration
+- **Environment Variable**: Run `multiagent-eval doctor` to verify that the `DASHBOARD_API_KEY` is correctly detected by the harness.
+- **501 Not Implemented**: If you see this error, it means **no key** is configured. The harness will block all sensitive routes until a key is provided.
+
+For further assistance, contact `ai.eval.harness.contact@gmail.com`.

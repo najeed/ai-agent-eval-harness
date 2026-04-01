@@ -38,6 +38,8 @@ If the structural parser finds **no tasks** (indicating a non-standard or highly
 ---
 
 ## 🛡️ 3. Robustness Features
+*   **Metadata Stripping (Expect/Goal)**: Within task descriptions or bullet points, patterns like `(Expect: ...)` or `(Goal: ...)` are automatically extracted. The content inside the parentheses is mapped to the `expected_outcome` field, while the rest of the text is cleaned of this metadata to keep the task description concise.
+*   **Bullet-Point Fallback**: If no `###` headers are present in the `## Tasks` section, the parser will attempt to extract each bullet point as a separate task, applying the same metadata stripping logic.
 *   **Synonym Recognition**: Headers like "Test Cases" are automatically treated as "Tasks".
 *   **Global Tool Injection**: Tools defined in a global `## Tools` section are automatically added to the `required_tools` of every task if not specifically overridden.
 *   **Force Overwrite**: Use `--force` to skip the overwrite confirmation prompt for rapid iteration.

@@ -153,7 +153,8 @@ class TestRoutes(unittest.TestCase):
              res = self.client.get("/api/info")
              data = res.get_json()
              self.assertEqual(data["world_shims"], 3)
-             self.assertIn("v1.2.0-stable", data["version"])
+             self.assertIn("-stable", data["version"])
+             self.assertIn("1.2.3", data["version"])
 
     def test_register_core_routes(self):
         # Line 76-161
@@ -261,7 +262,8 @@ class TestRoutes(unittest.TestCase):
             with patch("eval_runner.config.AGENT_API_URLS", [url]):
                 with patch("eval_runner.config.GOOGLE_API_KEY", keys.get("GOOGLE_API_KEY")), \
                      patch("eval_runner.config.ANTHROPIC_API_KEY", keys.get("ANTHROPIC_API_KEY")), \
-                     patch("eval_runner.config.OPENAI_API_KEY", keys.get("OPENAI_API_KEY")):
+                     patch("eval_runner.config.OPENAI_API_KEY", keys.get("OPENAI_API_KEY")), \
+                     patch("eval_runner.plugins.manager.plugins", []):
                     res = self.client.get("/api/info")
                     agent = res.get_json()["agents"][0]
                     self.assertEqual(agent["provider"], expected_p)

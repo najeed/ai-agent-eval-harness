@@ -6,6 +6,7 @@ Logic for indexing and searching scenario metadata.
 
 import json
 import os
+import datetime
 from pathlib import Path
 from typing import List, Dict, Any
 
@@ -82,9 +83,14 @@ class ScenarioCatalog:
 
         # Atomic update
         self.scenarios = new_scenarios
-        self.index_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.index_path, "w", encoding="utf-8") as f:
-            json.dump(self.scenarios, f, indent=2)
+        try:
+            self.index_path.parent.mkdir(parents=True, exist_ok=True)
+            # Use a robust write with explicit string conversion for Windows stability
+            with open(str(self.index_path).strip(), "w", encoding="utf-8") as f:
+                json.dump(self.scenarios, f, indent=2)
+        except Exception as write_err:
+            print(f"   [Catalog] Critical Error writing index: {write_err}")
+            # Fallback: Don't crash the whole app if indexing fails to persist
 
     def check_for_updates(self) -> bool:
         """Quickly checks if the number of files on disk matches the index."""
@@ -117,6 +123,7 @@ class ScenarioCatalog:
             self.load_index()
 
         results = self.scenarios
+        print(f"DEBUG: [Catalog] Searching across {len(results)} scenarios with filters: {filters}", flush=True)
 
         # 1. Text Search
         if query:
@@ -137,6 +144,7 @@ class ScenarioCatalog:
         for key, value in filters.items():
             if value:
                 results = [s for s in results if str(s.get(key)).lower() == str(value).lower()]
+                print(f"DEBUG: [Catalog] Filter '{key}={value}' reduced match count to {len(results)}", flush=True)
 
         return results
 
@@ -168,10 +176,6 @@ def list_scenarios(query: str = None):
         print(f"\n... and {len(results) - 50} more. Use a more specific search term.")
 
 
-def install_pack(pack_name: str):
-    """Installs a curated scenario pack by creating a structured directory."""
-    print(f"📦 Installing scenario pack: {pack_name}...")
-    
 def install_pack(pack_name: str):
     """Installs a curated scenario pack by creating a structured directory."""
     print(f"📦 Installing scenario pack: {pack_name}...")

@@ -2,7 +2,7 @@ const { useState, useEffect } = React;
 
 // Lazy wrapper — polls until window.VisualDebugger is registered by App.jsx, then renders it.
 // Fixes the race condition where Demo.jsx mounts before App.jsx sets window.VisualDebugger.
-const LazyDebugger = ({ runId, highlightFailure = false }) => {
+const LazyDebugger = ({ runId, highlightFailure = false, apiFetch }) => {
     const [ready, setReady] = useState(!!window.VisualDebugger);
     useEffect(() => {
         if (ready) return;
@@ -19,10 +19,10 @@ const LazyDebugger = ({ runId, highlightFailure = false }) => {
         </div>
     );
     const VD = window.VisualDebugger;
-    return <VD runId={runId} highlightFailure={highlightFailure} onNotify={() => {}} />;
+    return <VD runId={runId} highlightFailure={highlightFailure} onNotify={() => {}} apiFetch={apiFetch} />;
 };
 
-const Demo = () => {
+const Demo = ({ apiFetch }) => {
     useEffect(() => {
         // Init logic if needed
     }, []);
@@ -124,7 +124,7 @@ const Demo = () => {
                             <button onClick={nextStep} className="px-6 py-2 bg-white text-black font-black rounded-full text-[10px] uppercase tracking-widest z-50">Isolate Root Cause</button>
                         </div>
                         <div className="flex-1 overflow-hidden opacity-90 h-[500px] md:h-[600px] lg:h-[750px] border border-slate-800 rounded-2xl">
-                            <LazyDebugger runId="run-loan-risk-fail" />
+                            <LazyDebugger runId="run-loan-risk-fail" apiFetch={apiFetch} />
                         </div>
                     </div>
                 );
@@ -154,7 +154,7 @@ const Demo = () => {
                             </div>
                         </DraggableCard>
                         <div className="flex-1 h-[500px] md:h-[600px] lg:h-[750px] border border-slate-800 rounded-2xl overflow-hidden">
-                            <LazyDebugger runId="run-loan-risk-fail" highlightFailure={true} />
+                            <LazyDebugger runId="run-loan-risk-fail" highlightFailure={true} apiFetch={apiFetch} />
                         </div>
                     </div>
                 );
@@ -190,7 +190,7 @@ const Demo = () => {
                             </div>
                         </div>
                         <div className="flex-1 h-[500px] md:h-[600px] lg:h-[750px] border border-slate-800 rounded-2xl overflow-hidden">
-                            <LazyDebugger runId={showSuccess ? "run-loan-risk-pass" : "run-loan-risk-fail"} highlightFailure={false} />
+                            <LazyDebugger runId={showSuccess ? "run-loan-risk-pass" : "run-loan-risk-fail"} highlightFailure={false} apiFetch={apiFetch} />
                         </div>
                         {!fixing && step === 5 && showSuccess && (
                             <DraggableCard className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[55] animate-in zoom-in bounce-in-down duration-1000">

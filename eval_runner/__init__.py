@@ -2,7 +2,7 @@
 Evaluation Runner Core Package.
 """
 
-__version__ = "1.2.2"
+from .config import VERSION as __version__
 
 from . import (
     calibrator,  # noqa: F401

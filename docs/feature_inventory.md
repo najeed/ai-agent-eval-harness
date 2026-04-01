@@ -17,6 +17,8 @@ Enterprise-grade protection and regulatory audit tools.
 - **Credential Stripping**: Automated logic to strip sensitive keys (API keys, tokens) from metadata before trace signing.
 - **WORM Audit Logs**: Write-Once-Read-Many event streaming for immutable regulatory compliance.
 - **Audit Manifests**: Professional JSON manifests generation for every evaluation batch.
+- **Enterprise Identity & PBAC**: Extensible `AuthManager` provider pattern with support for SSO (OIDC/SAML) and granular permission nodes (e.g., `scenarios:read`, `eval:trigger`).
+- **Session-Based Governance**: Secure, server-side session management with HttpOnly cookies, replacing legacy plaintext storage.
 
 ## 3. Semantic Bridge & Drift Management
 Closing the loop between production behavior and evaluation rigor.

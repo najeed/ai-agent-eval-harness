@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-01T18:49:44.094518",
+  "batch_id": "test_signing",
+  "files": [
+    {
+      "name": "test.txt",
+      "sha256": "fce8c44af5133236c8cb7c5e5d91523976990184691db2e15a3d511809a8f803"
+    }
+  ],
+  "signature_ed25519": "cqk/fUwyQOG9pzhw4uWsS1eOdi8yBn7WSsS9V3JVRWJckPVf4cSJW82I0Sa2imSDE2k322sVU2Zp5e+sCEJ8AA==",
+  "public_key": "dAuf2tpBx06KVqouHxb5ZBgWmi6ab8DWtaa28Ye71eU="
+}

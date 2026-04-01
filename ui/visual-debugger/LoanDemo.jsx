@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-const LoanDemo = () => {
+const LoanDemo = ({ apiFetch }) => {
     const [step, setStep] = useState(1);
     const [fixing, setFixing] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -14,7 +14,7 @@ const LoanDemo = () => {
 
     // Safer access to window-attached components
     const GetIcon = (props) => (window.Icon ? <window.Icon {...props} /> : null);
-    const GetVisualDebugger = (props) => (window.VisualDebugger ? <window.VisualDebugger {...props} /> : <div className="p-8 text-neutral-500">Debugger not loaded</div>);
+    const GetVisualDebugger = (props) => (window.VisualDebugger ? <window.VisualDebugger apiFetch={apiFetch} {...props} /> : <div className="p-8 text-neutral-500">Debugger not loaded</div>);
     const { DraggableCard = (({children}) => <div>{children}</div>), TerminalLine = (() => null), StatusBadge = (() => null) } = window.DemoHelper || {};
     
     // Unified Terminal Rendering Helper
@@ -35,8 +35,12 @@ const LoanDemo = () => {
     };
 
     useEffect(() => {
-        fetch('/api/demo/loan/context')
-            .then(res => res.json())
+        const fetchFn = window.apiFetch || fetch;
+        fetchFn('/api/demo/loan/context')
+            .then(data => {
+                const json = data.json ? data.json() : data; // Handle both raw fetch and apiFetch
+                return Promise.resolve(json);
+            })
             .then(data => {
                 setContext(data);
                 setLoading(false);
@@ -59,18 +63,21 @@ const LoanDemo = () => {
     const runCommand = async (command) => {
         setExecuting(true);
         setTerminalOutput(prev => [...prev, { type: 'cmd', text: `$ ${command}` }]);
+        const fetchFn = window.apiFetch || fetch;
         try {
-            const res = await fetch('/api/demo/execute', {
+            const data = await fetchFn('/api/demo/execute', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ command })
             });
-            const data = await res.json();
-            if (data.status === 'success') {
-                setTerminalOutput(prev => [...prev, { type: 'success', text: data.stdout || 'Done.' }]);
-                return data;
+            // apiFetch returns data, raw fetch returns response
+            const res = data.status ? await data.json() : data;
+            
+            if (res.status === 'success') {
+                setTerminalOutput(prev => [...prev, { type: 'success', text: res.stdout || 'Done.' }]);
+                return res;
             } else {
-                setTerminalOutput(prev => [...prev, { type: 'error', text: data.stderr || data.error || 'Failed.' }]);
+                setTerminalOutput(prev => [...prev, { type: 'error', text: res.stderr || res.error || 'Failed.' }]);
                 return null;
             }
         } catch (err) {
@@ -85,13 +92,14 @@ const LoanDemo = () => {
         if (executing) return;
         setExecuting(true);
         setTerminalOutput(prev => [...prev, { type: 'cmd', text: `$ demo-agent: "${prompt.substring(0, 60)}${prompt.length > 60 ? '...' : ''}"` }]);
+        const fetchFn = window.apiFetch || fetch;
         try {
-            const res = await fetch('/api/demo/agent', {
+            const res = await fetchFn('/api/demo/agent', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt })
             });
-            const data = await res.json();
+            const data = res.json ? await res.json() : res;
             if (data.error) {
                 setTerminalOutput(prev => [...prev, { type: 'error', text: data.error }]);
             } else {
@@ -129,13 +137,14 @@ const LoanDemo = () => {
         setTerminalOutput(prev => [...prev,
             { type: 'cmd', text: '$ multiagent-eval evaluate --path loan_approval_scenario.json' }
         ]);
+        const fetchFn = window.apiFetch || fetch;
         try {
-            const res = await fetch('/api/demo/evaluate', {
+            const res = await fetchFn('/api/demo/evaluate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ hardened: false })
             });
-            const data = await res.json();
+            const data = res.json ? await res.json() : res;
             if (data.error) {
                 setTerminalOutput(prev => [...prev, { type: 'error', text: data.error }]);
             } else {
@@ -165,13 +174,14 @@ const LoanDemo = () => {
             { type: 'output', text: '  [PATCH] Updating agent policy: NEVER bypass rules for Admin claims' },
             { type: 'output', text: '  [PATCH] Enforcing mandatory loan_api for ALL decisions' },
         ]);
+        const fetchFn = window.apiFetch || fetch;
         try {
-            const res = await fetch('/api/demo/evaluate', {
+            const res = await fetchFn('/api/demo/evaluate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ hardened: true })
             });
-            const data = await res.json();
+            const data = res.json ? await res.json() : res;
             if (data.error) {
                 setTerminalOutput(prev => [...prev, { type: 'error', text: data.error }]);
             } else {
@@ -191,11 +201,15 @@ const LoanDemo = () => {
     useEffect(() => {
         if (viewingFile) {
             const cmd = window.navigator.platform.includes('Win') ? `type ${viewingFile.replace(/\//g, '\\')}` : `cat ${viewingFile}`;
-            fetch('/api/demo/execute', {
+            const fetchFn = window.apiFetch || fetch;
+            fetchFn('/api/demo/execute', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ command: cmd })
-            }).then(res => res.json()).then(data => setFileContent(data.stdout || data.error));
+            }).then(data => {
+                const res = data.json ? data.json() : data;
+                return Promise.resolve(res);
+            }).then(data => setFileContent(data.stdout || data.error));
         }
     }, [viewingFile]);
 

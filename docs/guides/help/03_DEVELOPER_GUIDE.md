@@ -232,4 +232,119 @@ If `cleanup_workspace` is `false` (default for many research scenarios), the dir
 
 ---
 
+## 🔐 11) Extending Authentication & PBAC
+
+The MultiAgentEval console uses an extensible **Auth Provider Pattern**. This allows the harness to stay "Zero-Touch" for local development while providing a clean hook for Enterprise SSO and PBAC integration.
+
+### 11.1 AuthManager Abstraction
+The core auth logic is defined in `eval_runner/console/auth_manager.py`.
+
+- **`AuthManager` (Base)**: An abstract interface for `authenticate()` and `has_permission()`.
+- **`StaticKeyProvider` (Default)**: Uses the `DASHBOARD_API_KEY` environment variable as a Root/Master credential, mapping automatically to the full set of PBAC nodes.
+
+### 11.2 Implementing Custom SSO/PBAC
+To integrate with an Enterprise Identity Provider (e.g., Okta, Azure AD, Ping), subclass `AuthManager` and override the factory method in `auth_manager.py`:
+### 11.2 Extending Authentication & PBAC
+
+For enterprise/SaaS scenarios, the `AuthManager` can be replaced with a custom provider (e.g., Okta, Azure AD).
+
+1. **Subclass AuthManager**: Implement `authenticate` and `has_permission` using granular permission strings.
+2. **Permission Mapping**: Map your external identity claims (e.g., JWT groups) to harness permission nodes (e.g., `Role.EVAL_TRIGGER`).
+3. **Custom Nodes**: Enterprise plugins can define their own strings (e.g., `governance:report:export`) to protect their unique API endpoints.
+
+```python
+from .auth_manager import AuthManager, Role
+
+class OktaAuthProvider(AuthManager):
+    def authenticate(self, token: str):
+        # 1. Verify JWT with Okta
+        # 2. Extract 'groups' or 'roles' claims
+        return {
+            "id": "user@org.com",
+            "permissions": [Role.SCENARIOS_READ, Role.EVAL_TRIGGER] 
+        }
+
+    def has_permission(self, user: dict, permission_node: str):
+        # In PBAC, check if the specific node is authorized
+        return permission_node in user.get("permissions", [])
+```
+
+### 11.3 Protecting Routes
+Use the `@require_permission` decorator in `routes.py` with granular nodes:
+
+```python
+from .auth_manager import Role
+from .auth_manager import require_permission # Re-imported from manager in routes.py
+
+@core_bp.route("/admin/settings")
+@require_permission(Role.SYSTEM_CONFIG)
+def admin_settings():
+    return "Sensitive Data"
+```
+
+---
+
+## 🔐 12) Security & Artifact Integrity
+
+The harness uses an **ED25519-based signing protocol** to ensure the integrity of evaluation artifacts.
+
+### 12.1 Signing Workflow
+- **Key Generation**: If `AES_PRIVATE_KEY` is missing from `.env`, the engine auto-generates a key in `.aes/keys/`.
+- **Manifest Signing**: The `ArtifactPlugin` generates an `audit_manifest.json` for every run, containing hashes of all traces and reports, signed by the system's private key.
+- **Verification**: Use `multiagent-eval verify --path <trace>` to validate the signature against the public key.
+
+### 12.2 CI/CD Hard Gates
+The `gate` command enforces these signatures in pipeline environments, preventing unverified or tampered results from passing the build.
+
+---
+
+## 🏗️ 13) JIT-Babel UI Hydration
+
+Custom UI modules (Story Demos, Adversarial Visualizations) are loaded dynamically via JIT-Babel. To ensure these modules can interact with the protected API, they **must** follow the hydration (UI loading) protocol.
+
+### 13.1 The `apiFetch` Prop
+Every custom component rendered by the Visual Suite receives an `apiFetch` prop. This is a pre-configured, authenticated `fetch` wrapper that includes the necessary PBAC headers.
+
+**Requirement**: Do NOT use raw `fetch` or `axios` in custom modules. Always use the provided prop.
+
+```jsx
+const MyCustomDemo = ({ apiFetch }) => {
+    const [data, setData] = React.useState(null);
+
+    React.useEffect(() => {
+        // Use the authenticated wrapper provided by the suite
+        apiFetch("/api/my-data")
+            .then(res => res.json())
+            .then(setData);
+    }, [apiFetch]);
+
+    return <div>{data ? "Loaded" : "Loading..."}</div>;
+};
+```
+
+### 13.2 Embedding the Debugger
+If your custom module embeds the `VisualDebugger`, you **must** propagate the `apiFetch` prop to it:
+
+```jsx
+<VisualDebugger 
+    runId="my-run-id" 
+    apiFetch={apiFetch} 
+/>
+```
+
+Failure to propagate this prop will result in `401 Unauthorized` errors when the debugger attempts to fetch trace events.
+
+---
+
+## 🌐 13) JIT Hydration & Story Modules
+
+The Visual Suite uses **JIT-Babel** to dynamically load React components (Story Modules) like `Demo.jsx` or `LoanDemo.jsx`.
+
+### 13.1 `window.apiFetch`
+Because the backend uses **Permission-Based Access Control (PBAC)**, standard `fetch` calls from Story Modules will fail with a 401/403.
+- All Story Modules **MUST** use `window.apiFetch`.
+- `apiFetch` automatically injects the necessary security headers and handles the auth-refresh handshake.
+
+---
+
 For internal logic of utilities like `doctor` or `quickstart`, see the corresponding files in `eval_runner/`.

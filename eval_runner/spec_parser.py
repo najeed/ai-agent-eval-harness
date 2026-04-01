@@ -65,7 +65,7 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
 
         if "overview" in header:
             scenario["description"] = body
-        elif "tasks" in header:
+        elif "tasks" in header or "test cases" in header:
             # First, check if there are actual ### headers defined
             if "###" in body:
                 # Find all H3 headers in the tasks section
@@ -76,9 +76,18 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                     end_pos = task_headers[i + 1].start() if i + 1 < len(task_headers) else len(body)
 
                     task_body = body[start_pos:end_pos].strip()
+                    
+                    # Metadata Stripping: Extract (Expect: ...) or (Goal: ...)
+                    expect_match = re.search(r"\((?:Expect|Goal):\s*(.*?)\)", task_body, re.IGNORECASE)
+                    expected_outcome = expect_match.group(1).strip() if expect_match else None
+                    if expect_match:
+                        task_body = task_body.replace(expect_match.group(0), "").strip()
+
                     node = {
                         "id": f"task-{len(scenario['workflow']['nodes']) + 1}",
+                        "title": task_title,
                         "task_description": task_body or task_title,
+                        "expected_outcome": expected_outcome,
                     }
                     scenario["workflow"]["nodes"].append(node)
                     # Simple linear edges by default from parser
@@ -88,17 +97,20 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                             "to": node["id"]
                         })
             else:
-                # No structured tasks found - trigger LLM synthesis for real implementation
-                import asyncio
-                try:
-                    synthesized = asyncio.run(synthesize_tasks_from_prd(markdown_text))
-                    for i, task in enumerate(synthesized):
+                # Fallback: Try to parse as bullet points if no H3 found
+                bullet_tasks = re.findall(r"^\s*-\s*(.*)", body, re.MULTILINE)
+                if bullet_tasks:
+                    for i, task_text in enumerate(bullet_tasks):
+                        # Strip (Expect: ...) from bullet points too
+                        expect_match = re.search(r"\((?:Expect|Goal):\s*(.*?)\)", task_text, re.IGNORECASE)
+                        expected_outcome = expect_match.group(1).strip() if expect_match else None
+                        if expect_match:
+                             task_text = task_text.replace(expect_match.group(0), "").strip()
+
                         node = {
-                            "id": task.get("task_id") or f"task-{i+1}",
-                            "task_description": task.get("description") or task.get("title") or "No description",
-                            "expected_outcome": task.get("expected_outcome"),
-                            "required_tools": task.get("required_tools", []),
-                            "success_criteria": task.get("success_criteria", [])
+                            "id": f"task-{len(scenario['workflow']['nodes']) + 1}",
+                            "task_description": task_text,
+                            "expected_outcome": expected_outcome
                         }
                         scenario["workflow"]["nodes"].append(node)
                         if i > 0:
@@ -106,13 +118,33 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                                 "from": scenario["workflow"]["nodes"][-2]["id"],
                                 "to": node["id"]
                             })
-                except Exception as e:
-                    print(f"   [SpecParser] Critical: LLM Synthesis failed and no manual tasks found: {e}")
-                    # Fallback to a single empty node to keep the scenario valid
-                    scenario["workflow"]["nodes"].append({
-                        "id": "task-1",
-                        "task_description": "Initial task (Generated as fallback)",
-                    })
+                else:
+                    # No structured tasks found - trigger LLM synthesis for real implementation
+                    import asyncio
+                    try:
+                        synthesized = asyncio.run(synthesize_tasks_from_prd(markdown_text))
+                        for i, task in enumerate(synthesized):
+                            node = {
+                                "id": task.get("task_id") or f"task-{len(scenario['workflow']['nodes']) + 1}",
+                                "title": task.get("title") or "Synthesized Task",
+                                "task_description": task.get("description") or task.get("title") or "No description",
+                                "expected_outcome": task.get("expected_outcome"),
+                                "required_tools": task.get("required_tools", []),
+                                "success_criteria": task.get("success_criteria", [])
+                            }
+                            scenario["workflow"]["nodes"].append(node)
+                            if len(scenario["workflow"]["nodes"]) > 1:
+                                scenario["workflow"]["edges"].append({
+                                    "from": scenario["workflow"]["nodes"][-2]["id"],
+                                    "to": node["id"]
+                                })
+                    except Exception as e:
+                        print(f"   [SpecParser] Critical: LLM Synthesis failed and no manual tasks found: {e}")
+                        # Fallback to a single empty node to keep the scenario valid
+                        scenario["workflow"]["nodes"].append({
+                            "id": "task-1",
+                            "task_description": "Initial task (Generated as fallback)",
+                        })
         elif "topology" in header:
             topology = {}
             for t_line in lines[1:]:

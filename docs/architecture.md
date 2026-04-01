@@ -185,16 +185,19 @@ The following mitigations are enforced at the core level:
 | 6 | Fork Bomb | `MAX_FORK_DEPTH = 3`, `MAX_FORK_BREADTH = 5` enforced in `SessionManager` | `config.py` |
 | 7 | RCE via Repro Scripts | Scripts output as inert `.txt`; `os.system`/`subprocess` strings stripped | `reporting_plugin.py` |
 | 8 | Prototype Pollution | `EvaluationContext`/`TurnContext` are `frozen` dataclasses; nested dicts wrapped in `MappingProxyType`; history stored as `tuple` | `context.py` |
-| 9 | Plugin GUI Hijacking | JWT-based **Secure Handoff** (60s tokens) for all Enterprise routes | `auth.py`, `App.jsx` |
+| 9 | Plugin GUI Hijacking | `AuthManager` Provider Pattern with secure, server-side session cookies (HttpOnly) | `auth_manager.py`, `app.py`, `App.jsx` |
+| 10 | 401 Exfiltration | Centralized `apiFetch` with automatic 401 interception and Security Gateway redirection | `App.jsx` |
 
-## Secure GUI Handoff Architecture
+## Secure PBAC & Session Architecture
 
-The Integrated Visual Suite uses a **Token-Exchange Protocol** to ensure Enterprise features are never exposed to unauthorized web requests:
+The Integrated Visual Suite uses a **Permission-Based Access Control (PBAC)** model to ensure Enterprise features are protected via granular security nodes:
 
-1. **Discovery**: The Flask backend exposes core and plugin routes via `/api/nav` with metadata (`type: internal | external | component`).
-2. **Handoff**: For internal routes, the React SPA uses standard routing. For `component` types, it renders a **Sandboxed Iframe**.
-3. **Security**: Plugin iframes are constrained via `sandbox="allow-scripts allow-forms allow-popups"` to prevent top-level session hijacking.
-4. **Communication**: Components communicate with the core UI via `window.postMessage` using origin-validated listeners for sanctioned actions like `NOTIFY`.
+1. **Auth Provider**: The backend utilizes an extensible `AuthManager` (Default: `StaticKeyProvider`).
+2. **Granular Permission Nodes**: Security is enforced at the node level (e.g., `scenarios:read`, `eval:trigger`) rather than rigid roles, allowing for custom enterprise role mapping.
+3. **Session Establishment**: The `/api/auth/login` endpoint initializes a secure, server-side Flask session upon valid credential verification.
+4. **Cookie Governance**: Authentication is maintained via `HttpOnly` session cookies, mitigating CSRF and XSS-based token theft.
+5. **Security Gateway**: The React frontend interceptors (via `apiFetch`) automatically trigger the 'Security Gateway' (Login Modal) upon 401 Unauthorized responses.
+6. **Iframe Constraints**: Plugin iframes are constrained via `sandbox="allow-scripts allow-forms allow-popups"` to prevent top-level session hijacking.
 
 ## Visual Suite: React Flow Implementation
 
