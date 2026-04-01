@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+# Ensure environment variables are loaded before ANY other imports (R6: Environment Portability)
+load_dotenv()
+
 import os
 import hashlib
 import flask
@@ -5,15 +9,22 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from .routes import register_core_routes, core_bp
 from .auth import auth_bp
-from .auth_manager import Role, require_permission
+from .auth_manager import Permission, require_permission
 from .demo_agent import demo_bp
 from eval_runner.plugins import manager
 from .. import config
 
+print(f"--- [v1.2.3-BOOT] Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})", flush=True)
 
 def create_app():
-    # Set static_folder to the visual debugger UI directory
-    ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ui", "visual-debugger"))
+    # Eager Hydration: Ensure plugins and scenarios are loaded before the first request
+    # This eliminates the "0 scenarios" state on initial load.
+    manager.load_plugins()
+    from eval_runner.catalog import ScenarioCatalog
+    ScenarioCatalog.get_instance().check_for_updates(force=True)
+
+    # Set static_folder using the project root for absolute reliability
+    ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
     app = Flask(__name__, static_folder=ui_path, static_url_path="")
     
     # Ensure session persistence (v1.2.3 Stabilization)
@@ -27,6 +38,7 @@ def create_app():
     # Hardened API Error Handlers (Prevents "Unexpected token <" regressions)
     @app.errorhandler(404)
     def handle_404(e):
+        print(f"   [Trace] 404 Error - Path: {flask.request.path}", flush=True)
         return flask.jsonify({"error": "Resource Not Found: The API endpoint requested is invalid.", "status": 404}), 404
 
     @app.errorhandler(405)
@@ -72,11 +84,12 @@ def create_app():
             item['path'] = core_paths[item['id']]
 
     # Endpoint to serve the unified navigation menu (API Priority)
-    @app.route("/api/nav", methods=["GET"])
-    @require_permission(Role.DOCS_READ)
+    app.config["NAV_REGISTRY"] = nav_registry
+    
+    @app.route("/api/nav")
     def get_nav():
-        import flask
-        return flask.jsonify({"nav": nav_registry})
+        # Add dynamic markers if needed (e.g. active states)
+        return flask.jsonify(app.config["NAV_REGISTRY"])
 
     # Frontend Catch-all Routes (Define LAST to prevent API masking)
     @app.route("/", defaults={'path': ''})
@@ -89,6 +102,7 @@ def create_app():
     @app.route("/docs")
     @app.route("/docs/api")
     def index(path=''):
+        print(f"DEBUG: SPA Navigation - Hijacking industrial route: {flask.request.path}")
         return send_from_directory(app.static_folder, "index.html")
 
     return app

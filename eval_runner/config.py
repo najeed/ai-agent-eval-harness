@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 # Load environment variables from .env file if it exists
 load_dotenv()
 
-PROJECT_ROOT = Path(__file__).parent.parent
+# Absolute Authoritative Project Root (supports environment override for test isolation)
+PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent))).resolve()
 
 def _get_project_version() -> str:
     """Safely extract version from pyproject.toml (Industrial Standard)."""
@@ -59,7 +60,7 @@ LOG_REDIRECT_PATH = get_safe_tmp_dir() / "tool_logs"
 AGENT_API_URLS = [url.strip() for url in os.getenv("AGENT_API_URLS", os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")).split(",")]
 # Legacy support for single-endpoint modules
 AGENT_API_URL = AGENT_API_URLS[0] if AGENT_API_URLS else "http://localhost:5001/execute_task"
-EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "5"))
+EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "10"))
 MAX_ENGINE_ATTEMPTS = int(os.getenv("MAX_ENGINE_ATTEMPTS", "50"))
 DEFAULT_INDUSTRY = os.getenv("DEFAULT_INDUSTRY", "telecom")
 
@@ -159,6 +160,10 @@ ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"
 # REQUIRED for production. If not set, protected routes will return 501.
 # See: docs/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
+
+# Industrial Feature Toggles (v1.2.3-ULTIMATE)
+DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
+
 # Throttle between agent turns (seconds) to prevent resource exhaustion
 # and satisfy rate-limiting requirements in sensitive industrial sectors.
 EVAL_TURN_THROTTLE = float(os.getenv("EVAL_TURN_THROTTLE", "0.0"))

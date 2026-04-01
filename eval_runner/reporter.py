@@ -25,10 +25,8 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
     else:
         report_dir = config.TRAJECTORIES_DIR
 
-    report_dir.mkdir(parents=True, exist_ok=True)
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    
+    timestamp = datetime.now().astimezone().strftime("%Y%m%d_%H%M%S")
+    iso_timestamp = datetime.now().astimezone().isoformat()
     # v1.2 meta vs legacy
     metadata_block = scenario.get("metadata", {})
     scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
@@ -42,12 +40,15 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
             "scenario_id": scenario_id,
             "title": title,
             "industry": industry,
-            "timestamp": timestamp,
+            "timestamp": iso_timestamp,
         },
         "results": results,
     }
 
     filepath = report_dir / filename
+    # Industrial Atomicity: Ensure directory exists before write (Resolves FileNotFoundError)
+    report_dir.mkdir(parents=True, exist_ok=True)
+    
     from .trace_utils import AESJsonEncoder
     with open(filepath, "w") as f:
         json.dump(output, f, indent=2, cls=AESJsonEncoder)

@@ -8,9 +8,18 @@ Refactored to use modular handlers for better maintainability.
 import argparse
 import os
 import sys
+import io
 import asyncio
 from pathlib import Path
 from . import __version__
+from .handlers import scenarios as h
+
+# Industrial Encoding Bridge (v1.2.3-ULTIMATE)
+# Forces UTF-8 for stdout/stderr to support high-fidelity Unicode symbols across Win/Linux/Unix.
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 # Suppress HF Hub unauthenticated request and symlink warnings
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
@@ -151,6 +160,7 @@ Utilities & Environment:
     aes_sub = aes_parser.add_subparsers(dest="aes_command")
     aes_val = aes_sub.add_parser("validate", help="Validate a scenario file against the AES JSON schema")
     aes_val.add_argument("--path", required=True, help="Path to the scenario JSON file to validate")
+    aes_val.add_argument("--export", help="Path to save the validated AES.YAML variant")
 
     aes_add = aes_sub.add_parser("add-standard", help="Register a new industry standard to the local AES manifest")
     aes_add.add_argument("--id", required=True, help="Unique identifier for the standard (e.g., standard-v2)")

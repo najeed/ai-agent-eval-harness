@@ -36,9 +36,17 @@ def handle_aes_validate(args):
                     data = json.load(f)
 
             validate(instance=data, schema=schema, resolver=resolver)
-            print(f"✅ {f_path.name}: Valid (v1.2)")
+            print(f"✔ {f_path.name}: Valid (AES v1.2-STABLE)")
+
+            # Industrial Export Logic (v1.2.3-ULTIMATE)
+            if getattr(args, 'export', None):
+                export_path = Path(args.export)
+                export_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(export_path, "w", encoding="utf-8") as yf:
+                    yaml.safe_dump(data, yf, sort_keys=False, indent=2)
+                print(f"⚙ Exported stabilized AES.YAML to: {export_path}")
         except Exception as e:
-            print(f"❌ {f_path.name}: Invalid - {str(e)}")
+            print(f"✘ {f_path.name}: Invalid - {str(e)}")
 
 def handle_inspect(args):
     """Handler for 'inspect' command."""

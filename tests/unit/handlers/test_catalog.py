@@ -6,6 +6,12 @@ from eval_runner import catalog
 
 ScenarioCatalog = catalog.ScenarioCatalog
 
+@pytest.fixture(autouse=True)
+def reset_catalog():
+    ScenarioCatalog.clear_instance()
+    yield
+    ScenarioCatalog.clear_instance()
+
 
 def test_catalog_indexing(tmp_path):
     # Setup mock industries directory
@@ -30,8 +36,8 @@ def test_catalog_indexing(tmp_path):
 
     with open(index_file, "r") as f:
         data = json.load(f)
-        assert len(data) == 1
-        assert data[0]["id"] == "scen_1"
+        assert len(data["scenarios"]) == 1
+        assert data["scenarios"][0]["id"] == "scen_1"
 
 
 def test_catalog_search(tmp_path):

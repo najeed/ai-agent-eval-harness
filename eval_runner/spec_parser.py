@@ -87,8 +87,13 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                         "id": f"task-{len(scenario['workflow']['nodes']) + 1}",
                         "title": task_title,
                         "task_description": task_body or task_title,
-                        "expected_outcome": expected_outcome,
                     }
+                    if expected_outcome:
+                        node["expected_outcome"] = {
+                            "type": "typed_value",
+                            "data_type": "string",
+                            "value": expected_outcome
+                        }
                     scenario["workflow"]["nodes"].append(node)
                     # Simple linear edges by default from parser
                     if len(scenario["workflow"]["nodes"]) > 1:
@@ -110,8 +115,13 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                         node = {
                             "id": f"task-{len(scenario['workflow']['nodes']) + 1}",
                             "task_description": task_text,
-                            "expected_outcome": expected_outcome
                         }
+                        if expected_outcome:
+                            node["expected_outcome"] = {
+                                "type": "typed_value",
+                                "data_type": "string",
+                                "value": expected_outcome
+                            }
                         scenario["workflow"]["nodes"].append(node)
                         if i > 0:
                             scenario["workflow"]["edges"].append({
@@ -128,10 +138,15 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                                 "id": task.get("task_id") or f"task-{len(scenario['workflow']['nodes']) + 1}",
                                 "title": task.get("title") or "Synthesized Task",
                                 "task_description": task.get("description") or task.get("title") or "No description",
-                                "expected_outcome": task.get("expected_outcome"),
                                 "required_tools": task.get("required_tools", []),
                                 "success_criteria": task.get("success_criteria", [])
                             }
+                            if task.get("expected_outcome"):
+                                node["expected_outcome"] = {
+                                    "type": "typed_value",
+                                    "data_type": "string",
+                                    "value": str(task.get("expected_outcome"))
+                                }
                             scenario["workflow"]["nodes"].append(node)
                             if len(scenario["workflow"]["nodes"]) > 1:
                                 scenario["workflow"]["edges"].append({

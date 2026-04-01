@@ -115,10 +115,11 @@ def test_plugin_blueprint_registration(client):
 def test_evaluate_endpoint(client):
     """Test that the evaluation endpoint is functional."""
     # Use the sample agent demo scenario which is guaranteed to exist
-    response = client.post("/api/evaluate", json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"})
-    assert response.status_code == 200
-    data = response.get_json()
-    assert data["status"] == "started"
+    with patch("pathlib.Path.exists", return_value=True):
+        response = client.post("/api/evaluate", json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"})
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["status"] == "started"
 
     # Test error case
     response = client.post("/api/evaluate", json={})
@@ -163,8 +164,11 @@ def test_list_runs_with_query(client, tmp_path):
 def test_evaluate_error_cases(client):
     """Test error handling in evaluate endpoint."""
     # Scenario not found
-    response = client.post("/api/evaluate", json={"path": "non_existent.json"})
-    assert response.status_code == 404
+    with patch("pathlib.Path.exists", return_value=False), \
+         patch("eval_runner.console.routes.ScenarioCatalog.get_instance") as mock_get_inst:
+        mock_get_inst.return_value.get_absolute_path.return_value = None
+        response = client.post("/api/evaluate", json={"path": "non_existent.json"})
+        assert response.status_code == 404
 
     # Internal error (e.g., loader fails)
     with patch("eval_runner.loader.load_scenario", side_effect=Exception("Load error")):

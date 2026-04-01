@@ -65,7 +65,7 @@ def test_list_scenarios_filtering(client, monkeypatch, tmp_path, auth_headers):
     """Verifies Console API scenarios filtering."""
     # Mock catalog search to avoid full indexing
     from eval_runner.catalog import ScenarioCatalog
-    def mock_search(self, query=None, industry=None, difficulty=None):
+    def mock_search(self, query=None, industry=None, difficulty=None, limit=50, offset=0):
         return [{"id": "s1", "industry": industry or "any"}]
     
     monkeypatch.setattr(ScenarioCatalog, "load_index", lambda x: None)

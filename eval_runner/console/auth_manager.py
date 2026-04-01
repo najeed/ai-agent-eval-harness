@@ -2,37 +2,37 @@ import os
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict, Union
 
-class Role:
+class Permission:
     """
-    Standard Permission Nodes for the AES Evaluation Harness.
+    Standard Granular Permission Nodes for the AES Evaluation Harness (Strict PBAC).
     Enterprise plugins can define custom strings (e.g., "billing:admin").
     """
-    # Read-Only Nodes
+    # 1. Read-Only Nodes
     SCENARIOS_READ = "scenarios:read"
     RUNS_READ      = "runs:read"
     DOCS_READ      = "docs:read"
     DEBUG_READ     = "debugger:read"
 
-    # Operator Nodes (Execution)
+    # 2. Operator Nodes (Execution)
     EVAL_TRIGGER   = "eval:trigger"
     DEMO_EXECUTE   = "demo:execute"
     INDEX_REFRESH  = "index:refresh"
     DEBUG_EVENT    = "debugger:event"
 
-    # Admin Nodes (Destructive / Config)
+    # 3. Admin Nodes (Destructive / Config)
     SCENARIOS_WRITE  = "scenarios:write"
     SCENARIOS_DELETE = "scenarios:delete"
     DEBUG_RESET      = "debugger:reset"
     SYSTEM_CONFIG    = "system:config"
 
-    # Legacy Compatibility Aliases (Standard Archetypes)
+    # PBAC Collections (Standard Profiles)
     @classmethod
-    def READER(cls) -> List[str]:
+    def ALL_READ(cls) -> List[str]:
         return [cls.SCENARIOS_READ, cls.RUNS_READ, cls.DOCS_READ, cls.DEBUG_READ]
 
     @classmethod
     def OPERATOR(cls) -> List[str]:
-        return cls.READER() + [cls.EVAL_TRIGGER, cls.DEMO_EXECUTE, cls.INDEX_REFRESH, cls.DEBUG_EVENT]
+        return cls.ALL_READ() + [cls.EVAL_TRIGGER, cls.DEMO_EXECUTE, cls.INDEX_REFRESH, cls.DEBUG_EVENT]
 
     @classmethod
     def ADMIN(cls) -> List[str]:
@@ -43,7 +43,7 @@ class AuthManager(ABC):
     
     @abstractmethod
     def authenticate(self, credentials: str) -> Optional[Dict]:
-        """Verify credentials and return a user profile (id, name, roles, permissions)."""
+        """Verify credentials and return a user profile (id, name, permissions)."""
         pass
 
     @abstractmethod
@@ -64,26 +64,26 @@ class StaticKeyProvider(AuthManager):
         return {
             "id": "root-admin",
             "name": "System Administrator",
-            "roles": ["admin"],
-            "permissions": Role.ADMIN(),
+            "permissions": Permission.ADMIN(),
             "type": "static-root"
         }
 
     def has_permission(self, user: Dict, permission_node: str) -> bool:
-        # Static Root Key always has all permissions
-        # In PBAC, we check if the requested node is in the user's permission list
+        """Strict PBAC implementation: Verifies granular permissions node without RBAC fallback."""
         user_perms = user.get("permissions", [])
-        return permission_node in user_perms or "admin" in user.get("roles", [])
+        # Authoritative PBAC check
+        return permission_node in user_perms
 
 def get_auth_provider() -> AuthManager:
     """Factory method to retrieve the active Auth Provider."""
     from .. import config
+    # Ensure environment is loaded for the API key
     return StaticKeyProvider(config.DASHBOARD_API_KEY)
 
 def require_permission(permission_node: str):
     """
     Unified decorator for Session-based (Browser) and Header-based (CLI) Auth.
-    Supports granular permission nodes.
+    Supports granular permission nodes via Strict PBAC logic.
     """
     from flask import request, session, jsonify
     from functools import wraps
@@ -101,7 +101,8 @@ def require_permission(permission_node: str):
                 return jsonify({"error": f"Forbidden: Permission '{permission_node}' required"}), 403
             
             # 2. Check Header (CLI / Programmatic)
-            api_key = request.headers.get("X-AES-API-KEY")
+            api_key = request.headers.get("X-AES-API-KEY") or request.headers.get("X-API-Key")
+            
             if api_key:
                 user = provider.authenticate(api_key)
                 if user:

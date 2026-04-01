@@ -5,6 +5,12 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 from eval_runner.catalog import ScenarioCatalog, list_scenarios
 
+@pytest.fixture(autouse=True)
+def reset_catalog():
+    ScenarioCatalog.clear_instance()
+    yield
+    ScenarioCatalog.clear_instance()
+
 def test_build_index_no_root(tmp_path):
     index_path = tmp_path / "index.json"
     cat = ScenarioCatalog(index_path=str(index_path))
@@ -12,6 +18,7 @@ def test_build_index_no_root(tmp_path):
     assert cat.scenarios == []
 
 def test_build_index_cache_hit(tmp_path):
+    ScenarioCatalog.clear_instance()
     industries_dir = tmp_path / "industries"
     scen_dir = industries_dir / "fin/scenarios"
     scen_dir.mkdir(parents=True)
@@ -51,12 +58,14 @@ def test_check_for_updates_no_industries(tmp_path):
     # Set root_dir to an empty temp path
     cat.root_dir = tmp_path / "empty_catalog"
     cat.root_dir.mkdir()
-    assert cat.check_for_updates() is False
+    # Force check to bypass 30s debounce
+    assert cat.check_for_updates(force=False) is False
 
 def test_load_index_sync_mismatch(tmp_path):
+    ScenarioCatalog.clear_instance()
     index_path = tmp_path / "index.json"
     with open(index_path, "w") as f:
-        json.dump([{"id": "old", "path": "p1"}], f)
+        json.dump({"scenarios": [{"id": "old", "path": "p1"}], "metadata": {}}, f)
         
     cat = ScenarioCatalog(index_path=str(index_path))
     
@@ -91,7 +100,7 @@ def test_list_scenarios_branches(capsys):
 
 def test_search_auto_load(tmp_path):
     index_path = tmp_path / "index.json"
-    cat_data = [{"id": "s1", "title": "t1", "industry": "fin", "description": "d", "tags": []}]
+    cat_data = {"scenarios": [{"id": "s1", "title": "t1", "industry": "fin", "description": "d", "tags": []}], "metadata": {}}
     with open(index_path, "w") as f:
         json.dump(cat_data, f)
     cat = ScenarioCatalog(index_path=str(index_path))

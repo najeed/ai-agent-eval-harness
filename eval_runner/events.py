@@ -55,7 +55,7 @@ class Event:
     def __init__(self, name: str, data: Dict[str, Any]):
         self.name = name
         self.data = data
-        self.timestamp = datetime.now().isoformat() + "Z"
+        self.timestamp = datetime.now().astimezone().isoformat()
 
     def to_dict(self) -> Dict[str, Any]:
         return {"event": self.name, "timestamp": self.timestamp, **self.data}

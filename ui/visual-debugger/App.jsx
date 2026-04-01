@@ -770,6 +770,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
     const [isLive, setIsLive] = useState(!runId || runId === 'live');
     const [viewMode, setViewMode] = useState('flow');
     const [rootCause, setRootCause] = useState(null);
+    const lastLoadedId = React.useRef(null);
 
     // Sync live/historical mode whenever runId prop changes
     useEffect(() => {
@@ -838,6 +839,8 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
     };
 
     useEffect(() => {
+        if (lastLoadedId.current === runId && !highlightFailure) return;
+        lastLoadedId.current = runId;
         loadTrace(runId);
     }, [runId, highlightFailure]);
 
@@ -994,7 +997,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                         <div className="max-w-md">
                             <h3 className="text-2xl font-black text-white mb-2">Debugger Offline</h3>
                             <p className="text-slate-500 text-sm leading-relaxed">
-                                Please select a historical run from the **Reports** view or trigger a live evaluation from the **Scenario Explorer** to begin debugging.
+                                Please select a historical run from the <b>Reports & Traces</b> view or trigger a live evaluation from the <b>Scenarios</b> view to begin debugging.
                             </p>
                         </div>
                     </div>
@@ -1064,15 +1067,29 @@ const ReportsView = ({ onViewReport, searchQuery = "", apiFetch }) => {
                     <h2 className="text-2xl font-bold text-white mb-2">Reports & Traces</h2>
                     <p className="text-slate-500 text-sm">Review historical execution logs and analyzed agent trajectories.</p>
                 </div>
-                <div className="relative">
-                    <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input
-                        type="text"
-                        placeholder="Filter historical runs by ID or scenario name..."
-                        className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                    />
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => {
+                            if (confirm("Are you sure you want to permanently prune all historical trace logs?")) {
+                                apiFetch('/api/cleanup-runs', { method: 'POST' })
+                                    .then(res => showToast(res.message))
+                                    .catch(err => showToast(err.message, 'error'));
+                            }
+                        }}
+                        className="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl py-2 px-4 text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all"
+                    >
+                        <Icon name="plus" size={14} className="rotate-45" /> Cleanup Traces
+                    </button>
+                    <div className="relative">
+                        <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                        <input
+                            type="text"
+                            placeholder="Filter historical runs by ID or scenario name..."
+                            className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -1399,6 +1416,27 @@ const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo, apiFetch }
                     </div>
                 </div>
             )}
+
+            {/* System Paths Transparency (v1.2.3) */}
+            <div className="pt-8 border-t border-slate-800 animate-in fade-in duration-700">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Industrial System Paths</h3>
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="bg-[#161b22]/50 border border-slate-800/50 rounded-2xl p-5 hover:border-blue-500/20 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Icon name="terminal" size={14} className="text-blue-500" />
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Execution Traces (JSONL)</span>
+                        </div>
+                        <p className="text-[10px] font-mono text-slate-500 break-all select-all">{systemInfo.runs_dir || 'Calculating authority...'}</p>
+                    </div>
+                    <div className="bg-[#161b22]/50 border border-slate-800/50 rounded-2xl p-5 hover:border-emerald-500/20 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Icon name="reports" size={14} className="text-emerald-500" />
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Visual Trajectories (Reports)</span>
+                        </div>
+                        <p className="text-[10px] font-mono text-slate-500 break-all select-all">{systemInfo.trajectories_dir || 'Calculating authority...'}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
@@ -1422,11 +1460,10 @@ const App = () => {
     // Initialize global reference for JIT Story Modules (Adversarial/Compliance Layers)
     useEffect(() => {
         window.apiFetch = apiFetch;
-        // Also ensure VisualDebugger is available immediately for Lazy Loaders
-    }, []);
+    }, [apiFetch]);
 
-    // Hardened PBAC Fetch Utility (Industrial-Grade)
-    const apiFetch = async (url, options = {}) => {
+    // Hardened PBAC Fetch Utility (Industrial-Grade Memoized v1.2.3)
+    const apiFetch = React.useCallback(async (url, options = {}) => {
         const start = Date.now();
         const entry = { url, method: options.method || 'GET', timestamp: start };
 
@@ -1468,34 +1505,46 @@ const App = () => {
             console.error(`[API Error] ${url}:`, err);
             throw err;
         }
-    };
+    }, [authRequired]);
 
-    // JIT Script Loader for Babel-based modules
-    const loadBabelScript = (src, checkGlobal) => {
-        return new Promise((resolve, reject) => {
-            if (window[checkGlobal]) return resolve();
+    // Authoritative JIT Script Loader (Transpilation Persistence v1.2.3-ULTIMATE)
+    const loadBabelScript = async (src, checkGlobal) => {
+        if (window[checkGlobal]) return;
 
-            console.log(`[JIT Loader] Loading module: ${src}`);
+        console.log(`[JIT Loader] Hydrating industrial module: ${src}`);
+        try {
+            const response = await fetch(src);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const code = await response.text();
+
+            // Authoritative Babel Transpilation (Standalone Mode)
+            const transpiled = window.Babel.transform(code, {
+                presets: ['env', 'react'],
+                filename: src
+            }).code;
+
             const script = document.createElement('script');
-            script.type = 'text/babel';
-            script.dataset.presets = 'env,react';
-            script.src = src;
-            script.async = true;
+            script.text = transpiled;
+            document.body.appendChild(script);
 
-            script.onload = () => {
-                // Babel transpiles script tags asynchronously. 
-                // We poll for the global to become available.
+            // Wait for Global Authority to establish
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
                 const interval = setInterval(() => {
                     if (window[checkGlobal]) {
                         clearInterval(interval);
                         resolve();
                     }
+                    if (++attempts > 100) {
+                        clearInterval(interval);
+                        reject(new Error(`Authority timeout for ${src}`));
+                    }
                 }, 50);
-                setTimeout(() => { clearInterval(interval); reject(new Error(`Timeout loading ${src}`)); }, 10000);
-            };
-            script.onerror = () => reject(new Error(`Failed to load ${src}`));
-            document.body.appendChild(script);
-        });
+            });
+        } catch (err) {
+            console.error(`[JIT Loader] Authority Failed: ${src}`, err);
+            throw err;
+        }
     };
 
     const handleAuthSuccess = () => {
@@ -1518,12 +1567,14 @@ const App = () => {
 
     useEffect(() => {
         if (activeTab === 'demo' && !isDemoReady) {
+            apiFetch('/api/demo/reset', { method: 'POST' }).catch(() => { });
             loadBabelScript('/DemoHelper.jsx', 'DemoHelper')
                 .then(() => loadBabelScript('/Demo.jsx', 'Demo'))
                 .then(() => setIsDemoReady(true))
                 .catch(err => showToast(`Demo hydration failed: ${err.message}`, 'error'));
         }
         if (activeTab === 'loan_demo' && !isLoanDemoReady) {
+            apiFetch('/api/demo/reset', { method: 'POST' }).catch(() => { });
             loadBabelScript('/LoanDemo.jsx', 'LoanDemo')
                 .then(() => setIsLoanDemoReady(true))
                 .catch(err => showToast(`Loan Demo hydration failed: ${err.message}`, 'error'));
@@ -1569,13 +1620,24 @@ const App = () => {
 
         window.addEventListener('message', handleMessage);
 
-        const path = window.location.pathname;
-        const matched = navItems.find(n => n.path === path || (n.path === '/' && path === ''));
-        if (matched) {
-            setActiveTab(matched.id);
-        } else if (path === '/docs/api') {
-            setActiveTab('api_docs');
-        }
+        const syncPathToTab = () => {
+            const path = window.location.pathname;
+            // Precise Match for Deep Links (v1.2.3 Resilience)
+            const matched = navItems.find(n => (n.path && n.path === path) || (n.path === '/' && (path === '' || path === '/')));
+
+            if (matched) {
+                console.log(`[Router] Authoritative Hydration: Path ${path} -> Tab ${matched.id}`);
+                setActiveTab(matched.id);
+            } else if (path === '/docs/api') {
+                setActiveTab('api_docs');
+            } else if (path.startsWith('/demo/loan')) {
+                setActiveTab('loan_demo');
+            } else if (path.startsWith('/demo')) {
+                setActiveTab('demo');
+            }
+        };
+
+        syncPathToTab();
 
         return () => window.removeEventListener('message', handleMessage);
     }, [navItems, handleNavClick]);

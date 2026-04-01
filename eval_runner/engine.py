@@ -112,7 +112,7 @@ class AgentAdapterRegistry:
         return await adapter(payload, endpoint)
 
 
-async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> list:
+async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None, max_turns: Optional[int] = None) -> list:
     """Entry point for evaluation. Delegates to the Runner strategy."""
     from .runner import DefaultRunner
 

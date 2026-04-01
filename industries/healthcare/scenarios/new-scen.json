@@ -1,0 +1,27 @@
+{
+  "aes_version": 1.2,
+  "metadata": {
+    "id": "new-scen",
+    "name": "New",
+    "compliance_level": "Standard",
+    "industry": "healthcare",
+    "tags": [],
+    "created_at": "2026-04-02T03:59:54.601035"
+  },
+  "description": "",
+  "industry": "healthcare",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "t1",
+        "task_description": "desc",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "win"
+        }
+      }
+    ],
+    "edges": []
+  }
+}

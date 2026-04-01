@@ -12,7 +12,7 @@
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
 [![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/test_security_audit.py)
 
-**MultiAgentEval** bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
+**MultiAgentEval** bridges the "Agentic Reliability Gap" through rigorous verification, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
 
 | Attribute | Specification |
 | :--- | :--- |
@@ -343,7 +343,7 @@ If you cannot install Docker, run these 3 commands in separate terminals:
 
 ## How to Contribute
 
-This is a community-driven project, and we welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on how to add new industries, scenarios, or improve the evaluation engine.
+This is a community-driven project, and we welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on how to add new industries, scenarios, or improve the engine.
 
 Here are ways to get involved:
 
@@ -369,7 +369,7 @@ Thanks to all our contributors! 🙌
 
 ## Licensing and Editions
 
-This project follows an **Open Core** model. The open-source capabilities provide a robust evaluation foundation, while the Enterprise Edition delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
+This project follows an **Open Core** model. The open-source capabilities provide a robust verification foundation, while the Enterprise Edition delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
 
 | Feature Module | Community Edition (OSS) | Enterprise Edition |
 | :--- | :--- | :--- |

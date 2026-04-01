@@ -32,7 +32,7 @@ def test_aes_validation_success(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "✅ valid.aes.yaml: Valid (v1.2)" in captured.out
+    assert "✔ valid.aes.yaml: Valid (AES v1.2-STABLE)" in captured.out
 
 
 def test_aes_validation_failure(tmp_path, capsys):
@@ -48,7 +48,7 @@ def test_aes_validation_failure(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "❌ invalid.aes.yaml: Invalid - 'workflow' is a required property" in captured.out
+    assert "✘ invalid.aes.yaml: Invalid - 'workflow' is a required property" in captured.out
 
 
 def test_aes_validation_with_complexity_level(tmp_path, capsys):
@@ -75,4 +75,4 @@ def test_aes_validation_with_complexity_level(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "✅ complexity.aes.yaml: Valid (v1.2)" in captured.out
+    assert "✔ complexity.aes.yaml: Valid (AES v1.2-STABLE)" in captured.out

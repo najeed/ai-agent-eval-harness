@@ -75,6 +75,7 @@ class PluginManager:
         self.plugins: List[BaseEvalPlugin] = []
         self._plugins = self.plugins  # Alias for diagnostic visibility
         self._loaded = False
+        self._last_load_time = 0
         self._initialized = True
 
     def reset(self):
@@ -82,10 +83,17 @@ class PluginManager:
         self.plugins.clear()
         self._loaded = False
 
-    def load_plugins(self):
-        """Discovers and loads plugins from entry points and persistence."""
-        if self._loaded:
-            return
+    def load_plugins(self, force: bool = False):
+        """Discovers and loads plugins with an industrial 60s TTL debounce."""
+        import time
+        now = time.time()
+        
+        # Performance: Skip scan if loaded within 60s (unless forced)
+        if self._loaded and not force:
+            if now - self._last_load_time < 60:
+                return
+        
+        self._last_load_time = now
 
         # 1. Discover external plugins via entry points (standard install)
         for entry_point in importlib.metadata.entry_points(group="eval_runner.plugins"):
@@ -154,7 +162,7 @@ class PluginManager:
             pass
 
         # 3. Ecosystem Adapters & Internal Plugins (Zero-Touch core discovery)
-        # These are explicitly loaded to ensure a single identity in the Singleton
+        # Authoritative Isolation: Ensure failure in one adapter does not crash the manager
         from eval_runner.adapters.openai import OpenAIAdapterPlugin
         from eval_runner.adapters.gemini import GeminiAdapterPlugin
         from eval_runner.adapters.claude import ClaudeAdapterPlugin
@@ -165,15 +173,18 @@ class PluginManager:
         from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
         from eval_runner.adapters.langchain import LangChainAdapterPlugin
 
-        internal_plugin_classes += [
+        potential_plugins = [
             OpenAIAdapterPlugin, GeminiAdapterPlugin, ClaudeAdapterPlugin,
             OllamaAdapterPlugin, GrokAdapterPlugin, AutoGenAdapterPlugin,
             CrewAIAdapterPlugin, LangGraphAdapterPlugin, LangChainAdapterPlugin
         ]
         
-        for PluginClass in internal_plugin_classes:
-            if not any(isinstance(p, PluginClass) for p in self.plugins):
-                self.plugins.append(PluginClass())
+        for PluginClass in potential_plugins:
+            try:
+                if not any(isinstance(p, PluginClass) for p in self.plugins):
+                    self.plugins.append(PluginClass())
+            except Exception as e:
+                print(f"   [PluginManager] Isolated Failure loading adapter {PluginClass.__name__}: {e}")
 
         self._loaded = True
 
