@@ -1,0 +1,46 @@
+{
+    "history": [
+        {
+            "role": "user",
+            "content": "I want to dispute a charge of $40."
+        },
+        {
+            "role": "agent",
+            "content": {
+                "action": "get_usage_data",
+                "input": {
+                    "customer_id": "cust_123"
+                }
+            }
+        },
+        {
+            "role": "environment",
+            "content": {
+                "status": "success",
+                "data": {
+                    "overages": 40
+                }
+            }
+        },
+        {
+            "role": "agent",
+            "content": "I see the $40 overage. I will apply a credit."
+        },
+        {
+            "role": "agent",
+            "content": {
+                "action": "apply_credit",
+                "input": {
+                    "amount": 40
+                }
+            }
+        },
+        {
+            "role": "environment",
+            "content": {
+                "status": "policy_violation",
+                "message": "Credit exceeds limit"
+            }
+        }
+    ]
+}

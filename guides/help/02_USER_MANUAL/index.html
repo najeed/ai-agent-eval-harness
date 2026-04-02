@@ -1,0 +1,5120 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Enterprise-grade reliability framework for AI agents.">
+      
+      
+        <meta name="author" content="Najeed Khan">
+      
+      
+        <link rel="canonical" href="https://najeed.github.io/ai-agent-eval-harness/guides/help/02_USER_MANUAL/">
+      
+      
+        <link rel="prev" href="../01_QUICK_START/">
+      
+      
+        <link rel="next" href="../03_DEVELOPER_GUIDE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>User Manual - MultiAgentEval</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#user-manual-multiagenteval" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MultiAgentEval
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              User Manual
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01_QUICK_START/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../feature_inventory/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../dataproc-design/" class="md-tabs__link">
+          
+  
+  
+  Dataproc Engine
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../01_EVALUATION_GUIDE/" class="md-tabs__link">
+          
+  
+  
+  Industry Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../04_AES_SPECIFICATION/" class="md-tabs__link">
+          
+  
+  
+  Advanced Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../04_ONBOARDING_TUTORIAL/" class="md-tabs__link">
+          
+  
+  
+  Ecosystem
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00_COMPREHENSIVE_GUIDE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MultiAgentEval
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_QUICK_START/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Manual
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Core Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Core Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗂️ Scenario
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Task
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧰 Tool Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-agent-eval-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 AES (Agent Eval Specification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📏 Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-evaluations-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ▶️ Running Evaluations (CLI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="▶️ Running Evaluations (CLI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evaluate-batch-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 evaluate — batch evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ CLI Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-single-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 run — single scenario
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧩 run — single scenario">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run-trace-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📽️ Run Trace Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adoption-productivity-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Adoption &amp; Productivity Utilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Adoption &amp; Productivity Utilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quickstart-the-60-second-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏃 quickstart — The 60-Second Demo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#console-react-visual-debugger-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🖥️ console — React Visual Debugger GUI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🖥️ console — React Visual Debugger GUI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doctor-environment-validator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 doctor — Environment Validator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-premium-visual-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎨 report — Premium Visual Reporting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-generate-interactive-scaffolding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ scenario generate — Interactive Scaffolding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#record-trace-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⏺ record — Trace Capture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#playground-interactive-experimentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎮 playground — Interactive Experimentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-scenario-catalog-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 list — Scenario Catalog Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lint-quality-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧹 lint — Quality Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-cli-utilities-ux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Advanced CLI Utilities &amp; UX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Advanced CLI Utilities &amp; UX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-scenario-packs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 install — Scenario Packs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analyze-repo-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔬 analyze — Repo Scanning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explain-trace-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🤖 explain — Trace Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visual-scenario-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠️ Visual Scenario Editor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenario-structure-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Scenario Structure (Example)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-industries-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Adding Industries &amp; Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Adding Industries &amp; Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔎 Tip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-topology-multi-agent-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Agent Topology (Multi-Agent Scenarios)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#best-practices-agent-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Best practices (Agent Topology)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠 Tool Definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚨 Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Metrics Explained
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Metrics Explained">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy_compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ policy_compliance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path_parsimony" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧭 path_parsimony
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state_verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 state_verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool_call_correctness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧰 tool_call_correctness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculation_accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📐 calculation_accuracy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planning_quality-root_cause_analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 planning_quality &amp; root_cause_analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consistency_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 consistency_score
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drift-triage-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 Drift &amp; Triage (Advanced)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧠 Drift &amp; Triage (Advanced)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-importing-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌪️ 5.1 Importing Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-state-level-trajectory-triage-how-root-cause-isolation-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📎 Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_DEVELOPER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/writing-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writing Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/running-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/test-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../feature_inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../agent_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cli_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/core_evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Evaluator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataproc Engine
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dataproc Engine
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/user_manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/distribution_manifest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distribution Manifest
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/local_synthesis_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Synthesis Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/data_veracity_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Veracity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/pilot_prioritization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Industry Prioritization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sector Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sector Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/agriculture/agriculture_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agriculture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_2" id="__nav_5_7_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commercial & Clinical
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Commercial & Clinical
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/finance/finance_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/healthcare/healthcare_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Healthcare
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/ecommerce/ecommerce_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E-Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/manufacturing/manufacturing_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manufacturing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_3" id="__nav_5_7_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public Sector
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Public Sector
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/public_sector/demographics/demographics_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demographics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/public_sector/housing/housing_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Housing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/public_sector/labor/labor_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Labor Market
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/public_sector/environment/environment_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/education/education_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Education
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_4" id="__nav_5_7_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastructure & Core
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Infrastructure & Core
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/energy/energy_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Energy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/telecom/telecom_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telecom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/implementation_strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_5" id="__nav_5_7_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Sector & Foundational
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Cross-Sector & Foundational
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/media_entertainment/media_entertainment_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Media & Entertainment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/cross_sector/decision_support_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decision Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/cross_sector/unstructured_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unstructured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/cross_sector/algorithm_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithm Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/cross_sector/industrial_sectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sector Taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7_6" id="__nav_5_7_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Details
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical Details
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/aes_alignment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AES Alignment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/architecture_diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Diagram
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/build_strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/config_management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/data_to_agentdata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Transformation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/framework_arch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/provider_interfaces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/robustness_strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robustness Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataproc-design/scenario_schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scenario Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Industry Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Industry Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_EVALUATION_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02_ADDING_AN_INDUSTRY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding an Industry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_CORE_FUNCTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_AES_SPECIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AES Specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_DRIFT_AND_TRIAGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Triage & Drift
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/LLM_JUDGE_CALIBRATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Judge Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/PYPI_DISTRIBUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PyPI Distribution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../publication_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Publication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ecosystem
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_ONBOARDING_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Onboarding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frameworks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frameworks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/autogen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AutoGen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/crewai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CrewAI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/gemini-multimodal-live/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gemini MultiModal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/gemini-vertex-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gemini Vertex AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/langchain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangChain
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/langgraph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangGraph
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/ollama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ollama
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frameworks/openai-assistants/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Assistants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_WORLD_SHIMS_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    World Shims
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_ADDING_WORLD_SHIMS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding World Shims
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_TRIAGE_ENGINE_AND_VFS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Triage & VFS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_ECOSYSTEM_VERIFICATION_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00_COMPREHENSIVE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comprehensive Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../samples/prd_sample/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PRD Sample
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code of Conduct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Core Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Core Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗂️ Scenario
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Task
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧰 Tool Sandbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-agent-eval-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 AES (Agent Eval Specification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📏 Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-evaluations-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ▶️ Running Evaluations (CLI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="▶️ Running Evaluations (CLI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evaluate-batch-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 evaluate — batch evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ CLI Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-single-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 run — single scenario
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧩 run — single scenario">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run-trace-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📽️ Run Trace Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adoption-productivity-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Adoption &amp; Productivity Utilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Adoption &amp; Productivity Utilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quickstart-the-60-second-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏃 quickstart — The 60-Second Demo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#console-react-visual-debugger-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🖥️ console — React Visual Debugger GUI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🖥️ console — React Visual Debugger GUI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doctor-environment-validator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 doctor — Environment Validator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-premium-visual-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎨 report — Premium Visual Reporting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-generate-interactive-scaffolding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ scenario generate — Interactive Scaffolding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#record-trace-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⏺ record — Trace Capture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#playground-interactive-experimentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎮 playground — Interactive Experimentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-scenario-catalog-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 list — Scenario Catalog Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lint-quality-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧹 lint — Quality Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-cli-utilities-ux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Advanced CLI Utilities &amp; UX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Advanced CLI Utilities &amp; UX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-scenario-packs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 install — Scenario Packs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analyze-repo-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔬 analyze — Repo Scanning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explain-trace-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🤖 explain — Trace Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visual-scenario-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠️ Visual Scenario Editor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenario-structure-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Scenario Structure (Example)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-industries-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Adding Industries &amp; Scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Adding Industries &amp; Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔎 Tip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-topology-multi-agent-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Agent Topology (Multi-Agent Scenarios)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#best-practices-agent-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Best practices (Agent Topology)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠 Tool Definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚨 Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Metrics Explained
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Metrics Explained">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy_compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ policy_compliance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path_parsimony" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧭 path_parsimony
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state_verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 state_verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool_call_correctness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧰 tool_call_correctness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculation_accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📐 calculation_accuracy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planning_quality-root_cause_analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 planning_quality &amp; root_cause_analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consistency_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 consistency_score
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drift-triage-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 Drift &amp; Triage (Advanced)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧠 Drift &amp; Triage (Advanced)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-importing-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌪️ 5.1 Importing Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-state-level-trajectory-triage-how-root-cause-isolation-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📎 Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="user-manual-multiagenteval">🧠 User Manual — MultiAgentEval<a class="headerlink" href="#user-manual-multiagenteval" title="Permanent link">&para;</a></h1>
+<p>This guide is for users who want to run and understand evaluations without diving into internal implementation details.</p>
+<hr />
+<h2 id="table-of-contents">📌 Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#core-concepts">Core Concepts</a></li>
+<li><a href="#running-evaluations-cli">Running Evaluations (CLI)</a></li>
+<li><a href="#scenario-structure-example">Scenario Structure</a></li>
+<li><a href="#metrics-explained">Metrics Explained</a></li>
+<li><a href="#drift-triage-advanced">Drift &amp; Triage (Advanced)</a></li>
+</ol>
+<hr />
+<h2 id="core-concepts">📚 Core Concepts<a class="headerlink" href="#core-concepts" title="Permanent link">&para;</a></h2>
+<h3 id="scenario">🗂️ Scenario<a class="headerlink" href="#scenario" title="Permanent link">&para;</a></h3>
+<p>A scenario is the unit of evaluation. It's a JSON file that defines:</p>
+<ul>
+<li><code>scenario_id</code> — unique identifier</li>
+<li><code>title</code> — human-friendly name</li>
+<li><code>industry</code> — category for grouping</li>
+<li><code>dataset</code> — (optional) path to a synthetic CSV/JSONL dataset to ground the scenario. <strong>Path Decoupling (v1.1+)</strong>: Relative paths (e.g., <code>./data.csv</code>) are resolved relative to the scenario file itself.</li>
+<li><code>tasks</code> — list of tasks to run</li>
+<li><code>tools</code> — mock tool behaviors (optional)</li>
+<li><code>policies</code> — rules and governance checks (optional)</li>
+<li><code>initial_state</code> — starting state (optional)</li>
+</ul>
+<h3 id="task">✅ Task<a class="headerlink" href="#task" title="Permanent link">&para;</a></h3>
+<p>A task is a step in a scenario:</p>
+<ul>
+<li><code>task_id</code></li>
+<li><code>description</code> — the prompt sent to the agent</li>
+<li><code>success_criteria</code> — metrics + thresholds used to determine success</li>
+<li><code>required_tools</code> — which tools the agent should call (optional)</li>
+<li><code>expected_state_changes</code> — expected changes to sandbox state (optional)</li>
+</ul>
+<h3 id="tool-sandbox">🧰 Tool Sandbox<a class="headerlink" href="#tool-sandbox" title="Permanent link">&para;</a></h3>
+<p>The harness uses a sandbox to simulate tool calls and external dependencies. This means:
+- No real API calls are made unless explicitly configured
+- Tool behavior is controlled by the scenario definition
+- Policies can be enforced during tool execution</p>
+<h3 id="aes-agent-eval-specification">🧩 AES (Agent Eval Specification)<a class="headerlink" href="#aes-agent-eval-specification" title="Permanent link">&para;</a></h3>
+<p>AES is a standardized YAML/JSON schema for defining benchmarks, tasks, expected outcomes, metrics, and policy constraints. It enables consistent sharing of evaluation scenarios across tools and repositories.</p>
+<h3 id="metrics">📏 Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h3>
+<p>Metrics score an agent’s performance. Built-in metrics include:
+- <code>policy_compliance</code> — avoids policy violations
+- <code>path_parsimony</code> — prefers fewer turns (efficiency)
+- <code>state_verification</code> — validates expected state changes. Supports <strong>dot-notation</strong> (e.g., <code>user.profile.balance</code>) for nested object verification.
+- <code>calculation_accuracy</code> — High-Fidelity: extracts and validates numerical results within a configurable tolerance.
+- <code>planning_quality</code> — evaluates strategic sequencing and decision-making logic.
+- <code>root_cause_analysis_correctness</code> — assesses the accuracy of agent diagnostics.
+- <code>consistency_score</code> — checks stability across multiple runs
+- <code>luna_judge_score</code> — semantic and behavioral evaluation via LLM-Judge (calibratable to human ground truth, with required provider guards).</p>
+<hr />
+<h2 id="running-evaluations-cli">▶️ Running Evaluations (CLI)<a class="headerlink" href="#running-evaluations-cli" title="Permanent link">&para;</a></h2>
+<h3 id="evaluate-batch-evaluation">🧪 <code>evaluate</code> — batch evaluation<a class="headerlink" href="#evaluate-batch-evaluation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>industries/telecom<span class="w"> </span>--format<span class="w"> </span>jsonl<span class="w"> </span>--output<span class="w"> </span>reports/latest_results.json<span class="w"> </span>--attempts<span class="w"> </span><span class="m">3</span>
+</code></pre></div>
+<p><strong>Key options:</strong>
+- <code>--path</code> (required): Scenario file or directory
+- <code>--format</code>: <code>jsonl</code> (default) or <code>csv</code>
+- <code>--output</code>: Output report path
+- <code>--limit</code>: Limit number of scenarios executed
+- <code>--attempts</code>: Run pass@k (multiple attempts per scenario)</p>
+<p><strong>What happens during evaluation:</strong>
+1. Loads each scenario
+2. Runs each task for up to <code>EVAL_MAX_TURNS</code> turns
+3. Calls the agent (default: HTTP adapter)
+4. Executes sandbox tool calls
+5. Computes metrics
+6. Writes reports and trace files</p>
+<h3 id="cli-quick-reference">⚡ CLI Quick Reference<a class="headerlink" href="#cli-quick-reference" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Common options</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>multiagent-eval evaluate</code></td>
+<td><code>--path</code>, <code>--format</code>, <code>--output</code>, <code>--limit</code>, <code>--attempts</code> / <code>-k</code></td>
+<td>Run a set of scenarios (batch mode)</td>
+</tr>
+<tr>
+<td><code>multiagent-eval run</code></td>
+<td><code>-k</code></td>
+<td>Run a single scenario JSON file</td>
+</tr>
+<tr>
+<td><code>multiagent-eval replay</code></td>
+<td><code>--path</code></td>
+<td>Replay a recorded run trace</td>
+</tr>
+<tr>
+<td><code>multiagent-eval aes validate</code></td>
+<td><code>--path</code></td>
+<td>Validate AES benchmark YAML (v1.1)</td>
+</tr>
+<tr>
+<td><code>multiagent-eval aes scaffold</code></td>
+<td><code>--output</code></td>
+<td>Generate a starter AES v1.1 template</td>
+</tr>
+<tr>
+<td><code>multiagent-eval console</code></td>
+<td><code>--port</code></td>
+<td>Launch the Visual Debugger local API and interactive GUI (Integrated Visual Suite)</td>
+</tr>
+<tr>
+<td><code>multiagent-eval quickstart</code></td>
+<td>(none)</td>
+<td>60-second CLI demo (spawns agent + runs evaluation).</td>
+</tr>
+<tr>
+<td><code>multiagent-eval doctor</code></td>
+<td>(none)</td>
+<td>Check environment, dependencies, and configuration</td>
+</tr>
+<tr>
+<td><code>multiagent-eval init</code></td>
+<td><code>--dir</code>, <code>--industry</code></td>
+<td>Scaffold a new benchmark environment and linked datasets</td>
+</tr>
+<tr>
+<td><code>multiagent-eval report</code></td>
+<td><code>--path</code></td>
+<td>Generate a <strong>Premium HTML report</strong> with reconstructed trajectories</td>
+</tr>
+<tr>
+<td><code>multiagent-eval scenario generate</code></td>
+<td>(none)</td>
+<td>Interactively bootstrap new scenarios</td>
+</tr>
+<tr>
+<td><code>multiagent-eval record</code></td>
+<td><code>--agent</code></td>
+<td>Capture real interactions into an executable trace</td>
+</tr>
+<tr>
+<td><code>multiagent-eval playground</code></td>
+<td><code>--agent</code></td>
+<td>Interactive REPL for rapid experimentation</td>
+</tr>
+<tr>
+<td><code>multiagent-eval spec-to-eval</code></td>
+<td><code>--input</code>, <code>--output</code></td>
+<td>Convert Markdown spec to scenario JSON</td>
+</tr>
+<tr>
+<td><code>multiagent-eval auto-translate</code></td>
+<td><code>--input</code>, <code>--model</code>, <code>--industry</code></td>
+<td>Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM</td>
+</tr>
+<tr>
+<td><code>multiagent-eval import-drift</code></td>
+<td><code>--input</code>, <code>--industry</code>, <code>--output-dir</code></td>
+<td>Convert production trace to scenario</td>
+</tr>
+<tr>
+<td><code>multiagent-eval mutate</code></td>
+<td><code>--input</code>, <code>--type</code>, <code>--output</code></td>
+<td>Generate adversarial scenario variants</td>
+</tr>
+<tr>
+<td><code>multiagent-eval list</code></td>
+<td><code>--search</code></td>
+<td>Search and explore the scenario catalog</td>
+</tr>
+<tr>
+<td><code>multiagent-eval lint</code></td>
+<td><code>--path</code></td>
+<td>Score and validate scenario quality/compliance</td>
+</tr>
+<tr>
+<td><code>multiagent-eval plugin</code></td>
+<td><code>&lt;plugin_name&gt; &lt;cmd&gt;</code></td>
+<td>Secure namespace for executing 3rd-party plugin commands</td>
+</tr>
+</tbody>
+</table>
+<h3 id="run-single-scenario">🧩 <code>run</code> — single scenario<a class="headerlink" href="#run-single-scenario" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/your_scenario.json<span class="w"> </span>-k<span class="w"> </span><span class="m">2</span>
+</code></pre></div>
+<p>Use this for rapid iteration and debugging.</p>
+<h4 id="run-trace-management">📽️ Run Trace Management<a class="headerlink" href="#run-trace-management" title="Permanent link">&para;</a></h4>
+<p>The harness records every event (agent messages, tool calls, metrics) into trace files for debugging and auditing.</p>
+<p><strong>Default Behavior:</strong>
+- All runs are appended to <code>runs/run.jsonl</code>.
+- Each run is also saved to its own file: <code>runs/run-&lt;run_id&gt;.jsonl</code>.</p>
+<p><strong>Configuration (Environment Variables):</strong>
+| Variable | Default | Description |
+|---|---|---|
+| <code>RUN_LOG_DIR</code> | <code>runs</code> | Directory where trace files are stored. |
+| <code>RUN_LOG_PER_RUN</code> | <code>true</code> | Save each run to a separate file. |
+| <code>RUN_LOG_MASTER</code> | <code>true</code> | Append all runs to a master <code>run.jsonl</code>. |
+| <code>RUN_LOG_ROTATE_COUNT</code> | <code>0</code> | Number of per-run files to keep. <code>0</code> means keep all. |</p>
+<hr />
+<h2 id="adoption-productivity-utilities">🚀 Adoption &amp; Productivity Utilities<a class="headerlink" href="#adoption-productivity-utilities" title="Permanent link">&para;</a></h2>
+<p>These utilities are designed to get you from "installation" to "first eval" in seconds.</p>
+<h3 id="quickstart-the-60-second-demo">🏃 <code>quickstart</code> — The 60-Second Demo<a class="headerlink" href="#quickstart-the-60-second-demo" title="Permanent link">&para;</a></h3>
+<p>Runs a complete evaluation loop using the built-in sample agent in your terminal.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>quickstart
+</code></pre></div>
+*   Spawns the sample agent server process.
+*   Runs a telecom troubleshooting scenario.
+*   Generates a <strong>Premium HTML report</strong> (Mermaid trajectories enabled) in <code>reports/</code>.
+*   <strong>Note:</strong> This command is designed for CLI-only instant feedback; use <code>multiagent-eval console</code> for the visual experience.</p>
+<h3 id="console-react-visual-debugger-gui">🖥️ <code>console</code> — React Visual Debugger GUI<a class="headerlink" href="#console-react-visual-debugger-gui" title="Permanent link">&para;</a></h3>
+<p>Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.</p>
+<h4 id="key-features">Key Features:<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Scenario Explorer</strong>: Browse the catalog with search filters. View real-time <strong>Lint Scores</strong> and quality status badges.</li>
+<li><strong>Background Execution</strong>: Trigger evaluations directly from the UI; monitor progress in real-time.</li>
+<li><strong>Visual DNA Debugger</strong>: Live trajectory playback, state inspection, and trace export via the <code>DebuggerStateStore</code> hook.</li>
+<li><strong>API Reference</strong>: Integrated technical documentation drawer for one-click access to guides.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>console<span class="w"> </span>--port<span class="w"> </span><span class="m">5000</span>
+</code></pre></div>
+<h3 id="doctor-environment-validator">🔍 <code>doctor</code> — Environment Validator<a class="headerlink" href="#doctor-environment-validator" title="Permanent link">&para;</a></h3>
+<p>Troubleshoot your installation and connectivity.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>multiagent-eval<span class="w"> </span>doctor
+</code></pre></div></p>
+<h3 id="report-premium-visual-reporting">🎨 <code>report</code> — Premium Visual Reporting<a class="headerlink" href="#report-premium-visual-reporting" title="Permanent link">&para;</a></h3>
+<p>Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--path<span class="w"> </span>runs/run_&lt;id&gt;.jsonl
+</code></pre></div></p>
+<h3 id="scenario-generate-interactive-scaffolding">✨ <code>scenario generate</code> — Interactive Scaffolding<a class="headerlink" href="#scenario-generate-interactive-scaffolding" title="Permanent link">&para;</a></h3>
+<p>Bootstrap new test cases without writing JSON by hand.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>multiagent-eval<span class="w"> </span>scenario<span class="w"> </span>generate
+</code></pre></div></p>
+<h3 id="record-trace-capture">⏺ <code>record</code> — Trace Capture<a class="headerlink" href="#record-trace-capture" title="Permanent link">&para;</a></h3>
+<p>Capture real interactions with your agent to create new eval scenarios.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>multiagent-eval<span class="w"> </span>record<span class="w"> </span>--agent<span class="w"> </span>http://localhost:5001/execute_task
+</code></pre></div></p>
+<h3 id="playground-interactive-experimentation">🎮 <code>playground</code> — Interactive Experimentation<a class="headerlink" href="#playground-interactive-experimentation" title="Permanent link">&para;</a></h3>
+<p>Talk to your agent directly in the CLI and see how it performs.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>multiagent-eval<span class="w"> </span>playground<span class="w"> </span>--agent<span class="w"> </span>http://localhost:5001/execute_task
+</code></pre></div></p>
+<h3 id="list-scenario-catalog-search">🔍 <code>list</code> — Scenario Catalog Search<a class="headerlink" href="#list-scenario-catalog-search" title="Permanent link">&para;</a></h3>
+<p>Discover scenarios across the built-in and downloaded libraries.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>multiagent-eval<span class="w"> </span>list<span class="w"> </span>--search<span class="w"> </span><span class="s2">&quot;telecom&quot;</span>
+</code></pre></div></p>
+<h3 id="lint-quality-scoring">🧹 <code>lint</code> — Quality Scoring<a class="headerlink" href="#lint-quality-scoring" title="Permanent link">&para;</a></h3>
+<p>Check your scenarios for AES compliance and technical quality.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>multiagent-eval<span class="w"> </span>lint<span class="w"> </span>--path<span class="w"> </span>industries/telecom/scenarios/troubleshooting_v1.json
+</code></pre></div>
+- <strong>90-100</strong>: High quality, CI-ready.
+- <strong>70-89</strong>: Warning (Missing metadata or low complexity).
+- <strong>&lt;70</strong>: Fail (Structural errors or zero tasks).</p>
+<hr />
+<h2 id="advanced-cli-utilities-ux">🚀 Advanced CLI Utilities &amp; UX<a class="headerlink" href="#advanced-cli-utilities-ux" title="Permanent link">&para;</a></h2>
+<h3 id="install-scenario-packs">📦 <code>install</code> — Scenario Packs<a class="headerlink" href="#install-scenario-packs" title="Permanent link">&para;</a></h3>
+<p>Rapidly deploy industry-specific scenario bundles (e.g., <code>telecom-pack</code>, <code>rag-agent-pack</code>).
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>multiagent-eval<span class="w"> </span>install<span class="w"> </span>telecom-pack
+</code></pre></div></p>
+<h3 id="analyze-repo-scanning">🔬 <code>analyze</code> — Repo Scanning<a class="headerlink" href="#analyze-repo-scanning" title="Permanent link">&para;</a></h3>
+<p>Scan agent repositories to identify tool patterns and auto-generate matching AES scenarios.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>multiagent-eval<span class="w"> </span>analyze<span class="w"> </span>https://github.com/example/agent
+</code></pre></div></p>
+<h3 id="explain-trace-analysis">🤖 <code>explain</code> — Trace Analysis<a class="headerlink" href="#explain-trace-analysis" title="Permanent link">&para;</a></h3>
+<p>Automated diagnostic analysis of <code>run.jsonl</code> traces to identify root causes of agent failures.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>multiagent-eval<span class="w"> </span>explain<span class="w"> </span>--path<span class="w"> </span>runs/run.jsonl
+</code></pre></div></p>
+<h3 id="visual-scenario-editor">🛠️ Visual Scenario Editor<a class="headerlink" href="#visual-scenario-editor" title="Permanent link">&para;</a></h3>
+<p>Built into the Visual Debugger (<code>multiagent-eval console</code>), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.</p>
+<hr />
+<hr />
+<h2 id="scenario-structure-example">🧩 Scenario Structure (Example)<a class="headerlink" href="#scenario-structure-example" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;scenario_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example_01&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basic instruction&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;generic&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">      </span><span class="nt">&quot;task_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;t1&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Write a friendly greeting.&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">      </span><span class="nt">&quot;success_criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">        </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;policy_compliance&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">},</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">        </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path_parsimony&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">}</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">      </span><span class="p">]</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">  </span><span class="p">]</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="adding-industries-scenarios">🧱 Adding Industries &amp; Scenarios<a class="headerlink" href="#adding-industries-scenarios" title="Permanent link">&para;</a></h2>
+<p>The simplest way to add a completely new industry is to generate a bootstrapped setup using <code>init</code>, which automatically creates a starter scenario and linked synthetic datasets.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>multiagent-eval<span class="w"> </span>init<span class="w"> </span>--dir<span class="w"> </span>industries/my_industry<span class="w"> </span>--industry<span class="w"> </span>my_industry
+</code></pre></div>
+<p>If you prefer to add them manually:
+The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</code>.</p>
+<ol>
+<li>Create a directory for your industry (if it doesn't exist):</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>industries/&lt;your_industry&gt;/scenarios
+</code></pre></div>
+<ol>
+<li>Add a JSON scenario file (any name ending in <code>.json</code>):</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">{</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&quot;scenario_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_scenario_01&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Example scenario&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">  </span><span class="nt">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;your_industry&gt;&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">  </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">]</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>Run it via CLI:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>industries/&lt;your_industry&gt;/scenarios/&lt;file&gt;.json
+</code></pre></div>
+<ol>
+<li>(Optional) Run an industry batch:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>industries/&lt;your_industry&gt;
+</code></pre></div>
+<h3 id="tip">🔎 Tip<a class="headerlink" href="#tip" title="Permanent link">&para;</a></h3>
+<p>Keep <code>scenario_id</code> unique within the industry and prefer descriptive file names like <code>scenario_&lt;short-name&gt;.json</code>.</p>
+<h3 id="agent-topology-multi-agent-scenarios">🧩 Agent Topology (Multi-Agent Scenarios)<a class="headerlink" href="#agent-topology-multi-agent-scenarios" title="Permanent link">&para;</a></h3>
+<p>When a scenario involves more than one agent, you can define an <code>agent_topology</code> object to control which agents can read or write which parts of the shared state.
+This prevents agents from unintentionally interfering with each other and enables fine-grained multi-agent evaluation.</p>
+<p>Example:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span><span class="nt">&quot;agent_a&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user.*&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user.profile&quot;</span><span class="p">]},</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">  </span><span class="nt">&quot;agent_b&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user.*&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;order.*&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;order.status&quot;</span><span class="p">]}</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="p">}</span>
+</code></pre></div></p>
+<h3 id="best-practices-agent-topology">✅ Best practices (Agent Topology)<a class="headerlink" href="#best-practices-agent-topology" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Use topology only when you need multi-agent separation.</strong> For single-agent scenarios, omitting <code>agent_topology</code> keeps things simpler.</li>
+<li><strong>Start with broad read permissions and tighten over time.</strong> This helps avoid accidental “permission denied” failures while you iterate.</li>
+<li><strong>Match topology to tool behavior.</strong> If a tool writes a state path, ensure the calling agent has <code>writes</code> rights for that path.</li>
+<li><strong>Avoid overlap for sensitive state.</strong> If two agents shouldn’t see each other’s data, keep their <code>reads</code> sets disjoint.</li>
+</ul>
+<h3 id="tool-definitions">🛠 Tool Definitions<a class="headerlink" href="#tool-definitions" title="Permanent link">&para;</a></h3>
+<p>Tools are defined within the scenario and can:
+- Apply state changes
+- Return structured outputs
+- Enforce policies</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">  </span><span class="nt">&quot;send_email&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">    </span><span class="nt">&quot;state_changes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">      </span><span class="p">{</span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;emails.sent&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">    </span><span class="p">],</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">    </span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Email sent&quot;</span><span class="p">}</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="policies">🚨 Policies<a class="headerlink" href="#policies" title="Permanent link">&para;</a></h3>
+<p>Policies enforce guardrails during tool execution.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nt">&quot;policies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">  </span><span class="nt">&quot;withdraw_money&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;max_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">}</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>If the agent calls <code>withdraw_money</code> with an amount above the limit, the harness returns a <code>policy_violation</code> response.</p>
+<hr />
+<h2 id="metrics-explained">📊 Metrics Explained<a class="headerlink" href="#metrics-explained" title="Permanent link">&para;</a></h2>
+<p>Metrics are evaluated per task and decide if the task succeeded.</p>
+<h3 id="policy_compliance">✅ <code>policy_compliance</code><a class="headerlink" href="#policy_compliance" title="Permanent link">&para;</a></h3>
+<p>Ensures the agent didn’t trigger policy violations via tool calls.</p>
+<h3 id="path_parsimony">🧭 <code>path_parsimony</code><a class="headerlink" href="#path_parsimony" title="Permanent link">&para;</a></h3>
+<p>Rewards fewer turns (more concise/efficient behavior).</p>
+<h3 id="state_verification">🧱 <code>state_verification</code><a class="headerlink" href="#state_verification" title="Permanent link">&para;</a></h3>
+<p>Validates that the sandbox state matches expected changes.</p>
+<h3 id="tool_call_correctness">🧰 <code>tool_call_correctness</code><a class="headerlink" href="#tool_call_correctness" title="Permanent link">&para;</a></h3>
+<p>Ensures the agent called required tools.</p>
+<h3 id="calculation_accuracy">📐 <code>calculation_accuracy</code><a class="headerlink" href="#calculation_accuracy" title="Permanent link">&para;</a></h3>
+<p>High-Fidelity: Uses regex to extract numerical values from the agent's summary and compares them against the expected values with a 0.01 tolerance.</p>
+<h3 id="planning_quality-root_cause_analysis">🧠 <code>planning_quality</code> &amp; <code>root_cause_analysis</code><a class="headerlink" href="#planning_quality-root_cause_analysis" title="Permanent link">&para;</a></h3>
+<p>Advanced cognitive metrics using domain-specific LLM rubrics to evaluate the quality of an agent's planning and diagnostic accuracy.</p>
+<h3 id="consistency_score">🔁 <code>consistency_score</code><a class="headerlink" href="#consistency_score" title="Permanent link">&para;</a></h3>
+<p>Used when <code>--attempts &gt; 1</code> to measure stability across runs.</p>
+<hr />
+<h2 id="drift-triage-advanced">🧠 Drift &amp; Triage (Advanced)<a class="headerlink" href="#drift-triage-advanced" title="Permanent link">&para;</a></h2>
+<h3 id="51-importing-drift">🌪️ 5.1 Importing Drift<a class="headerlink" href="#51-importing-drift" title="Permanent link">&para;</a></h3>
+<p>Convert production traces into evaluation scenarios:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>multiagent-eval<span class="w"> </span>import-drift<span class="w"> </span>--input<span class="w"> </span>production_trace.jsonl<span class="w"> </span>--industry<span class="w"> </span>telecom<span class="w"> </span>--output-dir<span class="w"> </span>industries/telecom/scenarios
+</code></pre></div>
+<h3 id="52-state-level-trajectory-triage-how-root-cause-isolation-works">🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)<a class="headerlink" href="#52-state-level-trajectory-triage-how-root-cause-isolation-works" title="Permanent link">&para;</a></h3>
+<p>AgentEval isolates the root cause of a failure by combining three layers of analysis — not just scanning logs.</p>
+<p><strong>Layer 1: State Parity Check (VFS Delta)</strong>
+Every World Shim (Database, Jira, Git, API, etc.) is "VFS-aware". When an agent calls a tool, AgentEval compares the resulting system state against the "Ground Truth" defined in the scenario. If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the <strong>"Patient Zero"</strong> step. This catches "silent failures" where the agent <em>thinks</em> it succeeded but the environment changed incorrectly.</p>
+<p><strong>Layer 2: Heuristic Triage Engine (<code>triage.py</code>)</strong>
+A specialized engine scans the entire trace for failure patterns:
+- <strong>Stall Detection</strong> — identifies if an agent is looping (e.g., calling <code>list_dir</code> 3 times with no change in behavior).
+- <strong>Tool-Level Exceptions</strong> — captures internal simulator errors (e.g., a "404 Not Found" from the API Shim) that the agent might have ignored.
+- <strong>Policy Violations</strong> — if a Security Shim blocks an action (like a regex-based data leak), the triage engine flags the exact guardrail triggered.</p>
+<p><strong>Layer 3: Visual Timeline Mapping</strong>
+The Visual Debugger's <strong>"Isolate Root Cause"</strong> automatically scrolls the timeline to the first Non-Success Signal — the exact failing node, highlighted in red.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Layer</th>
+<th style="text-align: left;">What it detects</th>
+<th style="text-align: left;">Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>State</strong></td>
+<td style="text-align: left;">Data/File divergence</td>
+<td style="text-align: left;">Catches silent failures where the agent thinks it succeeded.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Logic</strong></td>
+<td style="text-align: left;">Loops &amp; Stalls</td>
+<td style="text-align: left;">Identifies when an agent's reasoning has hit a dead-end.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Security</strong></td>
+<td style="text-align: left;">Policy Violations</td>
+<td style="text-align: left;">Pinpoints exactly which guardrail was triggered and why.</td>
+</tr>
+</tbody>
+</table>
+<p>By combining these layers, AgentEval can distinguish between an agent that <em>hallucinated a tool's existence</em> vs. an agent that <em>used the right tool but with the wrong parameters</em>.</p>
+<blockquote>
+<p><strong>Why use Shims instead of Real APIs?</strong>
+- <strong>Safety</strong>: No risk of accidentally deleting a production database or emailing a real customer.
+- <strong>Determinism</strong>: You can force the shim to fail (e.g., simulate a 500 error) to test error handling.
+- <strong>Speed</strong>: Simulated responses are near-instant vs. real network latency.</p>
+</blockquote>
+<p>📖 See the full technical deep-dive: <a href="../06_TRIAGE_ENGINE_AND_VFS/"><code>06_TRIAGE_ENGINE_AND_VFS.md</code></a></p>
+<hr />
+<h2 id="next-steps">📎 Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>For architecture and extension patterns, read the Developer Guide:
+- <code>docs/guides/help/03_DEVELOPER_GUIDE.md</code>
+- <code>docs/guides/help/06_TRIAGE_ENGINE_AND_VFS.md</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
