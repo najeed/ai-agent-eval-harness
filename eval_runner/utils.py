@@ -1,7 +1,7 @@
 """
 utils.py
 
-Authoritative architectural utilities for the MultiAgentEval harness.
+Architectural utilities for the MultiAgentEval harness.
 """
 
 import os

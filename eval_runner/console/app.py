@@ -102,7 +102,7 @@ def create_app():
     @app.route("/docs")
     @app.route("/docs/api")
     def index(path=''):
-        print(f"DEBUG: SPA Navigation - Hijacking industrial route: {flask.request.path}")
+        print(f"DEBUG: SPA Navigation - Obtaining industrial route: {flask.request.path}")
         return send_from_directory(app.static_folder, "index.html")
 
     return app
