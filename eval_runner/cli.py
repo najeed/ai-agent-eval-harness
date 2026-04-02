@@ -121,8 +121,11 @@ def main():
     aes_parser = subparsers.add_parser("aes", help="Agent Eval Specification (AES) utilities")
     aes_subparsers = aes_parser.add_subparsers(dest="aes_command", help="AES subcommands")
 
-    validate_parser = aes_subparsers.add_parser("validate", help="Validate an AES benchmark file")
-    validate_parser.add_argument("--path", required=True, help="Path to .aes.yaml file or directory")
+    validate_parser = aes_subparsers.add_parser("validate", help="Validate an AES benchmark/scenario file against the official schema")
+    validate_parser.add_argument("--path", required=True, help="Path to .aes.yaml, .json scenario, or directory")
+
+    scaffold_parser = aes_subparsers.add_parser("scaffold", help="Generate a template AES benchmark file (.aes.yaml)")
+    scaffold_parser.add_argument("--output", required=True, help="Path to save the scaffolded YAML")
 
     # --- SPEC-TO-EVAL COMMAND ---
     spec_parser = subparsers.add_parser("spec-to-eval", help="Convert Markdown PRD/Spec to Scenario JSON")
@@ -140,11 +143,8 @@ def main():
         help="Translate raw documents to JSON via a local LLM (Ollama required)",
     )
     trans_parser.add_argument("--input", required=True, help="Path to the source document")
-    trans_parser.add_argument(
-        "--model",
-        default="llama3",
-        help="Local Ollama model to use (Ollama must be running)",
-    )
+    trans_parser.add_argument("--model", default="llama3", help="Local Ollama model to use")
+    trans_parser.add_argument("--industry", help="Force a specific industry category (e.g., finance, legal)")
     trans_parser.add_argument("--output", help="Explicit path to save the generated JSON")
 
     # --- IMPORT-DRIFT COMMAND ---
@@ -330,6 +330,8 @@ def main():
         elif args.command == "aes":
             if args.aes_command == "validate":
                 handle_aes_validate(args)
+            elif args.aes_command == "scaffold":
+                handle_aes_scaffold(args)
         elif args.command == "replay":
             handle_replay(args)
         elif args.command == "mutate":

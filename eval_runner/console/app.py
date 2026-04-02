@@ -4,9 +4,11 @@ from flask_cors import CORS
 from .routes import register_core_routes
 from .auth import auth_bp
 from eval_runner.plugins import manager
+from eval_runner.catalog import ScenarioCatalog
 
 
 def create_app():
+    ScenarioCatalog.get_instance().load_index()
     # Set static_folder to the visual debugger UI directory
     ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ui", "visual-debugger"))
     app = Flask(__name__, static_folder=ui_path, static_url_path="")

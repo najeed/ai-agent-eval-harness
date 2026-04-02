@@ -13,6 +13,12 @@ multiagent-eval evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 - `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
 - `--limit`: Max number of scenarios to run.
 - `--agent-name`: Human-readable name for the agent (for reports and leaderboards). Priority: CLI Flag > Zero-Touch Discovery > Endpoint URL.
+- `--verbose`: Enable detailed execution logs.
+- `--pilot`: Quick-run pilot mode (forces `--limit 5 --attempts 1`).
+- `--seed`: Set random seed for reproducibility.
+- `--retry-failed`: Retry only previously failed scenarios from the latest trace.
+- `--push-hf`: HuggingFace repo ID to push results to after evaluation.
+- `--output`: Path to save the final results (default: `reports/latest_results.json`).
 
 **Environment Variables:**
 | Variable | Default | Description |
@@ -45,8 +51,12 @@ When `--attempts` > 1, the harness generates:
 ### `run`
 Execute a single scenario file or a Benchmark URI.
 ```bash
-multiagent-eval run --scenario <path_or_uri>
+multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent <url>]
 ```
+- `--scenario`: Path to a single scenario file or a Benchmark URI.
+- `--attempts`: Number of attempts (pass@k) for this single scenario.
+- `--agent`: Override the default agent URL for this specific run.
+
 **Example (Benchmark):** `multiagent-eval run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
 
 ### `list`
@@ -85,6 +95,26 @@ multiagent-eval analyze <github_url>
 ```
 **Example:** `multiagent-eval analyze https://github.com/my-org/my-agent` scaffolds scenarios in `scenarios/auto/` based on detected tool definitions.
 
+### `verify`
+Verify the integrity of a run trace using SHA-256 checksums and manifest validation.
+```bash
+multiagent-eval verify --path <path_to_run.jsonl> [--manifest <path_to_manifest.json>]
+```
+
+### `contribute`
+Launch the interactive wizard to create and submit new scenarios to the public catalog.
+```bash
+multiagent-eval contribute
+```
+
+### `leaderboard`
+Generate a performance comparison table from multiple execution traces.
+```bash
+multiagent-eval leaderboard [--dir <trace_directory>] [--output <filename.md>]
+```
+- `--dir`: Directory containing `.jsonl` traces (default: `runs`).
+- `--output`: Output Markdown filename (default: `LEADERBOARD.md`).
+
 ## Specification & Validation
 
 ### `aes validate`
@@ -115,8 +145,12 @@ multiagent-eval spec-to-eval --input <prd.md> [--output <scenario.json>] [--fill
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.
 ```bash
-multiagent-eval auto-translate --input <document.pdf> --model <model_name> --industry <industry>
+multiagent-eval auto-translate --input <document.pdf> [--model <model_name>] [--industry <industry>]
 ```
+- `--input`: Path to the source document (PDF, TXT, MD, DOCX).
+- `--model`: Local Ollama model to use (default: `llama3`).
+- `--industry`: Force a specific industry category; if omitted, the tool attempts semantic classification.
+
 **Requirement:** `Ollama` must be running locally.
 
 ### `ci generate`
@@ -151,6 +185,38 @@ Query the global Failure Corpus to retrieve known failing edge cases for specifi
 multiagent-eval failures search <query>
 ```
 **Example:** `multiagent-eval failures search "pii leaks"` discovers and imports 5 realistic failing scenarios from the corpus.
+
+### `inspect`
+Show detailed metadata and task descriptions for a specific scenario file.
+```bash
+multiagent-eval inspect --scenario-path <path_to.json>
+```
+
+### `taxonomy`
+Show the official failure taxonomy used for triage and reporting.
+```bash
+multiagent-eval taxonomy
+```
+
+### `catalog-search`
+Perform a deep keyword search across the title, ID, and description of all scenarios.
+```bash
+multiagent-eval catalog-search --query <search_term>
+```
+
+### `list-metrics`
+List all registered evaluation metrics (including those provided by plugins).
+```bash
+multiagent-eval list-metrics
+```
+
+### `cleanup-runs`
+Perform housekeeping by removing old execution traces.
+```bash
+multiagent-eval cleanup-runs [--days N] [--force]
+```
+- `--days`: Remove files older than N days (default: 7).
+- `--force`: Skip confirmation prompt.
 
 ## Debugging & Exploration
 

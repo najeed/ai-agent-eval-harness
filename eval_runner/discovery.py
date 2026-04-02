@@ -10,7 +10,7 @@ import importlib
 import pkgutil
 import inspect
 from pathlib import Path
-from typing import List, Type, Any
+from typing import List, Type, Any, Dict
 
 def discover_classes_in_module(module, base_class: Type, instantiate: bool = True) -> List[Any]:
     """Finds all classes in a module that inherit from a base class."""

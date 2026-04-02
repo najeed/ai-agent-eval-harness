@@ -35,14 +35,20 @@ python dataproc_engine/cli/main.py extract --industry [INDUSTRY] [FLAGS]
 ```
 
 ### Core Flags
-| Flag | Description | Example |
+| Flag | Description | Default / Example |
 | :--- | :--- | :--- |
-| `--industry` | Target industrial sector (16 sectors available). | `finance`, `healthcare`, `media_entertainment` |
-| `--limit` | Maximum number of records to process. | `--limit 100` |
-| `--schema-type` | Specific gold-standard schema configuration. | `clinical`, `sec_edgar`, `policy_risk` |
-| `--input-uri` | Local path or Web URL to user-provided data (BYOD override). | `--input-uri https://example.com/data.csv` |
-| `--overwrite` | Bypasses the conflict prompt for existing output. | `--overwrite` |
-| `--max-backups` | Maximum number of rolling backups to keep. | `--max-backups 10` |
+| `--industry` | Target industrial sector (16+ sectors available). | `finance` |
+| `--limit` | Maximum number of records to process. | `10` |
+| `--format` | Output format (JSON Lines or CSV). | `jsonl` |
+| `--schema-type` | Specific industry-standard schema variant. | `clinical`, `sec_edgar` |
+| `--source` | Data acquisition strategy (`api` or `file`). | `api` |
+| `--input-uri` | Local path or URL for `file` source ingestion. | `--input-uri data.csv` |
+| `--target-dir` | Custom output directory for results. | `output` |
+| `--output-name`| Override the default generated filename. | `my_dataset.jsonl` |
+| `--llm-strategy`| Transformation approach (`auto`, `cloud`, `ollama`, `mock`). | `auto` |
+| `--allow-simulation`| Fallback to high-fidelity synthetic data on failure. | `True` |
+| `--overwrite` | Bypasses the conflict prompt for existing output. | N/A |
+| `--max-backups` | Maximum number of rolling backups to keep. | `5` |
 
 ---
 
@@ -65,7 +71,7 @@ The engine supports **16 standard industrial sectors** with specialized gold-sta
 | **Commercial** | `agriculture` | `standard`, `usda_crops` | USDA |
 | **Commercial** | `ecommerce` | `olist`, `uci_retail`, `standard` | Olist, UCI |
 | **Logistics** | `transportation` | `standard`, `bts_ontime` | BTB, Eurostat|
-| **Foundational**| `media_entertainment`| `standard`, `imdb_cultural` | IMDb |
+| **Foundational**| `media_and_entertainment`| `standard`, `imdb_cultural` | IMDb |
 | **Foundational**| `decision_support` | `standard`, `signal_linking` | Correlator |
 | **Foundational**| `unstructured` | `standard`, `llm_scraper` | Scrapers |
 

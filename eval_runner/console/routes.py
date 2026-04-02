@@ -166,12 +166,17 @@ def evaluate_scenario():
     if not path_str:
         return jsonify({"error": "Missing 'path' parameter"}), 400
 
-    path = Path(path_str)
-    if not path.exists():
-        # Try relative to root?
-        path = Path(__file__).parent.parent.parent / path_str
+    from ..catalog import ScenarioCatalog
+    catalog = ScenarioCatalog()
+    path = catalog.get_absolute_path(path_str)
+    
+    if not path:
+        # Fallback for raw paths if not in catalog
+        path = Path(path_str)
         if not path.exists():
-            return jsonify({"error": f"Scenario not found at {path_str}"}), 404
+            path = Path(__file__).parent.parent.parent / path_str
+            if not path.exists():
+                return jsonify({"error": f"Scenario not found: {path_str}"}), 404
 
     from ..loader import load_scenario
     from ..engine import run_evaluation

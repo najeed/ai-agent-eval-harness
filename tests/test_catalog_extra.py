@@ -5,6 +5,13 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 from eval_runner.catalog import ScenarioCatalog, list_scenarios
 
+@pytest.fixture(autouse=True)
+def clear_catalog():
+    """Authoritative singleton reset for extra test isolation."""
+    ScenarioCatalog.clear_instance()
+    yield
+    ScenarioCatalog.clear_instance()
+
 def test_build_index_no_root(tmp_path):
     index_path = tmp_path / "index.json"
     cat = ScenarioCatalog(index_path=str(index_path))
@@ -55,7 +62,7 @@ def test_check_for_updates_no_industries(tmp_path):
 def test_load_index_sync_mismatch(tmp_path):
     index_path = tmp_path / "index.json"
     with open(index_path, "w") as f:
-        json.dump([{"id": "old", "path": "p1"}], f)
+        json.dump({"scenarios": [{"id": "old", "path": "p1"}]}, f)
         
     cat = ScenarioCatalog(index_path=str(index_path))
     
@@ -63,6 +70,8 @@ def test_load_index_sync_mismatch(tmp_path):
     with patch.object(cat, "check_for_updates", return_value=True), \
          patch.object(cat, "build_index") as mock_build:
         cat.load_index()
+        if cat._sync_thread:
+            cat._sync_thread.join(timeout=1.0)
         mock_build.assert_called()
 
 def test_load_index_no_file(tmp_path):
@@ -70,6 +79,8 @@ def test_load_index_no_file(tmp_path):
     cat = ScenarioCatalog(index_path=str(index_path))
     with patch.object(cat, "build_index") as mock_build:
         cat.load_index()
+        if cat._sync_thread:
+            cat._sync_thread.join(timeout=1.0)
         mock_build.assert_called()
 
 def test_list_scenarios_branches(capsys):
@@ -92,7 +103,7 @@ def test_search_auto_load(tmp_path):
     index_path = tmp_path / "index.json"
     cat_data = [{"id": "s1", "title": "t1", "industry": "fin", "description": "d", "tags": []}]
     with open(index_path, "w") as f:
-        json.dump(cat_data, f)
+        json.dump({"scenarios": cat_data}, f)
     cat = ScenarioCatalog(index_path=str(index_path))
     
     # Avoid rebuild by mocking check_for_updates
@@ -117,7 +128,7 @@ def test_list_scenarios_no_query(capsys):
     mock_cat.scenarios = [{"id": "s1", "industry": "i", "difficulty": 1, "title": "t"}]
     mock_cat.search.return_value = mock_cat.scenarios
     
-    with patch("eval_runner.catalog.ScenarioCatalog", return_value=mock_cat):
+    with patch("eval_runner.catalog.get_catalog", return_value=mock_cat):
         list_scenarios(query=None)
         out, _ = capsys.readouterr()
         assert "Scenario Catalog: (1 total)" in out
@@ -132,6 +143,9 @@ def test_check_for_updates_sync(tmp_path):
     cat.scenarios = [{}, {}] # count = 2
     
     # Mock Path("industries") to return our mock_path
+    # Ensure that any sub-paths joined also return a string-convertible mock
+    mock_path.__truediv__.return_value.__str__.return_value = str(tmp_path)
+    
     with patch("eval_runner.catalog.Path", return_value=mock_path):
          # Hits lines 87-88
          assert cat.check_for_updates() is False

@@ -120,7 +120,9 @@ def test_plugin_blueprint_registration(client):
 
 def test_evaluate_endpoint(client):
     """Test that the evaluation endpoint is functional."""
-    response = client.post("/api/evaluate", json={"path": "scenarios/research_verification.json"})
+    # Use a guaranteed-valid industrial scenario from the current index
+    valid_path = "industries/agriculture/scenarios/crop_management/10102_pest_identification_corn.json"
+    response = client.post("/api/evaluate", json={"path": valid_path})
     assert response.status_code == 200
     data = response.get_json()
     assert data["status"] == "started"

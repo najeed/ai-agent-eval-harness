@@ -4,7 +4,7 @@ import hashlib
 import json
 import datetime
 import os
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
 

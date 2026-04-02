@@ -192,8 +192,8 @@ class ParitySynthesizer:
 
     def validate_parity(self, original_df: pd.DataFrame, synthetic_df: pd.DataFrame) -> Dict[str, Any]:
         """
-        DEPRECATED: Use paritygen.validation.validate_parity() for true Wasserstein distance 
-        and correlation matrix drift analysis.
+        Calculates mathematical parity between original and synthetic datasets, 
+        including Wasserstein distance and correlation matrix drift analysis.
         """
         from .validation import validate_parity as true_validate
         return true_validate(original_df, synthetic_df)

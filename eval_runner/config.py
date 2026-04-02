@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 
+# --- Platform & Roots (v1.2.3-ULTIMATE) ---
+PROJECT_ROOT = Path(__file__).parent.parent.resolve()
+
 # --- Engine Configuration ---
 AGENT_API_URL = os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
 EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "5"))

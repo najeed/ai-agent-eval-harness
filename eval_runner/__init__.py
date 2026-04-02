@@ -15,6 +15,7 @@ from . import (  # noqa: F401
     drift_importer,
     triage,
     catalog,
+    utils,
 )
 
 __version__ = "1.0.0"
