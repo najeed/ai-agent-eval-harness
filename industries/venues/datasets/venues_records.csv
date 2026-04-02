@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+VEN-7632,Eve Corp,Active,High,Tokyo,2025-12-28T16:56:09.871730Z
+VEN-6237,Ivy Corp,Requires Action,Critical,Singapore,2025-04-15T17:56:09.871774Z
+VEN-4222,Eve Corp,Requires Action,Low,Toronto,2025-03-14T23:56:09.871795Z
+VEN-6613,Ivy Corp,Requires Action,High,Sydney,2025-07-24T08:56:09.871811Z
+VEN-7182,Jack Corp,Closed,High,Singapore,2025-04-20T20:56:09.871828Z
+VEN-9970,Jack Corp,Closed,High,New York,2026-02-23T06:56:09.871843Z
+VEN-4007,Jack Corp,Resolved,Medium,London,2025-08-10T08:56:09.871858Z
+VEN-5423,Ivy Corp,Closed,Critical,Toronto,2025-11-28T22:56:09.871874Z
+VEN-1006,Jack Corp,Requires Action,High,Dubai,2025-06-13T02:56:09.871888Z
+VEN-9993,Grace Corp,Closed,Critical,Singapore,2025-04-15T16:56:09.871904Z
+VEN-1314,Alice Corp,Closed,High,Toronto,2025-04-23T21:56:09.871918Z
+VEN-7123,Karen Corp,Requires Action,Medium,Berlin,2026-03-08T22:56:09.871932Z
+VEN-1140,Frank Corp,In Progress,Critical,New York,2025-08-28T13:56:09.871946Z
+VEN-6691,Ivy Corp,Resolved,Critical,New York,2026-01-12T04:56:09.871960Z
+VEN-6953,Hank Corp,Resolved,Critical,New York,2025-10-11T03:56:09.871974Z
+VEN-8770,Eve Corp,Pending,Critical,Tokyo,2025-08-04T00:56:09.871988Z
+VEN-9529,Eve Corp,Resolved,Medium,Tokyo,2026-01-03T09:56:09.872003Z
+VEN-6573,Hank Corp,Active,Low,Berlin,2025-11-01T23:56:09.872019Z
+VEN-3316,Eve Corp,Closed,Medium,New York,2025-08-21T11:56:09.872034Z
+VEN-7069,Frank Corp,Failed,High,Berlin,2026-01-14T00:56:09.872049Z
+VEN-8640,Alice Corp,Resolved,Medium,Toronto,2025-08-24T13:56:09.872062Z
+VEN-3162,Alice Corp,Pending,Medium,Tokyo,2025-08-07T01:56:09.872075Z
+VEN-8224,Leo Corp,Active,Medium,Toronto,2025-11-22T17:56:09.872090Z
+VEN-5995,Ivy Corp,Active,Medium,New York,2025-09-15T20:56:09.872104Z
+VEN-7705,Hank Corp,Closed,High,London,2025-09-01T10:56:09.872117Z
+VEN-4924,Hank Corp,Resolved,Low,Dubai,2025-11-26T21:56:09.872132Z
+VEN-8247,Jack Corp,Active,High,Dubai,2026-01-09T22:56:09.872145Z
+VEN-1958,Alice Corp,Active,Critical,New York,2025-05-04T18:56:09.872158Z
+VEN-5243,Diana Corp,Requires Action,Medium,Berlin,2026-01-13T01:56:09.872173Z
+VEN-6451,Leo Corp,Pending,Low,Berlin,2025-05-06T22:56:09.872187Z
+VEN-7809,Diana Corp,Active,Medium,Berlin,2025-12-07T14:56:09.872201Z
+VEN-1763,Leo Corp,Active,Critical,New York,2025-03-27T05:56:09.872215Z
+VEN-3064,Grace Corp,Requires Action,Low,Toronto,2025-08-09T12:56:09.872231Z
+VEN-4711,Ivy Corp,In Progress,Critical,Dubai,2026-01-25T07:56:09.872246Z
+VEN-8891,Bob Corp,Resolved,Medium,London,2025-10-18T13:56:09.872260Z
+VEN-2108,Ivy Corp,Closed,Critical,Dubai,2025-09-21T08:56:09.872274Z
+VEN-4050,Eve Corp,Resolved,High,New York,2025-12-25T12:56:09.872288Z
+VEN-9430,Eve Corp,Closed,Critical,New York,2025-11-11T18:56:09.872302Z
+VEN-2684,Grace Corp,Active,High,London,2025-10-06T09:56:09.872317Z
+VEN-9378,Charlie Corp,Requires Action,Critical,Dubai,2025-09-02T10:56:09.872332Z
+VEN-4256,Hank Corp,Pending,Low,Singapore,2025-09-08T02:56:09.872345Z
+VEN-8340,Karen Corp,Closed,Low,Sydney,2025-09-10T11:56:09.872359Z
+VEN-7132,Leo Corp,Failed,Low,Dubai,2025-07-23T10:56:09.872373Z
+VEN-9677,Frank Corp,Failed,Medium,Toronto,2025-06-23T18:56:09.872387Z
+VEN-6919,Hank Corp,Resolved,Critical,London,2026-03-09T07:56:09.872400Z
+VEN-8255,Charlie Corp,Active,Medium,Berlin,2026-02-20T20:56:09.872415Z
+VEN-4345,Frank Corp,In Progress,Medium,Berlin,2025-06-29T18:56:09.872430Z
+VEN-3039,Hank Corp,Closed,Critical,Sydney,2026-03-07T05:56:09.872445Z
+VEN-5806,Diana Corp,Active,High,New York,2025-11-01T21:56:09.872459Z
+VEN-8461,Eve Corp,In Progress,High,London,2025-12-12T10:56:09.872475Z
+VEN-5535,Diana Corp,Failed,Low,Berlin,2025-07-26T15:56:09.872489Z
+VEN-8224,Ivy Corp,Pending,Medium,New York,2025-04-27T07:56:09.872503Z
+VEN-2475,Ivy Corp,Pending,Critical,Sydney,2026-02-27T01:56:09.872518Z
+VEN-1819,Hank Corp,Resolved,Critical,Singapore,2025-12-20T22:56:09.872536Z
+VEN-5909,Charlie Corp,Requires Action,High,London,2025-10-07T21:56:09.872551Z
+VEN-2891,Hank Corp,Closed,Medium,Tokyo,2025-07-05T22:56:09.872565Z
+VEN-1881,Karen Corp,Resolved,Medium,London,2025-08-22T03:56:09.872579Z
+VEN-2462,Jack Corp,Resolved,Critical,Singapore,2025-10-31T00:56:09.872593Z
+VEN-7628,Eve Corp,Requires Action,Low,Berlin,2025-03-18T08:56:09.872607Z
+VEN-9835,Eve Corp,Closed,Medium,Berlin,2025-04-29T02:56:09.872623Z
+VEN-8179,Leo Corp,Failed,Low,Sydney,2025-09-07T11:56:09.872637Z
+VEN-2546,Jack Corp,Pending,Low,Sydney,2025-12-20T10:56:09.872652Z
+VEN-1327,Grace Corp,Requires Action,Medium,New York,2025-04-08T20:56:09.872666Z
+VEN-3367,Karen Corp,Active,Low,Dubai,2025-03-23T23:56:09.872680Z
+VEN-9136,Karen Corp,In Progress,High,Sydney,2025-06-25T06:56:09.872694Z
+VEN-2732,Frank Corp,In Progress,Medium,London,2025-10-18T11:56:09.872713Z
+VEN-8352,Charlie Corp,Failed,High,London,2025-11-25T20:56:09.872727Z
+VEN-4316,Alice Corp,In Progress,Low,Dubai,2025-10-31T04:56:09.872742Z
+VEN-9075,Karen Corp,Pending,Critical,London,2025-07-24T15:56:09.872755Z
+VEN-1551,Jack Corp,Resolved,Low,Dubai,2025-10-03T00:56:09.872769Z
+VEN-7030,Frank Corp,Resolved,Low,Dubai,2025-09-18T14:56:09.872783Z
+VEN-9111,Leo Corp,Resolved,Low,New York,2026-03-07T14:56:09.872796Z
+VEN-9350,Diana Corp,Resolved,Medium,Tokyo,2025-11-07T01:56:09.872810Z
+VEN-9392,Diana Corp,Closed,Medium,Sydney,2025-06-09T17:56:09.872823Z
+VEN-7106,Diana Corp,Pending,Critical,Singapore,2025-12-27T22:56:09.872836Z
+VEN-6660,Bob Corp,Failed,Medium,London,2025-05-30T09:56:09.872850Z
+VEN-3336,Grace Corp,Active,Low,London,2025-10-21T11:56:09.872864Z
+VEN-9141,Grace Corp,Requires Action,Medium,London,2025-04-23T19:56:09.872880Z
+VEN-9805,Leo Corp,Resolved,Low,Dubai,2025-06-05T21:56:09.872894Z
+VEN-9589,Eve Corp,Requires Action,Critical,London,2025-04-18T12:56:09.872907Z
+VEN-2988,Bob Corp,Failed,High,Singapore,2025-07-19T10:56:09.872920Z
+VEN-9757,Karen Corp,Requires Action,Medium,Berlin,2025-10-05T13:56:09.872933Z
+VEN-8265,Frank Corp,Failed,Low,New York,2025-03-30T11:56:09.872946Z
+VEN-9924,Ivy Corp,Resolved,Low,Singapore,2025-10-24T07:56:09.872960Z
+VEN-6999,Frank Corp,Closed,High,Sydney,2025-06-16T07:56:09.872974Z
+VEN-2701,Alice Corp,Resolved,Medium,Dubai,2026-03-05T10:56:09.872988Z
+VEN-3808,Frank Corp,Requires Action,High,Berlin,2025-12-12T01:56:09.873003Z
+VEN-9429,Alice Corp,Active,Medium,New York,2025-10-08T15:56:09.873016Z
+VEN-4379,Eve Corp,Requires Action,Medium,Singapore,2025-06-09T16:56:09.873029Z
+VEN-9648,Charlie Corp,Pending,Low,New York,2026-02-28T17:56:09.873042Z
+VEN-9512,Grace Corp,Requires Action,Low,New York,2025-11-19T01:56:09.873055Z
+VEN-3153,Eve Corp,Failed,Medium,Toronto,2025-05-04T15:56:09.873068Z
+VEN-7309,Alice Corp,Requires Action,High,Berlin,2025-05-18T20:56:09.873082Z
+VEN-4481,Diana Corp,Resolved,Low,Singapore,2025-03-14T04:56:09.873096Z
+VEN-8514,Ivy Corp,Resolved,Critical,Dubai,2026-03-10T11:56:09.873111Z
+VEN-2925,Bob Corp,Active,High,Tokyo,2025-04-03T19:56:09.873123Z
+VEN-3615,Karen Corp,Failed,Medium,Dubai,2025-10-07T12:56:09.873136Z
+VEN-8542,Ivy Corp,Pending,Medium,Sydney,2025-08-10T10:56:09.873149Z
+VEN-1135,Ivy Corp,Pending,Low,Toronto,2025-08-04T21:56:09.873162Z
+VEN-3025,Bob Corp,Failed,Medium,Sydney,2025-03-13T13:56:09.873176Z

@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+POR-1044,Alice Corp,In Progress,High,London,2025-09-21T07:56:09.819143Z
+POR-2602,Eve Corp,In Progress,Low,New York,2026-01-23T17:56:09.819233Z
+POR-8234,Bob Corp,Pending,Medium,New York,2025-09-13T01:56:09.819264Z
+POR-2049,Alice Corp,Requires Action,Medium,Dubai,2025-07-17T02:56:09.819282Z
+POR-1298,Jack Corp,Pending,High,Toronto,2026-02-03T15:56:09.819298Z
+POR-1301,Ivy Corp,Closed,Medium,Singapore,2025-12-19T21:56:09.819312Z
+POR-1827,Karen Corp,Failed,Medium,London,2025-05-27T01:56:09.819328Z
+POR-8486,Grace Corp,Requires Action,Critical,Dubai,2025-11-06T11:56:09.819344Z
+POR-5172,Hank Corp,In Progress,High,Toronto,2025-05-21T02:56:09.819359Z
+POR-6375,Frank Corp,Closed,Critical,Singapore,2026-01-28T05:56:09.819373Z
+POR-3013,Alice Corp,Requires Action,High,London,2025-12-03T21:56:09.819386Z
+POR-4771,Frank Corp,Resolved,High,Berlin,2025-12-18T11:56:09.819400Z
+POR-6485,Hank Corp,In Progress,Medium,Dubai,2026-02-17T19:56:09.819414Z
+POR-9426,Diana Corp,Failed,Low,Tokyo,2025-06-04T18:56:09.819428Z
+POR-2815,Alice Corp,Requires Action,Critical,London,2025-06-11T07:56:09.819443Z
+POR-9964,Jack Corp,Active,High,New York,2025-07-04T06:56:09.819458Z
+POR-1507,Karen Corp,In Progress,Low,Tokyo,2025-04-18T21:56:09.819472Z
+POR-7824,Karen Corp,Failed,Low,Tokyo,2025-12-02T20:56:09.819485Z
+POR-6480,Alice Corp,Requires Action,Critical,Berlin,2025-06-30T14:56:09.819499Z
+POR-3615,Grace Corp,Closed,High,London,2025-08-14T07:56:09.819513Z
+POR-9255,Grace Corp,In Progress,High,Sydney,2025-09-25T06:56:09.819526Z
+POR-2574,Hank Corp,Requires Action,Critical,Toronto,2025-08-05T19:56:09.819540Z
+POR-7779,Charlie Corp,In Progress,Medium,Tokyo,2026-02-04T09:56:09.819553Z
+POR-9004,Charlie Corp,Active,Low,Tokyo,2025-09-14T11:56:09.819566Z
+POR-4777,Karen Corp,Requires Action,High,London,2025-10-21T02:56:09.819579Z
+POR-2783,Karen Corp,Closed,High,Singapore,2025-04-06T10:56:09.819592Z
+POR-4203,Jack Corp,In Progress,Low,New York,2025-10-07T15:56:09.819605Z
+POR-1773,Bob Corp,Resolved,Critical,Dubai,2025-10-17T02:56:09.819619Z
+POR-6009,Alice Corp,Requires Action,Medium,Dubai,2025-03-11T21:56:09.819633Z
+POR-4308,Bob Corp,Pending,Low,Toronto,2025-03-29T21:56:09.819649Z
+POR-4171,Frank Corp,Requires Action,Medium,Berlin,2025-06-18T13:56:09.819663Z
+POR-6121,Ivy Corp,Closed,Critical,Sydney,2026-01-01T17:56:09.819677Z
+POR-3855,Frank Corp,Failed,High,London,2025-11-07T06:56:09.819690Z
+POR-8161,Leo Corp,Pending,High,Berlin,2025-09-22T22:56:09.819704Z
+POR-1093,Karen Corp,In Progress,High,Berlin,2026-02-07T04:56:09.819718Z
+POR-8630,Bob Corp,Failed,Critical,Tokyo,2025-06-27T15:56:09.819731Z
+POR-7851,Grace Corp,In Progress,Low,London,2025-04-21T16:56:09.819744Z
+POR-1056,Hank Corp,Requires Action,Critical,Tokyo,2025-06-21T11:56:09.819758Z
+POR-4484,Jack Corp,Resolved,High,Tokyo,2026-01-16T21:56:09.819772Z
+POR-4773,Diana Corp,Closed,Medium,Dubai,2025-06-28T07:56:09.819785Z
+POR-8544,Alice Corp,Failed,High,London,2025-09-08T20:56:09.819800Z
+POR-8197,Frank Corp,Resolved,Critical,Sydney,2025-04-11T22:56:09.819815Z
+POR-1947,Diana Corp,Active,Medium,Sydney,2025-03-26T03:56:09.819828Z
+POR-2123,Karen Corp,In Progress,Low,Sydney,2025-04-08T11:56:09.819842Z
+POR-3112,Eve Corp,In Progress,High,Toronto,2025-06-11T11:56:09.819855Z
+POR-1296,Bob Corp,Active,Medium,Sydney,2025-03-14T08:56:09.819868Z
+POR-1864,Charlie Corp,Pending,Medium,London,2025-08-11T03:56:09.819881Z
+POR-3770,Hank Corp,Resolved,Critical,London,2026-01-10T00:56:09.819894Z
+POR-2898,Eve Corp,Pending,Critical,London,2025-07-11T04:56:09.819907Z
+POR-3597,Frank Corp,Pending,High,Tokyo,2026-02-15T18:56:09.819921Z
+POR-2286,Charlie Corp,Resolved,Critical,Berlin,2026-01-03T02:56:09.819935Z
+POR-4014,Jack Corp,Pending,High,Toronto,2025-11-24T08:56:09.819949Z
+POR-4584,Grace Corp,Resolved,Medium,Sydney,2025-09-05T13:56:09.819963Z
+POR-8275,Bob Corp,Pending,Low,Berlin,2026-01-22T00:56:09.819977Z
+POR-7081,Hank Corp,Pending,High,Tokyo,2025-07-18T10:56:09.819991Z
+POR-8993,Alice Corp,Active,Critical,Tokyo,2025-09-14T05:56:09.820005Z
+POR-8828,Hank Corp,Active,High,New York,2025-08-07T02:56:09.820018Z
+POR-4464,Diana Corp,Closed,High,London,2026-01-18T02:56:09.820032Z
+POR-7362,Bob Corp,In Progress,Low,Tokyo,2025-07-13T11:56:09.820046Z
+POR-2107,Hank Corp,Closed,Medium,London,2025-10-07T19:56:09.820059Z
+POR-1078,Hank Corp,Pending,Medium,Toronto,2025-12-08T16:56:09.820073Z
+POR-2389,Alice Corp,In Progress,High,Toronto,2025-12-17T11:56:09.820086Z
+POR-8410,Diana Corp,Resolved,Critical,London,2025-11-14T10:56:09.820100Z
+POR-2288,Hank Corp,Active,Low,Toronto,2025-04-29T23:56:09.820114Z
+POR-7817,Diana Corp,Closed,High,Toronto,2025-03-26T22:56:09.820127Z
+POR-9144,Alice Corp,Pending,Critical,Sydney,2025-03-25T20:56:09.820144Z
+POR-7547,Karen Corp,Active,Critical,Dubai,2025-04-30T05:56:09.820158Z
+POR-9197,Frank Corp,Pending,Critical,New York,2025-03-31T16:56:09.820172Z
+POR-8216,Eve Corp,Active,High,London,2026-01-18T07:56:09.820185Z
+POR-1740,Charlie Corp,Resolved,Low,Berlin,2025-09-15T14:56:09.820198Z
+POR-1437,Ivy Corp,Pending,High,Toronto,2025-06-22T22:56:09.820211Z
+POR-5123,Hank Corp,Closed,Critical,Sydney,2025-03-13T10:56:09.820225Z
+POR-2174,Jack Corp,Pending,Medium,New York,2025-05-28T09:56:09.820240Z
+POR-7281,Diana Corp,Pending,Medium,Singapore,2025-06-11T20:56:09.820252Z
+POR-2874,Jack Corp,Resolved,Critical,London,2025-12-03T15:56:09.820266Z
+POR-3348,Hank Corp,In Progress,Low,London,2026-01-16T17:56:09.820278Z
+POR-7479,Jack Corp,In Progress,Low,Dubai,2026-02-21T08:56:09.820292Z
+POR-6003,Jack Corp,Closed,Critical,Dubai,2025-09-12T15:56:09.820308Z
+POR-2312,Ivy Corp,Active,High,Singapore,2025-06-19T21:56:09.820321Z
+POR-3914,Charlie Corp,Closed,Low,Berlin,2025-09-17T10:56:09.820334Z
+POR-7350,Alice Corp,Closed,Medium,London,2026-03-05T22:56:09.820348Z
+POR-9003,Diana Corp,Requires Action,High,Singapore,2025-06-12T08:56:09.820360Z
+POR-6361,Karen Corp,In Progress,Low,London,2025-10-14T17:56:09.820373Z
+POR-9283,Hank Corp,In Progress,Critical,Toronto,2025-05-17T04:56:09.820388Z
+POR-9008,Bob Corp,Closed,Critical,London,2025-12-25T08:56:09.820402Z
+POR-5938,Karen Corp,In Progress,High,London,2025-07-17T03:56:09.820417Z
+POR-2258,Charlie Corp,In Progress,High,New York,2026-01-03T13:56:09.820431Z
+POR-1512,Diana Corp,Pending,High,New York,2025-11-08T22:56:09.820444Z
+POR-5104,Eve Corp,In Progress,Critical,New York,2026-01-05T16:56:09.820457Z
+POR-5219,Jack Corp,Active,Critical,Toronto,2025-11-03T04:56:09.820470Z
+POR-3683,Alice Corp,Failed,High,New York,2026-03-11T07:56:09.820483Z
+POR-5188,Grace Corp,Requires Action,Medium,London,2025-11-16T10:56:09.820497Z
+POR-7489,Diana Corp,Active,Critical,Sydney,2025-07-22T04:56:09.820510Z
+POR-3708,Frank Corp,Requires Action,Medium,London,2025-10-04T13:56:09.820525Z
+POR-1989,Alice Corp,Resolved,Critical,Singapore,2025-03-15T07:56:09.820538Z
+POR-1414,Charlie Corp,Closed,Medium,London,2025-08-13T08:56:09.820550Z
+POR-4147,Bob Corp,Resolved,Low,Singapore,2025-09-07T20:56:09.820564Z
+POR-9104,Grace Corp,Active,High,Singapore,2025-06-24T07:56:09.820577Z
+POR-1538,Grace Corp,Requires Action,Low,Sydney,2025-07-31T21:56:09.820590Z
+POR-9483,Charlie Corp,Active,Critical,London,2026-02-19T05:56:09.820603Z

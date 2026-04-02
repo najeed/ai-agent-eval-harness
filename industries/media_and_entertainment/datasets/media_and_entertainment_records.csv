@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+MED-7663,Ivy Corp,Resolved,High,Berlin,2025-07-13T11:56:09.800654Z
+MED-7945,Ivy Corp,Active,High,Sydney,2025-12-11T19:56:09.800694Z
+MED-4854,Karen Corp,Closed,High,Toronto,2025-07-23T10:56:09.800708Z
+MED-4405,Frank Corp,Pending,High,London,2025-06-11T21:56:09.800721Z
+MED-3733,Jack Corp,Pending,Low,Tokyo,2025-08-29T03:56:09.800734Z
+MED-3304,Diana Corp,Requires Action,Medium,Sydney,2025-06-26T04:56:09.800746Z
+MED-8399,Grace Corp,In Progress,Low,Dubai,2025-08-15T00:56:09.800758Z
+MED-7648,Alice Corp,Pending,Low,Dubai,2026-01-11T18:56:09.800771Z
+MED-9276,Frank Corp,Pending,Critical,Singapore,2025-05-07T20:56:09.800784Z
+MED-6957,Leo Corp,Closed,High,Toronto,2025-12-31T13:56:09.800797Z
+MED-3952,Jack Corp,Failed,Critical,Dubai,2026-01-22T09:56:09.800809Z
+MED-4343,Frank Corp,Closed,High,Sydney,2025-10-18T07:56:09.800821Z
+MED-4527,Karen Corp,Pending,Low,London,2025-06-08T20:56:09.800910Z
+MED-3209,Hank Corp,Failed,Critical,Sydney,2025-09-13T01:56:09.800960Z
+MED-5765,Eve Corp,Pending,Critical,Singapore,2025-08-11T19:56:09.800983Z
+MED-9273,Alice Corp,Failed,Medium,Berlin,2025-12-08T03:56:09.801000Z
+MED-4299,Alice Corp,Resolved,Medium,Berlin,2025-11-04T07:56:09.801016Z
+MED-9810,Ivy Corp,In Progress,Low,Singapore,2025-11-19T12:56:09.801033Z
+MED-3203,Ivy Corp,Resolved,High,Toronto,2025-09-24T01:56:09.801049Z
+MED-6544,Alice Corp,Pending,Critical,Singapore,2025-04-03T00:56:09.801063Z
+MED-7252,Grace Corp,In Progress,Low,Singapore,2025-06-08T10:56:09.801078Z
+MED-3610,Leo Corp,Closed,High,London,2025-04-16T00:56:09.801092Z
+MED-1434,Frank Corp,Active,Critical,Singapore,2025-03-21T12:56:09.801107Z
+MED-9250,Frank Corp,Requires Action,Medium,London,2025-09-18T22:56:09.801121Z
+MED-6604,Charlie Corp,Resolved,High,Berlin,2025-12-03T15:56:09.801135Z
+MED-3484,Grace Corp,Requires Action,Medium,Singapore,2025-06-25T09:56:09.801149Z
+MED-8761,Charlie Corp,Requires Action,Medium,Toronto,2025-03-11T17:56:09.801164Z
+MED-4037,Karen Corp,Failed,High,New York,2025-06-11T02:56:09.801177Z
+MED-9515,Grace Corp,In Progress,High,Dubai,2026-01-27T00:56:09.801191Z
+MED-8716,Eve Corp,Pending,Low,Dubai,2026-01-06T14:56:09.801205Z
+MED-2419,Hank Corp,Closed,Critical,Dubai,2025-07-31T23:56:09.801219Z
+MED-5103,Grace Corp,Requires Action,High,Sydney,2025-04-16T18:56:09.801233Z
+MED-6308,Leo Corp,Failed,Medium,London,2025-04-13T09:56:09.801250Z
+MED-4995,Diana Corp,Closed,Critical,Singapore,2025-10-08T07:56:09.801266Z
+MED-1742,Grace Corp,Resolved,Critical,New York,2026-01-15T06:56:09.801280Z
+MED-9281,Alice Corp,Active,Low,Sydney,2025-06-26T15:56:09.801293Z
+MED-2037,Hank Corp,Active,Medium,New York,2025-06-17T04:56:09.801306Z
+MED-9994,Ivy Corp,Closed,High,Tokyo,2026-03-07T07:56:09.801320Z
+MED-8369,Charlie Corp,Pending,Medium,Toronto,2026-01-03T21:56:09.801333Z
+MED-3204,Alice Corp,Resolved,Medium,Sydney,2025-08-28T01:56:09.801346Z
+MED-1160,Charlie Corp,Closed,High,Toronto,2025-05-04T10:56:09.801361Z
+MED-3963,Karen Corp,Failed,Medium,Berlin,2025-05-29T22:56:09.801376Z
+MED-8929,Grace Corp,Active,Medium,Singapore,2025-06-30T15:56:09.801390Z
+MED-3233,Charlie Corp,Failed,High,Berlin,2025-11-01T11:56:09.801406Z
+MED-9326,Jack Corp,Closed,Medium,London,2026-01-28T09:56:09.801421Z
+MED-2943,Karen Corp,Active,High,Berlin,2025-04-30T17:56:09.801436Z
+MED-8551,Eve Corp,Pending,Critical,London,2025-05-21T11:56:09.801451Z
+MED-5426,Karen Corp,Closed,Low,Dubai,2026-03-05T01:56:09.801466Z
+MED-7503,Grace Corp,Resolved,Low,Dubai,2026-02-09T04:56:09.801479Z
+MED-7498,Karen Corp,Closed,High,Berlin,2025-12-08T09:56:09.801495Z
+MED-9980,Jack Corp,In Progress,Critical,Dubai,2025-05-28T21:56:09.801508Z
+MED-6219,Karen Corp,Requires Action,Medium,Dubai,2025-12-24T04:56:09.801523Z
+MED-8813,Alice Corp,Closed,High,Toronto,2025-12-29T03:56:09.801538Z
+MED-1648,Jack Corp,Failed,High,Tokyo,2025-06-26T08:56:09.801552Z
+MED-8832,Karen Corp,Pending,Critical,London,2025-08-20T17:56:09.801566Z
+MED-9604,Grace Corp,Resolved,Critical,Toronto,2025-08-07T18:56:09.801579Z
+MED-4513,Ivy Corp,Resolved,Critical,London,2025-12-25T20:56:09.801594Z
+MED-2274,Diana Corp,Requires Action,Critical,Dubai,2025-08-08T07:56:09.801610Z
+MED-6878,Ivy Corp,Resolved,Low,London,2025-07-02T21:56:09.801624Z
+MED-3922,Frank Corp,In Progress,High,Singapore,2025-06-09T03:56:09.801639Z
+MED-6825,Leo Corp,Failed,Medium,Tokyo,2025-05-06T06:56:09.801653Z
+MED-8000,Jack Corp,In Progress,Low,New York,2025-04-05T10:56:09.801667Z
+MED-7952,Ivy Corp,In Progress,Critical,Berlin,2025-11-08T00:56:09.801683Z
+MED-1811,Jack Corp,Active,Medium,Dubai,2026-03-06T22:56:09.801698Z
+MED-2854,Hank Corp,Requires Action,High,New York,2025-03-21T21:56:09.801714Z
+MED-3793,Alice Corp,In Progress,Low,Sydney,2026-02-11T05:56:09.801734Z
+MED-8413,Jack Corp,Pending,Low,New York,2025-08-20T08:56:09.801749Z
+MED-1100,Frank Corp,In Progress,High,Tokyo,2025-12-12T12:56:09.801762Z
+MED-5170,Eve Corp,Closed,Medium,Toronto,2025-04-17T05:56:09.801777Z
+MED-5507,Charlie Corp,Failed,Medium,London,2025-10-01T16:56:09.801791Z
+MED-2658,Ivy Corp,Closed,Critical,Toronto,2025-09-17T05:56:09.801804Z
+MED-1153,Charlie Corp,Failed,Low,Dubai,2025-09-17T14:56:09.801818Z
+MED-3158,Charlie Corp,Requires Action,Low,Sydney,2025-09-10T19:56:09.801832Z
+MED-7763,Frank Corp,Closed,Critical,Tokyo,2025-06-24T10:56:09.801846Z
+MED-3462,Alice Corp,Closed,Low,Sydney,2026-03-11T01:56:09.801859Z
+MED-3586,Diana Corp,Active,Low,Toronto,2025-07-15T07:56:09.801873Z
+MED-8155,Grace Corp,Closed,Low,Toronto,2025-12-23T12:56:09.801890Z
+MED-3745,Alice Corp,Requires Action,High,Berlin,2025-06-18T03:56:09.801908Z
+MED-4921,Grace Corp,Resolved,Low,London,2025-03-22T16:56:09.801922Z
+MED-3730,Leo Corp,In Progress,Critical,London,2025-06-13T11:56:09.801937Z
+MED-1909,Eve Corp,Requires Action,Medium,New York,2026-01-14T07:56:09.801952Z
+MED-7347,Bob Corp,Requires Action,Medium,Dubai,2025-05-04T01:56:09.801967Z
+MED-6609,Charlie Corp,Pending,High,Singapore,2025-08-20T08:56:09.801981Z
+MED-7532,Jack Corp,Failed,Low,Sydney,2025-09-18T23:56:09.801995Z
+MED-8194,Bob Corp,Active,Medium,Tokyo,2026-02-03T18:56:09.802009Z
+MED-6636,Frank Corp,In Progress,High,London,2026-02-11T18:56:09.802023Z
+MED-6795,Charlie Corp,Active,Medium,Tokyo,2025-11-01T16:56:09.802037Z
+MED-8091,Jack Corp,Pending,Low,Dubai,2025-12-15T22:56:09.802051Z
+MED-5960,Grace Corp,Closed,Medium,Dubai,2026-02-16T03:56:09.802064Z
+MED-2914,Alice Corp,Requires Action,Medium,Toronto,2025-11-01T03:56:09.802079Z
+MED-7816,Eve Corp,Failed,Critical,Singapore,2025-11-06T02:56:09.802092Z
+MED-7771,Ivy Corp,Closed,High,Berlin,2025-04-09T06:56:09.802105Z
+MED-2569,Leo Corp,Resolved,Critical,London,2026-01-23T02:56:09.802118Z
+MED-7128,Hank Corp,Failed,Critical,Dubai,2025-03-14T22:56:09.802135Z
+MED-7297,Diana Corp,Active,Critical,New York,2026-02-01T03:56:09.802148Z
+MED-7170,Jack Corp,Failed,Critical,Tokyo,2025-12-16T14:56:09.802161Z
+MED-2591,Frank Corp,In Progress,Low,Tokyo,2025-04-21T03:56:09.802174Z
+MED-1343,Frank Corp,In Progress,High,New York,2026-01-02T11:56:09.802188Z
+MED-9371,Hank Corp,Resolved,Low,Sydney,2025-06-28T22:56:09.802202Z
+MED-6114,Charlie Corp,Pending,Low,Berlin,2025-05-28T10:56:09.802217Z

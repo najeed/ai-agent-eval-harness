@@ -1,0 +1,101 @@
+ticket_id,customer_name,issue_type,status,priority,region,created_at
+TKT-7020,Hank,Connectivity,Resolved,Critical,Sydney,2025-04-30T06:56:09.854629Z
+TKT-8426,Bob,Plan Upgrade,In Progress,Medium,Singapore,2025-12-05T15:56:09.854677Z
+TKT-8686,Ivy,Billing,In Progress,Medium,New York,2026-02-07T15:56:09.854698Z
+TKT-9195,Grace,Billing,In Progress,Low,Toronto,2026-02-12T15:56:09.854716Z
+TKT-8301,Diana,Outage,Active,High,Singapore,2025-11-12T13:56:09.854732Z
+TKT-2125,Hank,Outage,In Progress,High,Singapore,2026-02-20T00:56:09.854747Z
+TKT-7539,Charlie,Hardware,Resolved,Low,Toronto,2025-06-09T05:56:09.854762Z
+TKT-4620,Grace,Connectivity,Resolved,Critical,London,2025-04-13T12:56:09.854777Z
+TKT-1100,Bob,Hardware,Pending,Medium,Dubai,2026-01-21T18:56:09.854794Z
+TKT-3577,Alice,Hardware,Failed,Low,Berlin,2026-01-13T09:56:09.854810Z
+TKT-6117,Charlie,Plan Upgrade,Active,Critical,Toronto,2026-01-18T10:56:09.854825Z
+TKT-5975,Jack,Connectivity,Resolved,Medium,Dubai,2025-12-26T01:56:09.854839Z
+TKT-5962,Hank,Plan Upgrade,Closed,Low,Singapore,2025-04-10T01:56:09.854853Z
+TKT-1998,Frank,Plan Upgrade,In Progress,Medium,Dubai,2026-03-09T04:56:09.854867Z
+TKT-6739,Jack,Connectivity,Requires Action,Critical,New York,2026-02-05T18:56:09.854881Z
+TKT-4382,Ivy,Connectivity,Resolved,Critical,New York,2025-11-12T08:56:09.854894Z
+TKT-9227,Jack,Connectivity,Requires Action,Low,London,2025-10-05T18:56:09.854908Z
+TKT-5515,Leo,Hardware,Resolved,High,London,2025-07-21T17:56:09.854922Z
+TKT-6581,Diana,Connectivity,Requires Action,High,New York,2025-04-08T04:56:09.854936Z
+TKT-6056,Grace,Outage,Closed,High,Tokyo,2025-09-14T02:56:09.854950Z
+TKT-3687,Diana,Billing,Requires Action,Critical,Tokyo,2025-12-21T20:56:09.854964Z
+TKT-4809,Alice,Connectivity,Closed,High,New York,2025-03-18T21:56:09.854978Z
+TKT-2264,Jack,Outage,Closed,Critical,Sydney,2026-03-10T14:56:09.854992Z
+TKT-5158,Frank,Connectivity,Active,High,New York,2025-09-06T05:56:09.855006Z
+TKT-2643,Karen,Plan Upgrade,Resolved,Critical,New York,2026-03-07T15:56:09.855020Z
+TKT-8917,Karen,Hardware,In Progress,Medium,Toronto,2025-04-29T11:56:09.855034Z
+TKT-8671,Grace,Outage,Resolved,Low,Singapore,2025-06-23T22:56:09.855048Z
+TKT-8624,Grace,Connectivity,Resolved,Low,Toronto,2025-06-19T13:56:09.855063Z
+TKT-2685,Ivy,Outage,Active,Low,Singapore,2025-09-28T02:56:09.855079Z
+TKT-7693,Eve,Hardware,Closed,Low,Berlin,2025-08-09T01:56:09.855093Z
+TKT-8793,Hank,Connectivity,Active,Low,Tokyo,2025-11-11T19:56:09.855107Z
+TKT-9116,Alice,Billing,Pending,Critical,Berlin,2025-07-22T09:56:09.855121Z
+TKT-1228,Ivy,Outage,Pending,Low,Tokyo,2025-12-16T03:56:09.855136Z
+TKT-8194,Diana,Billing,Active,High,Tokyo,2025-05-13T21:56:09.855150Z
+TKT-2254,Frank,Outage,Requires Action,Critical,Tokyo,2026-01-01T11:56:09.855166Z
+TKT-8487,Alice,Plan Upgrade,In Progress,Low,Singapore,2025-07-01T23:56:09.855180Z
+TKT-3613,Eve,Plan Upgrade,Pending,High,Berlin,2025-05-18T02:56:09.855195Z
+TKT-5620,Leo,Billing,Pending,Medium,Singapore,2025-09-26T16:56:09.855209Z
+TKT-7663,Bob,Hardware,Resolved,Critical,Dubai,2025-08-08T20:56:09.855223Z
+TKT-6361,Hank,Billing,Closed,Low,New York,2025-12-18T23:56:09.855237Z
+TKT-1635,Charlie,Plan Upgrade,Pending,High,Sydney,2025-08-10T12:56:09.855250Z
+TKT-1804,Diana,Plan Upgrade,Closed,High,Toronto,2025-11-15T19:56:09.855265Z
+TKT-7439,Eve,Outage,In Progress,High,New York,2025-10-05T17:56:09.855278Z
+TKT-7848,Alice,Plan Upgrade,In Progress,High,New York,2025-09-21T13:56:09.855292Z
+TKT-7957,Diana,Outage,Failed,Low,Dubai,2025-09-16T13:56:09.855308Z
+TKT-5267,Bob,Billing,Requires Action,Low,Singapore,2026-02-25T08:56:09.855321Z
+TKT-1838,Jack,Hardware,Failed,Medium,Singapore,2025-05-26T12:56:09.855335Z
+TKT-1217,Karen,Connectivity,Closed,Medium,New York,2025-12-09T17:56:09.855350Z
+TKT-6759,Ivy,Hardware,Pending,Low,Singapore,2026-03-08T04:56:09.855364Z
+TKT-2356,Leo,Hardware,Closed,High,Berlin,2025-08-12T05:56:09.855378Z
+TKT-1852,Leo,Billing,Closed,High,New York,2026-02-24T08:56:09.855394Z
+TKT-2656,Leo,Outage,In Progress,Low,Singapore,2025-07-12T04:56:09.855409Z
+TKT-4033,Diana,Hardware,Closed,Medium,Dubai,2025-11-24T21:56:09.855424Z
+TKT-4328,Ivy,Billing,Closed,Medium,New York,2025-10-10T07:56:09.855439Z
+TKT-5976,Grace,Hardware,In Progress,High,Toronto,2025-08-13T12:56:09.855453Z
+TKT-1343,Frank,Outage,Closed,High,Tokyo,2025-08-22T04:56:09.855468Z
+TKT-4041,Karen,Outage,Pending,Low,London,2026-02-19T17:56:09.855481Z
+TKT-8100,Alice,Billing,Requires Action,Low,Tokyo,2025-11-08T15:56:09.855495Z
+TKT-4921,Eve,Billing,In Progress,Medium,Toronto,2025-11-08T16:56:09.855509Z
+TKT-2581,Charlie,Outage,Active,High,Singapore,2025-11-12T01:56:09.855522Z
+TKT-6878,Alice,Outage,In Progress,Low,Sydney,2025-06-23T19:56:09.855535Z
+TKT-9025,Frank,Connectivity,Resolved,Low,Berlin,2025-09-19T16:56:09.855548Z
+TKT-7225,Jack,Billing,Closed,Critical,Singapore,2025-05-01T16:56:09.855562Z
+TKT-5011,Alice,Outage,Active,Low,Dubai,2025-10-06T05:56:09.855575Z
+TKT-4103,Ivy,Billing,Closed,Critical,New York,2025-06-01T22:56:09.855588Z
+TKT-2479,Alice,Billing,In Progress,High,London,2025-10-16T13:56:09.855606Z
+TKT-3306,Karen,Billing,Pending,Critical,Singapore,2025-04-12T11:56:09.855621Z
+TKT-7696,Frank,Plan Upgrade,Pending,Medium,Singapore,2026-01-23T05:56:09.855636Z
+TKT-7202,Jack,Outage,Closed,Critical,Tokyo,2026-02-23T21:56:09.855650Z
+TKT-4950,Karen,Connectivity,Failed,Critical,Toronto,2025-10-23T08:56:09.855665Z
+TKT-8820,Eve,Plan Upgrade,Active,Critical,Berlin,2025-11-18T14:56:09.855679Z
+TKT-4984,Karen,Hardware,In Progress,Critical,Dubai,2025-10-24T23:56:09.855693Z
+TKT-2026,Karen,Connectivity,Pending,Medium,London,2025-11-01T13:56:09.855706Z
+TKT-3932,Alice,Plan Upgrade,Resolved,Medium,Berlin,2025-04-16T04:56:09.855720Z
+TKT-7680,Frank,Outage,Resolved,Medium,London,2025-12-31T16:56:09.855735Z
+TKT-1431,Diana,Connectivity,In Progress,High,Toronto,2025-04-09T03:56:09.855749Z
+TKT-2142,Diana,Connectivity,Failed,Critical,Tokyo,2025-11-26T06:56:09.855764Z
+TKT-7948,Diana,Connectivity,Pending,High,Sydney,2025-12-15T17:56:09.855781Z
+TKT-6743,Bob,Plan Upgrade,Closed,Low,Dubai,2025-04-06T02:56:09.855796Z
+TKT-1597,Diana,Plan Upgrade,Active,Medium,Berlin,2025-06-06T09:56:09.855810Z
+TKT-9058,Grace,Plan Upgrade,In Progress,High,Singapore,2025-07-16T03:56:09.855823Z
+TKT-5827,Karen,Plan Upgrade,Pending,Low,London,2025-04-18T02:56:09.855838Z
+TKT-4027,Bob,Outage,Pending,High,Dubai,2025-05-03T16:56:09.855852Z
+TKT-4254,Diana,Connectivity,In Progress,Low,Berlin,2025-05-27T16:56:09.855865Z
+TKT-7856,Frank,Plan Upgrade,Pending,Low,Dubai,2026-02-25T23:56:09.855878Z
+TKT-8281,Jack,Hardware,Closed,Low,Sydney,2025-07-09T10:56:09.855892Z
+TKT-1313,Charlie,Connectivity,Closed,Critical,Toronto,2025-09-02T12:56:09.855905Z
+TKT-4717,Eve,Billing,In Progress,Medium,Singapore,2025-06-01T19:56:09.855920Z
+TKT-1852,Alice,Plan Upgrade,In Progress,High,Dubai,2025-07-07T04:56:09.855933Z
+TKT-8096,Alice,Connectivity,Pending,High,Tokyo,2025-05-15T14:56:09.855947Z
+TKT-6377,Frank,Outage,Failed,Critical,New York,2025-08-23T08:56:09.855961Z
+TKT-3460,Bob,Hardware,Requires Action,High,Berlin,2025-03-24T19:56:09.855976Z
+TKT-2502,Hank,Outage,Requires Action,Medium,Tokyo,2025-11-17T00:56:09.855990Z
+TKT-6148,Ivy,Outage,Requires Action,Medium,Berlin,2025-08-01T17:56:09.856006Z
+TKT-5562,Grace,Outage,In Progress,Critical,New York,2025-03-11T10:56:09.856020Z
+TKT-5031,Hank,Hardware,Active,Medium,London,2025-09-13T15:56:09.856035Z
+TKT-6274,Frank,Outage,Closed,Medium,Tokyo,2025-05-24T06:56:09.856050Z
+TKT-2222,Alice,Outage,Failed,High,Toronto,2025-06-21T10:56:09.856064Z
+TKT-5349,Frank,Billing,Requires Action,Low,Berlin,2025-06-28T02:56:09.856079Z
+TKT-8999,Bob,Plan Upgrade,Failed,Medium,Sydney,2025-05-15T10:56:09.856093Z

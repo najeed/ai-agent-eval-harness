@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+DEF-9705,Hank Corp,Failed,Low,Toronto,2025-11-25T13:56:09.718740Z
+DEF-2259,Alice Corp,In Progress,Low,Dubai,2025-04-08T01:56:09.718777Z
+DEF-4922,Charlie Corp,Requires Action,High,London,2026-02-17T10:56:09.718794Z
+DEF-6210,Karen Corp,Failed,Critical,Singapore,2025-05-28T19:56:09.718809Z
+DEF-3622,Hank Corp,Requires Action,Low,Tokyo,2025-09-23T05:56:09.718823Z
+DEF-6101,Hank Corp,Failed,High,Tokyo,2025-12-09T23:56:09.718838Z
+DEF-6579,Diana Corp,Closed,Critical,Toronto,2025-06-05T04:56:09.718851Z
+DEF-9846,Charlie Corp,Closed,Low,New York,2025-07-18T13:56:09.718865Z
+DEF-5294,Leo Corp,Closed,Low,Toronto,2025-07-10T02:56:09.718879Z
+DEF-5344,Ivy Corp,Active,Medium,New York,2025-09-24T04:56:09.718893Z
+DEF-6979,Diana Corp,Requires Action,Low,Singapore,2025-07-14T14:56:09.718907Z
+DEF-9581,Bob Corp,Requires Action,Critical,Sydney,2025-06-16T12:56:09.718920Z
+DEF-7391,Leo Corp,Requires Action,Critical,Berlin,2025-05-05T05:56:09.718934Z
+DEF-8425,Bob Corp,Resolved,High,New York,2025-12-02T22:56:09.718951Z
+DEF-8258,Ivy Corp,Failed,Critical,Berlin,2025-06-17T03:56:09.718965Z
+DEF-2415,Charlie Corp,In Progress,Medium,Tokyo,2025-05-23T06:56:09.718979Z
+DEF-1477,Frank Corp,Failed,Low,London,2026-01-31T22:56:09.718992Z
+DEF-5035,Alice Corp,Pending,Low,Toronto,2026-03-10T04:56:09.719006Z
+DEF-7058,Frank Corp,Requires Action,High,London,2025-04-11T11:56:09.719018Z
+DEF-3946,Eve Corp,Active,High,New York,2025-04-20T01:56:09.719032Z
+DEF-8079,Leo Corp,Pending,Low,Toronto,2025-10-27T12:56:09.719045Z
+DEF-5701,Ivy Corp,Pending,Medium,Singapore,2025-05-05T08:56:09.719059Z
+DEF-7350,Charlie Corp,Failed,Low,Berlin,2025-04-29T19:56:09.719076Z
+DEF-2038,Alice Corp,In Progress,Low,New York,2025-06-08T08:56:09.719089Z
+DEF-9466,Karen Corp,Pending,Low,Toronto,2025-05-17T21:56:09.719102Z
+DEF-2693,Jack Corp,Failed,Medium,Berlin,2025-09-03T02:56:09.719117Z
+DEF-5538,Karen Corp,Resolved,Critical,Berlin,2025-09-02T08:56:09.719130Z
+DEF-7801,Hank Corp,In Progress,High,Sydney,2025-08-14T14:56:09.719144Z
+DEF-1007,Hank Corp,Closed,Critical,Singapore,2025-04-29T23:56:09.719157Z
+DEF-8969,Leo Corp,Failed,Low,Tokyo,2025-12-17T09:56:09.719171Z
+DEF-7747,Alice Corp,Requires Action,Critical,Sydney,2025-06-15T08:56:09.719184Z
+DEF-9313,Frank Corp,Pending,Medium,Tokyo,2025-08-03T11:56:09.719198Z
+DEF-7082,Bob Corp,Resolved,High,Singapore,2026-01-16T05:56:09.719211Z
+DEF-3539,Leo Corp,Requires Action,Critical,Dubai,2025-04-13T09:56:09.719225Z
+DEF-8996,Eve Corp,In Progress,High,Berlin,2025-07-01T20:56:09.719239Z
+DEF-7777,Eve Corp,Closed,Low,Dubai,2025-09-26T08:56:09.719253Z
+DEF-3318,Karen Corp,Failed,Critical,London,2025-03-17T22:56:09.719266Z
+DEF-1328,Bob Corp,Requires Action,High,Berlin,2025-08-20T00:56:09.719279Z
+DEF-1818,Karen Corp,In Progress,Medium,Singapore,2025-04-03T04:56:09.719292Z
+DEF-9643,Jack Corp,Resolved,Low,Dubai,2025-08-05T19:56:09.719306Z
+DEF-8315,Leo Corp,Active,Medium,London,2025-05-13T01:56:09.719321Z
+DEF-1609,Bob Corp,Requires Action,Low,Berlin,2025-11-24T21:56:09.719335Z
+DEF-7064,Leo Corp,Active,High,Sydney,2025-12-10T17:56:09.719348Z
+DEF-4805,Jack Corp,Closed,Low,Toronto,2026-01-14T11:56:09.719361Z
+DEF-8864,Frank Corp,Failed,Medium,Tokyo,2025-04-16T07:56:09.719375Z
+DEF-1809,Leo Corp,In Progress,Low,London,2025-12-08T10:56:09.719389Z
+DEF-6002,Jack Corp,In Progress,High,Singapore,2025-07-15T09:56:09.719402Z
+DEF-5474,Charlie Corp,In Progress,Critical,Sydney,2025-08-11T00:56:09.719416Z
+DEF-2534,Karen Corp,Closed,High,Singapore,2025-04-22T13:56:09.719428Z
+DEF-5719,Leo Corp,Active,Critical,Berlin,2025-07-22T16:56:09.719440Z
+DEF-1957,Grace Corp,Failed,Low,Toronto,2025-06-24T20:56:09.719453Z
+DEF-1978,Eve Corp,Failed,Critical,Sydney,2025-11-12T20:56:09.719465Z
+DEF-8717,Diana Corp,Requires Action,Critical,Dubai,2025-08-02T07:56:09.719479Z
+DEF-1292,Alice Corp,Failed,Medium,Toronto,2025-10-22T23:56:09.719493Z
+DEF-8858,Jack Corp,Closed,Low,Dubai,2025-06-05T17:56:09.719506Z
+DEF-7368,Bob Corp,Requires Action,Medium,Dubai,2025-03-20T09:56:09.719520Z
+DEF-6269,Leo Corp,Closed,Low,Sydney,2025-12-13T10:56:09.719533Z
+DEF-5973,Karen Corp,Resolved,Low,Tokyo,2025-09-10T15:56:09.719546Z
+DEF-8858,Hank Corp,In Progress,High,Sydney,2025-12-31T08:56:09.719559Z
+DEF-7851,Diana Corp,Resolved,Medium,New York,2025-06-23T09:56:09.719572Z
+DEF-7554,Bob Corp,Failed,Medium,Tokyo,2025-03-21T09:56:09.719585Z
+DEF-3959,Alice Corp,Active,High,Tokyo,2026-01-20T20:56:09.719598Z
+DEF-9424,Leo Corp,Resolved,Critical,Dubai,2025-09-10T09:56:09.719611Z
+DEF-7205,Karen Corp,Failed,Low,London,2025-10-16T06:56:09.719624Z
+DEF-8721,Jack Corp,Failed,High,Singapore,2025-11-17T13:56:09.719637Z
+DEF-7440,Bob Corp,In Progress,Low,Berlin,2025-10-10T20:56:09.719656Z
+DEF-6899,Bob Corp,Requires Action,Low,Berlin,2025-10-02T12:56:09.719670Z
+DEF-8870,Karen Corp,Resolved,High,Sydney,2026-01-10T14:56:09.719683Z
+DEF-1009,Eve Corp,Active,Low,New York,2025-10-16T11:56:09.719696Z
+DEF-1097,Bob Corp,Requires Action,Low,Singapore,2025-08-05T00:56:09.719709Z
+DEF-3909,Frank Corp,Pending,Low,New York,2025-06-16T17:56:09.719721Z
+DEF-2331,Bob Corp,In Progress,Critical,New York,2025-07-15T05:56:09.719733Z
+DEF-4963,Leo Corp,Pending,Critical,Dubai,2025-09-18T19:56:09.719746Z
+DEF-2123,Bob Corp,Pending,Critical,Tokyo,2025-05-24T16:56:09.719758Z
+DEF-9674,Jack Corp,Resolved,High,Singapore,2026-02-16T08:56:09.719771Z
+DEF-7154,Eve Corp,Requires Action,Critical,Singapore,2026-01-05T13:56:09.719783Z
+DEF-2466,Bob Corp,In Progress,High,Toronto,2025-09-19T07:56:09.719797Z
+DEF-5680,Frank Corp,In Progress,Critical,London,2026-02-05T15:56:09.719814Z
+DEF-2577,Leo Corp,In Progress,Critical,Toronto,2025-11-22T01:56:09.719827Z
+DEF-2943,Hank Corp,Requires Action,Low,Tokyo,2025-09-09T08:56:09.719840Z
+DEF-1299,Hank Corp,Closed,Medium,Singapore,2026-02-26T15:56:09.719853Z
+DEF-5288,Eve Corp,Failed,Low,Sydney,2025-07-10T21:56:09.719866Z
+DEF-8217,Hank Corp,Pending,Low,Dubai,2025-12-20T01:56:09.719878Z
+DEF-4863,Jack Corp,Closed,High,New York,2025-05-26T15:56:09.719890Z
+DEF-9090,Karen Corp,Active,High,Singapore,2025-08-18T00:56:09.719903Z
+DEF-8631,Ivy Corp,Pending,Critical,Toronto,2025-07-23T01:56:09.719916Z
+DEF-7756,Grace Corp,Requires Action,High,London,2025-08-24T19:56:09.719930Z
+DEF-8132,Ivy Corp,Active,High,Sydney,2026-01-20T00:56:09.719943Z
+DEF-8602,Alice Corp,Pending,High,Toronto,2025-08-04T07:56:09.719955Z
+DEF-5368,Hank Corp,Requires Action,Medium,Berlin,2026-02-20T19:56:09.719968Z
+DEF-7004,Ivy Corp,In Progress,Medium,Tokyo,2025-10-13T07:56:09.719980Z
+DEF-5183,Leo Corp,Resolved,High,Berlin,2025-09-26T17:56:09.719994Z
+DEF-1734,Hank Corp,Active,Low,Dubai,2025-09-13T21:56:09.720007Z
+DEF-2053,Grace Corp,Requires Action,Critical,Toronto,2025-04-26T16:56:09.720022Z
+DEF-3775,Karen Corp,In Progress,Critical,New York,2025-07-30T17:56:09.720035Z
+DEF-1100,Hank Corp,Resolved,Low,Singapore,2026-03-03T00:56:09.720047Z
+DEF-2715,Eve Corp,Pending,Low,New York,2026-02-21T15:56:09.720060Z
+DEF-6087,Leo Corp,Failed,Critical,Toronto,2025-08-04T10:56:09.720072Z
+DEF-6988,Karen Corp,In Progress,Low,New York,2025-12-12T21:56:09.720085Z
+DEF-8872,Grace Corp,Requires Action,Critical,Toronto,2026-03-04T11:56:09.720098Z

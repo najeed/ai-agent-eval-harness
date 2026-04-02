@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+LEG-4444,Karen Corp,Failed,Critical,Sydney,2026-02-22T17:56:09.781271Z
+LEG-2058,Bob Corp,Pending,Low,Berlin,2025-11-24T04:56:09.781315Z
+LEG-5027,Ivy Corp,Active,Low,Sydney,2025-09-19T07:56:09.781332Z
+LEG-9891,Hank Corp,Requires Action,High,New York,2025-09-12T23:56:09.781347Z
+LEG-5871,Charlie Corp,Active,Critical,London,2025-12-26T03:56:09.781361Z
+LEG-3744,Eve Corp,Active,Medium,Tokyo,2025-04-21T23:56:09.781374Z
+LEG-3535,Jack Corp,Resolved,High,London,2025-06-04T22:56:09.781389Z
+LEG-1540,Charlie Corp,Resolved,Medium,Tokyo,2025-12-24T07:56:09.781479Z
+LEG-4210,Hank Corp,Pending,High,London,2025-10-27T02:56:09.781499Z
+LEG-9960,Leo Corp,Requires Action,Medium,Dubai,2025-05-19T19:56:09.781514Z
+LEG-9200,Jack Corp,In Progress,Low,Tokyo,2025-12-06T15:56:09.781529Z
+LEG-1256,Jack Corp,Active,Low,Toronto,2025-05-15T13:56:09.781546Z
+LEG-4668,Eve Corp,Closed,Low,Sydney,2025-07-11T15:56:09.781562Z
+LEG-1195,Bob Corp,Active,Low,London,2025-11-27T23:56:09.781577Z
+LEG-5183,Eve Corp,In Progress,Critical,Tokyo,2026-01-13T12:56:09.781590Z
+LEG-8685,Jack Corp,Resolved,High,Toronto,2025-07-05T22:56:09.781603Z
+LEG-5731,Eve Corp,Failed,Critical,Tokyo,2025-05-10T18:56:09.781617Z
+LEG-7658,Alice Corp,Failed,Medium,New York,2025-06-03T10:56:09.781630Z
+LEG-5719,Charlie Corp,Requires Action,Low,Tokyo,2025-08-14T16:56:09.781643Z
+LEG-5934,Leo Corp,Resolved,Critical,Dubai,2025-06-30T02:56:09.781657Z
+LEG-5802,Karen Corp,Requires Action,Medium,London,2025-04-04T13:56:09.781670Z
+LEG-5887,Hank Corp,Pending,High,Singapore,2025-05-06T23:56:09.781684Z
+LEG-5877,Karen Corp,Resolved,Critical,London,2025-10-14T09:56:09.781697Z
+LEG-4017,Jack Corp,In Progress,Critical,Berlin,2025-11-03T21:56:09.781710Z
+LEG-5641,Bob Corp,Resolved,High,Sydney,2026-02-26T22:56:09.781724Z
+LEG-3649,Diana Corp,Pending,Critical,Sydney,2025-07-30T09:56:09.781738Z
+LEG-9769,Bob Corp,Requires Action,Critical,Sydney,2026-02-14T19:56:09.781752Z
+LEG-6491,Charlie Corp,Active,Medium,Singapore,2026-02-17T06:56:09.781766Z
+LEG-6331,Eve Corp,Active,Low,Singapore,2026-01-17T07:56:09.781780Z
+LEG-4523,Alice Corp,In Progress,Medium,Tokyo,2025-10-28T10:56:09.781793Z
+LEG-7524,Leo Corp,Resolved,Medium,London,2025-09-26T15:56:09.781806Z
+LEG-3971,Charlie Corp,Resolved,High,Sydney,2025-10-04T21:56:09.781821Z
+LEG-1535,Diana Corp,Resolved,Low,Tokyo,2025-06-17T14:56:09.781834Z
+LEG-9285,Hank Corp,Active,High,London,2026-01-19T04:56:09.781849Z
+LEG-5817,Ivy Corp,Requires Action,Medium,Sydney,2025-09-08T21:56:09.781863Z
+LEG-6699,Eve Corp,Active,Medium,New York,2025-08-21T21:56:09.781877Z
+LEG-7907,Leo Corp,Active,High,New York,2025-05-25T13:56:09.781890Z
+LEG-6075,Leo Corp,Requires Action,Medium,New York,2025-11-23T05:56:09.782020Z
+LEG-5797,Leo Corp,In Progress,Low,Singapore,2026-01-12T21:56:09.782044Z
+LEG-1788,Ivy Corp,Requires Action,High,Tokyo,2025-07-19T17:56:09.782064Z
+LEG-8447,Leo Corp,Active,High,Tokyo,2025-08-03T03:56:09.782110Z
+LEG-6347,Bob Corp,Pending,High,New York,2025-10-20T07:56:09.782131Z
+LEG-8265,Charlie Corp,Active,Medium,Dubai,2025-09-15T09:56:09.782148Z
+LEG-5702,Eve Corp,Resolved,High,Sydney,2025-11-07T16:56:09.782507Z
+LEG-2098,Jack Corp,Requires Action,Critical,Toronto,2025-05-16T23:56:09.782546Z
+LEG-8489,Bob Corp,Closed,Low,Singapore,2025-07-20T18:56:09.782566Z
+LEG-2737,Karen Corp,Resolved,Medium,New York,2025-12-11T22:56:09.782583Z
+LEG-8021,Hank Corp,In Progress,Low,Berlin,2025-07-30T01:56:09.782598Z
+LEG-6628,Grace Corp,Active,High,New York,2025-07-06T02:56:09.782613Z
+LEG-7317,Ivy Corp,Resolved,Critical,Singapore,2025-12-04T09:56:09.782628Z
+LEG-4563,Hank Corp,Closed,Critical,New York,2025-09-08T10:56:09.782643Z
+LEG-1160,Grace Corp,Requires Action,Low,Berlin,2025-04-22T15:56:09.782659Z
+LEG-5224,Grace Corp,Pending,Critical,New York,2025-05-31T00:56:09.782674Z
+LEG-9015,Frank Corp,Resolved,Medium,Berlin,2025-11-15T02:56:09.782689Z
+LEG-5813,Leo Corp,Failed,Critical,Sydney,2025-09-04T03:56:09.782704Z
+LEG-1221,Jack Corp,In Progress,Critical,Dubai,2026-01-31T05:56:09.782719Z
+LEG-6410,Charlie Corp,Pending,High,Berlin,2025-05-20T14:56:09.782735Z
+LEG-6718,Alice Corp,Requires Action,Critical,Toronto,2025-03-28T10:56:09.782749Z
+LEG-9933,Jack Corp,Failed,High,New York,2025-09-25T23:56:09.782763Z
+LEG-6859,Grace Corp,Closed,Critical,Singapore,2025-11-04T22:56:09.782777Z
+LEG-8098,Charlie Corp,In Progress,Critical,Berlin,2025-09-01T06:56:09.782790Z
+LEG-7811,Hank Corp,Closed,Low,New York,2025-03-24T16:56:09.782805Z
+LEG-7974,Leo Corp,Failed,Medium,Tokyo,2026-01-21T16:56:09.782820Z
+LEG-4291,Diana Corp,Closed,Medium,New York,2025-05-19T08:56:09.782833Z
+LEG-7783,Eve Corp,Requires Action,Critical,New York,2026-02-02T19:56:09.782847Z
+LEG-7936,Grace Corp,In Progress,Low,Toronto,2026-01-25T05:56:09.782897Z
+LEG-4436,Bob Corp,Resolved,High,Singapore,2025-07-17T11:56:09.782912Z
+LEG-8815,Eve Corp,Closed,High,Sydney,2025-08-27T12:56:09.782927Z
+LEG-4887,Diana Corp,Active,Critical,New York,2026-01-02T04:56:09.782940Z
+LEG-4783,Frank Corp,Requires Action,Low,Toronto,2025-03-13T05:56:09.782954Z
+LEG-3465,Eve Corp,Closed,Low,Sydney,2025-09-26T12:56:09.782968Z
+LEG-2214,Leo Corp,Requires Action,Medium,London,2025-06-25T13:56:09.782982Z
+LEG-3275,Jack Corp,Active,Critical,Toronto,2025-04-15T13:56:09.782997Z
+LEG-2844,Alice Corp,Resolved,Low,Sydney,2025-07-19T06:56:09.783012Z
+LEG-4654,Charlie Corp,Requires Action,Medium,Dubai,2026-01-06T07:56:09.783026Z
+LEG-6794,Jack Corp,Closed,Low,New York,2026-02-04T23:56:09.783040Z
+LEG-6440,Frank Corp,In Progress,High,Toronto,2025-03-28T06:56:09.783056Z
+LEG-4225,Diana Corp,Failed,Critical,Tokyo,2025-08-11T17:56:09.783079Z
+LEG-7343,Bob Corp,Requires Action,Medium,Sydney,2025-09-26T10:56:09.783094Z
+LEG-9455,Jack Corp,Active,Medium,Tokyo,2025-03-16T10:56:09.783109Z
+LEG-2211,Leo Corp,Resolved,Critical,Sydney,2025-04-21T07:56:09.783123Z
+LEG-2265,Eve Corp,Failed,Medium,Singapore,2025-08-13T19:56:09.783139Z
+LEG-8430,Hank Corp,Pending,Low,Dubai,2025-11-10T09:56:09.783156Z
+LEG-3802,Alice Corp,Pending,Medium,London,2025-06-09T17:56:09.783171Z
+LEG-8322,Frank Corp,In Progress,Low,Dubai,2025-08-02T00:56:09.783188Z
+LEG-2152,Eve Corp,Requires Action,High,Dubai,2025-06-03T05:56:09.783203Z
+LEG-3583,Leo Corp,Closed,Low,Sydney,2026-03-04T02:56:09.783267Z
+LEG-1155,Charlie Corp,Requires Action,Medium,Singapore,2025-03-15T12:56:09.783322Z
+LEG-5025,Grace Corp,Requires Action,Low,Tokyo,2025-04-06T12:56:09.783345Z
+LEG-6365,Karen Corp,In Progress,Low,Berlin,2025-05-05T13:56:09.783362Z
+LEG-6078,Leo Corp,In Progress,Low,Sydney,2026-01-09T23:56:09.783380Z
+LEG-4459,Diana Corp,In Progress,Critical,Sydney,2026-01-03T02:56:09.783397Z
+LEG-6657,Charlie Corp,Resolved,Medium,Singapore,2025-04-11T00:56:09.783411Z
+LEG-4021,Diana Corp,Resolved,High,Sydney,2025-06-13T20:56:09.783432Z
+LEG-4791,Hank Corp,Requires Action,Low,London,2025-04-16T02:56:09.783448Z
+LEG-6229,Charlie Corp,Closed,Medium,Toronto,2025-10-14T19:56:09.783464Z
+LEG-6398,Charlie Corp,Closed,High,Berlin,2026-01-20T19:56:09.783480Z
+LEG-3005,Eve Corp,Pending,Low,Tokyo,2025-05-28T07:56:09.783497Z
+LEG-2931,Jack Corp,Closed,Critical,Toronto,2025-05-21T21:56:09.783515Z
+LEG-1883,Diana Corp,Closed,Low,Sydney,2025-06-22T13:56:09.783532Z

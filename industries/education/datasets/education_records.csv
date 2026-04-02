@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+EDU-2063,Diana Corp,Resolved,Low,London,2025-06-13T10:56:09.730357Z
+EDU-9971,Ivy Corp,Active,High,Tokyo,2025-07-18T06:56:09.730402Z
+EDU-9149,Frank Corp,In Progress,Medium,New York,2025-07-10T02:56:09.730417Z
+EDU-8647,Jack Corp,Pending,Critical,Dubai,2025-07-22T10:56:09.730430Z
+EDU-9580,Frank Corp,In Progress,Low,Toronto,2025-04-20T04:56:09.730442Z
+EDU-6027,Charlie Corp,Failed,Medium,Tokyo,2025-09-08T10:56:09.730456Z
+EDU-1391,Alice Corp,Resolved,Critical,Tokyo,2025-07-17T19:56:09.730467Z
+EDU-5663,Hank Corp,Active,High,Tokyo,2025-06-07T09:56:09.730490Z
+EDU-1048,Karen Corp,Failed,Medium,Tokyo,2025-12-03T18:56:09.730502Z
+EDU-6780,Bob Corp,Pending,Low,Tokyo,2026-02-09T09:56:09.730514Z
+EDU-2063,Jack Corp,Pending,Low,London,2025-11-04T12:56:09.730528Z
+EDU-7564,Frank Corp,Failed,Critical,London,2025-07-21T06:56:09.730541Z
+EDU-8759,Charlie Corp,Requires Action,Critical,Toronto,2025-10-13T06:56:09.730554Z
+EDU-2504,Eve Corp,In Progress,Critical,Toronto,2025-05-07T17:56:09.730567Z
+EDU-5995,Grace Corp,Requires Action,High,Sydney,2025-04-23T17:56:09.730578Z
+EDU-6491,Hank Corp,Resolved,Critical,Sydney,2026-02-22T00:56:09.730590Z
+EDU-6496,Charlie Corp,Pending,Low,London,2026-02-19T11:56:09.730602Z
+EDU-3756,Alice Corp,Requires Action,Critical,Berlin,2026-02-19T05:56:09.730614Z
+EDU-7713,Eve Corp,In Progress,Low,London,2025-03-17T20:56:09.730628Z
+EDU-1907,Jack Corp,Active,High,Sydney,2025-12-23T12:56:09.730640Z
+EDU-1992,Bob Corp,In Progress,Critical,New York,2026-01-25T15:56:09.730653Z
+EDU-4792,Charlie Corp,Active,High,London,2025-04-12T22:56:09.730664Z
+EDU-7230,Charlie Corp,Pending,Critical,New York,2025-06-05T23:56:09.730674Z
+EDU-3530,Frank Corp,Closed,Critical,Singapore,2026-02-24T16:56:09.730688Z
+EDU-8462,Eve Corp,Active,Medium,Singapore,2025-04-20T10:56:09.730701Z
+EDU-7418,Eve Corp,Failed,Critical,New York,2025-06-21T16:56:09.730713Z
+EDU-2281,Bob Corp,Pending,High,Dubai,2025-03-28T22:56:09.730725Z
+EDU-1424,Diana Corp,Pending,High,Toronto,2026-02-22T11:56:09.730738Z
+EDU-7128,Jack Corp,In Progress,Critical,Dubai,2025-10-08T15:56:09.730751Z
+EDU-6378,Jack Corp,Resolved,Critical,New York,2025-05-30T18:56:09.730765Z
+EDU-1767,Jack Corp,Active,High,Berlin,2025-06-01T23:56:09.730778Z
+EDU-9979,Diana Corp,Failed,Low,Singapore,2025-11-23T02:56:09.730790Z
+EDU-7105,Hank Corp,Failed,Critical,Sydney,2025-04-23T02:56:09.730802Z
+EDU-5281,Diana Corp,Closed,Medium,Dubai,2025-06-15T11:56:09.730815Z
+EDU-7993,Karen Corp,Pending,High,Sydney,2025-05-26T12:56:09.730827Z
+EDU-5141,Hank Corp,Resolved,High,Sydney,2026-02-04T01:56:09.730839Z
+EDU-8433,Leo Corp,Requires Action,Medium,New York,2025-09-07T06:56:09.730851Z
+EDU-3978,Alice Corp,Resolved,Critical,Berlin,2025-12-13T21:56:09.730863Z
+EDU-6534,Leo Corp,Pending,Medium,Toronto,2025-03-14T17:56:09.730872Z
+EDU-3714,Hank Corp,Active,Low,Tokyo,2026-01-16T20:56:09.730883Z
+EDU-9752,Leo Corp,Pending,Medium,Sydney,2025-03-26T12:56:09.730893Z
+EDU-1009,Karen Corp,In Progress,Critical,New York,2026-03-02T16:56:09.730906Z
+EDU-3913,Leo Corp,Resolved,Low,Tokyo,2026-01-03T18:56:09.730917Z
+EDU-8171,Diana Corp,In Progress,Medium,Toronto,2025-08-24T08:56:09.730928Z
+EDU-5250,Alice Corp,Requires Action,Low,London,2025-09-21T10:56:09.730939Z
+EDU-7522,Alice Corp,In Progress,High,London,2026-03-04T20:56:09.731050Z
+EDU-2504,Diana Corp,Closed,High,New York,2025-10-31T06:56:09.731076Z
+EDU-2712,Eve Corp,Pending,High,Singapore,2025-11-02T01:56:09.731095Z
+EDU-6904,Eve Corp,Resolved,Low,Berlin,2026-02-20T02:56:09.731111Z
+EDU-6681,Leo Corp,Closed,High,Toronto,2026-02-14T16:56:09.731126Z
+EDU-5375,Frank Corp,In Progress,Critical,Tokyo,2025-04-28T15:56:09.731141Z
+EDU-8388,Diana Corp,Active,Critical,Tokyo,2025-09-16T13:56:09.731157Z
+EDU-1014,Bob Corp,Failed,Medium,Sydney,2026-01-01T17:56:09.731170Z
+EDU-5082,Ivy Corp,In Progress,Critical,New York,2025-05-05T14:56:09.731185Z
+EDU-8491,Hank Corp,Failed,Critical,Toronto,2025-05-12T03:56:09.731199Z
+EDU-6469,Jack Corp,In Progress,High,Berlin,2026-02-07T05:56:09.731212Z
+EDU-1902,Karen Corp,Active,Medium,Sydney,2025-08-25T19:56:09.731226Z
+EDU-4497,Grace Corp,Active,Critical,Singapore,2025-09-11T23:56:09.731239Z
+EDU-9261,Karen Corp,In Progress,Critical,London,2025-07-29T21:56:09.731252Z
+EDU-1536,Diana Corp,Requires Action,Low,Singapore,2025-12-01T03:56:09.731266Z
+EDU-5822,Diana Corp,Resolved,Low,London,2025-12-16T17:56:09.731279Z
+EDU-6247,Bob Corp,Closed,Low,Singapore,2025-09-17T16:56:09.731291Z
+EDU-7714,Bob Corp,Requires Action,Critical,Berlin,2025-06-18T13:56:09.731305Z
+EDU-6404,Frank Corp,Active,Medium,New York,2025-06-28T06:56:09.731319Z
+EDU-4198,Frank Corp,Pending,High,Berlin,2025-10-23T03:56:09.731334Z
+EDU-5975,Charlie Corp,Resolved,High,Singapore,2025-08-04T12:56:09.731357Z
+EDU-8260,Hank Corp,Resolved,Medium,London,2025-11-18T11:56:09.731372Z
+EDU-5962,Eve Corp,Requires Action,Critical,Sydney,2026-02-19T08:56:09.731386Z
+EDU-5631,Ivy Corp,Requires Action,Critical,Berlin,2025-07-27T20:56:09.731400Z
+EDU-3784,Eve Corp,In Progress,High,Toronto,2026-01-04T03:56:09.731413Z
+EDU-4219,Karen Corp,In Progress,Low,Dubai,2025-04-10T01:56:09.731428Z
+EDU-5219,Charlie Corp,Resolved,Critical,Toronto,2025-12-21T04:56:09.731441Z
+EDU-6127,Karen Corp,Pending,Medium,Tokyo,2025-10-20T00:56:09.731455Z
+EDU-4690,Frank Corp,Closed,Medium,Dubai,2025-03-23T09:56:09.731468Z
+EDU-7052,Grace Corp,Requires Action,Medium,Toronto,2025-05-29T03:56:09.731482Z
+EDU-3309,Karen Corp,Pending,Medium,Dubai,2025-10-14T12:56:09.731496Z
+EDU-7462,Charlie Corp,Active,High,New York,2026-01-10T02:56:09.731510Z
+EDU-1242,Ivy Corp,Requires Action,Medium,Toronto,2025-03-11T23:56:09.731530Z
+EDU-8102,Ivy Corp,Requires Action,High,Sydney,2025-06-28T17:56:09.731544Z
+EDU-8895,Diana Corp,Active,Medium,Tokyo,2025-07-19T01:56:09.731557Z
+EDU-6067,Charlie Corp,Closed,Medium,Toronto,2025-12-16T19:56:09.731571Z
+EDU-6669,Karen Corp,Requires Action,High,Sydney,2025-09-30T17:56:09.731584Z
+EDU-8468,Bob Corp,Resolved,High,Singapore,2025-08-29T04:56:09.731599Z
+EDU-1457,Alice Corp,Requires Action,High,Sydney,2026-01-25T22:56:09.731613Z
+EDU-6177,Charlie Corp,In Progress,Critical,Tokyo,2025-11-22T21:56:09.731627Z
+EDU-5505,Hank Corp,In Progress,Medium,Singapore,2025-08-16T20:56:09.731642Z
+EDU-3571,Leo Corp,Failed,High,Berlin,2025-06-22T20:56:09.731657Z
+EDU-6884,Frank Corp,Pending,Medium,Tokyo,2025-06-22T06:56:09.731671Z
+EDU-3981,Charlie Corp,Closed,Critical,Toronto,2026-02-13T19:56:09.731685Z
+EDU-6516,Karen Corp,Pending,High,Toronto,2025-11-29T08:56:09.731700Z
+EDU-5176,Grace Corp,Closed,Medium,Tokyo,2025-12-11T11:56:09.731714Z
+EDU-6879,Jack Corp,Resolved,Low,Sydney,2025-09-14T22:56:09.731728Z
+EDU-5872,Jack Corp,Requires Action,High,Toronto,2025-08-18T13:56:09.731743Z
+EDU-7690,Alice Corp,Active,Critical,New York,2025-10-29T08:56:09.731763Z
+EDU-3727,Leo Corp,Pending,High,Sydney,2025-07-22T03:56:09.731778Z
+EDU-1754,Grace Corp,Active,Low,Singapore,2025-12-15T04:56:09.731793Z
+EDU-3642,Diana Corp,Active,High,Sydney,2025-09-11T04:56:09.731808Z
+EDU-3876,Hank Corp,Failed,Critical,Sydney,2025-04-28T21:56:09.731824Z
+EDU-7917,Ivy Corp,Pending,Critical,Sydney,2025-03-26T22:56:09.731840Z
+EDU-6399,Alice Corp,Resolved,Low,London,2025-04-09T18:56:09.731856Z

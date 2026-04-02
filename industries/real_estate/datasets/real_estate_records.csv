@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+REA-1429,Eve Corp,Pending,Medium,Dubai,2025-10-04T03:56:09.827914Z
+REA-1166,Charlie Corp,Failed,Critical,Sydney,2025-10-16T08:56:09.827959Z
+REA-1199,Eve Corp,Failed,Medium,Singapore,2025-08-21T04:56:09.827974Z
+REA-9527,Grace Corp,In Progress,Critical,Singapore,2025-06-03T23:56:09.828093Z
+REA-1979,Karen Corp,In Progress,Low,Sydney,2025-10-30T07:56:09.828120Z
+REA-9626,Grace Corp,Resolved,Low,Toronto,2025-08-13T10:56:09.828142Z
+REA-9767,Bob Corp,Closed,Low,London,2025-11-09T00:56:09.828159Z
+REA-9334,Eve Corp,Requires Action,Low,Dubai,2026-02-10T07:56:09.828176Z
+REA-6125,Alice Corp,Pending,Low,Toronto,2025-08-28T14:56:09.828192Z
+REA-9896,Hank Corp,Failed,Medium,Tokyo,2025-03-16T16:56:09.828207Z
+REA-9190,Charlie Corp,Resolved,Medium,New York,2025-10-31T13:56:09.828223Z
+REA-7430,Charlie Corp,Active,Critical,New York,2025-10-06T17:56:09.828237Z
+REA-6261,Alice Corp,Active,High,Singapore,2025-10-03T02:56:09.828252Z
+REA-6199,Jack Corp,Resolved,Low,New York,2025-09-11T20:56:09.828267Z
+REA-2158,Bob Corp,Resolved,Critical,Sydney,2026-02-23T09:56:09.828281Z
+REA-9145,Jack Corp,In Progress,Medium,Toronto,2025-04-29T08:56:09.828295Z
+REA-6818,Ivy Corp,Resolved,Medium,Singapore,2025-12-06T07:56:09.828309Z
+REA-3603,Karen Corp,Active,Low,Tokyo,2025-03-21T17:56:09.828324Z
+REA-1434,Alice Corp,Closed,High,New York,2025-04-14T15:56:09.828338Z
+REA-4188,Grace Corp,Closed,Critical,London,2025-07-14T19:56:09.828352Z
+REA-4070,Leo Corp,Active,Low,Singapore,2025-04-25T23:56:09.828367Z
+REA-2267,Jack Corp,Closed,Critical,Tokyo,2025-07-26T01:56:09.828381Z
+REA-6669,Diana Corp,In Progress,High,New York,2025-12-31T11:56:09.828395Z
+REA-3078,Hank Corp,Pending,Low,Sydney,2026-02-09T07:56:09.828409Z
+REA-4610,Hank Corp,Active,Medium,New York,2025-10-12T02:56:09.828424Z
+REA-5569,Grace Corp,In Progress,Critical,London,2025-09-02T04:56:09.828438Z
+REA-7349,Karen Corp,Closed,Medium,Toronto,2025-10-20T20:56:09.828453Z
+REA-8605,Alice Corp,In Progress,High,Dubai,2025-06-06T13:56:09.828468Z
+REA-2487,Karen Corp,Requires Action,Critical,London,2025-12-31T07:56:09.828484Z
+REA-6504,Leo Corp,Pending,High,Berlin,2025-07-27T17:56:09.828499Z
+REA-5615,Hank Corp,Failed,High,New York,2026-02-14T02:56:09.828514Z
+REA-1247,Bob Corp,Closed,High,London,2025-06-13T05:56:09.828530Z
+REA-6749,Diana Corp,Closed,Critical,Sydney,2025-05-24T23:56:09.828545Z
+REA-5543,Frank Corp,In Progress,Low,Toronto,2025-04-15T10:56:09.828561Z
+REA-9024,Jack Corp,In Progress,Critical,London,2026-01-26T01:56:09.828578Z
+REA-1501,Eve Corp,In Progress,High,Toronto,2025-04-29T10:56:09.828594Z
+REA-1795,Eve Corp,Resolved,Low,Toronto,2025-11-01T07:56:09.828611Z
+REA-2766,Leo Corp,Requires Action,Critical,Tokyo,2025-05-02T04:56:09.828629Z
+REA-7892,Charlie Corp,Pending,High,London,2025-06-21T21:56:09.828645Z
+REA-1622,Bob Corp,Pending,Low,Singapore,2025-08-29T23:56:09.828661Z
+REA-3857,Hank Corp,Active,High,Toronto,2026-03-03T18:56:09.828676Z
+REA-7269,Charlie Corp,Failed,Low,Dubai,2025-05-03T09:56:09.828695Z
+REA-1499,Karen Corp,Failed,Critical,Sydney,2025-04-13T06:56:09.828710Z
+REA-7251,Alice Corp,Active,Low,New York,2025-07-29T19:56:09.828727Z
+REA-4573,Bob Corp,Requires Action,High,Berlin,2025-05-24T11:56:09.828747Z
+REA-4474,Grace Corp,In Progress,Medium,Berlin,2025-06-27T14:56:09.828765Z
+REA-6196,Jack Corp,In Progress,Low,Berlin,2025-05-14T23:56:09.828782Z
+REA-4877,Eve Corp,Failed,Critical,New York,2025-12-26T09:56:09.828798Z
+REA-7912,Frank Corp,Pending,Critical,Toronto,2025-07-03T17:56:09.828815Z
+REA-7417,Ivy Corp,Active,Critical,Toronto,2025-06-09T02:56:09.828830Z
+REA-7762,Eve Corp,Pending,Medium,Toronto,2026-01-04T23:56:09.828846Z
+REA-3767,Grace Corp,Failed,Critical,Singapore,2025-06-30T19:56:09.828861Z
+REA-4868,Alice Corp,Requires Action,Medium,Singapore,2026-03-07T10:56:09.828877Z
+REA-7500,Ivy Corp,Failed,Low,New York,2026-01-19T13:56:09.828896Z
+REA-4407,Frank Corp,Requires Action,Critical,Tokyo,2025-09-22T12:56:09.828912Z
+REA-7453,Karen Corp,Pending,Critical,Tokyo,2025-12-08T19:56:09.828929Z
+REA-8219,Bob Corp,Pending,Low,Berlin,2025-07-30T10:56:09.828947Z
+REA-9110,Frank Corp,Requires Action,Low,London,2025-05-30T12:56:09.828963Z
+REA-7645,Bob Corp,Active,Critical,Toronto,2025-11-02T23:56:09.828979Z
+REA-9561,Frank Corp,Resolved,High,Singapore,2025-08-18T06:56:09.828997Z
+REA-1515,Leo Corp,Pending,Low,London,2025-05-15T10:56:09.829014Z
+REA-8859,Karen Corp,Failed,Critical,Dubai,2026-01-21T03:56:09.829031Z
+REA-7633,Karen Corp,Requires Action,Low,Sydney,2026-01-10T16:56:09.829048Z
+REA-6409,Bob Corp,Failed,Critical,Singapore,2025-07-09T19:56:09.829063Z
+REA-8679,Jack Corp,Resolved,Medium,New York,2025-06-21T16:56:09.829079Z
+REA-4885,Grace Corp,Requires Action,Medium,Toronto,2026-02-26T04:56:09.829099Z
+REA-7291,Grace Corp,Pending,Critical,Dubai,2025-07-26T12:56:09.829115Z
+REA-3944,Charlie Corp,Active,Medium,Berlin,2025-11-10T17:56:09.829128Z
+REA-3159,Leo Corp,Pending,Critical,Singapore,2026-01-29T10:56:09.829143Z
+REA-8943,Ivy Corp,Resolved,Critical,Sydney,2025-03-12T23:56:09.829157Z
+REA-3222,Alice Corp,Active,Critical,Sydney,2025-06-23T15:56:09.829172Z
+REA-7289,Ivy Corp,Requires Action,Critical,Sydney,2025-03-11T09:56:09.829187Z
+REA-7047,Jack Corp,Active,Low,Singapore,2026-03-08T01:56:09.829202Z
+REA-5066,Hank Corp,Resolved,Low,Tokyo,2025-08-01T16:56:09.829216Z
+REA-8594,Charlie Corp,Resolved,Medium,London,2026-02-12T10:56:09.829230Z
+REA-9573,Eve Corp,Closed,Critical,London,2025-08-07T13:56:09.829245Z
+REA-9408,Diana Corp,Active,Critical,London,2026-02-27T19:56:09.829260Z
+REA-9132,Jack Corp,Resolved,Medium,New York,2025-05-11T13:56:09.829279Z
+REA-4420,Bob Corp,Closed,Medium,Sydney,2025-10-23T03:56:09.829294Z
+REA-5316,Charlie Corp,In Progress,Medium,Dubai,2026-01-30T10:56:09.829309Z
+REA-4189,Jack Corp,Resolved,Low,London,2025-11-23T07:56:09.829324Z
+REA-9896,Ivy Corp,Pending,Medium,Singapore,2025-05-06T21:56:09.829338Z
+REA-7279,Charlie Corp,Active,Critical,Singapore,2025-08-09T07:56:09.829353Z
+REA-6242,Charlie Corp,Requires Action,Low,Berlin,2025-10-05T23:56:09.829366Z
+REA-1055,Alice Corp,Failed,High,Tokyo,2026-01-20T23:56:09.829380Z
+REA-1913,Grace Corp,In Progress,High,New York,2026-03-10T00:56:09.829395Z
+REA-7385,Hank Corp,Requires Action,Critical,Tokyo,2025-11-19T11:56:09.829408Z
+REA-5699,Bob Corp,In Progress,Critical,Dubai,2025-05-05T17:56:09.829421Z
+REA-5471,Grace Corp,Pending,Medium,London,2026-02-11T11:56:09.829434Z
+REA-4590,Frank Corp,Pending,Low,Dubai,2025-10-19T17:56:09.829447Z
+REA-8475,Diana Corp,In Progress,High,New York,2025-05-20T15:56:09.829461Z
+REA-8221,Leo Corp,In Progress,Medium,New York,2025-08-08T07:56:09.829474Z
+REA-7514,Frank Corp,In Progress,Medium,London,2025-10-19T18:56:09.829488Z
+REA-4055,Frank Corp,Resolved,Low,Berlin,2025-06-03T20:56:09.829504Z
+REA-8822,Karen Corp,Failed,Medium,Singapore,2025-07-19T07:56:09.829519Z
+REA-1123,Charlie Corp,Failed,High,Toronto,2025-05-25T10:56:09.829532Z
+REA-4886,Karen Corp,Active,Medium,Sydney,2025-07-09T05:56:09.829547Z
+REA-7010,Diana Corp,Pending,Critical,Dubai,2026-03-01T04:56:09.829561Z
+REA-3796,Bob Corp,Requires Action,Critical,Dubai,2025-06-24T07:56:09.829575Z
+REA-2657,Hank Corp,Pending,High,Berlin,2026-03-01T13:56:09.829588Z
