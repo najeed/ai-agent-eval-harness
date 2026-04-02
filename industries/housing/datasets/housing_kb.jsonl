@@ -1,3 +1,0 @@
-# Source: U.S. Dept. of Housing and Urban Development (HUD User), Attribution Required, https://www.huduser.gov/portal/datasets/fmr.html
-{"record_id":"dc05558cdae13b1c","industry":"housing","checksum":"d7c35071940d0394965ff012efa162edfadfe64d84b5b8834845499fe210d2a4","source":"https:\/\/www.huduser.gov\/portal\/datasets\/fmr\/api\/","provider":"HUD","location":"San Francisco, CA","rent_2br":3500.0,"year":2023}
-{"record_id":"b4b81f761b274f55","industry":"housing","checksum":"84957b43d2d648b6f664b28621bdd14f434aaf2d300a515f9274fef0c3df586d","source":"https:\/\/www.huduser.gov\/portal\/datasets\/fmr\/api\/","provider":"HUD","location":"Austin, TX","rent_2br":1850.0,"year":2023}

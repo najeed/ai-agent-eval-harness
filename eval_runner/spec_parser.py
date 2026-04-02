@@ -54,7 +54,7 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
 
         if "overview" in header:
             scenario["description"] = body
-        elif "tasks" in header:
+        elif "tasks" in header or "test cases" in header:
             # Find all H3 headers in the tasks section (numbered or unnumbered)
             task_headers = list(re.finditer(r"^###\s+(?:\d+\.\s*)?(.*)", body, re.MULTILINE))
             for i, match in enumerate(task_headers):
