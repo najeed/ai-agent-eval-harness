@@ -21,7 +21,7 @@ def create_app():
     # This eliminates the "0 scenarios" state on initial load.
     manager.load_plugins()
     from eval_runner.catalog import ScenarioCatalog
-    ScenarioCatalog.get_instance().check_for_updates(force=True)
+    ScenarioCatalog.get_instance().load_index()
 
     # Set static_folder using the project root for absolute reliability
     ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
