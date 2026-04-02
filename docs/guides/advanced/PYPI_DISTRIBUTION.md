@@ -17,7 +17,7 @@ Ensure the `version` in `pyproject.toml` is correct for your new release.
 
 ```toml
 [project]
-name = "multi-agent-eval"
+name = "multiagent-verify"
 version = "1.1.0" # Update this
 ...
 ```
@@ -68,7 +68,7 @@ twine upload --repository testpypi dist/*
 You can then try installing it from TestPyPI:
 ```bash
 # Use the new package name
-pip install --index-url https://test.pypi.org/simple/ --no-deps multi-agent-eval
+pip install --index-url https://test.pypi.org/simple/ --no-deps multiagent-verify
 ```
 
 ## Step 5: Upload to PyPI
