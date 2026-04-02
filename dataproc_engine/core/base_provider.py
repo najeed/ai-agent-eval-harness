@@ -94,6 +94,16 @@ class BaseProvider(ABC):
         # Hardening: Standardized Simulation Control
         self.allow_simulation = config.get("allow_simulation", True)
 
+    @property
+    def project_root(self) -> str:
+        """
+        v1.2: Static Anchor Protocol.
+        Provides a fail-safe, absolute reference to the project root directory.
+        This file is expected to live at <root>/dataproc_engine/core/base_provider.py.
+        """
+        import os
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
     def create_simulated_artifact(self, id: str, content: Any, source_url: str = "simulation://local", metadata: Dict = None) -> RawArtifact:
         """
         Standardized factory for high-fidelity simulations. 
@@ -102,8 +112,9 @@ class BaseProvider(ABC):
         import datetime
         final_metadata = metadata or {}
         final_metadata["simulation"] = True
+        final_id = id if id.startswith("sim-") else f"sim-{id}"
         return RawArtifact(
-            id=f"sim-{id}",
+            id=final_id,
             source_url=source_url,
             content=content,
             metadata=final_metadata,

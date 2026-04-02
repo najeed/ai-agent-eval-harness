@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import asyncio
 import aiohttp
@@ -15,11 +15,11 @@ class LaborProvider(BaseProvider):
     """
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
-        self.schema_type = config.get("schema_type", "bls") # bls, ilo
+        self.labor_mode = config.get("labor_mode", "bls") # bls, ilo
         self.api_key = config.get("bls_api_key")
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "ilo":
+        if self.labor_mode == "ilo":
             # Gold Standard: ILO (International Labour Organization)
             indicator = self.config.get("indicator", "EMP_TEMP_SEX_AGE_RT")
             url = f"https://www.ilo.org/ilostat-with-db/rest/data/{indicator}"
@@ -60,7 +60,7 @@ class LaborProvider(BaseProvider):
         
         for raw in raw_artifacts:
             for row in raw.content:
-                if self.schema_type == "ilo":
+                if self.labor_mode == "ilo":
                     data = {
                         "location": row.get("ref_area"),
                         "period": row.get("time"),
@@ -80,7 +80,7 @@ class LaborProvider(BaseProvider):
                         id=record_id,
                         industry="labor",
                         data=verified,
-                        provenance={"source": raw.source_url, "provider": self.schema_type.upper()},
+                        provenance={"source": raw.source_url, "provider": self.labor_mode.upper()},
                         checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
                     ))
         return results

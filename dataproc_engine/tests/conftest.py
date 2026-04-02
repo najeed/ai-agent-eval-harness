@@ -1,72 +1,60 @@
-﻿import pytest
-import json
-from unittest.mock import MagicMock, AsyncMock, patch
-import aiohttp
+import pytest
+from unittest.mock import MagicMock, AsyncMock
+from dataproc_engine.core.llm_manager import LLMManager
 
-@pytest.fixture(autouse=True)
-def mock_network_and_llm():
+class IndustryHeuristicMock:
     """
-    Global mock for all network calls and LLM provider endpoints.
-    Ensures tests can hit extraction logic branches without real tokens.
+    A state-aware mock for LLM operations that generates deterministic, 
+    industry-compliant StandardSchema records and simulates failure modes.
     """
-    with patch("aiohttp.ClientSession.post") as mock_post, \
-         patch("aiohttp.ClientSession.get") as mock_get:
-        
-        # Helper to generate industry-specific valid data
-        def get_mock_json(url=""):
-            # 1. SEC Fact Structure (Special Case)
-            if "sec.gov" in url:
-                return {
-                    "facts": {
-                        "us-gaap": {
-                            "Assets": {"units": {"USD": [{"val": 1000000}]}},
-                            "Revenues": {"units": {"USD": [{"val": 500000}]}},
-                            "NetIncomeLoss": {"units": {"USD": [{"val": 100000}]}}
-                        }
-                    }
-                }
-            
-            # 2. Standard valid values to pass domain validation
-            return {
-                "status": "mocked",
-                "entity_name": "Mock Corp",
-                "total_assets": 1000000,
-                "total_liabilities": 500000,
-                "net_income": 100000,
-                "revenue": 500000,
-                "revenues": 500000, # Finance Alias
-                "value": 100,
-                "sentiment_score": 0.8,
-                "cik": "0000320193",
-                "ticker": "AAPL",
-                "date": "2023-01-01"
+    def __init__(self):
+        self.failure_mode = None
+        self.call_count = 0
+
+    def set_failure_mode(self, mode):
+        """Supported: 'api_error', 'rate_limit', 'schema_violation', 'drift_detected'"""
+        self.failure_mode = mode
+
+    def _check_failure(self):
+        if self.failure_mode == "api_error":
+            raise Exception("Simulated Cloud Provider API Failure")
+        if self.failure_mode == "rate_limit":
+            raise Exception("Rate limit reached for model tier")
+
+    async def mock_extract_structured_data(self, prompt, schema, industry="finance", **kwargs):
+        self.call_count += 1
+        self._check_failure()
+
+        # Deterministic industry-based generation
+        records = []
+        limit = kwargs.get("limit", 1)
+        for i in range(limit):
+            record = {
+                "id": f"mock_{industry}_{i}",
+                "timestamp": "2024-01-01T00:00:00Z",
+                "industry": industry,
+                "data": {"signal": 0.85, "status": "stable", "index": i},
+                "metadata": {"source": "heuristic_mock", "version": "v2.0"},
+                "integrity_hash": "sha256_mock_hash"
             }
+            if self.failure_mode == "schema_violation":
+                del record["id"]
+            records.append(record)
+        return records
 
-        def create_mock_resp(url):
-            mock_resp = AsyncMock()
-            mock_resp.status = 200
-            payload = get_mock_json(url)
-            # Support both .json() and .text()
-            mock_resp.json.return_value = payload
-            mock_resp.text.return_value = json.dumps(payload)
-            
-            # Complex LLM support
-            mock_resp.json.return_value = {
-                "choices": [{"message": {"content": json.dumps(payload)}}], # OpenAI
-                "candidates": [{"content": {"parts": [{"text": json.dumps(payload)}]}}], # Gemini
-                "content": [{"text": json.dumps(payload)}], # Claude
-                "response": json.dumps(payload) # Ollama
-            }
-            # Catch-all for SEC case where .json() should return the raw dict
-            if "sec.gov" in url:
-                mock_resp.json.return_value = payload
+    def mock_verify_schema(self, data, schema, strict=False):
+        self._check_failure()
+        return data
 
-            mock_resp.__aenter__.return_value = mock_resp
-            return mock_resp
+@pytest.fixture
+def heuristic_mock():
+    return IndustryHeuristicMock()
 
-        mock_post.side_effect = lambda url, **kwargs: create_mock_resp(url)
-        mock_get.side_effect = lambda url, **kwargs: create_mock_resp(url)
-        
-        yield
-
-
+@pytest.fixture
+def patched_llm_manager(heuristic_mock):
+    """Fixture that patches LLMManager to use our IndustryHeuristicMock."""
+    mock_mgr = MagicMock(spec=LLMManager)
+    # Patch main entry points
+    mock_mgr.extract_structured_data = AsyncMock(side_effect=heuristic_mock.mock_extract_structured_data)
+    mock_mgr._verify_schema = MagicMock(side_effect=heuristic_mock.mock_verify_schema)
+    return mock_mgr

@@ -177,12 +177,13 @@ class ParitySynthesizer:
             for i in range(count):
                 raw_results[i][key] = corrected_vals[i]
             
-        # 3. Add Compliance Metadata
+        # 3. Add Compliance Metadata (V2: Policy-Aware Status)
         for record in raw_results:
+            is_restricted = model.get("policy") == "generator_only" or "Restricted" in model.get("license", "")
             record["_synthesis_audit"] = {
                 "generation_method": "statistical_sampling",
                 "source_license": model["license"],
-                "conservative_status": "distribution_ready",
+                "conservative_status": "local_only" if is_restricted else "embedded",
                 "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "disclaimer": "User is responsible for ensuring source data access is compliant."
             }

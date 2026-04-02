@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import datetime
 from typing import List, Dict, Any, Optional
@@ -14,9 +14,9 @@ class DecisionSupportProvider(BaseProvider):
     """
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
-        self.schema_type = config.get("schema_type", "policy_risk")
-        if self.schema_type == "standard":
-            self.schema_type = "policy_risk"
+        self.decision_support_mode = config.get("decision_support_mode", "policy_risk")
+        if self.decision_support_mode == "standard":
+            self.decision_support_mode = "policy_risk"
 
     async def extract(self) -> List[RawArtifact]:
         """
@@ -44,7 +44,7 @@ class DecisionSupportProvider(BaseProvider):
         for raw in raw_artifacts:
             input_data = raw.content
             
-            if self.schema_type == "policy_risk":
+            if self.decision_support_mode == "policy_risk":
                 # Logic: Combine yield gap + temp anomaly + inflation
                 yield_impact = abs(input_data.get("agriculture", {}).get("yield_gap", 0)) * 2
                 temp_impact = input_data.get("environment", {}).get("temp_anomaly", 0) / 5

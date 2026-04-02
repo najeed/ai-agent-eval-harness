@@ -1,8 +1,9 @@
-﻿import aiohttp
+import aiohttp
 import asyncio
 import hashlib
 import json
 import datetime
+import os
 from typing import List, Dict, Any
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
@@ -21,12 +22,14 @@ class FinanceProvider(BaseProvider):
         self.sec_user_agent = config.get("sec_user_agent", "Mozilla/5.0 (Evaluation Harness)")
         self.taxonomy = config.get("taxonomy", "us-gaap") 
         self.currency = config.get("currency", "USD")
-        self.schema_type = config.get("schema_type", "sec_edgar") # sec_edgar, credit_risk, world_bank
+        mode = config.get("finance_mode") or config.get("schema_type") or "secedgar"
+        self.finance_mode = mode.lower().replace("_", "")
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "world_bank":
-            # Gold Standard: World Bank Global Macro Indicators
-            # Default indicator: GDP (current US$) - NY.GDP.MKTP.CD
+        """
+        Unified extraction logic for World Bank, UCI Credit, and SEC XBRL.
+        """
+        if self.finance_mode == "worldbank":
             indicator = self.config.get("indicator", "NY.GDP.MKTP.CD")
             country = self.config.get("country", "all")
             url = f"https://api.worldbank.org/v2/country/{country}/indicator/{indicator}?format=json&per_page=100"
@@ -44,48 +47,60 @@ class FinanceProvider(BaseProvider):
                         return [RawArtifact(
                             id=f"WB-{indicator}-{country}",
                             source_url=url,
-                            content=content[1], # Index 1 contains the actual data records
+                            content=content,
                             metadata={"indicator": indicator, "country": country},
                             timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                         )]
                 except Exception as e:
                     logger.error("wb_extraction_failed", indicator=indicator, error=str(e))
-                
-                if self.allow_simulation:
-                    simulated_wb = [
-                        {"country": {"value": "United States"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
-                        {"country": {"value": "China"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"}
-                    ]
-                    return [self.create_simulated_artifact(
-                        id=f"WB-{indicator}",
-                        content=simulated_wb,
-                        source_url=url,
-                        metadata={"indicator": indicator}
-                    )]
-                return []
-
-        if self.schema_type == "credit_risk":
-            # Gold Standard: UCI Default of Credit Card Clients
-            url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls"
             
-            # Unified Data Acquisition (Local or Web URL)
+            if self.allow_simulation:
+                # v1.2-ULTIMATE: Static Anchor Protocol for total resiliency
+                mock_path = os.path.join(self.project_root, "industries", "finance", "mock_worldbank.json")
+                try:
+                    with open(mock_path, "r") as f:
+                        simulated_wb = json.load(f)
+                except Exception:
+                    simulated_wb = [
+                        {"page": 1},
+                        [
+                            {"country": {"value": "United States", "id": "US"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
+                            {"country": {"value": "China", "id": "CN"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"}
+                        ]
+                    ]
+                return [self.create_simulated_artifact(
+                    id=f"sim-WB-{indicator}",
+                    content=simulated_wb,
+                    source_url=url,
+                    metadata={"indicator": indicator}
+                )]
+            return []
+
+        if self.finance_mode == "creditrisk":
+            url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls"
             path = self.config.get("input_uri") or ""
             df = self.load_raw_data(path)
             
             if df is not None:
                 return [RawArtifact(
                     id="UCI-CREDIT-USER",
-                    source_url=path,
+                    source_url=path or url,
                     content=df.to_dict(orient="records"),
                     metadata={"dataset": "UCI Default Credits", "source": "User-Provided"},
                     timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                 )]
 
             if self.allow_simulation:
-                simulated_data = [
-                    {"ID": 1, "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 24, "PAY_0": 2, "BILL_AMT1": 3913, "PAY_AMT1": 0, "default": 1},
-                    {"ID": 2, "LIMIT_BAL": 120000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 26, "PAY_0": -1, "BILL_AMT1": 2682, "PAY_AMT1": 0, "default": 1}
-                ]
+                # v1.2-ULTIMATE: Static Anchor Protocol for total resiliency
+                mock_path = os.path.join(self.project_root, "industries", "finance", "mock_credit_risk.json")
+                try:
+                    with open(mock_path, "r") as f:
+                        simulated_data = json.load(f)
+                except Exception:
+                    simulated_data = [
+                        {"ID": 1, "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 24, "PAY_0": 2, "BILL_AMT1": 3913, "PAY_AMT1": 0, "default.payment.next.month": 1},
+                        {"ID": 2, "LIMIT_BAL": 120000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 26, "PAY_0": -1, "BILL_AMT1": 2682, "PAY_AMT1": 0, "default.payment.next.month": 1}
+                    ]
                 return [self.create_simulated_artifact(
                     id="UCI-CREDIT",
                     content=simulated_data,
@@ -94,30 +109,61 @@ class FinanceProvider(BaseProvider):
                 )]
             return []
 
-        ciks = self.config.get("ciks") or self.DEFAULT_CIKS
-        limit = self.config.get("limit", len(ciks))
-        target_ciks = ciks[:limit]
+        if self.finance_mode == "secedgar":
+            ciks = self.config.get("ciks") or self.DEFAULT_CIKS
+            limit = self.config.get("limit", len(ciks))
+            target_ciks = ciks[:limit]
+            
+            tasks = [self._fetch_and_transform_cik(cik) for cik in target_ciks]
+            results = await asyncio.gather(*tasks)
+            artifacts = [r for r in results if r is not None]
+            
+            if not artifacts and self.allow_simulation:
+                # v1.2-ULTIMATE: Static Anchor Protocol for total resiliency
+                mock_path = os.path.join(self.project_root, "industries", "finance", "mock_sec_edgar.json")
+                mock_data = {}
+                try:
+                    with open(mock_path, "r") as f:
+                        mock_data = json.load(f)
+                except Exception:
+                     pass
+
+                for cik in target_ciks:
+                    padded_cik = cik.zfill(10)
+                    sim_content = mock_data.get(padded_cik) or mock_data.get(cik) or mock_data.get("default")
+                    
+                    if not sim_content:
+                        sim_content = {
+                            "entityName": f"SIM Company {cik}",
+                            "facts": {self.taxonomy: {"Revenues": {"units": {self.currency: [{"val": 100000, "fy": 2023, "fp": "FY"}]}}}}
+                        }
+                    
+                    artifacts.append(self.create_simulated_artifact(
+                        id=f"SEC-{cik}-FACTS",
+                        content=sim_content,
+                        source_url="https://sim-sec.example.org/",
+                        metadata={"company": sim_content.get("entityName", f"SIM Company {cik}"), "cik": cik}
+                    ))
+            return artifacts
         
+        return []
+
+    async def _fetch_and_transform_cik(self, cik: str) -> Optional[RawArtifact]:
+        padded_cik = cik.zfill(10)
+        url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{padded_cik}.json"
         headers = {"User-Agent": self.sec_user_agent}
-        artifacts = []
         
         async with aiohttp.ClientSession() as session:
-            async def process_cik(cik):
-                padded_cik = cik.zfill(10)
-                url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{padded_cik}.json"
-                
-                async def fetch_sec_data():
-                    async with session.get(url, headers=headers) as resp:
-                        if resp.status == 200:
-                            return await resp.json()
-                        raise Exception(f"SEC API Error: {resp.status}")
-                
-                try:
-                    logger.info("queuing_sec_fetch", cik=padded_cik)
-                    content = await self.request_with_retry(fetch_sec_data)
-                    if not content:
-                        return None
-                        
+            async def fetch_sec_data():
+                async with session.get(url, headers=headers) as resp:
+                    if resp.status == 200:
+                        return await resp.json()
+                    raise Exception(f"SEC API Error: {resp.status}")
+            
+            try:
+                logger.info("queuing_sec_fetch", cik=padded_cik)
+                content = await self.request_with_retry(fetch_sec_data)
+                if content:
                     company_name = content.get("entityName", f"CIK {cik}")
                     return RawArtifact(
                         id=f"SEC-{cik}-FACTS",
@@ -126,151 +172,126 @@ class FinanceProvider(BaseProvider):
                         metadata={"company": company_name, "cik": cik},
                         timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                     )
-                except Exception as e:
-                    logger.error("sec_extraction_failed", cik=padded_cik, error=str(e))
-                    return None
-
-            tasks = [process_cik(cik) for cik in target_ciks]
-            results = await asyncio.gather(*tasks)
-            artifacts.extend([r for r in results if r])
-            
-        return artifacts
+            except Exception as e:
+                logger.error("sec_extraction_failed", cik=padded_cik, error=str(e))
+        return None
 
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
+        is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
         
-        if self.schema_type == "credit_risk":
-            TARGET_SCHEMA = {
-                "client_id": "string",
-                "limit_balance": "number",
-                "education_level": "string",
-                "age": "number",
-                "payment_status_recent": "number",
-                "default_binary": "number"
+        # Define schemas based on gold standard data sources
+        SCHEMAS = {
+            "secedgar": {
+                "entity_name": "string", "cik": "string", "total_assets": "number",
+                "revenues": "number", "net_income": "number", "audit_status": "string"
+            },
+            "worldbank": {
+                "country": "string", "indicator": "string", "value": "number", "year": "integer"
+            },
+            "creditrisk": {
+                "account_id": "string", "limit_balance": "number", "education": "integer",
+                "age": "integer", "default_payment": "integer"
             }
-            edu_map = {1: "Graduate", 2: "University", 3: "High School", 4: "Others"}
-            
-            for raw in raw_artifacts:
-                for row in raw.content:
-                    raw_data = {
-                        "client_id": str(row.get("ID")),
-                        "limit_balance": float(row.get("LIMIT_BAL", 0)),
-                        "education_level": edu_map.get(row.get("EDUCATION"), "Unknown"),
-                        "age": int(row.get("AGE", 0)),
-                        "payment_status_recent": int(row.get("PAY_0", 0)),
-                        "default_binary": int(row.get("default", 0))
-                    }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
-                    if verified:
-                        record_id = hashlib.md5(f"UCI-{row.get('ID')}".encode()).hexdigest()[:16]
-                        results.append(StandardSchema(
-                            id=record_id,
-                            industry="finance",
-                            data=verified,
-                            provenance={"source": raw.source_url, "schema": "UCI-Credit"},
-                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
-                        ))
-            return results
-
-        if self.schema_type == "world_bank":
-            TARGET_SCHEMA = {
-                "country": "string",
-                "indicator": "string",
-                "value": "number",
-                "year": "string"
-            }
-            for raw in raw_artifacts:
-                for row in raw.content:
-                    if row.get("value") is None: continue
+        }
+        
+        target_schema = SCHEMAS.get(self.finance_mode, SCHEMAS["secedgar"])
+        
+        for raw in raw_artifacts:
+            # 1. World Bank (Two-Tier List Awareness)
+            if self.finance_mode == "worldbank":
+                # World Bank returns [ {paging}, [data_list] ] for real API, 
+                # but simulated data is a flat list of records.
+                is_two_tier = (
+                    isinstance(raw.content, list) and 
+                    len(raw.content) == 2 and 
+                    isinstance(raw.content[0], dict) and 
+                    "page" in raw.content[0]
+                )
+                data_list = raw.content[1] if is_two_tier else raw.content
+                if not isinstance(data_list, list): data_list = [raw.content]
+                
+                for row in data_list:
+                    if not isinstance(row, dict): continue
                     raw_data = {
                         "country": row.get("country", {}).get("value", "Unknown"),
-                        "indicator": row.get("indicator", {}).get("value", "Unknown"),
-                        "value": float(row.get("value", 0)),
-                        "year": str(row.get("date", "0000"))
+                        "indicator": row.get("indicator", {}).get("value", "GDP"),
+                        "value": float(row.get("value") or 0),
+                        "year": int(row.get("date", 0))
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=is_strict)
                     if verified:
-                        # Deterministic ID based on Country and Year
                         source_id = f"WB-{row.get('country', {}).get('id', 'XX')}-{row.get('date')}"
                         results.append(StandardSchema(
                             id=hashlib.md5(source_id.encode()).hexdigest()[:16],
-                            industry="finance",
-                            data=verified,
+                            industry="finance", data=verified,
                             provenance={"source": raw.source_url, "schema": "World-Bank-Macro"},
                             checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
                         ))
-            return results
+                continue
 
-        TARGET_SCHEMA = {
-            "entity_name": "string",
-            "cik": "string",
-            "total_assets": "number",
-            "revenues": "number",
-            "net_income": "number",
-            "audit_status": "string"
-        }
-        
-        for raw in raw_artifacts:
+            # 2. UCI Credit Risk
+            if self.finance_mode == "creditrisk":
+                # Supported keys: LIMIT_BAL, AGE, ID, EDUCATION, default.payment.next.month
+                for row in raw.content:
+                    raw_data = {
+                        "account_id": str(row.get("ID", "0")),
+                        "limit_balance": float(row.get("LIMIT_BAL", 0)),
+                        "education": int(row.get("EDUCATION", 0)),
+                        "age": int(row.get("AGE", 0)),
+                        "default_payment": int(row.get("default.payment.next.month", 0))
+                    }
+                    verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=is_strict)
+                    if verified:
+                        results.append(StandardSchema(
+                            id=hashlib.md5(str(raw_data["account_id"]).encode()).hexdigest()[:16],
+                            industry="finance", data=verified,
+                            provenance={"source": raw.source_url, "schema": "UCI-Credit-Risk"},
+                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
+                        ))
+                continue
+
+            # 3. SEC XBRL (Standard Mode)
             facts = raw.content.get("facts", {}).get(self.taxonomy, {})
             company_name = raw.metadata.get("company")
             cik = raw.metadata.get("cik")
             
             def get_latest_fact(fact_name):
-                # Common GAAP tags for Revenue and Income
                 tags = [fact_name, f"{fact_name}Net", f"{fact_name}Abstract"]
                 for tag in tags:
-                    unit_data = facts.get(tag, {}).get("units", {}).get(self.currency, [])
-                    if unit_data:
-                        # Return the most recent audited value
-                        return unit_data[-1].get("val", 0)
+                    actual_tag = next((k for k in facts.keys() if k.lower() == tag.lower()), tag)
+                    unit_data = facts.get(actual_tag, {}).get("units", {}).get(self.currency, [])
+                    if unit_data: return unit_data[-1].get("val", 0)
                 return 0
 
             raw_data = {
-                "entity_name": company_name,
-                "cik": cik,
-                "total_assets": get_latest_fact("Assets"),
-                "revenues": get_latest_fact("Revenues"),
-                "net_income": get_latest_fact("NetIncomeLoss"),
-                "audit_status": "Verified"
+                "entity_name": company_name, "cik": cik,
+                "total_assets": float(get_latest_fact("Assets")),
+                "revenues": float(get_latest_fact("Revenues")),
+                "net_income": float(get_latest_fact("NetIncomeLoss")),
+                "audit_status": "Audited"
             }
-            
-            # Strict Schema Verification
-            verified_data = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
-            if verified_data:
-                # Deterministic record ID based on CIK and Timestamp
+            verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=is_strict)
+            if verified:
                 record_id = hashlib.md5(f"{cik}-{raw.timestamp}".encode()).hexdigest()[:16]
-                raw_str = json.dumps(verified_data, sort_keys=True)
-                data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
-
                 results.append(StandardSchema(
-                    id=record_id,
-                    industry="finance",
-                    data=verified_data,
-                    provenance={
-                        "source": raw.source_url,
-                        "taxonomy": self.taxonomy,
-                        "currency": self.currency
-                    },
-                    checksum=data_checksum
+                    id=record_id, industry="finance", data=verified,
+                    provenance={"source": raw.source_url, "taxonomy": self.taxonomy, "currency": self.currency},
+                    checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
                 ))
         return results
 
     def validate(self, normalized_data: List[StandardSchema]) -> bool:
+        """
+        Industry-specific semantic validation rules.
+        """
         for record in normalized_data:
-            if self.schema_type == "credit_risk":
-                if record.data.get("limit_balance", 0) < 0:
-                    return False
-            elif self.schema_type == "world_bank":
-                if record.data.get("value") is None:
-                    return False
-            else:
+            if self.finance_mode == "creditrisk":
+                if record.data.get("limit_balance", 0) < 0: return False
+            elif self.finance_mode == "worldbank":
+                if record.data.get("value") is None: return False
+            elif self.finance_mode == "secedgar":
+                # Default SEC validation: Assets should be positive
                 if record.data.get("total_assets", 0) <= 0:
-                    record_id = getattr(record, "id", "unknown")
-                    logger.warning("validation_failed", record_id=record_id, reason="Zero or negative assets")
                     return False
         return True
-
-
-
-
-

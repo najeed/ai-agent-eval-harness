@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import asyncio
 import aiohttp
@@ -15,11 +15,11 @@ class EnvironmentProvider(BaseProvider):
     """
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
-        self.schema_type = config.get("schema_type", "noaa") # noaa, copernicus
+        self.environment_mode = config.get("environment_mode", "noaa") # noaa, copernicus
         self.api_key = config.get("noaa_api_key")
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "copernicus":
+        if self.environment_mode == "copernicus":
             # Gold Standard: Copernicus Climate Change Service (C3S)
             dataset = self.config.get("dataset", "reanalysis-era5-single-levels")
             url = "https://cds.climate.copernicus.eu/api/v2"
@@ -60,7 +60,7 @@ class EnvironmentProvider(BaseProvider):
         
         for raw in raw_artifacts:
             for row in raw.content:
-                if self.schema_type == "copernicus":
+                if self.environment_mode == "copernicus":
                     data = {
                         "location": f"{row.get('latitude')}, {row.get('longitude')}",
                         "timestamp": row.get("time"),
@@ -84,7 +84,7 @@ class EnvironmentProvider(BaseProvider):
                         id=record_id,
                         industry="environment",
                         data=verified,
-                        provenance={"source": raw.source_url, "provider": self.schema_type.upper()},
+                        provenance={"source": raw.source_url, "provider": self.environment_mode.upper()},
                         checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
                     ))
         return results

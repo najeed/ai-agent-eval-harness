@@ -33,15 +33,18 @@ class LLMManager:
         """
         Extract data with V2.0 TokenGuard (Check-API-First).
         """
+        effective_strategy = self.strategy
+        
         # 0. V2: TokenGuard (Economic Interception)
         if source_hint and self.strategy != "mock":
              interception = self._token_guard_intercept(content, source_hint)
              if interception:
-                 logger.info(f"V2: TokenGuard intercepted request for {source_hint}. Routing to Tier 3 (Heuristic).")
-                 self.strategy = "heuristic" # Force bypass to cheap tier
+                  logger.info(f"V2: TokenGuard intercepted request for {source_hint}. Routing to Tier 3 (Heuristic).")
+                  self.strategy = "heuristic" # Persist state for visibility/lifecycle
+                  effective_strategy = "heuristic"
         
         # 0.5 Tier 0: Mock
-        if self.strategy == "mock":
+        if effective_strategy == "mock":
             import random
             mock_data = {}
             for key, expected_type in target_schema.items():
@@ -54,19 +57,19 @@ class LLMManager:
             return self._verify_schema(mock_data, target_schema)
 
         # 1. Tier 1: Cloud Providers (Preferred)
-        if self.strategy in ["auto", "cloud"]:
+        if effective_strategy in ["auto", "cloud"]:
             result = await self._try_cloud_providers(content, target_schema)
             if result:
                 return self._verify_schema(result, target_schema)
         
         # 2. Tier 2: Local Ollama (Fallback for text-only)
-        if self.strategy in ["auto", "ollama"] and len(content) < 50000:
+        if effective_strategy in ["auto", "ollama"] and len(content) < 50000:
              result = await self._try_ollama(content, target_schema)
              if result:
                  return self._verify_schema(result, target_schema)
                 
         # 3. Tier 3: Heuristics (Final fallback for structured patterns)
-        if self.strategy in ["auto", "heuristic"]:
+        if effective_strategy in ["auto", "heuristic"]:
             result = self._try_heuristics(content, target_schema)
             if result:
                 return self._verify_schema(result, target_schema)
@@ -313,7 +316,7 @@ class LLMManager:
                     num_match = re.search(rf"{key}.*?(\d[\d\.,]*)", content, re.IGNORECASE)
                     if num_match:
                         extracted[key] = num_match.group(1).replace(",", "")
-
+ 
         # 3. Decision Logic: High-signal discovery
         found_keys = set(extracted.keys())
         signal_ratio = len(found_keys) / len(schema)
@@ -356,8 +359,18 @@ class LLMManager:
                         break
                 
                 if key not in corrected_data:
-                    logger.error(f"Inference failed for required key '{key}'.")
-                    return None
+                    if strict:
+                        logger.error(f"STRICT FAILURE: Required key '{key}' missing.")
+                        return None
+                    else:
+                        logger.warning(f"Inference failed for key '{key}'. Populating with default value.")
+                        if expected_type == "number":
+                            corrected_data[key] = 0.0
+                        elif expected_type == "integer":
+                            corrected_data[key] = 0
+                        else:
+                            corrected_data[key] = ""
+                        continue
             
             # Type Enforcement
             val = corrected_data[key]
@@ -367,9 +380,10 @@ class LLMManager:
                         # Handle "$1,234.56" -> 1234.56
                         clean_val = val.replace("$", "").replace(",", "").strip()
                         corrected_data[key] = float(clean_val)
-                    elif not isinstance(val, (int, float)):
-                        raise ValueError("Not a number")
-                except ValueError:
+                    else:
+                        # Force float conversion for truthy values even if they're already ints
+                        corrected_data[key] = float(val) if val is not None else 0.0
+                except (ValueError, TypeError):
                     logger.error(f"Type failure for '{key}': {val} is not a valid number.")
                     return None
             elif expected_type == "string":
@@ -381,6 +395,8 @@ class LLMManager:
                 except (ValueError, TypeError):
                     logger.error(f"Type failure for '{key}': {val} is not a valid integer.")
                     return None
+        
+        return corrected_data
 
 
     def _token_guard_intercept(self, content: str, source_hint: str) -> bool:
@@ -413,5 +429,3 @@ class LLMManager:
             "total_cost_cents": round(self.estimated_cost_cents, 4),
             "roi_status": "positive" if self.estimated_cost_cents < 5.0 else "divergent"
         }
-
-

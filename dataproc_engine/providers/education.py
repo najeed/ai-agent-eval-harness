@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import asyncio
 import aiohttp
@@ -15,10 +15,10 @@ class EducationProvider(BaseProvider):
     """
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
-        self.schema_type = config.get("schema_type", "nces") # nces, unesco, mooc, kaggle
+        self.education_mode = config.get("education_mode", "nces") # nces, unesco, mooc, kaggle
         
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "unesco":
+        if self.education_mode == "unesco":
             # Gold Standard: UNESCO Institute for Statistics (UIS) - Global Literacy
             indicator = self.config.get("indicator", "LR_AG15T24") # Youth literacy rate
             url = f"https://api.uis.unesco.org/v1/data/UNESCO,UIS,1.0/{indicator}"
@@ -36,7 +36,7 @@ class EducationProvider(BaseProvider):
                 )]
             return []
 
-        if self.schema_type == "mooc":
+        if self.education_mode == "mooc":
             # Coursera / OpenEd
             url = "https://api.coursera.org/api/catalog.v1/courses"
             if self.allow_simulation:
@@ -52,7 +52,7 @@ class EducationProvider(BaseProvider):
                 )]
             return []
 
-        if self.schema_type == "kaggle":
+        if self.education_mode == "kaggle":
             # Kaggle Datasets
             url = "https://www.kaggle.com/api/v1/datasets/list"
             if self.allow_simulation:
@@ -85,8 +85,9 @@ class EducationProvider(BaseProvider):
 
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
+        is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
         
-        if self.schema_type == "unesco":
+        if self.education_mode == "unesco":
             TARGET_SCHEMA = {"region": "string", "year": "integer", "literacy_rate": "number"}
             for raw in raw_artifacts:
                 for row in raw.content:
@@ -95,7 +96,7 @@ class EducationProvider(BaseProvider):
                         "year": int(row.get("TIME_PERIOD", 0)),
                         "literacy_rate": float(row.get("OBS_VALUE", 0))
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                     if verified:
                         record_id = hashlib.md5(f"UNESCO-{raw_data['region']}-{raw_data['year']}".encode()).hexdigest()[:16]
                         results.append(StandardSchema(
@@ -107,7 +108,7 @@ class EducationProvider(BaseProvider):
                         ))
             return results
 
-        if self.schema_type == "mooc":
+        if self.education_mode == "mooc":
             TARGET_SCHEMA = {"course_name": "string", "enrollment_count": "integer", "user_rating": "number"}
             for raw in raw_artifacts:
                 for row in raw.content:
@@ -116,7 +117,7 @@ class EducationProvider(BaseProvider):
                         "enrollment_count": int(row.get("enrollment", 0)),
                         "user_rating": float(row.get("rating", 0))
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                     if verified:
                         record_id = hashlib.md5(f"MOOC-{row['course_id']}".encode()).hexdigest()[:16]
                         results.append(StandardSchema(
@@ -128,7 +129,7 @@ class EducationProvider(BaseProvider):
                         ))
             return results
 
-        if self.schema_type == "kaggle":
+        if self.education_mode == "kaggle":
             TARGET_SCHEMA = {"dataset_title": "string", "vote_count": "integer", "primary_tag": "string"}
             for raw in raw_artifacts:
                 for row in raw.content:
@@ -137,7 +138,7 @@ class EducationProvider(BaseProvider):
                         "vote_count": int(row.get("votes", 0)),
                         "primary_tag": row.get("tags")[0] if row.get("tags") else "generic"
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                     if verified:
                         record_id = hashlib.md5(f"KAGGLE-{raw_data['dataset_title']}".encode()).hexdigest()[:16]
                         results.append(StandardSchema(
@@ -158,7 +159,7 @@ class EducationProvider(BaseProvider):
                     "enrollment_count": float(row.get("year_2022", 0)),
                     "year": 2022
                 }
-                verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
                 if verified:
                     record_id = hashlib.md5(f"NCES-{raw_data['education_level']}-2022".encode()).hexdigest()[:16]
                     results.append(StandardSchema(

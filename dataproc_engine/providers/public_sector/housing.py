@@ -15,11 +15,11 @@ class HousingProvider(BaseProvider):
     """
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
-        self.schema_type = config.get("schema_type", "hud") # hud, infrastructure
+        self.housing_mode = config.get("housing_mode", "hud") # hud, infrastructure
         self.api_key = config.get("hud_api_key")
 
     async def extract(self) -> List[RawArtifact]:
-        if self.schema_type == "infrastructure":
+        if self.housing_mode == "infrastructure":
             # Gold Standard: World Bank Infrastructure
             indicator = self.config.get("indicator", "EG.ELC.ACCS.ZS") # Access to electricity
             url = f"https://api.worldbank.org/v2/country/all/indicator/{indicator}?format=json"
@@ -57,7 +57,7 @@ class HousingProvider(BaseProvider):
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
         
-        if self.schema_type == "infrastructure":
+        if self.housing_mode == "infrastructure":
             TARGET_SCHEMA = {"location": "string", "year": "integer", "access_rate": "number"}
             for raw in raw_artifacts:
                 for row in raw.content:

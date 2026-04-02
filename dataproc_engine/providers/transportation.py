@@ -1,4 +1,4 @@
-﻿import aiohttp
+import aiohttp
 import os
 import hashlib
 import json
@@ -16,7 +16,7 @@ class TransportationProvider(BaseProvider):
     def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
         self.api_key = config.get("dot_api_key")
-        self.mode = config.get("transit_mode", "air") # air, rail, road, osm, eurostat
+        self.mode = config.get("transit_mode") or config.get("schema_type") or "air"
         
     async def extract(self) -> List[RawArtifact]:
         """Fetch Transportation stats (Local, OSM, or Eurostat)."""
@@ -47,7 +47,7 @@ class TransportationProvider(BaseProvider):
             
             if self.allow_simulation:
                 return [self.create_simulated_artifact(
-                    id=f"OSM-{bbox}",
+                    id=f"sim-OSM-{bbox}",
                     content=[{"id": 12345, "type": "way", "tags": {"highway": "primary", "name": "Global Way"}}],
                     source_url=url,
                     metadata={"bbox": bbox}
@@ -72,9 +72,9 @@ class TransportationProvider(BaseProvider):
                 )]
             return []
 
-        input_path = self.config.get("input_uri") or ""
-        default_local = "industries/airline/datasets/airline_performance.csv"
-        path = input_path or default_local
+        # v1.2-ULTIMATE: Static Anchor Protocol for total resiliency
+        default_local = os.path.join(self.project_root, "industries", "airline", "datasets", "airline_performance.csv")
+        path = self.config.get("input_uri") or default_local
         
         df = self.load_raw_data(path)
         if df is not None:
