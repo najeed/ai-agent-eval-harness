@@ -1,0 +1,26 @@
+{
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Mixed-Fleet Industrial Evaluation",
+    "description": "A high-concurrency suite spanning HTTP and Local protocols.",
+    "id": "batch_fleet_001"
+  },
+  "concurrency": 5,
+  "attempts": 3,
+  "scenarios": [
+    {
+      "path": "scenarios/telecom/connectivity_check.json",
+      "agent_api_url": "http://localhost:5001/execute_task"
+    },
+    {
+      "path": "scenarios/finance/ledger_verification.json",
+      "agent_api_url": "local://walkthroughs/Phase 1 - Foundations - Beginner/adapters/local_agent_shim.py"
+    },
+    {
+      "path": "scenarios/telecom/signal_strength.json",
+      "agent_api_url": "http://localhost:5001/execute_task"
+    }
+  ]
+}
+
+

@@ -1,0 +1,27 @@
+{
+  "protocol_name": "Industrial Judge Agreement (IJA)",
+  "version": "1.2.3",
+  "consensus_strategy": "Weighted_Majority",
+  "min_judges": 3,
+  "judges": [
+    {
+      "id": "luna-1",
+      "name": "Luna-1 (The Optimist)",
+      "weight": 1.0,
+      "focus": "reasoning_depth"
+    },
+    {
+      "id": "luna-2",
+      "name": "Luna-2 (The Skeptic)",
+      "weight": 1.5,
+      "focus": "constraint_fidelity"
+    },
+    {
+      "id": "luna-3",
+      "name": "Luna-3 (The Auditor)",
+      "weight": 1.0,
+      "focus": "compliance_standard"
+    }
+  ],
+  "conflict_resolution": "Escalate_to_HITL"
+}

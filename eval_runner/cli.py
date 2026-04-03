@@ -200,6 +200,7 @@ Utilities & Environment:
     # --- ANALYSIS & REPORTING ---
     calibrate_parser = subparsers.add_parser("calibrate", help="Measure and visualize judge agreement against human-labeled ground truth")
     calibrate_parser.add_argument("--path", required=True, help="Path to the calibrated run trace or results file")
+    calibrate_parser.add_argument("--golden", help="Optional path to a golden manifest (JSON) for ground truth")
     calibrate_parser.add_argument("--plot", action="store_true", help="Generate a visualization of the calibration results")
 
     subparsers.add_parser("explain", help="Explain trace").add_argument("--path", required=True)

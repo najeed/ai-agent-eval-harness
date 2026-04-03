@@ -1,0 +1,12 @@
+{"event": "task_start", "task_id": "finance_t1", "metadata": {"name": "Loan Approval Check (Mutated)"}}
+{"event": "evaluation", "task_id": "finance_t1", "metric": "risk_accuracy", "value": 0.95, "metadata": {"model": "biased-judge"}}
+{"event": "task_start", "task_id": "finance_t2", "metadata": {"name": "Credit Calculation (Mutated)"}}
+{"event": "evaluation", "task_id": "finance_t2", "metric": "risk_accuracy", "value": 0.70, "metadata": {"model": "biased-judge"}}
+{"event": "task_start", "task_id": "finance_t3", "metadata": {"name": "Fraud Detection (Mutated)"}}
+{"event": "evaluation", "task_id": "finance_t3", "metric": "risk_accuracy", "value": 0.99, "metadata": {"model": "biased-judge"}}
+{"event": "task_start", "task_id": "finance_t4", "metadata": {"name": "Ledger Audit (Mutated)"}}
+{"event": "evaluation", "task_id": "finance_t4", "metric": "risk_accuracy", "value": 0.82, "metadata": {"model": "biased-judge"}}
+{"event": "task_start", "task_id": "finance_t5", "metadata": {"name": "KYC Verification (Mutated)"}}
+{"event": "evaluation", "task_id": "finance_t5", "metric": "risk_accuracy", "value": 0.90, "metadata": {"model": "biased-judge"}}
+
+

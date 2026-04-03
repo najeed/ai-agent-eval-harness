@@ -75,7 +75,7 @@ def get_system_info():
 @core_bp.route("/cleanup-runs", methods=["POST"])
 @require_permission(Permission.DEMO_EXECUTE)
 def cleanup_runs():
-    """Industrial-grade log cleanup (v1.2.3-ULTIMATE)"""
+    """Industrial-grade log cleanup (v1.2.3)"""
     try:
         count = 0
         if config.RUN_LOG_DIR.exists():
@@ -811,7 +811,7 @@ def read_doc(doc_path):
         if not target.exists() or not target.is_file():
             return jsonify({"error": f"Document not found: {doc_path}"}), 404
         
-        # Industrial Extraction: Use direct open() for mock-resilience (v1.2.3 Ultimate)
+        # Industrial Extraction: Use direct open() for mock-resilience (v1.2.3)
         with target.open("r", encoding="utf-8") as f:
             content = f.read()
 

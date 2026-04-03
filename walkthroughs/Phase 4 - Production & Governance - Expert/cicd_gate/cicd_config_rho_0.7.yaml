@@ -1,0 +1,26 @@
+# AES-Industrial CI/CD Sentinel Configuration
+# Version: 1.2
+# Level: Hard-Gate
+
+gate_rules:
+  # Spearman's Rho Correlation (Judge-Human Agreement)
+  - metric: spearman_rho
+    operator: gte
+    value: 0.7
+    on_violation: BLOCK_DEPLOYMENT
+
+  # Mean Success Rate (Benchmark Performance)
+  - metric: mean_score
+    operator: gte
+    value: 0.95
+    on_violation: BLOCK_DEPLOYMENT
+
+  # Cryptographic Integrity
+  - metric: benchmark_integrity
+    required: true
+    on_violation: BLOCK_DEPLOYMENT
+
+audit_logging:
+  enabled: true
+  retention_days: 90
+  output_format: json-industrial

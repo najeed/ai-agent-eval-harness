@@ -1,0 +1,30 @@
+{
+  "aes_version": "1.2.3",
+  "metadata": {
+    "name": "Industrial Hot Patch",
+    "id": "scenario_hitl_001",
+    "industry": "finance",
+    "risk_level": "CRITICAL"
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "scan_exploit",
+        "task_description": "Scan the production database for an active SQL injection exploit."
+      },
+      {
+        "id": "propose_patch",
+        "task_description": "Propose a 'Hot Patch' to reconfigure the firewall and block the attacker's IP.",
+        "interaction_mode": "Manual_Approval"
+      },
+      {
+        "id": "execute_patch",
+        "task_description": "Apply the patch and verify that the database is secure."
+      }
+    ],
+    "edges": [
+      ["scan_exploit", "propose_patch"],
+      ["propose_patch", "execute_patch"]
+    ]
+  }
+}

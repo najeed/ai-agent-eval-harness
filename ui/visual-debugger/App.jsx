@@ -1507,7 +1507,7 @@ const App = () => {
         }
     }, [authRequired]);
 
-    // Authoritative JIT Script Loader (Transpilation Persistence v1.2.3-ULTIMATE)
+    // Authoritative JIT Script Loader (Transpilation Persistence v1.2.3)
     const loadBabelScript = async (src, checkGlobal) => {
         if (window[checkGlobal]) return;
 

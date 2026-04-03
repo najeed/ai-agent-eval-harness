@@ -1,0 +1,53 @@
+{
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "State Refinement: The Recursion Paradox",
+    "description": "A workflow designed with a conditional retry loop for higher precision.",
+    "id": "dag_loop_001"
+  },
+  "industry": "general",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "node_writer",
+        "role": "Writer",
+        "task_description": "Generate a technical report on 'Core Reactor Stability'.",
+        "expected_outcome": {
+          "type": "contains",
+          "value": "Stability: Evaluated"
+        }
+      },
+      {
+        "id": "node_auditor",
+        "role": "Auditor",
+        "task_description": "Verify the report. If the 'Stability' is not explicitly 'STABLE', fail the check.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "string",
+          "value": "AUDIT_PASSED"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "node_writer",
+        "target": "node_auditor",
+        "condition": "on_success"
+      },
+      {
+        "source": "node_auditor",
+        "target": "node_writer",
+        "condition": "on_failure",
+        "label": "RETRY_LOOP"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Sequential_Approval",
+      "min_judges": 1
+    }
+  }
+}
+
+

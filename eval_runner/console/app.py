@@ -45,7 +45,7 @@ def create_app():
     def handle_405(e):
         return flask.jsonify({"error": "Method Not Allowed: This endpoint does not accept the requested HTTP method.", "status": 405}), 405
 
-    # Hardened Route Precedence (v1.2.3-ULTIMATE)
+    # Hardened Route Precedence (v1.2.3)
     # Explicitly register the login handler to bypass blueprint shadowing/405
     from .auth import login as login_handler
     app.add_url_rule("/api/auth/login", view_func=login_handler, methods=["POST"], strict_slashes=False)

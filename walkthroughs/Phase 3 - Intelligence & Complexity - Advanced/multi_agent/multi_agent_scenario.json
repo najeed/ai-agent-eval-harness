@@ -1,0 +1,61 @@
+{
+  "aes_version": 1.2,
+  "metadata": {
+    "name": "Collaborative Intelligence: The Silent Swarm",
+    "description": "A high-stakes interaction involving a Researcher, a Writer, and an Auditor.",
+    "id": "multi_agent_001"
+  },
+  "industry": "intelligence",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "node_researcher",
+        "role": "Researcher",
+        "task_description": "Search the provided databases for any mentions of a 'Sector-7' thermal leak. Provide only the raw sensor data.",
+        "expected_outcome": {
+          "type": "contains",
+          "value": "thermal_leak_detected: true"
+        }
+      },
+      {
+        "id": "node_writer",
+        "role": "Writer",
+        "task_description": "Take the raw sensor data from the Researcher and transform it into a formal incident report. The report must include a 'Security Severity' level.",
+        "expected_outcome": {
+          "type": "contains",
+          "value": "Security Severity: High"
+        }
+      },
+      {
+        "id": "node_auditor",
+        "role": "Auditor",
+        "task_description": "Review the incident report. Verify that the 'Security Severity' is justified based on the 'Sector-7' source. If it is, output 'AUDIT_PASSED'.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "string",
+          "value": "AUDIT_PASSED"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "node_researcher",
+        "target": "node_writer",
+        "condition": "on_completion"
+      },
+      {
+        "source": "node_writer",
+        "target": "node_auditor",
+        "condition": "on_completion"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Sequential_Approval",
+      "min_judges": 1
+    }
+  }
+}
+
+

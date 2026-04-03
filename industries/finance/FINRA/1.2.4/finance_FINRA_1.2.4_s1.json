@@ -1,0 +1,25 @@
+{
+  "aes_version": 1.2,
+  "metadata": {
+    "id": "finance_FINRA_1.2.4_s1",
+    "name": "Curated finance FINRA (1.2.4)"
+  },
+  "industry": "finance",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "n1",
+        "task_description": "Benchmark for finance FINRA v1.2.4"
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
+  }
+}

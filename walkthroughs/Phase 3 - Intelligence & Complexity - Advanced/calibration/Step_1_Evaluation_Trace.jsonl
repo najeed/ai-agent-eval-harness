@@ -1,0 +1,12 @@
+{"event": "task_start", "task_id": "finance_t1", "metadata": {"name": "Loan Approval Check"}}
+{"event": "evaluation", "task_id": "finance_t1", "metric": "risk_accuracy", "value": 0.85, "metadata": {"model": "gpt-4o"}}
+{"event": "task_start", "task_id": "finance_t2", "metadata": {"name": "Credit Calculation"}}
+{"event": "evaluation", "task_id": "finance_t2", "metric": "risk_accuracy", "value": 0.40, "metadata": {"model": "gpt-4o"}}
+{"event": "task_start", "task_id": "finance_t3", "metadata": {"name": "Fraud Detection"}}
+{"event": "evaluation", "task_id": "finance_t3", "metric": "risk_accuracy", "value": 0.95, "metadata": {"model": "gpt-4o"}}
+{"event": "task_start", "task_id": "finance_t4", "metadata": {"name": "Ledger Audit"}}
+{"event": "evaluation", "task_id": "finance_t4", "metric": "risk_accuracy", "value": 0.30, "metadata": {"model": "gpt-4o"}}
+{"event": "task_start", "task_id": "finance_t5", "metadata": {"name": "KYC Verification"}}
+{"event": "evaluation", "task_id": "finance_t5", "metric": "risk_accuracy", "value": 0.75, "metadata": {"model": "gpt-4o"}}
+
+

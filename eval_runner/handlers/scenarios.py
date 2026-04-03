@@ -38,7 +38,7 @@ def handle_aes_validate(args):
             validate(instance=data, schema=schema, resolver=resolver)
             print(f"✔ {f_path.name}: Valid (AES v1.2-STABLE)")
 
-            # Industrial Export Logic (v1.2.3-ULTIMATE)
+            # Industrial Export Logic (v1.2.3)
             if getattr(args, 'export', None):
                 export_path = Path(args.export)
                 export_path.parent.mkdir(parents=True, exist_ok=True)

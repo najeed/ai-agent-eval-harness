@@ -44,7 +44,7 @@ def handle_explain(args):
 
 def handle_calibrate(args):
     """Handler for 'calibrate' command."""
-    calibrator.run_calibration(args.path, plot=getattr(args, "plot", False))
+    calibrator.run_calibration(args.path, golden_path=getattr(args, "golden", None), plot=getattr(args, "plot", False))
 
 def handle_leaderboard(args):
     """Handler for 'leaderboard' command."""
