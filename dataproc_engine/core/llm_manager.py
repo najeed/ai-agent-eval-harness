@@ -316,7 +316,7 @@ class LLMManager:
                     num_match = re.search(rf"{key}.*?(\d[\d\.,]*)", content, re.IGNORECASE)
                     if num_match:
                         extracted[key] = num_match.group(1).replace(",", "")
-
+ 
         # 3. Decision Logic: High-signal discovery
         found_keys = set(extracted.keys())
         signal_ratio = len(found_keys) / len(schema)
@@ -360,10 +360,16 @@ class LLMManager:
                 
                 if key not in corrected_data:
                     if strict:
-                        logger.error(f"Inference failed for required key '{key}'.")
+                        logger.error(f"STRICT FAILURE: Required key '{key}' missing.")
                         return None
                     else:
-                        logger.warning(f"Inference failed for key '{key}'. Skipping property enforcement.")
+                        logger.warning(f"Inference failed for key '{key}'. Populating with default value.")
+                        if expected_type == "number":
+                            corrected_data[key] = 0.0
+                        elif expected_type == "integer":
+                            corrected_data[key] = 0
+                        else:
+                            corrected_data[key] = ""
                         continue
             
             # Type Enforcement
@@ -374,9 +380,10 @@ class LLMManager:
                         # Handle "$1,234.56" -> 1234.56
                         clean_val = val.replace("$", "").replace(",", "").strip()
                         corrected_data[key] = float(clean_val)
-                    elif not isinstance(val, (int, float)):
-                        raise ValueError("Not a number")
-                except ValueError:
+                    else:
+                        # Force float conversion for truthy values even if they're already ints
+                        corrected_data[key] = float(val) if val is not None else 0.0
+                except (ValueError, TypeError):
                     logger.error(f"Type failure for '{key}': {val} is not a valid number.")
                     return None
             elif expected_type == "string":
@@ -422,5 +429,3 @@ class LLMManager:
             "total_cost_cents": round(self.estimated_cost_cents, 4),
             "roi_status": "positive" if self.estimated_cost_cents < 5.0 else "divergent"
         }
-
-

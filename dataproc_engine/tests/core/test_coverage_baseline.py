@@ -19,7 +19,7 @@ async def test_full_pipeline_all_industries():
         "finance", "healthcare", "energy", "telecom", "ecommerce",
         "agriculture", "transportation", "unstructured", "demographics",
         "labor", "environment", "education", "housing", "manufacturing",
-        "media_entertainment", "decision_support"
+        "media_and_entertainment", "decision_support"
     ]
     
     for industry in industries:
@@ -35,7 +35,7 @@ async def test_full_pipeline_all_industries():
 @pytest.mark.asyncio
 @pytest.mark.parametrize("industry", [
     "finance", "ecommerce", "demographics", "labor", "environment", 
-    "housing", "manufacturing", "media_entertainment", "decision_support",
+    "housing", "manufacturing", "media_and_entertainment", "decision_support",
     "healthcare", "energy", "telecom", "education", "transportation", "agriculture"
 ])
 async def test_ultimate_coverage(industry):
@@ -69,7 +69,7 @@ async def test_ultimate_coverage(industry):
     elif industry == "manufacturing":
         schemas = ["industrial_stats", "asm"]
         mode_key = "manufacturing_mode"
-    elif industry == "media_entertainment":
+    elif industry == "media_and_entertainment":
         schemas = ["imdb", "spotify"]
         mode_key = "media_mode"
     elif industry == "healthcare":

@@ -37,7 +37,7 @@ python dataproc_engine/cli/main.py extract --industry [INDUSTRY] [FLAGS]
 ### Core Flags
 | Flag | Description | Example |
 | :--- | :--- | :--- |
-| `--industry` | Target industrial sector (16 sectors available). | `finance`, `healthcare`, `media_entertainment` |
+| `--industry` | Target industrial sector (16 sectors available). | `finance`, `healthcare`, `media_and_entertainment` |
 | `--limit` | Maximum number of records to generate/process. | `--limit 100` |
 | `--format` | Output dataset format (`jsonl` or `csv`). | `--format csv` |
 | `--source` | Data acquisition mode (`api` for live or `file` for local ingestion). | `--source file` |
@@ -70,7 +70,7 @@ The engine supports **16 standard industrial sectors** with specialized gold-sta
 | **Commercial** | `agriculture` | `standard`, `usda_crops` | USDA |
 | **Commercial** | `ecommerce` | `olist`, `uci_retail`, `standard` | Olist, UCI |
 | **Logistics** | `transportation` | `standard`, `bts_ontime` | BTB, Eurostat|
-| **Foundational**| `media_entertainment`| `standard`, `imdb_cultural` | IMDb |
+| **Foundational**| `media_and_entertainment`| `standard`, `imdb_cultural` | IMDb |
 | **Foundational**| `decision_support` | `standard`, `signal_linking` | Correlator |
 | **Foundational**| `unstructured` | `standard`, `llm_scraper` | Scrapers |
 
@@ -88,7 +88,7 @@ The engine supports **16 standard industrial sectors** with specialized gold-sta
 - [Environment Guide](public_sector/environment/environment_guide.md)
 - [Education Guide](education/education_guide.md)
 - [Housing Guide](public_sector/housing/housing_guide.md)
-- [Media & Entertainment Guide](media_entertainment/media_entertainment_guide.md)
+- [Media & Entertainment Guide](media_and_entertainment/media_and_entertainment_guide.md)
 - [Decision Support Guide](cross_sector/decision_support_guide.md)
 - [Unstructured Guide](cross_sector/unstructured_guide.md)
 

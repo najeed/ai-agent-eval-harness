@@ -19,7 +19,7 @@ The **dataproc-engine** is an enterprise-grade framework designed to generate hi
     - **Anchors**: [Finance](finance/finance_guide.md), [Healthcare](healthcare/healthcare_guide.md), [Energy](energy/energy_guide.md), [Telecom](telecom/telecom_guide.md).
     - **Core Growth**: [Agriculture](agriculture/agriculture_guide.md), [Transportation](transportation/transportation_guide.md), [eCommerce](ecommerce/ecommerce_guide.md), [Unstructured](unstructured/unstructured_guide.md).
     - **Public Sector**: [Demographics](public_sector/demographics/demographics_guide.md), [Labor](public_sector/labor/labor_guide.md), [Environment](public_sector/environment/environment_guide.md), [Housing](public_sector/housing/housing_guide.md).
-    - **Specialized**: [Education](education/education_guide.md), [Manufacturing](manufacturing/manufacturing_guide.md), [Media](media_entertainment/media_entertainment_guide.md), [Decision Support](cross_sector/industrial_sectors.md#16-decision-support).
+    - **Specialized**: [Education](education/education_guide.md), [Manufacturing](manufacturing/manufacturing_guide.md), [Media](media_and_entertainment/media_and_entertainment_guide.md), [Decision Support](cross_sector/industrial_sectors.md#16-decision-support).
 
 ---
 

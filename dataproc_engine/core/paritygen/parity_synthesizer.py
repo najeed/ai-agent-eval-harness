@@ -164,8 +164,8 @@ class ParitySynthesizer:
                 scaled_series = raw_series
             
             corrected_vals = []
-            for v in scaled_series: # Iterate over scaled_series, not vals
-                corrected = v # Start with the scaled value
+            for v in scaled_series:
+                corrected = v
                 
                 # Boundary Checks (Hardened)
                 if dist.get("min") is not None: 
@@ -189,14 +189,6 @@ class ParitySynthesizer:
             }
             
         return raw_results
-
-    def validate_parity(self, original_df: pd.DataFrame, synthetic_df: pd.DataFrame) -> Dict[str, Any]:
-        """
-        DEPRECATED: Use paritygen.validation.validate_parity() for true Wasserstein distance 
-        and correlation matrix drift analysis.
-        """
-        from .validation import validate_parity as true_validate
-        return true_validate(original_df, synthetic_df)
 
     def get_compliance_manifest(self) -> Dict[str, Any]:
         return {model_id: meta["license"] for model_id, meta in self.MODELS.items()}

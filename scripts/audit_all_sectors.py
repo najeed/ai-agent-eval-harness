@@ -16,7 +16,7 @@ INDUSTRIES = [
     "finance", "energy", "healthcare", "telecom", "ecommerce", 
     "unstructured", "agriculture", "transportation", "demographics", 
     "labor", "environment", "education", "housing", "manufacturing", 
-    "media_entertainment", "decision_support"
+    "media_and_entertainment", "decision_support"
 ]
 
 async def run_audit():

@@ -96,7 +96,7 @@ To generate a compliant parity dataset, use the dedicated scripts in the `genera
 3. **Industrial**: `python industries/manufacturing/generators/industrial_generator.py`
 4. **Olist**: `python industries/retail/generators/olist_generator.py`
 5. **FAOStat**: `python industries/agriculture/generators/faostat_generator.py`
-6. **IMDb**: `python industries/media_entertainment/generators/imdb_generator.py`
+6. **IMDb**: `python industries/media_and_entertainment/generators/imdb_generator.py`
 7. **Ookla**: `python industries/telecom/generators/ookla_generator.py`
 
 ---

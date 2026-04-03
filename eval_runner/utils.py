@@ -6,8 +6,24 @@ Architectural utilities for the MultiAgentEval harness.
 
 import os
 from pathlib import Path
-from typing import Union
+from typing import Union, Dict
 
+# Industry Consolidation Table (AES Standard v1.2)
+INDUSTRY_MAPPING = {
+    "fintech": "finance",
+    "medtech": "healthcare",
+    "telecommunications": "telecom",
+    "media_entertainment": "media_and_entertainment",
+    "industrial": "manufacturing",
+}
+
+def normalize_industry(industry: str) -> str:
+    """Normalizes industry identifier to the authoritative AES standard."""
+    if not industry:
+        return "generic"
+    
+    clean_industry = str(industry).lower().strip().replace(" ", "_")
+    return INDUSTRY_MAPPING.get(clean_industry, clean_industry)
 
 def is_path_safe(target: Union[str, Path], base: Union[str, Path]) -> bool:
     """

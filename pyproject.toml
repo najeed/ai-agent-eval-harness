@@ -1,5 +1,5 @@
 [project]
-name = "multiagent-eval"
+name = "multiagent-verify"
 version = "1.2.3"
 description = "Enterprise-grade reliability framework for AI agents."
 readme = "README.md"
@@ -44,6 +44,7 @@ multiagent-eval = "eval_runner.cli:main"
 coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "dataproc_engine/tests"]
 addopts = "-ra"
 python_files = ["test_*.py"]
+pythonpath = ["."]

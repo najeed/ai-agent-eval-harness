@@ -129,8 +129,8 @@ def extract(industry, limit, format, target_dir, output_name, source, input_uri,
             elif industry == "manufacturing":
                 from dataproc_engine.providers.manufacturing import ManufacturingProvider
                 provider = ManufacturingProvider(config, llm_manager=llm_manager)
-            elif industry == "media_entertainment":
-                from dataproc_engine.providers.media_entertainment import MediaProvider
+            elif industry == "media_and_entertainment":
+                from dataproc_engine.providers.media_and_entertainment import MediaProvider
                 provider = MediaProvider(config, llm_manager=llm_manager)
             elif industry == "decision_support":
                 from dataproc_engine.providers.decision_support import DecisionSupportProvider

@@ -29,7 +29,7 @@ The following 16 sectors have been fully hardened and verified against industria
 -   **Environment** ([Environment Guide](public_sector/environment/environment_guide.md))
 -   **Education** ([Education Guide](education/education_guide.md))
 -   **Housing** ([Housing Guide](public_sector/housing/housing_guide.md))
--   **Media & Entertainment** ([Media Guide](media_entertainment/media_entertainment_guide.md))
+-   **Media & Entertainment** ([Media Guide](media_and_entertainment/media_and_entertainment_guide.md))
 -   **Decision Support** ([Decision Support Guide](cross_sector/decision_support_guide.md))
 -   **Unstructured** ([Unstructured Guide](cross_sector/unstructured_guide.md))
 

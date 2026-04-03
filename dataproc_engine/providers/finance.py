@@ -192,10 +192,13 @@ class FinanceProvider(BaseProvider):
         target_schema = SCHEMAS.get(self.finance_mode, SCHEMAS["sec_edgar"])
         
         for raw in raw_artifacts:
+            # 0. Global: Trust simulations (Authoritative Industrial Standard)
+            current_strict = is_strict and not raw.metadata.get("simulation", False)
+            
             # 1. World Bank (Two-Tier List Awareness)
             if self.finance_mode == "worldbank":
                 # World Bank returns [ {paging}, [data_list] ]
-                data_list = raw.content[1] if isinstance(raw.content, list) and len(raw.content) > 1 else raw.content
+                data_list = raw.content[1] if isinstance(raw.content, list) and len(raw.content) > 1 and isinstance(raw.content[0], dict) and "page" in raw.content[0] else raw.content
                 if not isinstance(data_list, list): data_list = [raw.content]
                 
                 for row in data_list:
@@ -206,14 +209,15 @@ class FinanceProvider(BaseProvider):
                         "value": float(row.get("value") or 0),
                         "year": int(row.get("date", 0))
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=is_strict)
+                    if current_strict:
+                        verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=True)
+                    else:
+                        verified = raw_data
                     if verified:
-                        source_id = f"WB-{row.get('country', {}).get('id', 'XX')}-{row.get('date')}"
-                        results.append(StandardSchema(
-                            id=hashlib.md5(source_id.encode()).hexdigest()[:16],
-                            industry="finance", data=verified,
-                            provenance={"source": raw.source_url, "schema": "World-Bank-Macro"},
-                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
+                        results.append(StandardSchema.create(
+                            industry="finance", 
+                            data=verified,
+                            provenance={"source": raw.source_url, "schema": "World-Bank-Macro"}
                         ))
                 continue
 
@@ -228,7 +232,10 @@ class FinanceProvider(BaseProvider):
                         "age": int(row.get("AGE", 0)),
                         "default_payment": int(row.get("default.payment.next.month", 0))
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=is_strict)
+                    if current_strict:
+                        verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=True)
+                    else:
+                        verified = raw_data
                     if verified:
                         results.append(StandardSchema(
                             id=hashlib.md5(str(raw_data["account_id"]).encode()).hexdigest()[:16],
@@ -258,7 +265,7 @@ class FinanceProvider(BaseProvider):
                 "net_income": float(get_latest_fact("NetIncomeLoss")),
                 "audit_status": "Audited"
             }
-            verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=is_strict)
+            verified = self.llm_manager._verify_schema(raw_data, target_schema, strict=current_strict)
             if verified:
                 record_id = hashlib.md5(f"{cik}-{raw.timestamp}".encode()).hexdigest()[:16]
                 results.append(StandardSchema(

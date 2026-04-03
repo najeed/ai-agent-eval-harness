@@ -3,7 +3,7 @@ import hashlib
 import json
 from unittest.mock import patch, AsyncMock
 from dataproc_engine.providers.manufacturing import ManufacturingProvider
-from dataproc_engine.providers.media_entertainment import MediaProvider
+from dataproc_engine.providers.media_and_entertainment import MediaProvider
 from dataproc_engine.core.llm_manager import LLMManager
 
 @pytest.mark.asyncio
@@ -31,9 +31,9 @@ async def test_manufacturing_asm_production():
     assert results[0].data["establishments"] > 0
 
 @pytest.mark.asyncio
-async def test_media_entertainment_production():
+async def test_media_and_entertainment_production():
     """Verify Media & Entertainment extraction and transformation (High-fidelity)."""
-    config = {"industry": "media_entertainment", "media_mode": "imdb", "allow_simulation": True}
+    config = {"industry": "media_and_entertainment", "media_mode": "imdb", "allow_simulation": True}
     provider = MediaProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
     
     artifacts = await provider.extract()
@@ -41,4 +41,4 @@ async def test_media_entertainment_production():
     results = await provider.transform(artifacts)
     assert len(results) > 0
     assert results[0].data["rating"] > 0
-    assert results[0].industry == "media_entertainment"
+    assert results[0].industry == "media_and_entertainment"

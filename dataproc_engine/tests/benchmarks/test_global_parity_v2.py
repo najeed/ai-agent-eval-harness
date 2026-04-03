@@ -35,7 +35,7 @@ class MockResponse:
     ("education", {"education_mode": "nces"}),
     ("housing", {"housing_mode": "hud"}),
     ("manufacturing", {"manufacturing_mode": "industrial_stats"}),
-    ("media_entertainment", {"media_mode": "imdb"}),
+    ("media_and_entertainment", {"media_mode": "imdb"}),
     ("decision_support", {"decision_mode": "standard"}),
 ])
 async def test_industry_parity(industry, custom_config):
@@ -100,7 +100,7 @@ async def test_industry_parity(industry, custom_config):
         if industry in [
             "transportation", "agriculture", "unstructured", "demographics", 
             "labor", "environment", "education", "housing", "manufacturing", 
-            "media_entertainment", "decision_support", "finance", "energy", "healthcare", "telecom", "ecommerce"
+            "media_and_entertainment", "decision_support", "finance", "energy", "healthcare", "telecom", "ecommerce"
         ]:
              assert len(transformed) > 0, f"{industry} failed to produce records from dummy data."
 

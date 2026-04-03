@@ -268,13 +268,7 @@ def test_parity_synthesizer_unknown_model_raises():
         synth.generate_statistical_twin("non_existent_model_xyz")
 
 
-def test_parity_synthesizer_validate_parity_passthrough():
-    """ParitySynthesizer.validate_parity delegates to paritygen.validation."""
-    synth = ParitySynthesizer()
-    df_a = pd.DataFrame({"val": [1.0, 2.0, 3.0]})
-    df_b = pd.DataFrame({"val": [1.1, 2.1, 3.1]})
-    result = synth.validate_parity(df_a, df_b)
-    assert "val" in result
+
 
 
 # ─── Step 7: Full E2E Pipeline ────────────────────────────────────────────────

@@ -20,6 +20,16 @@ class DatasetEngine:
         self.llm_manager = llm_manager or LLMManager(self.config)
         self.synthesis_engine = ParitySynthesizer()
         self.providers = {}
+        try:
+            self.client = dataproc.JobControllerClient()
+        except Exception as e:
+            logger.error(f"Failed to initialize DataProc client: {e}")
+            self.client = None
+
+    def run_job(self, job_spec):
+        if not self.client:
+            raise RuntimeError("DataProc client not initialized")
+        return self.client.submit_job(project_id=self.project_id, region=self.region, job=job_spec)
 
     def register_provider(self, industry: str, provider: BaseProvider):
         """
@@ -49,7 +59,7 @@ class DatasetEngine:
             "labor": "labor",
             "environment": "environment",
             "housing": "housing",
-            "media_entertainment": "media_entertainment",
+            "media_and_entertainment": "media_and_entertainment",
             "decision_support": "decision_support"
         }
         lookup_key = industry_map.get(industry, industry)

@@ -71,7 +71,7 @@ class MediaProvider(BaseProvider):
                         record_id = hashlib.md5(f"IMDB-{row['tconst']}".encode()).hexdigest()[:16]
                         results.append(StandardSchema(
                             id=record_id,
-                            industry="media_entertainment",
+                            industry="media_and_entertainment",
                             data=verified,
                             provenance={"source": raw.source_url, "provider": "IMDb"},
                             checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
@@ -92,7 +92,7 @@ class MediaProvider(BaseProvider):
                     record_id = hashlib.md5(f"SPOTIFY-{raw_data['track_name']}-{raw_data['artist']}".encode()).hexdigest()[:16]
                     results.append(StandardSchema(
                         id=record_id,
-                        industry="media_entertainment",
+                        industry="media_and_entertainment",
                         data=verified,
                         provenance={"source": raw.source_url, "provider": "Spotify"},
                         checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
