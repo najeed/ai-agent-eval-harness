@@ -49,8 +49,9 @@ If you see a list of industrial benchmarks, you are ready to begin.
 ### 🔴 [Phase 3 - Intelligence & Complexity - Advanced](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced)
 **Focus**: Complex workflows and rapid bootstrapping.
 - **[Auto-Translate](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/auto_translation/README.md)**: Bootstrap AES scenarios from raw industrial PRDs.
-- **[Multi-Agent Interactions](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/multi_agent/README.md)**: Orchestrate team-based agentic evaluations.
+- **[Multi-Agent Interactions](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/multi_agent/README.md)**: Orchestrate team-based agentic evaluations and coordinate complex agentic swarms.
 - **[DAG Loops & Flow Control](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/dag_loops/README.md)**: Master recursion and state-flow visualization.
+- **[Accuracy](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/accuracy/README.md)**: Human Ground Truth and Mutated Bad Judge diagnostics.
 
 ### 🟣 [Phase 4 - Production & Governance - Expert](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert)
 **Focus**: Scientific precision and zero-trust security pipelines.

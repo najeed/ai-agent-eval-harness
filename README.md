@@ -65,9 +65,23 @@ multiagent-eval quickstart
 *   **Result**: Launches mock agent, executes a telecom scenario, and builds a report.
 *   **Next Step**: `multiagent-eval console` for the visual dashboard.
 
+
 ## Mission
 
 Our goal is to create a standardized, community-driven benchmark for AI agent performance. By providing a rich set of industry-specific starter scenarios and a flexible evaluation runner, we aim to help developers, researchers, and businesses measure and improve their agent-based systems.
+
+## 🎓 Master the Art of Industrial Evaluation
+
+Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you from foundational agent discovery through zero-trust production governance concepts. This is a learn-by-doing short-story based roadmap for anyone building reliable agentic systems.
+
+| Phase | Path to Mastery | Milestones |
+| :--- | :--- | :--- |
+| 🟢 **Foundations** | Discovery, Native Adapters, and Sandboxing. | [Start Here](./walkthroughs/Phase%201%20-%20Foundations%20-%20Beginner) |
+| 🟡 **Scale** | Batch Evaluation, Pack Management, and Mutation. | [Go Intermediate](./walkthroughs/Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate) |
+| 🔴 **Intelligence** | Auto-Translation, Multi-Agent, and DAG Loops. | [Go Advanced](./walkthroughs/Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced) |
+| 🟣 **Governance** | Trace Replay, IJA Consensus, and HITL Overrides. | [Become Expert](./walkthroughs/Phase%204%20-%20Production%20%26%20Governance%20-%20Expert) |
+
+👉 **[Launch the Master Syllabus](./walkthroughs/README.md)** to begin your journey.
 
 The harness is organized into the following key components:
 
