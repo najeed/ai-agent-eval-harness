@@ -23,10 +23,24 @@ def run_calibration(path: str, golden_path: Optional[str] = None, plot: bool = F
 
     # 1. Load Trace Events
     events = []
-    with open(trace_path, "r", encoding="utf-8") as f:
-        for line in f:
-            if line.strip():
-                events.append(json.loads(line))
+    if trace_path.is_dir():
+        # Aggregated Loading (Industrial Calibration Standard)
+        for fpath in sorted(trace_path.rglob("*.jsonl")):
+            with open(fpath, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        try:
+                            events.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            continue
+    else:
+        with open(trace_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    try:
+                        events.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
 
     # 2. Extract Golden Labels (Ground Truth)
     golden_labels = {}

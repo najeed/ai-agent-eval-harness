@@ -18,7 +18,7 @@
 | :--- | :--- |
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 Regulatory-Hardened AES v1.2 |
+| **Status** | 🟢 Production-Ready AES v1.2 |
 | **Architecture** | [Zero-Touch Core](docs/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.2 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 

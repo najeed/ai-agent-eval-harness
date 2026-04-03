@@ -37,12 +37,12 @@ def check_security_health():
 
     # 2. Auth Provider Integrity
     try:
-        from .console.auth_manager import get_auth_provider, Role
+        from .console.auth_manager import get_auth_provider, Permission
         provider = get_auth_provider()
         print(f"  ✔ Auth Provider active: {provider.__class__.__name__}")
         
         # Test PBAC Node manifest
-        if Role.SCENARIOS_READ == "scenarios:read":
+        if Permission.SCENARIOS_READ == "scenarios:read":
             print("  ✔ PBAC Permission Nodes are healthy")
         else:
             print("  ❌ PBAC Permission Nodes are misconfigured")

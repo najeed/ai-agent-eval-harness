@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Najeed Khan", email = "ai.eval.harness.contact@gmail.com" }
 ]
-license = "Apache-2.0"
+license = { text = "Apache-2.0" }
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -47,4 +47,4 @@ coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 testpaths = ["tests", "dataproc_engine/tests"]
 addopts = "-ra"
 python_files = ["test_*.py"]
-pythonpath = ["."]
+pythonpath = ["."]

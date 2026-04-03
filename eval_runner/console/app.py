@@ -28,7 +28,12 @@ def create_app():
     app = Flask(__name__, static_folder=ui_path, static_url_path="")
     
     # Ensure session persistence (v1.2.3 Stabilization)
-    app.secret_key = hashlib.sha256(config.DASHBOARD_API_KEY.encode()).hexdigest()
+    api_key = getattr(config, "DASHBOARD_API_KEY", None)
+    if api_key:
+        app.secret_key = hashlib.sha256(api_key.encode()).hexdigest()
+    else:
+        # Fallback to a random key if no API key is provided, allowing the app to boot
+        app.secret_key = os.urandom(24).hex()
     
     CORS(app, supports_credentials=True) # Explicit support for session cookies
     app.register_blueprint(auth_bp)
@@ -87,6 +92,7 @@ def create_app():
     app.config["NAV_REGISTRY"] = nav_registry
     
     @app.route("/api/nav")
+    @require_permission(Permission.SCENARIOS_READ)
     def get_nav():
         # Add dynamic markers if needed (e.g. active states)
         return flask.jsonify(app.config["NAV_REGISTRY"])

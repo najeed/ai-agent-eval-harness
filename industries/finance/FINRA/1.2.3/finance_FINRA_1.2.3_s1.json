@@ -2,7 +2,8 @@
   "aes_version": 1.2,
   "metadata": {
     "id": "finance_FINRA_1.2.3_s1",
-    "name": "Curated finance FINRA (1.2.3)"
+    "name": "Curated finance FINRA (1.2.3)",
+    "compliance_level": "Regulatory_Audit"
   },
   "industry": "finance",
   "workflow": {
@@ -17,6 +18,7 @@
   "evaluation": {
     "consensus": {
       "strategy": "Majority_Vote",
+      "min_judges": 1,
       "judge_panel": [
         "Luna-1"
       ]

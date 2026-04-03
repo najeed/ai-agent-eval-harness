@@ -276,25 +276,9 @@ Utilities & Environment:
 
     return parser
 
-def reconstruct_results_from_events(events: list) -> list:
-    """Helper to reconstruct results structure from JSONL events."""
-    from .triage import TriageEngine
-    results_map = {}
-    for event in events:
-        task_id = event.get("task_id", "unknown")
-        ev_type = event.get("event")
-        if task_id not in results_map:
-            results_map[task_id] = {"task_id": task_id, "metrics": [], "conversation_history": [], "triage_tag": "SUCCESS"}
-        res = results_map[task_id]
-        if ev_type == "evaluation":
-            res["metrics"].append({"metric": event.get("metric"), "score": event.get("value"), "threshold": event.get("threshold", 0.5), "success": event.get("success", False)})
-        elif ev_type in ["prompt", "agent_response", "tool_result"]:
-            role = "agent" if ev_type == "agent_response" else "user"
-            content = event.get("content") or {"action": event.get("tool"), "status": event.get("status")}
-            res["conversation_history"].append({"role": role, "content": content})
-    final_results = list(results_map.values())
-    TriageEngine.apply_triage(final_results)
-    return final_results
+
+from .trace_utils import reconstruct_results_from_events
+
 
 def main():
     """Main CLI entrance."""

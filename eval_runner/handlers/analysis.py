@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from typing import Dict, Any
 from .. import reporter, calibrator, explainer, leaderboard_generator, taxonomy, trace_utils
-from ..cli import reconstruct_results_from_events
+from ..trace_utils import reconstruct_results_from_events
 
 def handle_report(args):
     """Handler for 'report' command."""
