@@ -9,18 +9,18 @@ from eval_runner.adapters.autogen import AutoGenAdapterPlugin
 def test_verification_result_nist_compliance():
     """Verify VerificationResult adheres to NIST AI-100-1 (7-dimension vector)."""
     res = VerificationResult(
-        aggregate_score=0.85,
         success=True,
         message="Standard compliance check",
         metrics={
             "reliability": 0.9,
             "safety": 0.8,
             "security": 0.9,
-            "transparency": 0.7,
+            "fairness": 0.8,
             "explainability": 0.8,
             "privacy": 0.9,
-            "fairness": 0.8
-        }
+            "resilience": 0.7
+        },
+        aggregate_score=0.85
     )
     
     data = res.to_dict()
@@ -30,7 +30,7 @@ def test_verification_result_nist_compliance():
     assert "timestamp" in data
     
     # Test defaults
-    res_default = VerificationResult(aggregate_score=0.5, success=False, message="Fail")
+    res_default = VerificationResult(success=False, message="Fail", aggregate_score=0.5)
     assert res_default.metrics["reliability"] == 0.0
     assert len(res_default.metrics) == 7
 
@@ -111,7 +111,7 @@ def test_base_verifier_interface():
     """Ensure BaseVerifier is an ABC requiring verify()."""
     class MyVerifier(BaseVerifier):
         def verify(self, trace_path, **kwargs):
-            return VerificationResult(1.0, True, "OK")
+            return VerificationResult(success=True, message="OK", aggregate_score=1.0)
     
     v = MyVerifier()
     res = v.verify(Path("test.jsonl"))

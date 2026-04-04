@@ -18,7 +18,7 @@ def _get_project_version() -> str:
                 return tomllib.load(f).get("project", {}).get("version", "1.2.3")
     except Exception:
         pass
-    return "1.2.3"
+    return "1.2.4"
 
 VERSION = _get_project_version()
 _TEMP_DIR_CACHE = None
@@ -113,7 +113,7 @@ ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-4-6-sonnet")
 ANTHROPIC_VERSION = os.getenv("ANTHROPIC_VERSION", "2023-06-01")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/models")
+GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1/models")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 XAI_API_KEY = os.getenv("XAI_API_KEY")
@@ -161,7 +161,7 @@ ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"
 # See: docs/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 
-# Industrial Feature Toggles (v1.2.3)
+# Industrial Feature Toggles (v1.2.4)
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
 # Throttle between agent turns (seconds) to prevent resource exhaustion

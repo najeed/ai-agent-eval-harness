@@ -58,10 +58,12 @@ class DefaultRunner(BaseRunner):
 
         all_attempt_results = []
 
+        EventEmitter.emit(CoreEvents.PHASE_START, {"phase": "pass_at_k_execution", "k": attempts}, span_context=ctx.span_context)
         for k in range(1, attempts + 1):
             session = SessionManager(scenario, metadata=ctx.metadata)
             attempt_results = await session.execute_tasks(k)
             all_attempt_results.append(attempt_results)
+        EventEmitter.emit(CoreEvents.PHASE_END, {"phase": "pass_at_k_execution"}, span_context=ctx.scenario_id)
 
         # Cross-attempt aggregation (e.g. consistency)
         if attempts > 1:

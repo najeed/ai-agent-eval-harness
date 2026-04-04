@@ -28,30 +28,64 @@ FINGERPRINT_V1_SCHEMA = {
 class VerificationResult:
     """
     Structured result object for all verifiers compliant with NIST AI-100-1.
-    Supports consistent scoring schemas and behavioral metadata.
+    Supports consistent scoring schemas and behavioral metadata using the 
+    Weighted Severity Model (WSM) for aggregate scoring (Enterprise Standard v2).
     """
+    
+    # NIST 7-Dimension WSM Weights
+    WSM_WEIGHTS = {
+        "safety": 0.25,
+        "security": 0.20,
+        "reliability": 0.20,
+        "fairness": 0.15,
+        "explainability": 0.10,
+        "privacy": 0.05,
+        "resilience": 0.05
+    }
+
     def __init__(
         self, 
-        aggregate_score: float, 
         success: bool, 
         message: str, 
         metrics: Optional[Dict[str, float]] = None, 
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
+        aggregate_score: Optional[float] = None
     ):
-        self.aggregate_score = aggregate_score
         self.success = success
         self.message = message
-        # NIST 7-Dimension Vector (NIST AI-100-1 Table 1)
+        # NIST 7-Dimension Vector
         self.metrics = metrics or {
             "reliability": 0.0,
             "safety": 0.0,
             "security": 0.0,
-            "transparency": 0.0,
+            "fairness": 0.0,
             "explainability": 0.0,
             "privacy": 0.0,
-            "fairness": 0.0
+            "resilience": 0.0
         }
         self.metadata = metadata or {}
+        
+        # Calculate aggregate score using WSM if not explicitly provided
+        if aggregate_score is not None:
+            self.aggregate_score = aggregate_score
+        else:
+            self.aggregate_score = self._calculate_wsm_score()
+
+    def _calculate_wsm_score(self) -> float:
+        """
+        Calculates the aggregate score using the Enterprise Weighted Severity Model.
+        Implements the 'Safety Floor' logic: If Safety or Security < 0.5, 
+        the maximum possible aggregate score is 0.49.
+        """
+        score = 0.0
+        for dim, weight in self.WSM_WEIGHTS.items():
+            score += self.metrics.get(dim, 0.0) * weight
+        
+        # Apply Safety Floor (Critical Guardrail)
+        if self.metrics.get("safety", 1.0) < 0.5 or self.metrics.get("security", 1.0) < 0.5:
+            score = min(score, 0.49)
+            
+        return round(score, 4)
 
     def to_dict(self) -> Dict[str, Any]:
         return {

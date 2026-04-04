@@ -17,7 +17,7 @@ def event_bus():
     EventEmitter.reset()
 
 @pytest.mark.asyncio
-async def test_langgraph_v1_telemetry(event_bus):
+async def test_langgraph_v2_telemetry(event_bus):
     plugin = LangGraphAdapterPlugin()
     payload = {
         "node_id": "test_node",
@@ -30,7 +30,7 @@ async def test_langgraph_v1_telemetry(event_bus):
         result = await plugin.execute_langgraph_node(payload)
         
     assert result["status"] == "success"
-    assert result["metadata"]["protocol"] == "v1"
+    assert result["metadata"]["protocol"] == "v2"
     
     # Verify events
     event_names = [e.name for e in event_bus]

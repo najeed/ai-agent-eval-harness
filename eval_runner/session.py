@@ -54,6 +54,7 @@ class SessionManager:
             edges = workflow.get("edges", [])
 
             # 1. Build Dependency Graph
+            EventEmitter.emit(CoreEvents.PHASE_START, {"phase": "workflow_sort"}, span_context=self.session_metadata.get("span_context"))
             graph = {node_id: set() for node_id in nodes_data}
             for edge in edges:
                 if edge["to"] in graph:
@@ -68,6 +69,8 @@ class SessionManager:
                 # Fallback or strict fail? User requested "real implementation".
                 # We should fail the session as DAGs by definition are acyclic.
                 raise ValueError(f"Workflow contains cyclic dependencies: {e}")
+            finally:
+                EventEmitter.emit(CoreEvents.PHASE_END, {"phase": "workflow_sort"}, span_context=self.session_metadata.get("span_context"))
 
             # 3. Handle Empty Workflow
             if not nodes_data:
@@ -82,6 +85,11 @@ class SessionManager:
                 EventEmitter.emit(
                     CoreEvents.TASK_START,
                     {"task_id": node_id, "attempt": attempt_number},
+                    span_context=self.session_metadata.get("span_context")
+                )
+                EventEmitter.emit(
+                    CoreEvents.SUBTASK_START,
+                    {"subtask_id": f"subtask-{node_id}", "type": "agent_reasoning"},
                     span_context=self.session_metadata.get("span_context")
                 )
 
@@ -138,9 +146,11 @@ class SessionManager:
                             elif protocol == "local":
                                 endpoint = os.getenv("AGENT_LOCAL_CMD")
                         
+                        EventEmitter.emit(CoreEvents.ACTION_START, {"action_type": "llm_inference", "protocol": protocol}, span_context=turn_ctx.span_context)
                         agent_response = await AgentAdapterRegistry.call_agent(
                             payload, protocol=protocol, endpoint=endpoint, span_context=turn_ctx.span_context
                         )
+                        EventEmitter.emit(CoreEvents.ACTION_END, {"action_type": "llm_inference", "status": "success"}, span_context=turn_ctx.span_context)
                         turns_taken = turn
 
                         if not agent_name:
@@ -199,6 +209,11 @@ class SessionManager:
                 )
                 all_task_results.append(task_results)
                 executed_nodes.add(node_id)
+                EventEmitter.emit(
+                    CoreEvents.SUBTASK_END, 
+                    {"subtask_id": f"subtask-{node_id}"}, 
+                    span_context=self.session_metadata.get("span_context")
+                )
                 EventEmitter.emit(CoreEvents.TASK_END, {"task_id": node_id, "results": task_results}, span_context=self.session_metadata.get("span_context"))
 
         finally:
@@ -226,9 +241,11 @@ class SessionManager:
         )
         actions["used_tools"].append(tool_name)
 
+        EventEmitter.emit(CoreEvents.ACTION_START, {"action_type": "tool_execution", "tool": tool_name}, span_context=turn_ctx.span_context)
         state_before = sandbox.state.copy()
         result = sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
+        EventEmitter.emit(CoreEvents.ACTION_END, {"action_type": "tool_execution", "tool": tool_name}, span_context=turn_ctx.span_context)
 
         EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tool_name, "result": result}, span_context=turn_ctx.span_context)
 
@@ -327,6 +344,7 @@ class SessionManager:
         # v1.2 Hardened Metrics: Pre-condition check (State Hygiene)
         sh = node.get("state_hygiene", {})
         if sh:
+            EventEmitter.emit(CoreEvents.STEP_START, {"step_name": "state_hygiene_check"}, span_context=self.session_metadata.get("span_context"))
             hygiene_results = []
             for rule in sh.get("rules", []):
                 path = rule.get("path")
@@ -364,6 +382,7 @@ class SessionManager:
             # Record hygiene as a meta-metric or log it
             if hygiene_results:
                 results["state_hygiene"] = hygiene_results
+            EventEmitter.emit(CoreEvents.STEP_END, {"step_name": "state_hygiene_check"}, span_context=self.session_metadata.get("span_context"))
 
         # Parse success_criteria from node if it exists (for compatibility)
         # or use the v1.2 expected_outcome

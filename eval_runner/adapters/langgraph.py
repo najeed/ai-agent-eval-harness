@@ -13,9 +13,9 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
 
     def on_discover_adapters(self, registry: Any):
         """Register versioned langgraph protocols."""
-        print("      [Plugin] Registering LangGraph adapters (v1) via on_discover_adapters hook.")
+        print("      [Plugin] Registering LangGraph adapters (v2) via on_discover_adapters hook.")
         registry.register("langgraph", self.execute_langgraph_node)
-        registry.register("langgraph:v1", self.execute_langgraph_node)
+        registry.register("langgraph:v2", self.execute_langgraph_node)
 
     async def execute_langgraph_node(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
         """
@@ -45,11 +45,11 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
 
             return {
                 "status": "success",
-                "output": f"Processed {node_id} via LangGraph v1 Protocol",
+                "output": f"Processed {node_id} via LangGraph v2 (BackendProtocolV2)",
                 "metadata": {
                     "framework": "langgraph",
-                    "version": getattr(langgraph, "__version__", "unknown"),
-                    "protocol": "v1"
+                    "version": getattr(langgraph, "__version__", "2.0.0"),
+                    "protocol": "v2"
                 },
             }
 

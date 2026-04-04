@@ -3,25 +3,30 @@
 # Install with: pip install -r requirements.txt
 
 # --- Web Framework ---
-Flask>=2.0.0
-flask-cors>=3.0.0
+Flask>=3.1.0
+flask-cors>=4.0.0
 
 # --- HTTP & Async ---
-requests>=2.0.0
-aiohttp>=3.8.0
+requests>=2.33.0
+aiohttp>=3.13.0
 
 # --- Data & Schemas ---
-jsonschema>=4.0.0
-PyYAML>=6.0
+jsonschema>=4.20.0
+PyYAML>=6.0.1
 
 # --- ML / Embeddings (optional, for benchmark loaders) ---
-sentence-transformers
-numpy
-datasets
+sentence-transformers>=3.0.0
+numpy>=2.4.0
+datasets>=4.8.0
 
 # --- Security & Auth ---
-PyJWT>=2.0.0
-cryptography>=41.0.0
+PyJWT>=2.8.0
+cryptography>=46.0.0
+
+# --- Observability & SDKs ---
+opentelemetry-api==1.25.0
+opentelemetry-sdk==1.25.0
+google-generativeai>=2.0.4
 
 # --- Environment ---
 python-dotenv
