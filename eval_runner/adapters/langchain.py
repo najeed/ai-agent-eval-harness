@@ -67,12 +67,11 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
                 },
             }
         except ImportError:
-            EventEmitter.emit(CoreEvents.CHAIN_START, {"adapter": "langchain", "mode": "mock"})
-            EventEmitter.emit(CoreEvents.CHAIN_END, {"adapter": "langchain", "mode": "mock"})
+            EventEmitter.emit(CoreEvents.ERROR, {"message": "LangChain SDK not installed"})
             return {
-                "status": "mock_success",
-                "output": f"Mock LangChain output for {task_id} (SDK not installed)",
-                "metadata": {"framework": "langchain", "mode": "mock"},
+                "status": "error",
+                "message": "LangChain SDK (langchain) not installed. Native execution failed.",
+                "metadata": {"framework": "langchain", "mode": "failed"},
             }
 
     async def _execute_remote_langserve(self, url: str, input_data: Any, payload: Dict[str, Any]) -> Dict[str, Any]:

@@ -135,16 +135,15 @@ async def test_adapter_guards():
     crew_plugin = CrewAIAdapterPlugin()
 
     # Force import error for these tests by manipulating sys.modules
+    # Note: We must also patch the adapter modules to trigger the ImportError in the execute method
     with patch.dict("sys.modules", {
         "langgraph": None,
         "crewai": None,
-        "eval_runner.adapters.langgraph": None, # Ensure the adapter itself can't load its dependency
-        "eval_runner.adapters.crewai": None, # Ensure the adapter itself can't load its dependency
     }):
         lg_res = await lg_plugin.execute_langgraph_node({"node_id": "test"})
-        assert lg_res["status"] == "mock_success"
-        assert "not installed" in lg_res["output"]
+        assert lg_res["status"] == "error"
+        assert "not installed" in lg_res["message"]
 
         crew_res = await crew_plugin.execute_crewai_task({"task_id": "test"})
-        assert crew_res["status"] == "mock_success"
-        assert "not installed" in crew_res["output"]
+        assert crew_res["status"] == "error"
+        assert "not installed" in crew_res["message"]

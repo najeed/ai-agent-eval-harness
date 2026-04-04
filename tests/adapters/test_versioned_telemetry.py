@@ -89,5 +89,45 @@ async def test_langchain_v1_telemetry(event_bus):
     assert CoreEvents.NODE_START in event_names
     assert CoreEvents.CHAIN_END in event_names
 
+@pytest.mark.asyncio
+async def test_missing_sdk_err_reporting(event_bus):
+    """Verifies all adapters report 'error' when SDK is missing (No-Masking policy)."""
+    lg_plugin = LangGraphAdapterPlugin()
+    ag_plugin = AutoGenAdapterPlugin()
+    crew_plugin = CrewAIAdapterPlugin()
+    lc_plugin = LangChainAdapterPlugin()
+
+    # Force missing SDKs
+    with patch.dict("sys.modules", {
+        "langgraph": None,
+        "autogen": None,
+        "crewai": None,
+        "langchain": None,
+        "langchain_core": None
+    }), patch("eval_runner.config.AUTOGEN_API_URL", None):
+        # LangGraph
+        lg_res = await lg_plugin.execute_langgraph_node({"node_id": "test"})
+        assert lg_res["status"] == "error"
+        assert "not installed" in lg_res["message"]
+
+        # AutoGen (unconfigured fallback)
+        ag_res = await ag_plugin.execute_autogen_query({"agent_id": "test"})
+        assert ag_res["status"] == "error"
+        assert "not installed" in ag_res["message"]
+
+        # CrewAI
+        crew_res = await crew_plugin.execute_crewai_task({"task_id": "test"})
+        assert crew_res["status"] == "error"
+        assert "not installed" in crew_res["message"]
+
+        # LangChain
+        lc_res = await lc_plugin.execute_langchain_query({"task_id": "test"})
+        assert lc_res["status"] == "error"
+        assert "not installed" in lc_res["message"]
+
+    # Verify ERROR events were emitted
+    event_names = [e.name for e in event_bus]
+    assert CoreEvents.ERROR in event_names
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

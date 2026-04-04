@@ -405,8 +405,8 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |
 | **Interactive Triage** | 🔶 Heuristic only | ✅ Multi-user Sync & Human Annotation |
-| **Advanced Sandbox** | 🔶 Path/Shell Gating| ✅ Hardened Docker Isolation & Red-Team Probes |
-| **Auth & Governance** | ❌ None | ✅ OIDC SSO, RBAC, Managed Leaderboards |
+| **Advanced Sandbox** | 🔶 Path/Shell Gating | ✅ Hardened Docker Isolation & Red-Team Probes |
+| **Auth & Governance** | 🔶 Mandatory Authentication | ✅ OIDC SSO, RBAC, Managed Leaderboards |
 
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 

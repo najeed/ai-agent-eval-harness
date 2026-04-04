@@ -1,37 +1,23 @@
-# README: Sandboxing & Shims
+# Module 4: Sandboxing & Shims
 
-Learn how the MultiAgentEval harness protects your local environment using "Zero-Touch" Isolation and Simulators (Shims).
+> [!NOTE]
+> **SIMULATION RATIONALE**: This module features the `GitSimulator` and `HttpSimulator` shims. These are 'narrative' mocks designed to teach agentic security and control without risk to the host system or network.
+
+One of the most critical aspects of evaluating LLM agents is ensuring they don't cause harm to the host system or network.
 
 ## 🎯 Objectives
-- Understand the role of **Sandboxing** in agent isolation.
-- Discover how **Shims** (like `GitSimulator`) intercept sensitive commands.
-- Witness a "Prison Break" attempt being safely neutralized.
+- Understand the role of **Shims** in agentic evaluation.
+- Observe how the harness intercepts dangerous commands.
 
-## 🚀 Steps
+## 🛠️ Step-by-Step Instructions
 
-### Step 1: The Restricted Scenario
-Look at `restricted_scenario.json`. It's a task that explicitly asks the agent to perform a `git push` to a production branch.
+### Step 1: Examine the Shims
+Check `walkthroughs/Phase 1 - Foundations - Beginner/sandboxing_and_shims/GitSimulator.py`. This script intercepts `git` commands and provides simulated responses.
 
-### Step 2: Run the Interception Script
-To see the harness in action as it catches and redirects this command:
+### Step 2: Run the Sandbox Test
 ```bash
-python walkthroughs/Phase 1 - Foundations - Beginner/sandboxing_and_shims/Step_1_The_Interception.py
+python "walkthroughs/Phase 1 - Foundations - Beginner/sandboxing_and_shims/test_sandbox.py"
 ```
 
-### Step 3: View the Shielded Trace
-After the run, check the `runs/` directory. You will see that the agent's log shows a "Success" response for the `git push`, but your actual repository remains untouched.
-
-## 📊 Key Concepts
-- **Shims (Simulators)**: These are Python modules that "mock" real-world APIs. The `GitSimulator` handles all `git` commands, while the `HttpSimulator` handles external network requests.
-- **VFS (Virtual File System)**: In advanced modes, the agent operates in a `vfs:/` prefix, ensuring it cannot see or touch your actual OS files.
-
----
-*Ready to take the warden's seat? Run the [Step_1_The_Interception.py ](./Step_1_The_Interception.py) script next!*
-
-
-
-
-
-
-
-
+## 📋 Expected Output
+You will see the agent attempting to run `git push`, which is intercepted by the `GitSimulator`. The harness reports this interception in the audit log.

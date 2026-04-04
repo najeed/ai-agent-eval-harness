@@ -1,6 +1,9 @@
-# README: Trace Importer (The Time Traveler's Log)
+# Module 10: The Trace Importer (Capture & Replay)
 
-Learn how to bridge the gap between production logs and the evaluation harness by capturing and replaying real-world agentic failures.
+> [!NOTE]
+> **SIMULATION RATIONALE**: This module uses simulated production logs and 'dummy' scenarios to ensure a portable, zero-dependency educational experience. In an industrial deployment, this would interface with real telemetry sinks (e.g., Datadog, LangSmith).
+
+In this module, we explore how to capture real-world "drifts" from production and import them back into the evaluation harness as new test cases.
 
 ## 🎯 Objectives
 - Simulate a **Production Capture** event.

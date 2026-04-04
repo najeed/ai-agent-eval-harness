@@ -1,3 +1,4 @@
+# eval_runner/adapters/autogen.py
 import json
 import aiohttp
 from typing import Dict, Any, Optional
@@ -41,7 +42,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
             })
 
             # In a real environment, we would initialize actual agents here.
-            # For the harness, we simulate the 'NODE_START/NODE_END' chatter signals.
+            # We simulate the 'NODE_START/NODE_END' chatter signals for auditor visibility.
             EventEmitter.emit(CoreEvents.NODE_START, {"adapter": "autogen", "node_id": "assistant"})
             EventEmitter.emit(CoreEvents.NODE_END, {"adapter": "autogen", "node_id": "assistant"})
             
@@ -59,8 +60,16 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
 
         except ImportError:
             # Fallback to Remote API if SDK is not installed
-            url = url or payload.get("url") or config.AUTOGEN_API_URL
+            url = url or payload.get("url") or getattr(config, "AUTOGEN_API_URL", None)
             
+            if not url:
+                EventEmitter.emit(CoreEvents.ERROR, {"message": "AutoGen SDK and Remote URL missing"})
+                return {
+                    "status": "error",
+                    "message": "AutoGen SDK not installed and no Remote API URL provided. Native execution failed.",
+                    "metadata": {"framework": "autogen", "mode": "failed"},
+                }
+
             print(f"      [Adapter] Info: 'autogen' SDK not found. Using Remote API at: {url}")
             
             async with aiohttp.ClientSession() as session:

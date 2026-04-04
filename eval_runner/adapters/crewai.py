@@ -61,12 +61,9 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
             }
 
         except ImportError:
-            print(f"      [Adapter] Warning: 'crewai' SDK not found. Mocking telemetry.")
-            EventEmitter.emit(CoreEvents.CHAIN_START, {"adapter": "crewai", "mode": "mock"})
-            EventEmitter.emit(CoreEvents.CHAIN_END, {"adapter": "crewai", "mode": "mock"})
-            
+            EventEmitter.emit(CoreEvents.ERROR, {"message": "CrewAI SDK not installed"})
             return {
-                "status": "mock_success",
-                "output": f"Mock CrewAI output for {task_id} (SDK not installed)",
-                "metadata": {"framework": "crewai", "mode": "mock"},
+                "status": "error",
+                "message": "CrewAI SDK (crewai) not installed. Native execution failed.",
+                "metadata": {"framework": "crewai", "mode": "failed"},
             }

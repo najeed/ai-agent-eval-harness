@@ -54,12 +54,9 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
             }
 
         except ImportError:
-            print(f"      [Adapter] Warning: 'langgraph' SDK not found. Mocking telemetry.")
-            EventEmitter.emit(CoreEvents.CHAIN_START, {"adapter": "langgraph", "mode": "mock"})
-            EventEmitter.emit(CoreEvents.CHAIN_END, {"adapter": "langgraph", "mode": "mock"})
-            
+            EventEmitter.emit(CoreEvents.ERROR, {"message": "LangGraph SDK not installed"})
             return {
-                "status": "mock_success",
-                "output": f"Mock LangGraph output for {node_id} (SDK not installed)",
-                "metadata": {"framework": "langgraph", "mode": "mock"},
+                "status": "error",
+                "message": "LangGraph SDK (langgraph) not installed. Native execution failed.",
+                "metadata": {"framework": "langgraph", "mode": "failed"},
             }
