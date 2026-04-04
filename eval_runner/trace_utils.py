@@ -30,7 +30,7 @@ def load_events(path: Union[Path, str]) -> List[Dict[Any, Any]]:
     if not path.exists():
         raise FileNotFoundError(f"Trace file not found: {path}")
 
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8-sig") as f:
         content = f.read().strip()
         if not content:
             return []

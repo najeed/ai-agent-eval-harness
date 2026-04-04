@@ -161,7 +161,7 @@ ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"
 # See: docs/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 
-# Industrial Feature Toggles (v1.2.3-ULTIMATE)
+# Industrial Feature Toggles (v1.2.3)
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
 # Throttle between agent turns (seconds) to prevent resource exhaustion

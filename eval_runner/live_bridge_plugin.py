@@ -64,9 +64,14 @@ class RemoteBridgePlugin(BaseEvalPlugin):
 
         try:
             # We use a simple GET on the state endpoint as a heartbeat
-            response = requests.get(self.endpoint, headers=headers, timeout=0.1)
-            # 200 (Success) or 401 (Unauthorized - still alive) means the console is there.
-            self.active = response.status_code in (200, 401)
+            response = requests.get(self.endpoint, headers=headers, timeout=0.2)
+            # 200 (Success) means the console is active and accessible.
+            # 401 (Unauthorized) means we have no access, so we should stay inactive to stop looping.
+            if response.status_code == 401:
+                print(f"[RemoteBridgePlugin] Unauthorized: Invalid or missing API Key for {self.endpoint}")
+                self.active = False
+            else:
+                self.active = response.status_code == 200
         except Exception:
             self.active = False
         return self.active
@@ -86,7 +91,10 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             headers["X-AES-API-KEY"] = config.DASHBOARD_API_KEY
 
         try:
-            requests.post(self.endpoint, headers=headers, json={"event": event_name, "data": data}, timeout=0.2)
+            response = requests.post(self.endpoint, headers=headers, json={"event": event_name, "data": data}, timeout=0.5)
+            if response.status_code == 401:
+                print(f"[RemoteBridgePlugin] Unauthorized: Disabling bridge for this run.")
+                self.active = False
         except Exception:
             # If the console dies, stop trying for this run
             self.active = False

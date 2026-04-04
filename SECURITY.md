@@ -9,6 +9,17 @@ We actively maintain and provide security updates for the following versions:
 | Latest  | :white_check_mark: |
 | < Latest| :x:                |
 
+## Industrial Security & Trust (v1.2.3)
+
+The Evaluation Harness v1.2.3 includes advanced **Industrial Security Hardening** and a **Cryptographic Trust Protocol** to ensure the integrity of your evaluations.
+
+For detailed technical information on these features, please refer to:
+- **[Industrial Security Hardening (R1-R3)](docs/guides/07_SECURITY_AND_AUTHENTICATION.md#5-industrial-security-hardening-v123)**: Details on SSRF protection, telemetry masking, and operational controls.
+- **[The Trust Protocol](docs/guides/07_SECURITY_AND_AUTHENTICATION.md#6-the-trust-protocol-fingerprinting--certification)**: Overview of trace fingerprinting and the public Certification API.
+- **[Trust Protocol Technical Spec](docs/spec/trust_protocol_spec_v1.md)**: Deep dive into SHA-256 and ED25519 implementation for **custom extensions**.
+
+---
+
 ## Reporting a Vulnerability
 
 We take the security of the MultiAgentEval seriously. If you discover a security vulnerability, please follow these steps:

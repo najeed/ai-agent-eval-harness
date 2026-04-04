@@ -110,6 +110,11 @@ def require_permission(permission_node: str):
                         return f(*args, **kwargs)
                     return jsonify({"error": f"Forbidden: Permission '{permission_node}' required"}), 403
             
+            if not api_key and not user:
+                print(f"   [Auth] 401 Unauthorized - No session and no X-AES-API-KEY header (Path: {request.path})", flush=True)
+            elif api_key and not user:
+                print(f"   [Auth] 401 Unauthorized - Invalid API Key provided (Path: {request.path})", flush=True)
+
             return jsonify({"error": "Unauthorized: Invalid or missing API Key"}), 401
         return decorated_function
     return decorator

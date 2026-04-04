@@ -1,0 +1,57 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, langsmith-0.7.22, aiohttp-1.1.0, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 2 items
+
+tests\unit\test_verifier_hardened.py F.                                  [100%]
+
+================================== FAILURES ===================================
+______________________ test_verifier_end_to_end_signing _______________________
+
+tmp_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-1845/test_verifier_end_to_end_signi0')
+
+    def test_verifier_end_to_end_signing(tmp_path):
+        """
+        Harden Test: Verify full cryptographic signing and verification cycle.
+        Uses real ED25519 keys and SHA-256 hashing. No mocks.
+        """
+        # 1. Setup - Create a mock trace file
+        trace_content = b"sample trace data for cryptographic verification"
+        trace_path = tmp_path / "test_run_123.jsonl"
+        trace_path.write_bytes(trace_content)
+    
+        # 2. Key Generation
+        keys_dir = tmp_path / "keys"
+>       TraceVerifier.generate_key_pair(output_dir=str(keys_dir.relative_to(config.PROJECT_ROOT)))
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\unit\test_verifier_hardened.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-1845/test_verifier_end_to_end_signi0/keys')
+other = WindowsPath('C:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness')
+
+    def relative_to(self, other, *, walk_up=False):
+        """Return the relative path to another path identified by the passed
+        arguments.  If the operation is not possible (because this is not
+        related to the other path), raise ValueError.
+    
+        The *walk_up* parameter controls whether `..` may be used to resolve
+        the path.
+        """
+        if not hasattr(other, 'with_segments'):
+            other = self.with_segments(other)
+        for step, path in enumerate(chain([other], other.parents)):
+            if path == self or path in self.parents:
+                break
+            elif not walk_up:
+>               raise ValueError(f"{str(self)!r} is not in the subpath of {str(other)!r}")
+E               ValueError: 'C:\\Users\\najee\\AppData\\Local\\Temp\\pytest-of-najee\\pytest-1845\\test_verifier_end_to_end_signi0\\keys' is not in the subpath of 'C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness'
+
+C:\Python314\Lib\pathlib\__init__.py:495: ValueError
+=========================== short test summary info ===========================
+FAILED tests/unit/test_verifier_hardened.py::test_verifier_end_to_end_signing
+========================= 1 failed, 1 passed in 0.21s =========================

@@ -128,63 +128,82 @@ class PluginManager:
             if not any(isinstance(existing, p.__class__) for existing in self.plugins):
                 self.plugins.append(p)
 
-        # 4. Fallback for internal essential plugins
-        internal_plugin_classes = []
+        # 4. Fallback for Internal Essential Plugins & Ecosystem Adapters
+        # Industrial-Grade Discovery: Ensures core capabilities are loaded even if entry-points are shadowed.
+        internal_manifest = []
+
+        # -- Core Essentials --
         try:
             from .coverage_plugin import CoveragePlugin
-
-            internal_plugin_classes.append(CoveragePlugin)
+            internal_manifest.append(CoveragePlugin)
         except ImportError:
             pass
+
         try:
-            from .live_bridge_plugin import RemoteBridgePlugin
-
-            internal_plugin_classes.append(RemoteBridgePlugin)
+            from .flight_recorder import FlightRecorderPlugin
+            internal_manifest.append(FlightRecorderPlugin)
         except ImportError:
             pass
+
         try:
-            from .publication_plugin import PublicationPlugin
-
-            internal_plugin_classes.append(PublicationPlugin)
+            from .reporting_plugin import ReportingPlugin
+            internal_manifest.append(ReportingPlugin)
         except ImportError:
             pass
+
         try:
             from .artifact_plugin import ArtifactPlugin
-
-            internal_plugin_classes.append(ArtifactPlugin)
+            internal_manifest.append(ArtifactPlugin)
         except ImportError:
             pass
+
+        try:
+            from .publication_plugin import PublicationPlugin
+            internal_manifest.append(PublicationPlugin)
+        except ImportError:
+            pass
+
+        try:
+            from .live_bridge_plugin import RemoteBridgePlugin
+            internal_manifest.append(RemoteBridgePlugin)
+        except ImportError:
+            pass
+
         try:
             from .triage_plugin import TroubleshootingPlugin
-
-            internal_plugin_classes.append(TroubleshootingPlugin)
+            internal_manifest.append(TroubleshootingPlugin)
         except ImportError:
             pass
 
-        # 3. Ecosystem Adapters & Internal Plugins (Zero-Touch core discovery)
-        # Authoritative Isolation: Ensure failure in one adapter does not crash the manager
-        from eval_runner.adapters.openai import OpenAIAdapterPlugin
-        from eval_runner.adapters.gemini import GeminiAdapterPlugin
-        from eval_runner.adapters.claude import ClaudeAdapterPlugin
-        from eval_runner.adapters.ollama import OllamaAdapterPlugin
-        from eval_runner.adapters.grok import GrokAdapterPlugin
-        from eval_runner.adapters.autogen import AutoGenAdapterPlugin
-        from eval_runner.adapters.crewai import CrewAIAdapterPlugin
-        from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
-        from eval_runner.adapters.langchain import LangChainAdapterPlugin
+        # -- Ecosystem Adapters --
+        try:
+            from eval_runner.adapters.openai import OpenAIAdapterPlugin
+            from eval_runner.adapters.gemini import GeminiAdapterPlugin
+            from eval_runner.adapters.claude import ClaudeAdapterPlugin
+            from eval_runner.adapters.ollama import OllamaAdapterPlugin
+            from eval_runner.adapters.grok import GrokAdapterPlugin
+            from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+            from eval_runner.adapters.crewai import CrewAIAdapterPlugin
+            from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
+            from eval_runner.adapters.langchain import LangChainAdapterPlugin
 
-        potential_plugins = [
-            OpenAIAdapterPlugin, GeminiAdapterPlugin, ClaudeAdapterPlugin,
-            OllamaAdapterPlugin, GrokAdapterPlugin, AutoGenAdapterPlugin,
-            CrewAIAdapterPlugin, LangGraphAdapterPlugin, LangChainAdapterPlugin
-        ]
-        
-        for PluginClass in potential_plugins:
+            internal_manifest.extend([
+                OpenAIAdapterPlugin, GeminiAdapterPlugin, ClaudeAdapterPlugin,
+                OllamaAdapterPlugin, GrokAdapterPlugin, AutoGenAdapterPlugin,
+                CrewAIAdapterPlugin, LangGraphAdapterPlugin, LangChainAdapterPlugin
+            ])
+        except ImportError:
+            pass
+
+        # Robust Instantiation Loop (Zero-Touch Isolation)
+        for PluginClass in internal_manifest:
             try:
+                # Deduplication: Only load if an instance of this class doesn't exist
                 if not any(isinstance(p, PluginClass) for p in self.plugins):
                     self.plugins.append(PluginClass())
             except Exception as e:
-                print(f"   [PluginManager] Isolated Failure loading adapter {PluginClass.__name__}: {e}")
+                # Log isolated failure without crashing the manager
+                print(f"   [PluginManager] Isolated Failure loading {PluginClass.__name__}: {e}")
 
         self._loaded = True
 

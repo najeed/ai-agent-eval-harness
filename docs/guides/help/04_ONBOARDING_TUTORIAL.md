@@ -16,7 +16,7 @@ Welcome to the harness! This tutorial walks a first-time user (e.g., a Product M
 
 ---
 
-## 1) Setup (First Time)
+## 1 Setup (First Time)
 
 ### ✅ Step 1: Clone & Install
 
@@ -68,7 +68,7 @@ multiagent-eval list --search "telecom"
 
 ---
 
-## 2) Run a Quick Evaluation (First Smoke Test)
+## 2 Run a Quick Evaluation (First Smoke Test)
 
 ### ✅ Step 1: Pick a built-in industry scenario
 
@@ -82,7 +82,7 @@ multiagent-eval evaluate --path industries/telecom --export
 
 ---
 
-## 3) Add your own industry / scenario
+## 3 Add your own industry / scenario
 
 Instead of manually typing out JSON, the easiest way to start a new industry benchmark is the `init` command.
 
@@ -100,7 +100,7 @@ multiagent-eval run --scenario industries/retail/scenarios/starter_scenario.json
 
 ---
 
-## 4) Validate Scenario Quality
+## 4 Validate Scenario Quality
 
 Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:
 
@@ -110,7 +110,7 @@ multiagent-eval lint --path industries/retail/scenarios/starter_scenario.json
 
 ---
 
-## 5) Inspect the Output
+## 5 Inspect the Output
 
 ### ✅ Replay the run trace
 
@@ -134,7 +134,7 @@ Inspect results natively using the **Visual Debugger**. The suite provides a uni
 
 ---
 
-## 6) Next Steps
+## 6 Next Steps
 
 - ✅ Read the **User Manual** (`docs/guides/help/02_USER_MANUAL.md`).
 - 🧠 Read the **Developer Guide** (`docs/guides/help/03_DEVELOPER_GUIDE.md`) for adapters and plugins.

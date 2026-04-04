@@ -57,7 +57,7 @@ def get_system_info():
 
     return jsonify({
         "status": "active",
-        "version": "v1.2.3-hardened",
+        "version": config._get_project_version(),
         "agent_count": len(all_plugins) if all_plugins is not None else 0,
         "adapter_count": len(adapters) if adapters is not None else 0,
         "utility_count": len(utilities) if utilities is not None else 0,
@@ -85,6 +85,43 @@ def cleanup_runs():
         return jsonify({"status": "success", "message": f"Pruned {count} historical traces.", "count": count})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+@core_bp.route("/v1/certificates/<run_id>", methods=["GET"])
+def get_verification_certificate(run_id):
+    """
+    Public Trust Protocol endpoint.
+    Retrieves the authoritative Verification Certificate (VC) for a specific run.
+    This enables external systems (Enterprise Deployment Gates) to verify the 
+    integrity and behavioral fingerprint of an evaluation without private access.
+    """
+    # 1. Authoritative lookup in certificates directory
+    cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+    
+    if cert_path.exists():
+        try:
+            with open(cert_path, "r", encoding="utf-8") as f:
+                return jsonify(json.load(f))
+        except Exception as e:
+            return jsonify({"error": f"Failed to retrieve certificate: {str(e)}"}), 500
+            
+    # 2. Fallback to sidecar in runs directory (Standard Reproducibility)
+    sidecar_manifest = config.RUN_LOG_DIR / f"run_{run_id}_manifest.json" # Handling both run_ and direct
+    if not sidecar_manifest.exists():
+        sidecar_manifest = config.RUN_LOG_DIR / f"{run_id}_manifest.json"
+    
+    if sidecar_manifest.exists():
+        try:
+            with open(sidecar_manifest, "r", encoding="utf-8") as f:
+                return jsonify(json.load(f))
+        except Exception as e:
+                return jsonify({"error": f"Failed to retrieve sidecar manifest: {str(e)}"}), 500
+            
+    return jsonify({
+        "error": "Certificate not found.", 
+        "run_id": run_id,
+        "status": "unverified",
+        "message": "No Verification Certificate (VC) has been issued for this run."
+    }), 404
 
 @core_bp.route("/demo/reset", methods=["POST"])
 @require_permission(Permission.DEMO_EXECUTE)

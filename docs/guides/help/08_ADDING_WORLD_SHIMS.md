@@ -49,6 +49,8 @@ In `.env` (or via environment variables), you can set `GLOBAL_ENABLED_SHIMS`:
 - This allows you to disable heavy or risky shims system-wide without updating a single scenario.
 - **Wildcard**: Use `*` to enable all registered shims (including those from plugins).
 
+---
+
 ### 2. Per-Scenario Configuration
 Each scenario can further restrict its environment using the `enabled_shims` property:
 - This only has an effect if the shim is also allowed by the Global Override.
@@ -77,6 +79,8 @@ class MyEcoPlugin(BaseEvalPlugin):
         # Register your shim instance in the provided registry dict
         registry["custom"] = MyCustomSimulator()
 ```
+
+---
 
 ### 3. Verify on Dashboard
 Restart the console or run `multiagent-eval console`. Your shim will be automatically discovered and reflected in the "World Shims" count.

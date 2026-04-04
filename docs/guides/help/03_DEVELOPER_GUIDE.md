@@ -4,7 +4,7 @@ This guide is for engineers building on or extending the harness.
 
 ---
 
-## 📂 1) Repository Overview
+## 📂 1 Repository Overview
 
 **Key directories:**
 - `eval_runner/` — Core engine, loaders, metrics, reporter, plugins, simulators, CLI
@@ -16,7 +16,7 @@ This guide is for engineers building on or extending the harness.
 
 ---
 
-## 🧩 2) CLI Architecture
+## 🧩 2 CLI Architecture
 
 Entry point: `eval_runner/cli.py`
 
@@ -45,7 +45,7 @@ Entry point: `eval_runner/cli.py`
 
 ---
 
-## 🧠 3) Evaluation Engine (Zero-Touch Core)
+## 🧠 3 Evaluation Engine (Zero-Touch Core)
 
 The core has been refactored into a decoupled, event-driven architecture to support Enterprise hot-swapping.
 
@@ -91,7 +91,7 @@ Register this plugin in your `pyproject.toml` or load it via the `PluginManager`
 
 ---
 
-## 🔌 4) Plugin System
+## 🔌 4 Plugin System
 
 Plugins are the primary extension point. They are discovered via `eval_runner.plugins` entry points in `pyproject.toml`.
 
@@ -144,7 +144,7 @@ class EnterpriseConsolePlugin(BaseEvalPlugin):
 
 ---
 
-## 📡 5) VS Code Extension & IDE Integration
+## 📡 5 VS Code Extension & IDE Integration
 
 The harness now includes a **VS Code Extension** scaffold (`vscode-extension/`) that brings core evaluation workflows directly into the editor.
 - **Run Scenario**: Right-click any `.json` scenario to execute a trace.
@@ -152,13 +152,13 @@ The harness now includes a **VS Code Extension** scaffold (`vscode-extension/`) 
 
 ---
 
-## 🛠️ 6) Visual Scenario Editor (AES Builder)
+## 🛠️ 6 Visual Scenario Editor (AES Builder)
 
 The Integrated Visual Suite provides a visual playground for constructing complex evaluation logic. Developers can add task nodes and validation expectations via a drag-and-drop interface, which then generates the underlying AES JSON.
 
 ---
 
-## 📡 7) Event-Driven Monitoring
+## 📡 7 Event-Driven Monitoring
 
 The `EventEmitter` allows you to build observability without touching the core code.
 
@@ -172,7 +172,7 @@ def audit_logger(payload):
 
 ---
 
-## 📊 8) Metrics System
+## 📊 8 Metrics System
 
 Metrics live in the `eval_runner/metrics/` package. 
 
@@ -200,7 +200,7 @@ def my_score(criterion, summary):
 
 ---
 
-## 🛠️ 9) Sandbox Workspace Lifecycle
+## 🛠️ 9 Sandbox Workspace Lifecycle
 
 The `ToolSandbox` now supports automated environment management via lifecycle hooks:
 
@@ -222,7 +222,7 @@ If `cleanup_workspace` is `false` (default for many research scenarios), the dir
 
 ---
 
-## 🤝 10) Contribution & Verification Flow
+## 🤝 10 Contribution & Verification Flow
 1. Add scenario JSON in `industries/<industry>/scenarios/`.
 2. Run with `multiagent-eval run --scenario <path>`.
 3. Add specialized metrics or plugins as needed.
@@ -232,7 +232,7 @@ If `cleanup_workspace` is `false` (default for many research scenarios), the dir
 
 ---
 
-## 🔐 11) Extending Authentication & PBAC
+## 🔐 11 Extending Authentication & PBAC
 
 The MultiAgentEval console uses an extensible **Auth Provider Pattern**. This allows the harness to stay "Zero-Touch" for local development while providing a clean hook for Enterprise SSO and PBAC integration.
 
@@ -284,7 +284,7 @@ def admin_settings():
 
 ---
 
-## 🔐 12) Security & Artifact Integrity
+## 🔐 12 Security & Artifact Integrity
 
 The harness uses an **ED25519-based signing protocol** to ensure the integrity of evaluation artifacts.
 
@@ -298,7 +298,7 @@ The `gate` command enforces these signatures in pipeline environments, preventin
 
 ---
 
-## 🏗️ 13) JIT-Babel UI Hydration
+## 🏗️ 13 JIT-Babel UI Hydration
 
 Custom UI modules (Story Demos, Adversarial Visualizations) are loaded dynamically via JIT-Babel. To ensure these modules can interact with the protected API, they **must** follow the hydration (UI loading) protocol.
 
@@ -336,11 +336,11 @@ Failure to propagate this prop will result in `401 Unauthorized` errors when the
 
 ---
 
-## 🌐 13) JIT Hydration & Story Modules
+## 🌐 14 JIT Hydration & Story Modules
 
 The Visual Suite uses **JIT-Babel** to dynamically load React components (Story Modules) like `Demo.jsx` or `LoanDemo.jsx`.
 
-### 13.1 `window.apiFetch`
+### 14.1 `window.apiFetch`
 Because the backend uses **Permission-Based Access Control (PBAC)**, standard `fetch` calls from Story Modules will fail with a 401/403.
 - All Story Modules **MUST** use `window.apiFetch`.
 - `apiFetch` automatically injects the necessary security headers and handles the auth-refresh handshake.

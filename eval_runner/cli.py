@@ -14,7 +14,7 @@ from pathlib import Path
 from . import __version__
 from .handlers import scenarios as h
 
-# Industrial Encoding Bridge (v1.2.3-ULTIMATE)
+# Industrial Encoding Bridge (v1.2.3)
 # Forces UTF-8 for stdout/stderr to support high-fidelity Unicode symbols across Win/Linux/Unix.
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')

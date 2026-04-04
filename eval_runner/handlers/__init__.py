@@ -22,6 +22,10 @@ def __getattr__(name):
     }
     
     if name in _handlers:
-        return importlib.import_module(_handlers[name], __package__)
+        mod = importlib.import_module(_handlers[name], __package__)
+        # Explicitly mount on the parent module to support standard attribute access
+        # and ensure consistency in isolated environments.
+        setattr(importlib.import_module(__package__), name, mod)
+        return mod
     
     raise AttributeError(f"module {__name__} has no attribute {name}")

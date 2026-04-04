@@ -3,14 +3,15 @@
 # 🤖 MultiAgentEval - The Enterprise-Grade Reliability Framework for AI Agents
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
-[![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-95.4%25-brightgreen.svg)](TESTING.md)
-[![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-98.2%25-brightgreen.svg)](docs/feature_inventory.md)
+[![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-86%25-brightgreen.svg)](TESTING.md)
+[![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-92%25-brightgreen.svg)](eval_runner/utils.py)
 [![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
+[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-v1.2.3--Hardened-gold.svg)](docs/spec/trust_protocol_spec_v1.md)
+[![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
-[![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/test_security_audit.py)
+[![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/security/test_security_audit.py)
 
 **MultiAgentEval** bridges the "Agentic Reliability Gap" through rigorous verification, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
 
@@ -18,9 +19,9 @@
 | :--- | :--- |
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 Production-Ready AES v1.2 |
+| **Status** | 🟢 Production-Ready AES v1.2.3 |
 | **Architecture** | [Zero-Touch Core](docs/architecture.md) |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.2 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.2.3 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### 🛡️ Add the Badge to Your Agent
 
@@ -107,7 +108,9 @@ The harness is organized into the following key components:
 - **Deterministic Outcomes**: Validation against industrial standards (ISO-20022, HL7, SWIFT).
 - **State-Machine DAGs**: Non-linear `workflow` execution with Pre-condition Gating for multi-step safety.
 - **Pluralistic Judging**: Non-repudiable audit records via Inter-Judge Agreement (IJA) panel consensus.
-- **Asymmetric Trust Protocol (ED25519)**: Open Core support for trace signing and asymmetric verification, ensuring non-repudiation in the base harness.
+- **Asymmetric Trust Protocol (ED25519)**: Open Core support for trace signing and asymmetric verification, ensuring non-repudiation in the base harness via detached certificates.
+- **Detached Signature Trust Protocol**: Hybrid SHA-256 (Integrity) and ED25519 (Authority) model for industrial-grade non-repudiation.
+- **Public Certificates API**: REST endpoint for non-authenticated retrieval of authoritative run certificates (`/api/v1/certificates`).
 - **CI/CD Hard Gating**: Built-in CLI `gate` command for enforcing cryptographic integrity and trace success in automated pipelines.
 
 ## Getting Started
@@ -236,7 +239,7 @@ The latest release introduces a new suite of high-level automation and visual to
 
 ---
 
-The harness is built on a decoupled, event-driven architecture that allows Enterprise integrations to be hot-swapped without core modifications.
+The harness is built on a decoupled, event-driven architecture that allows custom integrations to be hot-swapped without core modifications.
 
 - **EventEmitter Bus**: Passive observation of every turn, tool call, and state change.
 - **🧩 Pluggable Judge Layer**: Configurable model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.

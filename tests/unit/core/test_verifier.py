@@ -27,17 +27,21 @@ def test_sign_trace_success(tmp_path):
     trace_file = tmp_path / "run_123.jsonl"
     trace_file.write_text('{"event": "start"}', encoding="utf-8")
     
-    manifest_path = TraceVerifier.sign_trace(str(trace_file), metadata={"user": "test_bot"})
+    manifest = TraceVerifier.sign_trace(str(trace_file), metadata={"user": "test_bot"})
     
-    assert manifest_path.exists()
-    assert manifest_path.name == "run_123_manifest.json"
-    
-    with open(manifest_path, "r", encoding="utf-8") as f:
-        manifest = json.load(f)
-    
+    # 1. Verify returned dictionary
     assert manifest["trace_file"] == "run_123.jsonl"
     assert manifest["metadata"]["user"] == "test_bot"
     assert "sha256" in manifest
+
+    # 2. Verify file on disk (backward compatibility)
+    manifest_path = tmp_path / "run_123_manifest.json"
+    assert manifest_path.exists()
+    
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        stored_manifest = json.load(f)
+    
+    assert stored_manifest["sha256"] == manifest["sha256"]
 
 def test_sign_trace_not_found():
     """Verifies that FileNotFoundError is raised for missing traces."""
@@ -49,7 +53,8 @@ def test_verify_trace_success(tmp_path):
     trace_file = tmp_path / "valid.jsonl"
     trace_file.write_text("content", encoding="utf-8")
     
-    manifest_path = TraceVerifier.sign_trace(str(trace_file))
+    TraceVerifier.sign_trace(str(trace_file))
+    manifest_path = tmp_path / "valid_manifest.json"
     
     result = TraceVerifier.verify_trace(str(trace_file), str(manifest_path))
     assert result is True
@@ -59,7 +64,8 @@ def test_verify_trace_tampered(tmp_path):
     trace_file = tmp_path / "tamper_me.jsonl"
     trace_file.write_text("original", encoding="utf-8")
     
-    manifest_path = TraceVerifier.sign_trace(str(trace_file))
+    TraceVerifier.sign_trace(str(trace_file))
+    manifest_path = tmp_path / "tamper_me_manifest.json"
     
     # Tamper with the trace
     trace_file.write_text("manipulated", encoding="utf-8")

@@ -76,15 +76,50 @@ All tool executions are performed within a sandbox that:
 - Enforces path-traversal protection (Jail-check).
 - Limits execution time via configurable timeouts.
 
-#### Asymmetric Trace Signing
-For high-integrity environments, the harness supports signing evaluation traces using **ED25519** keys. See the [Advanced Security Guide](docs/guides/advanced/04_INTEGRITY_SIGNING.md) for details.
+---
+
+## 🛡️ 5. Industrial Security Hardening (v1.2.3)
+
+For the v1.2.3 release, the Evaluation Harness has undergone a comprehensive security overhaul to meet industrial-grade compliance standards.
+
+### A. Network & SSRF Protection (R1)
+The `RemoteBridgePlugin` and internal network drivers now implement **IP-level validation** to prevent Server-Side Request Forgery (SSRF).
+- **Forbidden Endpoints**: All requests to loopback (`127.0.0.1`), link-local (`169.254.x.x`), and private subnets are blocked by default.
+- **Cloud Metadata Security**: Access to cloud provider metadata endpoints (e.g., `169.254.169.254`) is strictly neutralized to prevent credential theft.
+
+### B. Data Integrity & Telemetry Masking (R2)
+- **Path Traversal Hardening**: All file-based operations (scenario saving, trace loading, and report generation) are subject to strict `Path.resolve()` jail-checks. The harness will refuse to interact with any file path outside of authorized project directories.
+- **Recursive Secret Scrubbing**: The `TraceRecorder` and `EventEmitter` now employ a recursive masking layer that automatically redacts common secret patterns (API keys, JWTs, PII) from flight-recorded telemetry.
+
+### C. Operational Best Practices (R3)
+- **Turn Throttling**: The `EVAL_TURN_THROTTLE` configuration allows for tunable delays between agent turns, preventing resource exhaustion and satisfying rate-limiting requirements in sensitive industrial environments.
+- **Header Enforcement**: The `X-AES-API-KEY` header is now a mandatory requirement for all sensitive management console routes when `DASHBOARD_API_KEY` is configured.
 
 ---
 
+## 📑 6. The Trust Protocol: Fingerprinting & Certification
+
+The Trust Protocol provides **immutable proof of run integrity** using a detached signature architecture.
+
+### A. Behavioral Fingerprinting
+A **Behavioral Fingerprint** (or Verification Certificate - VC) is a signed JSON snapshot that ensures a run's environment precisely matches the intended evaluation criteria.
+- **Content Integrity**: Uses **SHA-256 content hashing** to generate a unique fingerprint of the raw `.jsonl` trace file. If a single character in the trace is modified post-execution, the hash mismatch invalidates the certificate.
+- **Scenario Topology**: The fingerprint includes a cryptographic binding to the scenario's DAG structure and tool definitions, ensuring the agent was not tested against a weakened or modified variant.
+
+### B. Certification API
+The **Certification API** serves as a public "Trust Anchor," allowing external systems and CI/CD gates to verify the authenticity of an evaluation run without requiring administrative access to the harness.
+
+- **Endpoint**: `GET /api/v1/certificates/<run_id>`
+- **Response**: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the **ED25519 signature** from the issuing harness.
+- **Public Verification**: Stakeholders can use the harness's **Public Key** to verify the signature and re-compute the trace hash locally to prove absolute veracity.
+
+### C. HMS-Ready Architecture
+The Trust Protocol is designed for **HMS-Readiness**, supporting the transition to professional Hardware Security Modules (HSM) or Cloud KMS providers.
+- **Pluggable KeyLoader**: The harness uses a modular interface for key retrieval. While the `LocalFileKeyLoader` is the default, **custom extensions** can implement loaders for AWS KMS, GCP KMS, or Azure Key Vault, ensuring that private keys never reside on the local evaluation disk.
 
 ---
 
-### 🔑 5. Enterprise Identity & PBAC Integration
+## 🔑 7. Custom Extensions Identity & PBAC Integration
 
 For professional and high-compliance environments, the harness uses a **Permission-Based Access Control (PBAC)** system, which replaces rigid roles with granular, string-based permission nodes.
 
@@ -95,9 +130,9 @@ For professional and high-compliance environments, the harness uses a **Permissi
 
 #### SSO Implementation (SAML/OIDC)
 Plugins can subclass `AuthManager` to integrate with **Okta**, **Azure AD**, or other OIDC providers. This allows you to:
-1. Map custom OIDC groups (e.g., `Harness-SuperUser`) to granular permission nodes (e.g., `EVAL_TRIGGER`).
-2. Define enterprise-specific permission strings (e.g., `governance:audit:export`) for protected plugin routes.
-3. Enforce multi-factor authentication (MFA).
+- Map custom extensions groups (e.g., `Harness-SuperUser`) to granular permission nodes (e.g., `EVAL_TRIGGER`).
+- Define custom extensions permission strings (e.g., `governance:audit:export`) for protected plugin routes.
+- Enforce multi-factor authentication (MFA).
 
 For technical details on extending authentication, see the [Developer Guide](help/03_DEVELOPER_GUIDE.md#11-extending-authentication--rbac).
 
@@ -120,4 +155,4 @@ If you encounter a `401 Unauthorized` error when accessing the Visual Debugger o
 - **Environment Variable**: Run `multiagent-eval doctor` to verify that the `DASHBOARD_API_KEY` is correctly detected by the harness.
 - **501 Not Implemented**: If you see this error, it means **no key** is configured. The harness will block all sensitive routes until a key is provided.
 
-For further assistance, contact `ai.eval.harness.contact@gmail.com`.
+For further assistance, contact `ai.eval.harness.contact+security@gmail.com`.

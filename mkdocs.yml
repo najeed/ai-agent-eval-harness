@@ -109,6 +109,8 @@ nav:
       - Core Functions: guides/03_CORE_FUNCTIONS_GUIDE.md
   - Advanced Guides:
       - AES Specification: guides/04_AES_SPECIFICATION.md
+      - Trust Protocol Spec: spec/trust_protocol_spec_v1.md
+      - Security & Auth: guides/07_SECURITY_AND_AUTHENTICATION.md
       - Triage & Drift: guides/05_DRIFT_AND_TRIAGE.md
       - LLM Judge Calibration: guides/advanced/LLM_JUDGE_CALIBRATION.md
       - PyPI Distribution: guides/advanced/PYPI_DISTRIBUTION.md

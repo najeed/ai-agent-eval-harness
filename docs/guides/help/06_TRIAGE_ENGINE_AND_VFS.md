@@ -9,6 +9,8 @@ Unlike standard benchmarks that only check the agent's final text response, Agen
 *   **State Comparison**: When an agent executes a tool, AgentEval compares the resulting system state against the "Ground Truth" defined in the scenario.
 *   **Patient Zero**: If the agent queries the wrong table or fails to commit a file, the State Divergence is marked immediately as the "Patient Zero" step.
 
+---
+
 ## 2. Heuristic Triage Engine (`triage.py`)
 AgentEval uses a specialized engine to scan the entire execution trace for failure patterns:
 

@@ -9,7 +9,7 @@ LLM-as-a-judge is powerful but can be prone to "self-correction bias" or "vaguen
 
 ### 1. Labeling Ground Truth
 Ensure your scenarios include a `human_score` field in the criteria metadata. This represents the "Gold Standard" from a subject matter expert.
-
+```json
 {
   "metric": "luna_judge_score",
   "threshold": 0.8,
@@ -24,12 +24,16 @@ Ensure your scenarios include a `human_score` field in the criteria metadata. Th
 > [!TIP]
 > **Use the `required: true` flag** during calibration. This prevents the benchmark from falling back to Jaccard similarity if your judge provider is misconfigured, ensuring that your calibration metrics always reflect actual LLM performance.
 
+---
+
 ### 2. Execution
 Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (`run.jsonl`).
 
 ```bash
 multiagent-eval evaluate --path scenarios/healthcare/
 ```
+
+---
 
 ### 3. Running the Calibrator
 Use the `calibrate` command to generate an alignment report.

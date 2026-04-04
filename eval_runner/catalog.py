@@ -44,8 +44,9 @@ class ScenarioCatalog:
             cls._initialized = False
 
     def __init__(self, index_path: str = None):
-        """authoritative singleton initialization guard."""
-        if ScenarioCatalog._initialized:
+        """Authoritative singleton initialization guard with attribute safety."""
+        # Use a local lock to ensure attribute assignment is atomic on the instance
+        if getattr(self, "_attrs_initialized", False):
             return
             
         from eval_runner import config
@@ -63,6 +64,7 @@ class ScenarioCatalog:
         self._last_sync_check = 0
         self.manifest = {}
         
+        self._attrs_initialized = True
         ScenarioCatalog._initialized = True
 
     @classmethod

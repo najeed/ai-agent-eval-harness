@@ -269,8 +269,6 @@ Built into the Visual Debugger (`multiagent-eval console`), this tool provides a
 
 ---
 
----
-
 ## 🧩 Scenario Structure (Example)
 
 ```json
@@ -434,7 +432,7 @@ A specialized engine scans the entire trace for failure patterns:
 - **Policy Violations** — if a Security Shim blocks an action (like a regex-based data leak), the triage engine flags the exact guardrail triggered.
 
 **Layer 3: Visual Timeline Mapping**
-The Visual Debugger's **"Isolate Root Cause"** automatically scrolls the timeline to the first Non-Success Signal — the exact failing node, highlighted in red.
+The Visual Debugger's **"Isolate Root Cause"** automatically scrolls the timeline to the first Non-Success Signal — the exact failing node.
 
 | Layer | What it detects | Why it matters |
 | :--- | :--- | :--- |
@@ -453,7 +451,7 @@ By combining these layers, AgentEval can distinguish between an agent that *hall
 
 ---
 
-## 🔬 6) Failure Taxonomy & Analysis
+## 🔬 6 Failure Taxonomy & Analysis
 
 ### 6.1 Failure Categories (Triage Tags)
 The "Isolate Root Cause" engine and the Failure Corpus search for the following high-fidelity failure signatures:

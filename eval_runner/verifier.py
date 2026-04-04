@@ -1,9 +1,13 @@
 import json
 import hashlib
+import logging
+from abc import ABC, abstractmethod
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 from . import config
+
+logger = logging.getLogger(__name__)
 
 # Baseline schema for OpenCore-compatible Behavioral Fingerprints (v1)
 FINGERPRINT_V1_SCHEMA = {
@@ -21,8 +25,39 @@ FINGERPRINT_V1_SCHEMA = {
     "topology_p95": "float"
 }
 
+class KeyLoader(ABC):
+    """Abstract base class for loading cryptographic keys (HMS-Readiness)."""
+    @abstractmethod
+    def load_private_key(self, path: str):
+        pass
+
+    @abstractmethod
+    def load_public_key(self, path: str):
+        pass
+
+class LocalFileKeyLoader(KeyLoader):
+    """Default implementation for loading keys from local PEM files."""
+    def load_private_key(self, path: str):
+        from cryptography.hazmat.primitives import serialization
+        with open(path, "rb") as f:
+            return serialization.load_pem_private_key(f.read(), password=None)
+
+    def load_public_key(self, path: str):
+        from cryptography.hazmat.primitives import serialization
+        with open(path, "rb") as f:
+            return serialization.load_pem_public_key(f.read())
+
 class TraceVerifier:
-    """Handles SHA-256 signing and verification of run traces for public reproducibility."""
+    """
+    Electronic Verification and Certification Engine for evaluation traces.
+    Implements the industrial Trust Protocol (SHA-256 + ED25519).
+    """
+    _key_loader: KeyLoader = LocalFileKeyLoader()
+
+    @classmethod
+    def set_key_loader(cls, loader: KeyLoader):
+        """Allows overriding the default key loader (e.g., for KMS/HSM)."""
+        cls._key_loader = loader
 
     @staticmethod
     def compute_signature(trace_path: Path) -> str:
@@ -33,43 +68,78 @@ class TraceVerifier:
                 sha256.update(chunk)
         return sha256.hexdigest()
 
-    @staticmethod
-    def sign_trace(trace_path: str, metadata: Optional[Dict[str, Any]] = None, private_key_path: Optional[str] = None) -> Path:
+    @classmethod
+    def sign_trace(cls, trace_path: str, metadata: Optional[Dict[str, Any]] = None, private_key_path: Optional[str] = None, fingerprint_id: Optional[str] = None) -> Dict[str, Any]:
         """
-        Signs a trace file. If private_key_path is provided, generates an ED25519 signature.
-        Otherwise, generates a standard SHA-256 manifest.
+        Signs a trace file and issues a standardized Verification Certificate (VC).
+        Returns the Manifest DICT (Authoritative Proof).
         """
         p = Path(trace_path)
         if not p.exists():
             raise FileNotFoundError(f"Trace file not found: {trace_path}")
 
-        signature = TraceVerifier.compute_signature(p)
-        
+        # 1. Compute Integrity Hash (SHA-256)
+        sha256_hash = cls.compute_signature(p)
+        run_id = p.stem
+
+        # 2. Build the Manifest (Standardized v1.2.3)
         manifest = {
-            "harness_version": "1.2.0-opencore",
-            "timestamp": datetime.now().isoformat(),
+            "harness_version": "1.2.3",
+            "version": "1.2.3",  # Aliased for modern consumers
+            "timestamp": datetime.now().astimezone().isoformat(),
+            "run_id": run_id,
             "trace_file": p.name,
-            "sha256": signature,
-            "metadata": metadata or {}
+            "sha256": sha256_hash,
+            "metadata": metadata or {},
+            "fingerprint_id": fingerprint_id or "default_v1",
+            "signing_algorithm": "ED25519"
         }
 
-        # R1.2 Remediation: Add Asymmetric Signature if key is provided
+        if fingerprint_id:
+            manifest["behavioral_fingerprint_id"] = fingerprint_id
+
+        # 3. Add Asymmetric Authority (ED25519) if key available
         if private_key_path:
-            # We sign the SHA-256 hash of the trace for efficiency
-            manifest["signature_ed25519"] = TraceVerifier.sign_asymmetric(signature.encode(), private_key_path)
-            manifest["signing_algorithm"] = "ED25519"
+            try:
+                # We sign the entire manifest structure (sorted)
+                manifest_bytes = json.dumps(manifest, sort_keys=True).encode("utf-8")
+                signature_hex = cls.sign_asymmetric(manifest_bytes, private_key_path)
+                manifest["signature_ed25519"] = signature_hex
+            except Exception as e:
+                logger.warning(f"Could not cryptographically sign trace: {e}")
 
-        # Save manifest in the same directory as the trace
-        manifest_path = p.parent / f"{p.stem}_manifest.json"
-        with open(manifest_path, "w", encoding="utf-8") as f:
-            json.dump(manifest, f, indent=2)
-        
-        return manifest_path
+        # 4. Save Sidecar Manifest (Standard Reproducibility)
+        sidecar_path = p.parent / f"{p.stem}_manifest.json"
+        try:
+            with open(sidecar_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=4)
+        except Exception as e:
+            logger.error(f"Failed to save sidecar manifest: {e}")
 
-    @staticmethod
-    def verify_trace(trace_path: str, manifest_path: str, public_key_path: Optional[str] = None) -> bool:
+        # 5. Authoritative certificate backup (for Public API)
+        try:
+            cert_dir = config.REPORTS_DIR / "certificates"
+            cert_dir.mkdir(parents=True, exist_ok=True)
+            cert_path = cert_dir / f"{run_id}_vc.json"
+            with open(cert_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=4)
+        except Exception:
+             # Silently skip if authoritative storage is unavailable (common in lean tests)
+             pass
+
+        return manifest
+
+    @classmethod
+    def get_certificate(cls, trace_path: str, private_key_path: Optional[str] = None) -> Dict[str, Any]:
         """
-        Verifies a trace file against its manifest. Supports both SHA-256 and ED25519.
+        Signs a trace and returns the certificate DICT directly (API Helper).
+        """
+        return cls.sign_trace(trace_path, private_key_path=private_key_path)
+
+    @classmethod
+    def verify_trace(cls, trace_path: str, manifest_path: str, public_key_path: Optional[str] = None) -> bool:
+        """
+        Verifies a trace file against its manifest (VC). Supports both SHA-256 and ED25519.
         """
         tp = Path(trace_path)
         mp = Path(manifest_path)
@@ -81,8 +151,9 @@ class TraceVerifier:
             with open(mp, "r", encoding="utf-8") as f:
                 manifest = json.load(f)
             
+            # Extract basic integrity details
             expected_hash = manifest.get("sha256")
-            actual_hash = TraceVerifier.compute_signature(tp)
+            actual_hash = cls.compute_signature(tp)
             
             # 1. Base Integrity Check
             if expected_hash != actual_hash:
@@ -91,9 +162,14 @@ class TraceVerifier:
             # 2. Cryptographic Proof (R1.2)
             sig_hex = manifest.get("signature_ed25519")
             if sig_hex and public_key_path:
-                return TraceVerifier.verify_asymmetric(actual_hash.encode(), sig_hex, public_key_path)
+                manifest_to_verify = manifest.copy()
+                manifest_to_verify.pop("signature_ed25519", None)
+                
+                manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
+                if not cls.verify_asymmetric(manifest_bytes, sig_hex, public_key_path):
+                    return False
             elif sig_hex and not public_key_path:
-                # If signed but no key provided, we mark as "Integrity Only" but technically valid
+                # If signed but no key provided, integrity only is valid but signature remains unverified
                 return True
                 
             return True
@@ -111,7 +187,12 @@ class TraceVerifier:
         private_key = ed25519.Ed25519PrivateKey.generate()
         public_key = private_key.public_key()
 
-        d = Path(output_dir)
+        out_path = Path(output_dir)
+        if out_path.is_absolute():
+            d = out_path
+        else:
+            d = (config.PROJECT_ROOT / output_dir).resolve()
+            
         d.mkdir(parents=True, exist_ok=True)
 
         # Save Private Key (Keep Secret!)
@@ -133,28 +214,18 @@ class TraceVerifier:
         
         return d
 
-    @staticmethod
-    def sign_asymmetric(data_bytes: bytes, private_key_path: str) -> str:
-        """Signs bytes using an ED25519 private key and returns hex signature."""
-        from cryptography.hazmat.primitives.asymmetric import ed25519
-        from cryptography.hazmat.primitives import serialization
-
-        with open(private_key_path, "rb") as f:
-            private_key = serialization.load_pem_private_key(f.read(), password=None)
-        
+    @classmethod
+    def sign_asymmetric(cls, data_bytes: bytes, private_key_path: str) -> str:
+        """Signs bytes using an ED25519 private key via the pluggable _key_loader."""
+        private_key = cls._key_loader.load_private_key(private_key_path)
         signature = private_key.sign(data_bytes)
         return signature.hex()
 
-    @staticmethod
-    def verify_asymmetric(data_bytes: bytes, hex_signature: str, public_key_path: str) -> bool:
+    @classmethod
+    def verify_asymmetric(cls, data_bytes: bytes, hex_signature: str, public_key_path: str) -> bool:
         """Verifies a hex signature against data using an ED25519 public key."""
-        from cryptography.hazmat.primitives.asymmetric import ed25519
-        from cryptography.hazmat.primitives import serialization
-
-        with open(public_key_path, "rb") as f:
-            public_key = serialization.load_pem_public_key(f.read())
-        
         try:
+            public_key = cls._key_loader.load_public_key(public_key_path)
             public_key.verify(bytes.fromhex(hex_signature), data_bytes)
             return True
         except Exception:

@@ -5,7 +5,7 @@
 
 ---
 
-## 1) Quick Start (Get Running in 60 Seconds)
+## 1 Quick Start (Get Running in 60 Seconds)
 
 ### 1.1 Install and Run
 
@@ -35,6 +35,7 @@ multiagent-eval quickstart
 - `multiagent-eval auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
 - `multiagent-eval run --scenario <benchmark-uri>`: Zero-config execution for community benchmarks (GAIA, AssistantBench).
 - `multiagent-eval report --path <path>`: Generate a standalone Premium HTML report (reconstructed from any `.jsonl` trace).
+- `multiagent-eval gate --run <id>`: Enforce cryptographic integrity in a CI/CD pipeline using the **Trust Protocol**.
 - `multiagent-eval replay --path <path>`: View the step-by-step history of a run in terminal.
 - Advanced Utilities: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
 
@@ -43,7 +44,7 @@ multiagent-eval quickstart
 
 ---
 
-## 2) User Manual (Scenario & Execution Guide)
+## 2 User Manual (Scenario & Execution Guide)
 
 ### 2.1 Core Concepts
 - **AES (Agent Eval Specification)**: A standardized JSON/YAML format for defining portable benchmarks.
@@ -62,7 +63,7 @@ multiagent-eval quickstart
 
 ---
 
-## 3) Developer Guide (Zero-Touch Core Architecture)
+## 3 Developer Guide (Zero-Touch Core Architecture)
 
 ### 3.1 Architecture Overview
 The harness uses a **Zero-Touch Core** design, where all major capabilities are hot-swappable via the **Modular Plugin Bus**:
@@ -71,7 +72,8 @@ The harness uses a **Zero-Touch Core** design, where all major capabilities are 
 3. **EventEmitter**: Broadcasts state changes through a central bus.
 4. **Discovery Engine**: Centrally manages dynamic discovery of plugins and adapters via `eval_runner/discovery.py`.
 5. **AgentAdapterRegistry**: Dynamically registers agent protocols at runtime using discovery.
-6. **Plugins**: Standard lifecycle listeners and interceptors, discovered automatically.
+6. **TraceVerifier**: The industrial engine for **Asymmetric Trust (ED25519)** and **Detached Integrity (SHA-256)**.
+7. **Plugins**: Standard lifecycle listeners and interceptors, discovered automatically.
 
 ### 3.2 Extensibility
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.

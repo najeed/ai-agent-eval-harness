@@ -124,3 +124,6 @@ scenarios/index.json
 
 # --- Generated internal tasks ---
 tasks/
+
+# --- Cryptographic Keys ---
+.aes/keys/
