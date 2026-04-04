@@ -1,6 +1,6 @@
 [project]
 name = "multiagent-verify"
-version = "1.2.3"
+version = "1.2.4"
 description = "Enterprise-grade reliability framework for AI agents."
 readme = "README.md"
 authors = [

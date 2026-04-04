@@ -106,3 +106,9 @@ class CoreEvents:
     HITL_PAUSE = "hitl_pause"
     HITL_RESUME = "hitl_resume"
     ERROR = "error"
+
+    # Core Telemetry Extensions (v1.2.4)
+    CHAIN_START = "chain_start"
+    CHAIN_END = "chain_end"
+    NODE_START = "node_start"
+    NODE_END = "node_end"
