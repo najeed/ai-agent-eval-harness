@@ -44,12 +44,14 @@ class DefaultRunner(BaseRunner):
             scenario_id=scenario.get("scenario_id", "unknown"),
             scenario_data=copy.deepcopy(scenario),
             metadata=dict(copy.deepcopy(metadata)) if metadata else {},
+            span_context=scenario.get("span_context"),
         )
 
         run_id = f"run-{ctx.scenario_id}-{int(asyncio.get_event_loop().time())}"
         EventEmitter.emit(
             CoreEvents.RUN_START,
             {"run_id": run_id, "scenario": ctx.scenario_id, "k_attempts": attempts},
+            span_context=ctx.span_context
         )
 
         plugins.manager.trigger("before_evaluation", ctx)
@@ -77,6 +79,7 @@ class DefaultRunner(BaseRunner):
                 "successful_attempts": sum(1 for res in all_attempt_results if self._is_attempt_successful(res)),
                 "total_attempts": attempts,
             },
+            span_context=ctx.span_context
         )
 
         return all_attempt_results

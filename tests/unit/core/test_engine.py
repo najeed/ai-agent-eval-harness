@@ -49,7 +49,7 @@ async def test_pass_at_k_protocol():
     # Mock agent to succeed in 1 out of 2 attempts
     attempt_count = 0
 
-    async def mock_agent_call(payload, protocol="http", endpoint=None):
+    async def mock_agent_call(payload, protocol="http", endpoint=None, **kwargs):
         nonlocal attempt_count
         attempt_count += 1
         if attempt_count == 1:
@@ -85,7 +85,7 @@ async def test_consistency_score_integration():
     }
 
     # Mock agent to give same answer twice
-    async def mock_agent_call(payload, protocol="http", endpoint=None):
+    async def mock_agent_call(payload, protocol="http", endpoint=None, **kwargs):
         return {"action": "final_answer", "summary": "Identical result"}
 
     with patch(

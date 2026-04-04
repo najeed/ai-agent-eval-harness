@@ -11,7 +11,7 @@ import json
 import os
 import importlib.metadata
 import concurrent.futures
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Dict
 from pathlib import Path
 from . import config
 from . import discovery
@@ -37,11 +37,11 @@ from abc import ABC, abstractmethod
 class BaseEvalPlugin(ABC):
     """Base class for all evaluation plugins."""
 
-    def before_evaluation(self, context: Any):
+    def before_evaluation(self, context: Any, span_context: Optional[Dict[str, Any]] = None):
         """Hook called before the evaluation scenario begins."""
         pass
 
-    def after_evaluation(self, context: Any, results: list):
+    def after_evaluation(self, context: Any, results: list, span_context: Optional[Dict[str, Any]] = None):
         """Hook called after the evaluation scenario completes."""
         pass
 

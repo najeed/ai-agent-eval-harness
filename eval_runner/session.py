@@ -82,6 +82,7 @@ class SessionManager:
                 EventEmitter.emit(
                     CoreEvents.TASK_START,
                     {"task_id": node_id, "attempt": attempt_number},
+                    span_context=self.session_metadata.get("span_context")
                 )
 
                 conversation_history = []
@@ -102,6 +103,7 @@ class SessionManager:
                         "agent": endpoint,
                         "agent_name": agent_name,
                     },
+                    span_context=self.session_metadata.get("span_context")
                 )
                 conversation_history.append({"role": "user", "content": current_message})
 
@@ -115,9 +117,10 @@ class SessionManager:
                         turn_number=turn,
                         current_message=current_message,
                         history=copy.deepcopy(conversation_history),
+                        span_context=self.session_metadata.get("span_context"),
                     )
 
-                    EventEmitter.emit(CoreEvents.TURN_START, {"turn": turn, "task_id": node_id})
+                    EventEmitter.emit(CoreEvents.TURN_START, {"turn": turn, "task_id": node_id}, span_context=turn_ctx.span_context)
                     plugins.manager.trigger("on_agent_turn_start", turn_ctx)
 
                     try:
@@ -136,7 +139,7 @@ class SessionManager:
                                 endpoint = os.getenv("AGENT_LOCAL_CMD")
                         
                         agent_response = await AgentAdapterRegistry.call_agent(
-                            payload, protocol=protocol, endpoint=endpoint
+                            payload, protocol=protocol, endpoint=endpoint, span_context=turn_ctx.span_context
                         )
                         turns_taken = turn
 
@@ -157,7 +160,8 @@ class SessionManager:
                                 "step": turn, 
                                 "response": agent_response,
                                 "agent_name": agent_name
-                            }
+                            },
+                            span_context=turn_ctx.span_context
                         )
                     except Exception as e:
                         EventEmitter.emit(CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"})
@@ -195,7 +199,7 @@ class SessionManager:
                 )
                 all_task_results.append(task_results)
                 executed_nodes.add(node_id)
-                EventEmitter.emit(CoreEvents.TASK_END, {"task_id": node_id, "results": task_results})
+                EventEmitter.emit(CoreEvents.TASK_END, {"task_id": node_id, "results": task_results}, span_context=self.session_metadata.get("span_context"))
 
         finally:
             sandbox.teardown()
@@ -226,7 +230,7 @@ class SessionManager:
         result = sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
 
-        EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tool_name, "result": result})
+        EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tool_name, "result": result}, span_context=turn_ctx.span_context)
 
         history.append(
             {

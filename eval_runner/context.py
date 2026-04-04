@@ -31,6 +31,7 @@ class EvaluationContext:
     global_state: Dict[str, Any] = field(default_factory=dict)
     plugin_data: Dict[str, Any] = field(default_factory=dict)  # Bucket for plugins to store cross-task data
     grounding_hits: Dict[str, Dict[str, int]] = field(default_factory=lambda: {"policies": {}, "tools": {}})
+    span_context: Optional[Dict[str, Any]] = None
 
     def __post_init__(self):
         # Deep-copy and freeze mutable dict fields to prevent Prototype Pollution
@@ -49,6 +50,7 @@ class TurnContext:
     history: Tuple[Dict[str, Any], ...]  # Tuple for immutability
     agent_response: Optional[Dict[str, Any]] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+    span_context: Optional[Dict[str, Any]] = None
 
     def __post_init__(self):
         # Convert history list to tuple if passed as list

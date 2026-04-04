@@ -69,7 +69,7 @@ class AgentAdapterRegistry:
         plugins.manager.trigger("on_discover_adapters", cls)
 
     @staticmethod
-    async def _human_adapter(payload: dict, endpoint: Optional[str] = None):
+    async def _human_adapter(payload: dict, endpoint: Optional[str] = None, **kwargs):
         """Standard adapter for Human-In-The-Loop intervention."""
         # Provides structured metadata to the session loop
         return {
@@ -84,7 +84,7 @@ class AgentAdapterRegistry:
     _plugins_discovered: bool = False
 
     @classmethod
-    async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None):
+    async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None, span_context: Optional[Dict[str, Any]] = None):
         cls._discover()
         
         if protocol not in cls._adapters and not cls._plugins_discovered:
@@ -109,7 +109,7 @@ class AgentAdapterRegistry:
             raise ValueError(f"No endpoint/command provided for protocol '{protocol}'")
 
         print(f"      [Engine] Executing {protocol} call to: {endpoint}")
-        return await adapter(payload, endpoint)
+        return await adapter(payload, endpoint, span_context=span_context)
 
 
 async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None, max_turns: Optional[int] = None) -> list:

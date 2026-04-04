@@ -10,7 +10,7 @@ class MockDiscoveryPlugin(BaseEvalPlugin):
     def on_discover_adapters(self, registry):
         registry.register("mock_proto", self.mock_adapter)
 
-    async def mock_adapter(self, payload, endpoint=None):
+    async def mock_adapter(self, payload, endpoint=None, **kwargs):
         return {"action": "final_answer", "content": "Mock discovery works!"}
 
 
@@ -57,7 +57,7 @@ async def test_hitl_pause_resume(monkeypatch):
     # Mock call_agent to return hitl_pause then final_answer
     call_counts = 0
 
-    async def mock_call_agent(payload, protocol="http", endpoint=None):
+    async def mock_call_agent(payload, protocol="http", endpoint=None, **kwargs):
         nonlocal call_counts
         call_counts += 1
         if call_counts == 1:
@@ -106,7 +106,7 @@ async def test_trajectory_branching(monkeypatch):
         "max_turns": 2,
     }
 
-    async def mock_call_agent(payload, protocol="http", endpoint=None):
+    async def mock_call_agent(payload, protocol="http", endpoint=None, **kwargs):
         return {
             "action": "branch",
             "branches": [{"name": "branch_a", "message": "hello from branch a"}],

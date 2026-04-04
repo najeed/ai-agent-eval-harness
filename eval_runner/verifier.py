@@ -25,6 +25,54 @@ FINGERPRINT_V1_SCHEMA = {
     "topology_p95": "float"
 }
 
+class VerificationResult:
+    """
+    Structured result object for all verifiers compliant with NIST AI-100-1.
+    Supports consistent scoring schemas and behavioral metadata.
+    """
+    def __init__(
+        self, 
+        aggregate_score: float, 
+        success: bool, 
+        message: str, 
+        metrics: Optional[Dict[str, float]] = None, 
+        metadata: Optional[Dict[str, Any]] = None
+    ):
+        self.aggregate_score = aggregate_score
+        self.success = success
+        self.message = message
+        # NIST 7-Dimension Vector (NIST AI-100-1 Table 1)
+        self.metrics = metrics or {
+            "reliability": 0.0,
+            "safety": 0.0,
+            "security": 0.0,
+            "transparency": 0.0,
+            "explainability": 0.0,
+            "privacy": 0.0,
+            "fairness": 0.0
+        }
+        self.metadata = metadata or {}
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "aggregate_score": self.aggregate_score,
+            "success": self.success,
+            "message": self.message,
+            "metrics": self.metrics,
+            "metadata": self.metadata,
+            "timestamp": datetime.now().astimezone().isoformat()
+        }
+
+class BaseVerifier(ABC):
+    """
+    Abstract interface for standardized verification.
+    All high-fidelity verifiers should implement this interface.
+    """
+    @abstractmethod
+    def verify(self, trace_path: Path, **kwargs) -> VerificationResult:
+        """Executes the verification logic and returns a structured result."""
+        pass
+
 class KeyLoader(ABC):
     """Abstract base class for loading cryptographic keys (HMS-Readiness)."""
     @abstractmethod

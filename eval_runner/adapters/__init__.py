@@ -13,7 +13,7 @@ from typing import Dict, Any, Optional
 from .. import config
 
 
-async def http_adapter(payload: dict, url: str):
+async def http_adapter(payload: dict, url: str, **kwargs):
     """Call an agent over HTTP (default)."""
     import aiohttp
 
@@ -27,7 +27,7 @@ async def http_adapter(payload: dict, url: str):
             return await response.json()
 
 
-async def local_subprocess_adapter(payload: dict, command: str):
+async def local_subprocess_adapter(payload: dict, command: str, **kwargs):
     """
     Call an agent by spawning a local subprocess.
     Sends JSON payload to stdin and reads JSON response from stdout.
@@ -55,7 +55,7 @@ async def local_subprocess_adapter(payload: dict, command: str):
         raise RuntimeError(f"Agent subprocess returned invalid JSON: {stdout.decode()}")
 
 
-async def socket_adapter(payload: dict, address: str):
+async def socket_adapter(payload: dict, address: str, **kwargs):
     """
     Call an agent over a Unix domain socket or TCP socket.
     Format: 'unix:/path/to/socket' or 'tcp:host:port'
