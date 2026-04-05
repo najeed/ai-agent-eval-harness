@@ -1,6 +1,6 @@
 # STORY: Certification (Verification & Scoring)
 
-Welcome back Agent. You've reached the **Final Milestone**. 🏁
+Welcome back Expert Lead. You've reached the **Final Milestone**. 🏁
 
 ## 📖 The Narrative
 You've completed the evaluation, identified the root causes, and generated the leaderboard. Now, you must make it official.

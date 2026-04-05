@@ -1,6 +1,6 @@
 # STORY: The Blame Game (Attribution Interpretation)
 
-Welcome Agent, to the board room. We've got a problem. The customer support agent just failed a high-stakes migration.
+Welcome Advanced Lead, to the board room. We've got a problem. The customer support agent just failed a high-stakes migration.
 
 ## 📖 The Conflict
 - **The LLM Team**: Says the model is fine, it's the agent's logic.

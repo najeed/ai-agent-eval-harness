@@ -1,10 +1,10 @@
 # STORY: Model Wars (Publication & Model Wars)
 
-Welcome Agent. The Board of Directors needs a decision. 🏛️
+Welcome Expert Lead. The Board of Directors needs a decision. 🏛️
 
 ## 📖 The Narrative
 We've been given a budget to upgrade the entire company's AI fleet. We have three finalists in the **Gemini Arena**:
-1.  **Gemini 1.5 Pro**: The reliable workhorse.
+1.  **Gemini 3.1 Pro**: The reliable workhorse.
 2.  **Gemini 2.5 Flash**: Internal industrial prototype ($N=400$ verified).
 3.  **GPT-4o (Legacy Bridge)**: For compatibility with older tools.
 

@@ -1,6 +1,6 @@
 # STORY: The Smoking Gun (Auditing Traces)
 
-Welcome Agent. We have a **Breach in Progress**. 🚨
+Welcome Expert Lead. We have a **Breach in Progress**. 🚨
 
 ## 📖 The Narrative
 An agent in the **Financial Services** sector just attempted to access a legacy mainframe that was *explicitly* shim-blocked in the scenario config. 

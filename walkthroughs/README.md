@@ -71,4 +71,4 @@ If you see a list of industrial benchmarks, you are ready to begin.
 - **[Human-In-The-Loop (HITL)](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/hitl/README.md)**: Master shared governance with the Human Governor override.
 
 ---
-*Ready to become an evaluation lead? Start with [Phase 1: Discovery](./Phase%201%20-%20Foundations%20-%20Beginner/discovery/README.md) next.*
+*Ready to become an evaluation leader? Start with [Phase 1: Discovery](./Phase%201%20-%20Foundations%20-%20Beginner/discovery/README.md) next.*

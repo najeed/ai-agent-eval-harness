@@ -2,7 +2,7 @@
 
 # STORY: The Promotion (Permission Management)
 
-Congratulations, Agent. Your performance in the Discovery and Advanced phases has been recognized. 🎖️
+Congratulations, Expert Lead. Your performance in the Discovery and Advanced phases has been recognized. 🎖️
 
 ## 📖 The Narrative
 You have been formally **promoted** to Senior Auditor for the New York cluster. 

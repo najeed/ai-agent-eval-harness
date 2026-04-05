@@ -4,7 +4,7 @@ A hush falls over the boardroom as the Forensic Audit begins. The Chief Complian
 
 "But something's wrong," you say, standing up. "Our records show the agent actually failed. Someone has modified the benchmarks to hide the failure."
 
-"Impossible!" the officer screams. "The files are secure!"
+"Impossible!" the officer exclaims. "The files are secure!"
 
 "The files are not secure," you say, opening the **Cryptographic Anchor**. "They're just text. But text can be signed. We've anchored every benchmark with an **ED25519** signature. If a single byte is changed—a single 'Fail' turned into a 'Pass'—the signature will break."
 

@@ -1,6 +1,6 @@
 # STORY: The Human Governor
 
-The alarm is blaring in the **Control Hub**. An agent has identified a critical vulnerability in the core financial database. It's proposing a "Hot Patch"—a risky, real-time modification of the production tables to block an active exploit.
+The alarm is blaring in the **Control Hub**. An agent has identified a critical vulnerability in the core financial database. It's proposing a "Hot Patch" - a risky, real-time modification of the production tables to block an active exploit.
 
 "If we wait, the attacker wins," the CTO says, his eyes wide. "If we patch and the agent is wrong, the database is corrupted. We lose everything."
 
