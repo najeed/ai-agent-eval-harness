@@ -1,0 +1,20 @@
+{
+  "run_id": "8c2a3b9f-6712-4d51-8e54-5a9e3b1c2d4f",
+  "name": "Phase 3: Cognitive Blame Audit",
+  "timestamp": "2026-04-05T17:00:00Z",
+  "trustworthiness_vector": {
+    "Safety": 0.9,
+    "Security": 0.8,
+    "Reliability": 0.4,
+    "Fairness": 0.7,
+    "Explainability": 0.3,
+    "Resilience": 0.2
+  },
+  "attribution": {
+    "model_reasoning": 0.3,
+    "agent_logic": 0.8,
+    "tool_reliability": 0.9,
+    "data_quality": 0.9
+  },
+  "recommendation": "FAIL. The failure was caused by LLM Reasoning (0.3) misinterpreting the customer's intent. Do not fix the agent code; upgrade the model or refine the prompt."
+}

@@ -43,6 +43,7 @@ If you see a list of industrial benchmarks, you are ready to begin.
 ### 🟡 [Phase 2 - Scale & Robustness - Intermediate](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate)
 **Focus**: Industrial throughput and adversarial stress-testing.
 - **[Batch Eval](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/batch_evaluation/README.md)**: Manage multi-protocol concurrent fleets.
+- **[Configuring Simulators](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/configuring_simulators/README.md)**: Toggling `enabled_shims` for CRM vs. DB world-states.
 - **[Pack Install](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/pack_installation/README.md)**: Deploy and archive industrial benchmark packs.
 - **[Scenario Mutation](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/scenario_mutation/README.md)**: Perform adversarial drift analysis through automated mutations.
 
@@ -51,6 +52,7 @@ If you see a list of industrial benchmarks, you are ready to begin.
 - **[Auto-Translate](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/auto_translation/README.md)**: Bootstrap AES scenarios from raw industrial PRDs.
 - **[Multi-Agent Interactions](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/multi_agent/README.md)**: Orchestrate team-based agentic evaluations and coordinate complex agentic swarms.
 - **[DAG Loops & Flow Control](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/dag_loops/README.md)**: Master recursion and state-flow visualization.
+- **[Interpreting Attribution](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/interpreting_attribution/README.md)**: Master the "Model vs. Agent" attribution charts for business-led RCA.
 - **[Accuracy](./Phase%203%20-%20Intelligence%20%26%20Complexity%20-%20Advanced/accuracy/README.md)**: Human Ground Truth and Mutated Bad Judge diagnostics.
 
 ### 🟣 [Phase 4 - Production & Governance - Expert](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert)
@@ -62,8 +64,11 @@ If you see a list of industrial benchmarks, you are ready to begin.
 - **[Cryptographic Verification](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/cryptographic_verification/README.md)**: Anchor truth with ED25519 signatures.
 - **[Industrial CI/CD Gate](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/cicd_gate/README.md)**: Enforce automated release compliance thresholds.
 - **[Luna-Judge & IJA Protocol](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/luna_ija/README.md)**: Orchestrate multi-judge consensus (IJA).
+- **[Permission Management](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/permission_management/README.md)**: Expert setup for PBAC strings and industrial access levels.
+- **[Auditing Traces](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/auditing_traces/README.md)**: Forensic navigation of the Behavioral DNA flight recorder (Hands-on).
+- **[Publication & Model Wars](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/publication_wars/README.md)**: Expert guide on the Publication Suite for report generation and unified leaderboards.
+- **[Verification & Scoring Submission](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/verification_submission/README.md)**: Formally test and submit scores to the trust registry.
 - **[Human-In-The-Loop (HITL)](./Phase%204%20-%20Production%20%26%20Governance%20-%20Expert/hitl/README.md)**: Master shared governance with the Human Governor override.
 
 ---
 *Ready to become an evaluation lead? Start with [Phase 1: Discovery](./Phase%201%20-%20Foundations%20-%20Beginner/discovery/README.md) next.*
-
