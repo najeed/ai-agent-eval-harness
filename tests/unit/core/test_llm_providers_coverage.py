@@ -109,49 +109,69 @@ async def test_gemini_missing_key(monkeypatch):
         await p.generate("hi")
 
 @pytest.mark.asyncio
-async def test_gemini_model_normalization(mock_session):
-    mock_session.post.return_value.__aenter__.return_value.status = 500
-    mock_session.post.return_value.__aenter__.return_value.text = AsyncMock(return_value="err")
-    
+async def test_gemini_model_normalization():
     p = GeminiProvider(api_key="g-test", model="models/gemini-pro")
-    with pytest.raises(Exception):
+    with patch("google.genai.Client") as mock_client_class:
+        mock_client = mock_client_class.return_value
+        mock_response = AsyncMock()
+        mock_response.text = "ok"
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
+        
         await p.generate("hi")
-    
-    # Verify the URL constructing didn't have double "models/"
-    call_args = mock_session.post.call_args
-    assert "models/gemini-pro:" in call_args[0][0]
-    assert "models/models/" not in call_args[0][0]
+        
+        # Verify the model name passed to the SDK
+        call_args = mock_client.aio.models.generate_content.call_args
+        assert call_args.kwargs["model"] == "models/gemini-pro"
 
 @pytest.mark.asyncio
-async def test_gemini_malformed_json(mock_session):
-    mock_session.post.return_value.__aenter__.return_value.status = 200
-    mock_session.post.return_value.__aenter__.return_value.json = AsyncMock(
-        return_value={"candidates": []}
-    )
+async def test_gemini_empty_response():
     p = GeminiProvider(api_key="g-test")
-    with pytest.raises(Exception, match="Unexpected Gemini response format"):
-        await p.generate("hi")
+    with patch("google.genai.Client") as mock_client_class:
+        mock_client = mock_client_class.return_value
+        mock_response = MagicMock()
+        mock_response.text = None
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
+        
+        with pytest.raises(Exception, match="Empty response from Gemini SDK"):
+            await p.generate("hi")
 
 @pytest.mark.asyncio
-async def test_gemini_list_models(mock_session):
-    mock_session.get.return_value.__aenter__.return_value.status = 200
-    mock_session.get.return_value.__aenter__.return_value.json = AsyncMock(
-        return_value={"models": [{"name": "gemini-v2"}]}
-    )
+async def test_gemini_list_models():
     p = GeminiProvider(api_key="g-test")
-    models = await p.list_models()
-    assert len(models) == 1
-    
+    with patch("google.genai.Client") as mock_client_class:
+        mock_client = mock_client_class.return_value
+        
+        # Mocking an async iterator for client.aio.models.list()
+        mock_model = MagicMock()
+        mock_model.name = "models/gemini-v2"
+        mock_model.display_name = "models/gemini-v2"
+        
+        # Use a simple list and an async generator function
+        async def mock_list_gen():
+            yield mock_model
+            
+        # Ensure the whole chain is MagicMock to prevent AsyncMock from returning coroutines
+        mock_client.aio = MagicMock()
+        mock_client.aio.models = MagicMock()
+        mock_client.aio.models.list = MagicMock(return_value=mock_list_gen())
+
+        models = await p.list_models()
+        assert len(models) == 1
+        assert models[0]["name"] == "models/gemini-v2"
+        
     # Test error path
-    mock_session.get.return_value.__aenter__.return_value.status = 500
-    assert await p.list_models() == []
+    with patch("google.genai.Client") as mock_client_class:
+        mock_client = mock_client_class.return_value
+        mock_client.aio = MagicMock()
+        mock_client.aio.models = MagicMock()
+        mock_client.aio.models.list = MagicMock(side_effect=Exception("fail"))
+        assert await p.list_models() == []
 
 @pytest.mark.asyncio
 async def test_gemini_list_models_no_key(monkeypatch):
     monkeypatch.setattr("eval_runner.config.GOOGLE_API_KEY", "")
     p = GeminiProvider(api_key="")
-    with pytest.raises(Exception, match="Google API key missing"):
-        await p.list_models()
+    assert await p.list_models() == []
 
 @pytest.mark.asyncio
 async def test_grok_list_models():

@@ -80,6 +80,7 @@ Passed to turn-level hooks (`on_agent_turn_start`, `on_tool_request`, etc.). It 
 | `current_message`| `str` | The latest raw input (from user or environment). |
 | `history` | `tuple` | **Immutable**. Tuple of message dictionaries representing the full chat history. |
 | `agent_response` | `dict` | Parsed agent action (e.g., `{"tool": "...", "args": {}}`). Available in `on_turn_end`. |
+| `span_context` | `dict` | **Immutable**. Opaque dictionary for distributed tracing (OTel 1.40.0). |
 | `metadata` | `dict` | Turn-specific metadata (timings, token counts). |
 
 ---
@@ -216,12 +217,13 @@ There is built-in support for extending agent communication protocols without to
 
 **Note on Discovery Timing**: Agent adapters and subcommands are discovered dynamically from active plugins. For execution commands (`evaluate`, `run`, `record`, `playground`), the harness triggers the full discovery lifecycle to ensure all custom protocols are available.
 
-Built-in Ecosystem Adapters:
-- **`langgraph://`**: Integration with LangChain's LangGraph.
+Built-in Ecosystem Adapters (2026 Baseline):
+- **`langgraph://`**: Integration with LangChain's **LangGraph v2** (v2 Protocol).
 - **`crewai://`**: Support for CrewAI agent swarms.
 - **`autogen://`**: Support for Microsoft AutoGen agents.
 - **`grok://`**: Native xAI Grok API integration.
-- **`ollama://`**, **`openai://`**, **`claude://`**, **`gemini://`**: Direct LLM provider shims.
+- **`ollama://`**, **`openai://`**, **`claude://`**: Direct LLM provider shims.
+- **`gemini://`**: Official **google-genai v1.70.0** SDK implementation (Default: Gemini 2.5 Flash).
 
 ```python
 from eval_runner.plugins import BaseEvalPlugin

@@ -1,0 +1,53 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  python-security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install -r requirements.txt
+          pip install pip-audit bandit safety
+
+      - name: Run pip-audit
+        run: pip-audit --desc on --summary
+
+      - name: Run Bandit
+        run: bandit -r .
+
+      - name: Run Safety
+        run: safety check
+
+  container-security:
+    needs: python-security
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Build Docker image
+        run: docker build -t multiagent-verify:latest .
+
+      - name: Scan Docker image with Trivy
+        run: trivy image --exit-code 1 --severity HIGH,CRITICAL multiagent-verify:latest

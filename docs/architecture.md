@@ -59,6 +59,10 @@ The core engine is built around a central `EventEmitter` (see `eval_runner/event
 #### Key Event Types:
 - `RUN_START` / `RUN_END`: lifecycle of the entire evaluation.
 - `TASK_START` / `TASK_END`: cycle for a specific scenario task.
+- `PHASE_START` / `PHASE_END`: Hierarchical macro-segments (**Behavioral DNA**).
+- `SUBTASK_START` / `SUBTASK_END`: Discrete logic units (**Behavioral DNA**).
+- `ACTION_START` / `ACTION_END`: Individual tool executions or agent decisions.
+- `STEP_START` / `STEP_END`: Atomic processing steps.
 - `PROMPT`: when the harness sends a request to the agent.
 - `AGENT_RESPONSE`: when the agent returns an action.
 - `TOOL_CALL` / `TOOL_RESULT`: execution of a sandbox tool.
@@ -91,21 +95,19 @@ The `PluginManager` triggers these hooks synchronously, ensuring a deterministic
 | Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
 | Trace Verifier | `eval_runner/verifier.py` | Asymmetric signing and integrity verification (ED25519) |
 
-## Regulatory Enforcement Layer: AES v1.2 & Dataproc Engine
+## Regulatory Alignment Layer: NIST AI-100-1 Principles
 
-AES v1.2 elevates the harness into a **Verification OS** for mission-critical industries, powered by the `dataproc_engine` simulation backbone:
+v1.2.4 elevates the harness into a **Verification OS** for mission-critical industries, aligned with the **NIST AI-100-1** trustworthiness framework:
 
-- **Industrial Simulation Backbone (`dataproc_engine`)**: A high-fidelity data extraction and synthesis engine that powers 8 core industrial sectors:
-    - **Finance**: ISO-20022 compliant transaction streams and credit risk models.
-    - **Healthcare**: HL7 FHIR-mapped EHR simulations and PII-masked clinical records.
-    - **Telecom**: Network topology logs and CDR (Call Detail Record) troubleshooting data.
-    - **Energy**: Grid load signals and renewable energy optimization telemetry.
+- **Weighted Severity Model (WSM)**: Implements the Enterprise WSM for aggregate scoring across 7 NIST dimensions: Safety (25%), Security (20%), Reliability (20%), Fairness (15%), Explainability (10%), Privacy (5%), and Resilience (5%).
+- **Safety Floor Guardrail**: A critical regulatory enforcement that caps the aggregate score at **0.49** if the Safety or Security dimensions fall below 0.5.
+- **Asymmetric Trust Protocol (ED25519)**: Traces are signed with private keys and verified via public keys, enabling non-repudiable audit trails.
+- **Industrial Simulation Backbone (`dataproc_engine`)**: A high-fidelity extraction and synthesis engine powering 8 core industrial sectors.
     - **Ecommerce**: SKU inventory states and multi-stage fulfillment workflows.
     - **Transportation**: Logistics routing manifests and real-time fleet telemetry.
     - **Agriculture**: IoT soil sensor data and supply chain traceability logs.
     - **Unstructured**: Raw document pools for testing "bare metal" extraction capabilities.
 
-- **Zero-Touch Provider Discovery**: The `dataproc_engine` utilizes a dynamic discovery system. By placing a new provider in the `dataproc_engine/providers/` directory, it is automatically registered with the `DatasetEngine`, allowing scenarios to access new industrial data instantly without core modifications.
 
 - **Modular Data Extraction**: Simulation data is completely decoupled from logic. Industry-specific datasets are stored in externalized `.json` and `.csv` files within the `industries/` directory, ensuring auditability and ease of updates.
 

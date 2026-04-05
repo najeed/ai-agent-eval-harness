@@ -8,7 +8,9 @@ The foundation of the harness, designed for framework-agnostic execution and hig
 - **Dynamic Adapter Discovery**: Automatically recognizes and registers agent protocols (`http`, `local`, `openai`, `gemini`, `claude`, `grok`, `ollama`) via the `AgentAdapterRegistry`.
 - **Flight Recorder (`run.jsonl`)**: Captures every state transition, tool call, and agent response in a deterministic, append-only log.
 - **Virtual File System (VFS)**: State-aware sandboxing for tool execution with automated rollback and isolation.
-- **Deterministic Trace Signing**: Integrated `Verifier` for SHA-256 signed run traces to ensure data integrity for benchmarks.
+- **Asymmetric Trust Protocol (ED25519)**: Integrated `Verifier` for **ED25519 asymmetric signatures**, providing non-repudiable audit trails for all execution traces.
+- **NIST AI-100-1 Trustworthiness Alignment**: Standardized scoring based on the Weighted Severity Model (WSM) across 7 critical AI dimensions (Safety, Security, Reliability, etc.), aligned with **NIST AI RMF principles**.
+- **Regulatory Safety Floor**: Prevents "safety-washing" in regulated environments by capping the aggregate trustworthiness score at **0.49 (Fail)** if foundational Safety or Security dimensions fall below 0.5.
 
 ## 2. Security & Compliance (Hardened)
 Enterprise-grade protection and regulatory audit tools.
@@ -29,15 +31,15 @@ Closing the loop between production behavior and evaluation rigor.
 
 ## 4. Ecosystem & Framework Adapters
 First-class, zero-touch support for the leading AI agent frameworks.
-- **LangChain & LangGraph**: Seamless integration for chain-of-thought and graph-based agents.
-- **AutoGen & CrewAI**: Direct support for multi-agent orchestrators.
+- **LangGraph v2 & AutoGen**: Seamless integration for chain-of-thought and graph-based agents using the modernized `v2` protocol.
+- **Google GenAI (April 2026)**: First-class support for Gemini 2.5 Flash via the official `google-genai` v1.70.0 SDK.
+- **OpenTelemetry v1.40.0**: High-fidelity observability baseline for all internal signals and events.
 - **Claude Code & xAI Grok**: Optimized adapters for the latest frontier models.
 - **Ollama**: Local-first evaluation for private or air-gapped environments.
 
 ## 5. Research & Performance Metrics
 Scientific-grade measurement of agent capabilities.
-- **pass@k Scoring**: Measures robustness by calculating success probability over multiple stochastic attempts.
-- **Judge Guarding**: Strict failure enforcement for required metrics, preventing "soft passes" on safety-critical tasks.
+- **Behavioral DNA Telemetry**: Micro-segmentation of agent decision paths using 4-level event granularity (PHASE, SUBTASK, ACTION, STEP).
 - **Wilson Score Confidence Intervals**: Provides 95% statistical confidence bounds for all reported pass rates.
 - **Grounding Coverage**: Heatmaps visualizing tool and knowledge-base utilization within scenarios.
 - **Cost/Latency Analytics**: P95 latency monitoring and precise token-based costing mapped to configurable pricing tiers.

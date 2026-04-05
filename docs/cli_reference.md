@@ -27,17 +27,13 @@ multiagent-eval evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 | `RUN_LOG_PER_RUN` | `true` | Save individual trace files per scenario |
 | `RUN_LOG_MASTER` | `true` | Consolidated trace log |
 | `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `anthropic`, `gemini`, `ollama`, `grok`) |
-| `JUDGE_MODEL` | - | Specific model for the judge (e.g., `llama4`) |
+| `JUDGE_MODEL` | `llama3` | Specific model for the judge (Industrial Default) |
 | `LUNA_JUDGE_TEMPERATURE`| `0.0` | Temperature for judge generation |
 | `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
 | `DEFAULT_LLM_TIMEOUT` | `10` | Timeout for LLM provider calls |
 | `PLUGIN_TIMEOUT` | `5.0` | Execution timeout for eval plugins |
 | `OLLAMA_API_URL` | `.../api/chat` | Ollama model service endpoint |
-| `AUTOGEN_API_URL` | `...` | Endpoint for AutoGen protocol |
-| `OPENAI_API_KEY` | - | API key for OpenAI provider |
-| `ANTHROPIC_API_KEY`| - | API key for Anthropic provider |
 | `GOOGLE_API_KEY` | - | API key for Gemini provider |
-| `XAI_API_KEY` | - | API key for xAI/Grok provider |
 | `ENABLE_DEMO` | `true` | Enable internal UI demo features |
 
 

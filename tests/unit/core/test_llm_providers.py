@@ -53,11 +53,11 @@ async def test_anthropic_provider():
 @pytest.mark.asyncio
 async def test_gemini_provider():
     provider = GeminiProvider(api_key="gk-test")
-    with patch("aiohttp.ClientSession.post") as mock_post:
+    with patch("google.genai.Client") as mock_client_class:
+        mock_client = mock_client_class.return_value
         mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json.return_value = {"candidates": [{"content": {"parts": [{"text": "0.7"}]}}]}
-        mock_post.return_value.__aenter__.return_value = mock_response
+        mock_response.text = "0.7"
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         result = await provider.generate("test")
         assert result == "0.7"

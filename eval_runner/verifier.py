@@ -27,7 +27,7 @@ FINGERPRINT_V1_SCHEMA = {
 
 class VerificationResult:
     """
-    Structured result object for all verifiers compliant with NIST AI-100-1.
+    Structured result object for all verifiers aligned with NIST AI-100-1 principles.
     Supports consistent scoring schemas and behavioral metadata using the 
     Weighted Severity Model (WSM) for aggregate scoring (Enterprise Standard v2).
     """
@@ -52,6 +52,7 @@ class VerificationResult:
         aggregate_score: Optional[float] = None
     ):
         self.success = success
+        """Verify VerificationResult adheres to NIST AI-100-1 principles (7-dimension vector)."""
         self.message = message
         # NIST 7-Dimension Vector
         self.metrics = metrics or {

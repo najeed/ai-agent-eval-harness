@@ -8,20 +8,26 @@
 [![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-v1.2.3--Hardened-gold.svg)](docs/spec/trust_protocol_spec_v1.md)
+[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-ED25519-gold.svg)](docs/spec/trust_protocol_spec_v1.md)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
-[![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/security/test_security_audit.py)
+[![Security Scan](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/security.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/security.yml)
+## 🛡️ Industrial AI Agent Verification & Trustworthiness
 
-**MultiAgentEval** bridges the "Agentic Reliability Gap" through rigorous verification, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
+MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **April 2026**, the framework is aligned with the **NIST AI-100-1** trustworthiness framework, providing high-fidelity telemetry (**Behavioral DNA**) and deterministic verification of agent reliability across core industrial sectors.
+
+[![NIST AI-100-1](https://img.shields.io/badge/Alignment-NIST%20AI--100--1--Aligned-brightgreen.svg)](docs/guides/07_SECURITY_AND_AUTHENTICATION.md#nist-ai-100-1-alignment-suite-r4)
+[![Behavioral DNA](https://img.shields.io/badge/Telemetry-Behavioral%20DNA--v2-blue.svg)](docs/architecture.md#eventemitter-bus-passive-observation)
 
 | Attribute | Specification |
 | :--- | :--- |
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 Production-Ready AES v1.2.3 |
+| **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
+| **Version** | v1.2.4 (April 2026 Industrial Baseline) |
+| **Trust Model** | [Behavioral DNA & WSM](docs/architecture.md) |
 | **Architecture** | [Zero-Touch Core](docs/architecture.md) |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.2.3 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.2 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### 🛡️ Add the Badge to Your Agent
 
@@ -47,8 +53,7 @@ Alternatively, link directly to our high-fidelity SVG asset:
     - [Prerequisites](#prerequisites)
     - [60-Second Quickstart](#60-second-quickstart-get-running-now)
     - [Manual Evaluation](#manual-evaluation-running-the-sample-agent)
-- [At a Glance (v1.0 RC)](#at-a-glance-v10-rc)
-- [The Advanced Update (v1.1)](#the-advanced-update-v11)
+- [At a Glance](#at-a-glance)
 - [Zero-Touch Core Architecture](#zero-touch-core-architecture)
     - [Advanced Utilities](#advanced-utilities)
 - [Integrated Visual Suite (Native GUI)](#integrated-visual-suite-native-gui)
@@ -86,7 +91,7 @@ Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you f
 
 The harness is organized into the following key components:
 
--   `/dataproc_engine`: High-fidelity industrial data extraction engine (8 Sectors, Gold Standards).
+-   `/dataproc_engine`: High-fidelity industrial data extraction engine (7 Sectors, Gold Standards).
 -   `/industries`: Evaluation assets (5,000+ starter scenarios) categorized by 45+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
 -   `/eval_runner/console`: Flask-based REST API for the Integrated Visual Suite.
@@ -100,18 +105,9 @@ The harness is organized into the following key components:
 -   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
 -   `/sample_agent`: Reference implementation for benchmark testing.
 
-### 🏗️ Modular Architecture Highlights (v1.2)
-- **Data-Driven Providers**: Industry-specific extractors (Healthcare, Telecom, Finance) now load simulation data from externalized `.json` and `.csv` files in the `industries/` directory.
-- **Zero-Touch Extensibility**: Dynamic discovery enables automatic registration of new agent adapters and dataset providers without modifying core registries.
-- **Robust Serialization**: Integrated `AESJsonEncoder` ensures stable logging and trace recording even when dealing with Mock objects or complex Path types.
-- **Universal Portability**: Eliminated hardcoded system paths, ensuring the harness runs seamlessly across Windows, macOS, and Linux.
-- **Deterministic Outcomes**: Validation against industrial standards (ISO-20022, HL7, SWIFT).
-- **State-Machine DAGs**: Non-linear `workflow` execution with Pre-condition Gating for multi-step safety.
-- **Pluralistic Judging**: Non-repudiable audit records via Inter-Judge Agreement (IJA) panel consensus.
-- **Asymmetric Trust Protocol (ED25519)**: Open Core support for trace signing and asymmetric verification, ensuring non-repudiation in the base harness via detached certificates.
-- **Detached Signature Trust Protocol**: Hybrid SHA-256 (Integrity) and ED25519 (Authority) model for industrial-grade non-repudiation.
-- **Public Certificates API**: REST endpoint for non-authenticated retrieval of authoritative run certificates (`/api/v1/certificates`).
-- **CI/CD Hard Gating**: Built-in CLI `gate` command for enforcing cryptographic integrity and trace success in automated pipelines.
+- **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring.
+- **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
+- **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 
 ## Getting Started
 
@@ -146,18 +142,18 @@ The harness is organized into the following key components:
 > [!TIP]
 > **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `multiagent-eval console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs/guides/help/02_USER_MANUAL.md#visual-suite) for details.
 
-## 📂 The Global Scenario Corpus (v1.1)
+## 📂 The Global Scenario Corpus
 
 The harness now ships with a massive, validated corpus of **5,000+ scenarios** designed to stress-test agents across every dimension:
 
 ### 🏛️ Industry-Specific (4,000+ Scenarios)
-Comprehensive coverage for **50+ sectors** including:
+Comprehensive coverage for **50+ verticals** including:
 - **Finance & Banking**: Loan processing, fraud detection, and regulatory audits.
 - **Healthcare**: PII handling, insurance reconciliation, and diagnostic workflows.
 - **Telecom & Energy**: Network troubleshooting, grid optimization, and billing.
 
 ### 🧠 Advanced Categories (1,000+ Scenarios)
-- **Cross-Industry Negotiation**: Scenarios where agents must bridge data and policy gaps between two distinct sectors (e.g., Legal & Healthcare).
+- **Cross-Industry Negotiation**: Scenarios where agents must bridge data and policy gaps between two distinct verticals (e.g., Legal & Healthcare).
 - **Ethical & Safety Guardrails**: Hardened tests for PII leakage, prompt injection, and bias.
 - **Interactive Complexity**: Multi-turn flows involving conflicting human-in-the-loop (HITL) requirements.
 - **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
@@ -204,7 +200,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 
 ---
 
-## At a Glance (v1.0 RC)
+## At a Glance
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **20-Shim Enterprise Suite**: High-fidelity simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more.
@@ -215,10 +211,6 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Integrated Visual Suite**: Unified React dashboard for live trace replay and visual debugging.
 - **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
 - **Judge Guarding**: Model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
-
-## The Advanced Update (v1.1)
-
-The latest release introduces a new suite of high-level automation and visual tools designed for 10x developer productivity.
 
 #### Advanced CLI Suite
 - **`list`**: Faceted search filtering across 5,000+ industry scenarios.
@@ -249,10 +241,9 @@ The harness is built on a decoupled, event-driven architecture that allows custo
 - **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok).
 - **Pluggable World Shims**: Register custom environment simulators through the `on_register_simulators` hook.
 
-
 ### 🛠️ dataproc-engine: Industrial Extraction Core
 The framework now features a standalone extraction engine designed for high-fidelity data acquisition:
-- **8-Sector Coverage**: Finance, Healthcare, Energy, Telecom, Ecommerce, Agriculture, Transportation, and Unstructured.
+- **Sector Coverage**: Finance, Healthcare, Energy, Telecom, Ecommerce, Agriculture, and Transportation.
 - **Zero-Mock Integrity**: Automated fallback to high-fidelity simulations when live APIs are unavailable, maintaining 100% data availability.
 
 Beyond the advanced suite, the harness provides a robust toolkit for professional evaluation:

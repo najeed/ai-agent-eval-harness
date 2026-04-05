@@ -115,13 +115,18 @@ async def test_claude_success_stub(adapter_stub):
         assert res["output"] == "claude response"
 
 @pytest.mark.asyncio
-async def test_gemini_success_stub(adapter_stub):
-    server = adapter_stub
-    base_url = f"http://{server.host}:{server.port}/v1beta/models"
+async def test_gemini_success_stub():
     plugin = GeminiAdapterPlugin()
-    with patch("eval_runner.config.GEMINI_BASE_URL", base_url):
+    with patch("google.genai.Client") as mock_client_class:
+        mock_client = mock_client_class.return_value
+        mock_response = AsyncMock()
+        mock_response.text = "gemini response"
+        mock_response.usage_metadata = None
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
+        
         res = await plugin.execute_gemini_query({"api_key": "test", "messages": [{"role":"user","content":"hi"}]})
         assert res["status"] == "success"
+        assert res["output"] == "gemini response"
 
 @pytest.mark.asyncio
 async def test_ollama_success_stub(adapter_stub):

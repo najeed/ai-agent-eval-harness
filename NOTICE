@@ -1,0 +1,21 @@
+AI Agent Eval Harness (multiagent-verify)
+Copyright 2025-2026 Najeed Khan
+
+This product includes software developed by the following third-party projects:
+
+- aiohttp (Apache 2.0)
+- Flask (BSD-3-Clause)
+- flask-cors (MIT)
+- requests (Apache 2.0)
+- jsonschema (MIT)
+- PyYAML (MIT)
+- sentence-transformers (Apache 2.0)
+- numpy (BSD-3-Clause)
+- datasets (Apache 2.0)
+- PyJWT (MIT)
+- cryptography (Apache 2.0 / BSD-3-Clause)
+- opentelemetry-api (Apache 2.0)
+- opentelemetry-sdk (Apache 2.0)
+- google-genai (Apache 2.0)
+
+For more information, see the LICENSES/ directory and COMPLIANCE.md.

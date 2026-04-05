@@ -177,68 +177,62 @@ class AnthropicProvider(LLMProvider):
 
 
 class GeminiProvider(LLMProvider):
-    """Google Gemini provider."""
+    """
+    Google Gemini provider using the modern google-genai SDK (v1.70.0+).
+    Architectural Shift: Migrated from raw REST (aiohttp) to the official SDK
+    for 2026 industrial-grade reliability.
+    """
 
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
         self.api_key = api_key or config.GOOGLE_API_KEY
-        self.base_url = base_url or config.GEMINI_BASE_URL
         self.model = model or config.GEMINI_MODEL
+        # The SDK handles the base URL automatically, but we can override if needed
+        self.vertex_ai = "vertexai" in (base_url or "").lower()
+
+    async def _get_client(self):
+        """Lazy initialization of the GenAI client."""
+        from google import genai
+        return genai.Client(api_key=self.api_key, vertexai=self.vertex_ai)
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
             raise Exception("Google API key missing.")
 
-        # Normalize model name to ensure no redundant "models/" prefixing
-        model_id = self.model
-        if model_id.startswith("models/"):
-            model_id = model_id.replace("models/", "", 1)
+        try:
+            client = await self._get_client()
+            from google.genai import types
+
+            response = await client.aio.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=kwargs.get("temperature", 0.1),
+                    max_output_tokens=kwargs.get("max_output_tokens", 1024),
+                )
+            )
             
-        # Standard v1beta endpoint structure
-        url = f"{self.base_url}/{model_id}:generateContent?key={self.api_key}"
-        
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(
-                    url,
-                    headers={"Content-Type": "application/json"},
-                    json={
-                        "contents": [{"parts": [{"text": prompt}]}],
-                        "generationConfig": {
-                            "temperature": kwargs.get("temperature", 0.1),
-                            "maxOutputTokens": kwargs.get("max_output_tokens", 1024),
-                        }
-                    },
-                    timeout=aiohttp.ClientTimeout(total=45),
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        try:
-                            # Defensive parsing
-                            return data["candidates"][0]["content"]["parts"][0]["text"].strip()
-                        except (KeyError, IndexError):
-                            raise Exception(f"Unexpected Gemini response format: {data}")
-                    else:
-                        error_text = await response.text()
-                        raise Exception(f"Gemini error {response.status}: {error_text}")
-            except Exception as e:
-                raise Exception(f"Gemini request failed: {e}")
+            if response and response.text:
+                return response.text.strip()
+            else:
+                raise Exception(f"Empty response from Gemini SDK: {response}")
+                
+        except Exception as e:
+            raise Exception(f"Gemini SDK request failed: {e}")
 
     async def list_models(self) -> list:
-        """Lists available models for the given API key."""
+        """Lists available models using the GenAI SDK."""
         if not self.api_key:
-            raise Exception("Google API key missing.")
+            return []
 
-        url = f"{self.base_url}/models?key={self.api_key}"
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        return data.get("models", [])
-                    else:
-                        return []
-            except:
-                return []
+        try:
+            client = await self._get_client()
+            models = []
+            async for m in client.aio.models.list():
+                models.append({"id": m.name, "name": m.display_name or m.name})
+            return models
+        except Exception as e:
+            print(f"      [Gemini] Failed to list models: {e}")
+            return []
 
 
 class GrokProvider(LLMProvider):

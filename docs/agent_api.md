@@ -15,6 +15,7 @@ POST /execute_task
 | `task_description` | string | ✅ | The task for the agent to perform |
 | `turn` | integer | ✅ | Current turn number in the conversation |
 | `conversation_history` | array | ❌ | Array of previous turns (`{role, content}`) |
+| `span_context` | object | ❌ | Opaque dictionary for distributed tracing (OTel 1.40.0) |
 
 
 ## Agent Identity (Name Discovery)
@@ -112,9 +113,16 @@ Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed
          Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 50}}
 ```
 
-```
+## 🧬 Behavioral DNA Telemetry Hooks
 
----
+To support high-granularity auditing, agents can optionally emit hierarchical markers during their execution. These are captured by the harness's **Behavioral DNA** bus:
+
+1. **`PHASE`**: Macro-segments (e.g., "Research", "Planning", "Execution").
+2. **`SUBTASK`**: Discrete logic units within a phase.
+3. **`ACTION`**: Individual tool decisions or internal reasoning steps.
+4. **`STEP`**: Atomic processing increments.
+
+The harness automatically maps transitions between these states to provide a precise timeline of the agent's internal lifecycle.
 
 ## 💻 Local Subprocess Protocol
 
@@ -144,10 +152,6 @@ When using `--protocol socket`, the harness opens a persistent connection:
 
 Payloads are exchanged as JSON strings followed by a newline `\n`. The harness ensures persistent connection stability during multi-attempt evaluations. This protocol is recommended for high-performance integrations or cross-service communication.
 
----
-
----
-
 ## 🏛 Benchmark URIs (Community Integration)
 The harness natively supports evaluating against major research benchmarks using custom URI schemes:
 
@@ -155,8 +159,6 @@ The harness natively supports evaluating against major research benchmarks using
 - **`assistantbench://[split]`**: Loads scenarios from AssistantBench (e.g., `assistantbench://test`).
 
 These URIs are handled by the `loader.py` which transparently wraps the external data into the standardized AES format with multi-turn metric support.
-
----
 
 ## 🔗 Ecosystem Hub Payloads
 When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harness transparently maps the AES scenario into specific provider payloads. The return object follows the same `action` structure as the standard POST request.
@@ -210,7 +212,7 @@ The `luna_judge_score` metric can be customized per-scenario or per-criterion us
 | `judge_temperature` | float | `0.0` | Randomness of the judge (higher = less predictable) |
 | `judge_rubric` | string | `generic` | The named rubric to use (see below) |
 
-### Built-in Rubrics
+## Built-in Rubrics
 The following industry-standard rubrics are available out-of-the-box:
 - `clinical_safety`: Healthcare-specific safety and HIPAA compliance check.
 - `fiduciary_accuracy`: Financial advice and numerical correctness audit.
@@ -238,4 +240,3 @@ The following industry-standard rubrics are available out-of-the-box:
 
 ## Visual Debugger Integration
 The **Visual Debugger** (`multiagent-eval console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React dashboard.
-

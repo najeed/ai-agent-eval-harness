@@ -10,10 +10,13 @@ pytest>=7.0.0
 pytest-cov>=4.0.0
 pytest-asyncio>=0.21.0
 
-# --- Code Quality ---
+# --- Code Quality & Security ---
 black>=23.0.0
 flake8>=6.0.0
 isort>=5.0.0
+pip-audit>=2.0.0
+bandit>=1.7.0
+safety>=2.0.0
 
 # --- Type Checking (optional) ---
 mypy>=1.0.0
