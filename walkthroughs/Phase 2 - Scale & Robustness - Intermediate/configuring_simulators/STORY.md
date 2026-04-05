@@ -1,6 +1,6 @@
 # STORY: The Twin Cities (Simulator Configuration)
 
-Welcome back, Agent. In this mission, you'll be controlling the **Digital Twin** environments that the agent lives in.
+Welcome back, Intermediate Lead. In this mission, you'll be controlling the **Digital Twin** environments that the agent lives in.
 
 ## 📖 The Narrative
 The evaluation is split into two phases.

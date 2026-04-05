@@ -20,11 +20,6 @@ class DatasetEngine:
         self.llm_manager = llm_manager or LLMManager(self.config)
         self.synthesis_engine = ParitySynthesizer()
         self.providers = {}
-        try:
-            self.client = dataproc.JobControllerClient()
-        except Exception as e:
-            logger.error(f"Failed to initialize DataProc client: {e}")
-            self.client = None
 
     def run_job(self, job_spec):
         if not self.client:
