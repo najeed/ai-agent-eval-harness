@@ -7,23 +7,25 @@ Coverage for core/config.py and core/base_provider.py gaps:
   - BaseProvider.load_raw_data() edge cases
   - BaseProvider.heuristic_transform() default behavior
 """
+
 import os
-import pytest
-import pandas as pd
 from unittest.mock import patch
+
+import pandas as pd
+import pytest
+
+from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.config import ConfigLoader
-from dataproc_engine.core.base_provider import BaseProvider, StandardSchema, RawArtifact
 from dataproc_engine.core.llm_manager import LLMManager
 
-
 # ─── ConfigLoader ─────────────────────────────────────────────────────────────
+
 
 def test_config_load_secrets_finance_no_env_vars():
     """ConfigLoader.load_secrets warns but returns dict when env vars are missing."""
     with patch.dict(os.environ, {}, clear=True):
         # Remove keys if present
-        env = {k: v for k, v in os.environ.items()
-               if k not in ("SEC_USER_AGENT", "FRED_API_KEY")}
+        env = {k: v for k, v in os.environ.items() if k not in ("SEC_USER_AGENT", "FRED_API_KEY")}
         with patch.dict(os.environ, env, clear=True):
             secrets = ConfigLoader.load_secrets("finance")
     assert isinstance(secrets, dict)
@@ -36,7 +38,9 @@ def test_config_load_secrets_finance_no_env_vars():
 
 def test_config_load_secrets_finance_with_env_vars():
     """ConfigLoader.load_secrets returns values when env vars are set."""
-    with patch.dict(os.environ, {"SEC_USER_AGENT": "TestAgent/1.0", "FRED_API_KEY": "test_key_123"}):
+    with patch.dict(
+        os.environ, {"SEC_USER_AGENT": "TestAgent/1.0", "FRED_API_KEY": "test_key_123"}
+    ):
         secrets = ConfigLoader.load_secrets("finance")
     assert secrets["sec_user_agent"] == "TestAgent/1.0"
     assert secrets["fred_api_key"] == "test_key_123"
@@ -79,12 +83,13 @@ def test_config_get_config_env_overrides():
 
 # ─── StandardSchema.create() factory ─────────────────────────────────────────
 
+
 def test_standard_schema_create_auto_generates_id_and_checksum():
     """StandardSchema.create() auto-generates id and checksum if not provided."""
     schema = StandardSchema.create(
         industry="finance",
         data={"revenue": 1000.0, "profit": 100.0},
-        provenance={"source": "test://source"}
+        provenance={"source": "test://source"},
     )
     assert schema.id is not None
     assert len(schema.id) == 16  # md5 truncated
@@ -96,10 +101,7 @@ def test_standard_schema_create_auto_generates_id_and_checksum():
 def test_standard_schema_create_with_explicit_id():
     """StandardSchema.create() respects explicit record_id."""
     schema = StandardSchema.create(
-        industry="healthcare",
-        data={"glucose": 110.0},
-        provenance={},
-        record_id="custom-id-001"
+        industry="healthcare", data={"glucose": 110.0}, provenance={}, record_id="custom-id-001"
     )
     assert schema.id == "custom-id-001"
 
@@ -118,7 +120,7 @@ def test_standard_schema_to_dict_flattens_data():
     schema = StandardSchema.create(
         industry="energy",
         data={"series_id": "WTI", "latest_value": 75.4},
-        provenance={"source": "eia.gov"}
+        provenance={"source": "eia.gov"},
     )
     flat = schema.to_dict()
     assert "series_id" in flat
@@ -139,12 +141,9 @@ def test_standard_schema_from_pandas_series():
 
 def test_standard_schema_from_pandas_with_provenance_fields():
     """StandardSchema.from_pandas() extracts provenance fields from row."""
-    row = pd.Series({
-        "id": "r002",
-        "val": 99.0,
-        "source": "test://source",
-        "retrieved_at": "2023-01-01"
-    })
+    row = pd.Series(
+        {"id": "r002", "val": 99.0, "source": "test://source", "retrieved_at": "2023-01-01"}
+    )
     schema = StandardSchema.from_pandas(row, industry="finance")
 
     # source and retrieved_at should be in provenance, not data
@@ -155,8 +154,10 @@ def test_standard_schema_from_pandas_with_provenance_fields():
 
 # ─── BaseProvider edge cases ──────────────────────────────────────────────────
 
+
 class ConcreteProvider(BaseProvider):
     """Minimal concrete implementation of BaseProvider for testing."""
+
     async def extract(self):
         return []
 
@@ -248,10 +249,7 @@ def test_base_provider_create_simulated_artifact():
     """create_simulated_artifact always tags artifact with simulation=True and sim- prefix."""
     provider = ConcreteProvider({})
     artifact = provider.create_simulated_artifact(
-        id="test-123",
-        content={"key": "value"},
-        source_url="test://url",
-        metadata={"extra": "data"}
+        id="test-123", content={"key": "value"}, source_url="test://url", metadata={"extra": "data"}
     )
     assert isinstance(artifact, RawArtifact)
     assert artifact.id.startswith("sim-")

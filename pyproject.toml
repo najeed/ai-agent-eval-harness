@@ -28,6 +28,8 @@ dependencies = [
     "opentelemetry-api==1.40.0",
     "opentelemetry-sdk==1.40.0",
     "google-genai==1.70.0",
+    "pypdf==6.9.2",
+    "python-docx==1.2.0",
 ]
 
 [build-system]
@@ -51,3 +53,40 @@ testpaths = ["tests", "dataproc_engine/tests"]
 addopts = "-ra"
 python_files = ["test_*.py"]
 pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+# Standardize on industrial 100-character line length (2026 upgrade)
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# Select E (Error), F (Pyflakes), UP (Upgrade), B (Bugbear), I (Isort)
+select = ["E", "F", "UP", "B", "I"]
+ignore = ["E203"]
+
+# Exclude auxiliary/educational directories from core linting
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "node_modules",
+    "dist",
+    "build",
+    "walkthroughs",
+    "docs",
+    "examples",
+    "examples",
+    ".aes",
+    "reports",
+    "results",
+    "runs",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

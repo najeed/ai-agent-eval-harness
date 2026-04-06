@@ -1,7 +1,9 @@
+from typing import Any
+
 import aiohttp
-from typing import Any, Dict
-from ..plugins import BaseEvalPlugin
+
 from .. import config
+from ..plugins import BaseEvalPlugin
 
 
 class ClaudeAdapterPlugin(BaseEvalPlugin):
@@ -15,7 +17,9 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Claude adapter via on_discover_adapters hook.")
         registry.register("claude", self.execute_claude_query)
 
-    async def execute_claude_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
+    async def execute_claude_query(
+        self, payload: dict[str, Any], url: str = None
+    ) -> dict[str, Any]:
         """
         Executes a query against the Anthropic Claude Messages API.
         """
@@ -47,7 +51,9 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(url, json=claude_payload, headers=headers, timeout=30) as response:
+                async with session.post(
+                    url, json=claude_payload, headers=headers, timeout=30
+                ) as response:
                     if response.status != 200:
                         err_text = await response.text()
                         return {

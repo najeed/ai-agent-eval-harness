@@ -1,13 +1,14 @@
+import datetime
 import json
 from pathlib import Path
-from typing import List, Dict, Any, Union
-import datetime
+from typing import Any
 
 
 class AESJsonEncoder(json.JSONEncoder):
     """
     Custom JSON encoder to handle non-standard types like Path, datetime, and Mock objects.
     """
+
     def default(self, obj: Any) -> Any:
         if isinstance(obj, Path):
             return str(obj)
@@ -22,7 +23,7 @@ class AESJsonEncoder(json.JSONEncoder):
             return str(obj)
 
 
-def load_events(path: Union[Path, str]) -> List[Dict[Any, Any]]:
+def load_events(path: Path | str) -> list[dict[Any, Any]]:
     """
     Loads events from a trace file. Supports both JSONL and standard JSON array formats.
     """
@@ -30,7 +31,7 @@ def load_events(path: Union[Path, str]) -> List[Dict[Any, Any]]:
     if not path.exists():
         raise FileNotFoundError(f"Trace file not found: {path}")
 
-    with open(path, "r", encoding="utf-8-sig") as f:
+    with open(path, encoding="utf-8-sig") as f:
         content = f.read().strip()
         if not content:
             return []
@@ -67,18 +68,34 @@ def load_events(path: Union[Path, str]) -> List[Dict[Any, Any]]:
 def reconstruct_results_from_events(events: list) -> list:
     """Helper to reconstruct results structure from JSONL events."""
     from .triage import TriageEngine
+
     results_map = {}
     for event in events:
         task_id = event.get("task_id", "unknown")
         ev_type = event.get("event")
         if task_id not in results_map:
-            results_map[task_id] = {"task_id": task_id, "metrics": [], "conversation_history": [], "triage_tag": "SUCCESS"}
+            results_map[task_id] = {
+                "task_id": task_id,
+                "metrics": [],
+                "conversation_history": [],
+                "triage_tag": "SUCCESS",
+            }
         res = results_map[task_id]
         if ev_type == "evaluation":
-            res["metrics"].append({"metric": event.get("metric"), "score": event.get("value"), "threshold": event.get("threshold", 0.5), "success": event.get("success", False)})
+            res["metrics"].append(
+                {
+                    "metric": event.get("metric"),
+                    "score": event.get("value"),
+                    "threshold": event.get("threshold", 0.5),
+                    "success": event.get("success", False),
+                }
+            )
         elif ev_type in ["prompt", "agent_response", "tool_result"]:
             role = "agent" if ev_type == "agent_response" else "user"
-            content = event.get("content") or {"action": event.get("tool"), "status": event.get("status")}
+            content = event.get("content") or {
+                "action": event.get("tool"),
+                "status": event.get("status"),
+            }
             res["conversation_history"].append({"role": role, "content": content})
     final_results = list(results_map.values())
     TriageEngine.apply_triage(final_results)

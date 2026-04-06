@@ -1,11 +1,12 @@
-from typing import Dict, Any
+from typing import Any
+
 from . import MetricRegistry
 
 
 @MetricRegistry.register("technical_correctness")
 @MetricRegistry.register("algorithm_correctness")
 @MetricRegistry.register("code_quality")
-async def calculate_technical_correctness(criterion: Dict[str, Any], agent_summary: str) -> float:
+async def calculate_technical_correctness(criterion: dict[str, Any], agent_summary: str) -> float:
     """
     High-fidelity technical evaluation using Luna-Judge.
     Maps to the 'technical_correctness' rubric.

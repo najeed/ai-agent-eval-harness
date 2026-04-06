@@ -1,9 +1,9 @@
-import json
-import os
 import asyncio
-import aiohttp
+import json
 from datetime import datetime
 from pathlib import Path
+
+import aiohttp
 
 
 async def record_interaction(agent_url: str):
@@ -46,16 +46,22 @@ async def record_interaction(agent_url: str):
                 print("  Thinking...")
 
                 try:
-                    async with session.post(agent_url, json={"task_description": task}, timeout=10) as response:
+                    async with session.post(
+                        agent_url, json={"task_description": task}, timeout=10
+                    ) as response:
                         if response.status == 200:
                             data = await response.json()
+
                             # R2.2 Remediation: Simple sensitive data masking
                             def mask_data(val):
                                 if isinstance(val, dict):
                                     return {k: mask_data(v) for k, v in val.items()}
                                 if isinstance(val, list):
                                     return [mask_data(v) for v in val]
-                                if isinstance(val, str) and (len(val) > 20 and any(x in val.lower() for x in ["key", "secret", "token"])):
+                                if isinstance(val, str) and (
+                                    len(val) > 20
+                                    and any(x in val.lower() for x in ["key", "secret", "token"])
+                                ):
                                     return f"{val[:4]}...[MASKED]"
                                 return val
 
@@ -77,6 +83,7 @@ async def record_interaction(agent_url: str):
     finally:
         # Save to file
         from .trace_utils import AESJsonEncoder
+
         with open(log_file, "w", encoding="utf-8") as f:
             for e in events:
                 f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")

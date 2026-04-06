@@ -4,21 +4,25 @@ simulators.py
 Standard simulation shims for common agent environments (Git, API).
 """
 
-from typing import Any, Dict
+from typing import Any
 
 
 class BaseSimulator:
     """Base class for all world shims with state management."""
-    def __init__(self, initial_state: Dict[str, Any] = None):
+
+    def __init__(self, initial_state: dict[str, Any] = None):
         self.state = initial_state or {}
 
-    def execute(self, action: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, action: str, params: dict[str, Any]) -> dict[str, Any]:
         """Dispatches an action to a handler method."""
         handler_name = f"handle_{action}"
         handler = getattr(self, handler_name, None)
         if handler:
             return handler(params)
-        return {"status": "error", "message": f"Unknown action: {action} on {self.__class__.__name__}"}
+        return {
+            "status": "error",
+            "message": f"Unknown action: {action} on {self.__class__.__name__}",
+        }
 
     def cleanup(self):
         """Perform lifecycle cleanup (close files, sockets, etc.)."""
@@ -29,7 +33,7 @@ class BaseSimulator:
         """Destructor to safeguard against resource leaks."""
         try:
             self.cleanup()
-        except:
+        except:  # noqa: E722
             pass
 
 
@@ -37,12 +41,14 @@ class GitSimulator(BaseSimulator):
     """Simulates a dynamic Git repository state."""
 
     def __init__(self):
-        super().__init__({
-            "current_branch": "main",
-            "file_tree": {}, # path -> content
-            "staged_files": [],
-            "history": [{"commit": "init", "message": "Initial commit"}],
-        })
+        super().__init__(
+            {
+                "current_branch": "main",
+                "file_tree": {},  # path -> content
+                "staged_files": [],
+                "history": [{"commit": "init", "message": "Initial commit"}],
+            }
+        )
 
     def handle_git_clone(self, params: dict) -> dict:
         repo = params.get("url")
@@ -68,12 +74,14 @@ class ApiSimulator(BaseSimulator):
     """Simulates a generic REST API with dynamic registration."""
 
     def __init__(self):
-        super().__init__({
-            "endpoints": {
-                "/api/v1/health": {"status": "healthy"},
-                "/api/v1/user/1": {"id": 1, "name": "Test User", "plan": "pro"},
+        super().__init__(
+            {
+                "endpoints": {
+                    "/api/v1/health": {"status": "healthy"},
+                    "/api/v1/user/1": {"id": 1, "name": "Test User", "plan": "pro"},
+                }
             }
-        })
+        )
 
     def handle_api_request(self, params: dict) -> dict:
         method = params.get("method", "GET").upper()
@@ -88,7 +96,7 @@ class ApiSimulator(BaseSimulator):
         elif method == "POST":
             # Real implementation: allow adding endpoints dynamically
             if "path" in params and "data" in params:
-                 self.state["endpoints"][params["path"]] = params["data"]
+                self.state["endpoints"][params["path"]] = params["data"]
             return {"status": "success", "data": {"id": 999, "status": "created"}}
         return {"status": "error", "message": f"Unsupported method: {method}"}
 
@@ -104,12 +112,14 @@ class DatabaseSimulator(BaseSimulator):
     """Simulates a dynamic secure SQL environment."""
 
     def __init__(self):
-        super().__init__({
-            "tables": {
-                "users": [{"id": 1, "email": "admin@example.com", "role": "admin"}],
-                "logs": [],
+        super().__init__(
+            {
+                "tables": {
+                    "users": [{"id": 1, "email": "admin@example.com", "role": "admin"}],
+                    "logs": [],
+                }
             }
-        })
+        )
 
     def handle_database_query(self, params: dict) -> dict:
         q = params.get("query", "").lower()
@@ -138,9 +148,7 @@ class CRMSimulator(BaseSimulator):
     """Simulates a dynamic CRM system."""
 
     def __init__(self):
-        super().__init__({
-            "leads": [{"id": "L101", "name": "Acme Corp", "status": "New"}]
-        })
+        super().__init__({"leads": [{"id": "L101", "name": "Acme Corp", "status": "New"}]})
 
     def handle_crm_update_lead(self, params: dict) -> dict:
         lead_id = params.get("id")
@@ -156,10 +164,9 @@ class EmailSimulator(BaseSimulator):
     """Simulates a dynamic email server."""
 
     def __init__(self):
-        super().__init__({
-            "inbox": [{"id": "M001", "from": "boss@corp.com", "subject": "Status?"}],
-            "sent": []
-        })
+        super().__init__(
+            {"inbox": [{"id": "M001", "from": "boss@corp.com", "subject": "Status?"}], "sent": []}
+        )
 
     def handle_email_send(self, params: dict) -> dict:
         self.state["sent"].append(params)
@@ -173,9 +180,7 @@ class CalendarSimulator(BaseSimulator):
     """Simulates a dynamic calendar system."""
 
     def __init__(self):
-        super().__init__({
-            "events": [{"title": "Eval Kickoff", "time": "2026-03-20T10:00"}]
-        })
+        super().__init__({"events": [{"title": "Eval Kickoff", "time": "2026-03-20T10:00"}]})
 
     def handle_calendar_book(self, params: dict) -> dict:
         # Check for conflicts in a real implementation
@@ -187,10 +192,12 @@ class JiraSimulator(BaseSimulator):
     """Simulates a dynamic Jira project management environment."""
 
     def __init__(self):
-        super().__init__({
-            "issues": [{"id": "PROJ-1", "summary": "Initial Bug", "status": "To Do"}],
-            "projects": ["PROJ"]
-        })
+        super().__init__(
+            {
+                "issues": [{"id": "PROJ-1", "summary": "Initial Bug", "status": "To Do"}],
+                "projects": ["PROJ"],
+            }
+        )
 
     def handle_jira_create(self, params: dict) -> dict:
         summary = params.get("summary", "New Task")
@@ -216,9 +223,7 @@ class CloudSimulator(BaseSimulator):
     """Simulates dynamic AWS/GCP infrastructure."""
 
     def __init__(self):
-        super().__init__({
-            "instances": [{"id": "i-1234", "type": "t2.micro", "status": "running"}]
-        })
+        super().__init__({"instances": [{"id": "i-1234", "type": "t2.micro", "status": "running"}]})
 
     def handle_cloud_launch(self, params: dict) -> dict:
         new_id = f"i-{len(self.state['instances']) + 5678}"
@@ -231,10 +236,7 @@ class TerminalSimulator(BaseSimulator):
     """Simulates a dynamic SSH/Bash terminal."""
 
     def __init__(self):
-        super().__init__({
-            "cwd": "/home/user",
-            "history": []
-        })
+        super().__init__({"cwd": "/home/user", "history": []})
 
     def handle_terminal_execute(self, params: dict) -> dict:
         cmd = params.get("cmd", "")
@@ -249,8 +251,8 @@ class TerminalSimulator(BaseSimulator):
     # Backward compatibility shim for execute(cmd, params)
     def execute(self, action: str, params: dict) -> dict:
         if action not in ["terminal_execute"]:
-             params["cmd"] = action # If called directly as execute("ls", {})
-             return self.handle_terminal_execute(params)
+            params["cmd"] = action  # If called directly as execute("ls", {})
+            return self.handle_terminal_execute(params)
         return super().execute(action, params)
 
 
@@ -269,9 +271,7 @@ class ERPSimulator(BaseSimulator):
     """Simulates a dynamic ERP system."""
 
     def __init__(self):
-        super().__init__({
-            "orders": [{"id": "O-99", "item": "Widget", "qty": 100}]
-        })
+        super().__init__({"orders": [{"id": "O-99", "item": "Widget", "qty": 100}]})
 
     def handle_erp_create_order(self, params: dict) -> dict:
         self.state["orders"].append(params)
@@ -293,9 +293,9 @@ class KnowledgeBaseSimulator(BaseSimulator):
     """Simulates dynamic Knowledge Base."""
 
     def __init__(self):
-        super().__init__({
-            "docs": [{"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}]
-        })
+        super().__init__(
+            {"docs": [{"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}]}
+        )
 
     def handle_kb_search(self, params: dict) -> dict:
         return {"status": "success", "results": self.state["docs"]}
@@ -305,9 +305,9 @@ class SupportDeskSimulator(BaseSimulator):
     """Simulates dynamic ticketing system."""
 
     def __init__(self):
-        super().__init__({
-            "tickets": [{"id": "TKT-123", "subject": "Billing issue", "status": "open"}]
-        })
+        super().__init__(
+            {"tickets": [{"id": "TKT-123", "subject": "Billing issue", "status": "open"}]}
+        )
 
     def handle_support_close(self, params: dict) -> dict:
         ticket_id = params.get("id")
@@ -343,9 +343,7 @@ class CICDSimulator(BaseSimulator):
     """Simulates dynamic CI/CD pipeline."""
 
     def __init__(self):
-        super().__init__({
-            "builds": [{"id": "B-1", "status": "success"}]
-        })
+        super().__init__({"builds": [{"id": "B-1", "status": "success"}]})
 
     def handle_cicd_deploy(self, params: dict) -> dict:
         new_id = f"B-{len(self.state['builds']) + 1}"
@@ -357,9 +355,7 @@ class IoTSimulator(BaseSimulator):
     """Simulates dynamic IoT device interaction."""
 
     def __init__(self):
-        super().__init__({
-            "devices": {"thermostat": "72F", "lights": "off"}
-        })
+        super().__init__({"devices": {"thermostat": "72F", "lights": "off"}})
 
     def handle_iot_update(self, params: dict) -> dict:
         device = params.get("device")
@@ -371,7 +367,7 @@ class IoTSimulator(BaseSimulator):
     # Special case execute for IoT
     def execute(self, action: str, params: dict) -> dict:
         if action == "iot_update":
-             return self.handle_iot_update(params)
+            return self.handle_iot_update(params)
         return super().execute(action, params)
 
 
@@ -379,9 +375,7 @@ class SecuritySimulator(BaseSimulator):
     """Simulates dynamic Identity & Access Management."""
 
     def __init__(self):
-        super().__init__({
-            "users": [{"id": "u_99", "role": "admin"}]
-        })
+        super().__init__({"users": [{"id": "u_99", "role": "admin"}]})
 
     def handle_security_auth(self, params: dict) -> dict:
         return {"status": "success", "token": "jwt_token_xyz"}
@@ -421,7 +415,7 @@ def get_simulator_registry() -> dict:
     # Return new instances of all internal simulators
     registry = {name: cls() for name, cls in _INTERNAL_SIMULATOR_CLASSES.items()}
 
-    # Trigger plugin hook to allow external shims to register themselves (they should provide instances or factory)
+    # Trigger plugin hook to allow external shims to register themselves (they should provide instances or factory), E501, E501  # noqa: E501
     plugins.manager.trigger("on_register_simulators", registry)
 
     return registry

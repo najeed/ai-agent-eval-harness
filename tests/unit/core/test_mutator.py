@@ -4,9 +4,8 @@ test_mutator.py
 Unit tests for the adversarial mutation engine.
 """
 
-import pytest
 import json
-from pathlib import Path
+
 from eval_runner import mutator
 
 
@@ -21,8 +20,8 @@ def test_mutator_typo():
         "metadata": {"name": "typo_test", "compliance_level": "Standard"},
         "workflow": {
             "nodes": [{"id": "n1", "task_description": "Please clone the repo"}],
-            "edges": []
-        }
+            "edges": [],
+        },
     }
     mutated = mutator.mutate_scenario(scenario, "typo")
     desc = mutated["workflow"]["nodes"][0]["task_description"]
@@ -39,10 +38,7 @@ def test_mutator_ambiguity():
         "industry": "test",
         "description": "test",
         "metadata": {"name": "ambiguity_test", "compliance_level": "Standard"},
-        "workflow": {
-            "nodes": [{"id": "n1", "task_description": "Clone the repo"}],
-            "edges": []
-        }
+        "workflow": {"nodes": [{"id": "n1", "task_description": "Clone the repo"}], "edges": []},
     }
     mutated = mutator.mutate_scenario(scenario, "ambiguity")
     desc = mutated["workflow"]["nodes"][0]["task_description"]
@@ -60,10 +56,7 @@ def test_mutator_injection():
         "industry": "test",
         "description": "test",
         "metadata": {"name": "injection_test", "compliance_level": "Standard"},
-        "workflow": {
-            "nodes": [{"id": "n1", "task_description": "Clone the repo"}],
-            "edges": []
-        }
+        "workflow": {"nodes": [{"id": "n1", "task_description": "Clone the repo"}], "edges": []},
     }
     mutated = mutator.mutate_scenario(scenario, "injection")
     desc = mutated["workflow"]["nodes"][0]["task_description"]
@@ -76,6 +69,6 @@ def test_save_mutated_scenario(tmp_path):
     output_file = tmp_path / "mutated.json"
     mutator.save_mutated_scenario(scenario, output_file)
     assert output_file.exists()
-    with open(output_file, "r") as f:
+    with open(output_file) as f:
         data = json.load(f)
     assert data == scenario

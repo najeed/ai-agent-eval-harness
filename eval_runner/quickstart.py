@@ -1,12 +1,9 @@
-import os
-import sys
 import subprocess
+import sys
 import time
-import asyncio
-import signal
 from pathlib import Path
-from . import engine
-from . import reporter
+
+from . import engine, reporter
 
 
 def start_sample_agent():
@@ -40,7 +37,9 @@ async def run_quickstart():
         return
 
     try:
-        scenario_path = Path("industries/telecom/scenarios/technical_support/13814_home_internet_slow_speed.json")
+        scenario_path = Path(
+            "industries/telecom/scenarios/technical_support/13814_home_internet_slow_speed.json"
+        )
         if not scenario_path.exists():
             print(f"❌ Error: Quickstart scenario not found at {scenario_path}")
             return
@@ -49,7 +48,7 @@ async def run_quickstart():
 
         import json
 
-        with open(scenario_path, "r", encoding="utf-8") as f:
+        with open(scenario_path, encoding="utf-8") as f:
             scenario = json.load(f)
 
         results = await engine.run_evaluation(scenario)

@@ -1,6 +1,7 @@
+from unittest.mock import AsyncMock, patch
+
 import pytest
-import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
+
 from eval_runner.engine import AgentAdapterRegistry, run_evaluation
 from eval_runner.runner import DefaultRunner
 
@@ -24,7 +25,9 @@ async def test_adapter_registry_call_agent():
     mock_adapter = AsyncMock(return_value={"action": "test"})
     AgentAdapterRegistry.register("test-proto", mock_adapter)
 
-    result = await AgentAdapterRegistry.call_agent({"task_description": "do thing"}, protocol="test-proto", endpoint="test://url")
+    result = await AgentAdapterRegistry.call_agent(
+        {"task_description": "do thing"}, protocol="test-proto", endpoint="test://url"
+    )
     assert result["action"] == "test"
     mock_adapter.assert_called_once()
 
@@ -73,10 +76,12 @@ async def test_default_runner_events():
     runner = DefaultRunner()
     scenario = {"scenario_id": "event-test"}
 
-    with patch("eval_runner.events.EventEmitter.emit") as mock_emit, patch(
-        "eval_runner.session.SessionManager.execute_tasks", new_callable=AsyncMock
-    ) as mock_exec:
-
+    with (
+        patch("eval_runner.events.EventEmitter.emit") as mock_emit,
+        patch(
+            "eval_runner.session.SessionManager.execute_tasks", new_callable=AsyncMock
+        ) as mock_exec,
+    ):
         mock_exec.return_value = []
         await runner.run(scenario, attempts=1)
 

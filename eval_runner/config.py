@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file if it exists
@@ -8,10 +9,12 @@ load_dotenv()
 # Absolute Authoritative Project Root (supports environment override for test isolation)
 PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent))).resolve()
 
+
 def _get_project_version() -> str:
     """Safely extract version from pyproject.toml (Industrial Standard)."""
     try:
         import tomllib
+
         target = PROJECT_ROOT / "pyproject.toml"
         if target.exists():
             with open(target, "rb") as f:
@@ -20,8 +23,10 @@ def _get_project_version() -> str:
         pass
     return "1.2.4"
 
+
 VERSION = _get_project_version()
 _TEMP_DIR_CACHE = None
+
 
 def get_safe_tmp_dir() -> Path:
     """
@@ -34,30 +39,37 @@ def get_safe_tmp_dir() -> Path:
 
     # 1. Primary path: Git-ignored .tmp directory within the project
     primary = PROJECT_ROOT / ".tmp"
-    
+
     try:
         if not primary.exists():
             primary.mkdir(parents=True, exist_ok=True)
-        
+
         # Verify write permission
         test_file = primary / ".aes_perm_test"
         test_file.write_text("perm_test", encoding="utf-8")
         test_file.unlink()
-        
+
         _TEMP_DIR_CACHE = primary
         return primary
     except Exception:
         # 2. Fallback to OS default if project root is read-only (unlikely in dev)
         import tempfile
+
         fallback = Path(tempfile.gettempdir()) / "aes_eval"
         fallback.mkdir(parents=True, exist_ok=True)
         _TEMP_DIR_CACHE = fallback
         return fallback
 
+
 LOG_REDIRECT_PATH = get_safe_tmp_dir() / "tool_logs"
 
 # --- Engine Configuration ---
-AGENT_API_URLS = [url.strip() for url in os.getenv("AGENT_API_URLS", os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")).split(",")]
+AGENT_API_URLS = [
+    url.strip()
+    for url in os.getenv(
+        "AGENT_API_URLS", os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
+    ).split(",")
+]
 # Legacy support for single-endpoint modules
 AGENT_API_URL = AGENT_API_URLS[0] if AGENT_API_URLS else "http://localhost:5001/execute_task"
 EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "10"))
@@ -85,7 +97,7 @@ JUDGE_MODEL = os.getenv("JUDGE_MODEL")  # Specific model for the judge
 LUNA_JUDGE_PROMPT = os.getenv(
     "LUNA_JUDGE_PROMPT",
     """
-You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.
+You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.  # noqa: E501
 1.0 means they are semantically equivalent.
 0.0 means they are completely different.
 
@@ -113,7 +125,9 @@ ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-4-6-sonnet")
 ANTHROPIC_VERSION = os.getenv("ANTHROPIC_VERSION", "2023-06-01")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1/models")
+GEMINI_BASE_URL = os.getenv(
+    "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1/models"
+)
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 XAI_API_KEY = os.getenv("XAI_API_KEY")
@@ -123,7 +137,9 @@ XAI_MODEL = os.getenv("XAI_MODEL", "grok-4.20-beta-0309")
 # --- Metric Thresholds & Defaults ---
 CLARITY_MIN_LENGTH = int(os.getenv("CLARITY_MIN_LENGTH", "10"))
 LATENCY_DECAY_PER_HOP = float(os.getenv("LATENCY_DECAY_PER_HOP", "0.2"))
-REFUSAL_KEYWORDS = os.getenv("REFUSAL_KEYWORDS", "cannot,unable,refuse,policy,against,not allowed,sorry").split(",")
+REFUSAL_KEYWORDS = os.getenv(
+    "REFUSAL_KEYWORDS", "cannot,unable,refuse,policy,against,not allowed,sorry"
+).split(",")
 
 # --- Reporter Configuration ---
 REPORTS_DIR = (PROJECT_ROOT / os.getenv("REPORTS_DIR", "reports")).resolve()

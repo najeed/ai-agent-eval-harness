@@ -1,6 +1,5 @@
 import os
 import tempfile
-import shutil
 from pathlib import Path
 
 # This ensures a 100% stable, zero-touch environment on any OS (inc. Windows)
@@ -17,25 +16,25 @@ os.makedirs(_DEMO, exist_ok=True)
 
 # Export to environment for eval_runner.config to pick up on import
 os.environ["PROJECT_ROOT"] = str(_ROOT)
-os.environ["RUN_LOG_DIR"] = "runs" # Relative to PROJECT_ROOT
+os.environ["RUN_LOG_DIR"] = "runs"  # Relative to PROJECT_ROOT
 os.environ["DASHBOARD_API_KEY"] = "test-key-123"
 
-import unittest
-from unittest.mock import MagicMock, patch, mock_open
-import json
-from flask import Flask
-from datetime import datetime
+import unittest  # noqa: E402
+from unittest.mock import MagicMock, patch  # noqa: E402
 
-# Force-override config at runtime to handle cases where config.py was imported 
+from flask import Flask  # noqa: E402
+
+# Force-override config at runtime to handle cases where config.py was imported
 # before the environment variables were set.
-import eval_runner.config
+import eval_runner.config  # noqa: E402
+
 eval_runner.config.PROJECT_ROOT = _ROOT
 eval_runner.config.RUN_LOG_DIR = _ROOT / "runs"
 eval_runner.config.TRAJECTORIES_DIR = _ROOT / "reports" / "trajectories"
 
 # SUT - Imports will now pick up the bootstrapped environment
-from eval_runner.console.routes import core_bp, DebuggerStateStore
-from eval_runner import config
+from eval_runner.console.routes import DebuggerStateStore, core_bp  # noqa: E402
+
 
 class TestRoutes(unittest.TestCase):
     @classmethod
@@ -47,26 +46,30 @@ class TestRoutes(unittest.TestCase):
         eval_runner.config.TRAJECTORIES_DIR = _ROOT / "reports" / "trajectories"
         os.makedirs(eval_runner.config.RUN_LOG_DIR, exist_ok=True)
         os.makedirs(eval_runner.config.TRAJECTORIES_DIR, exist_ok=True)
+
     def setUp(self):
         # Create a fresh Flask container for each test to ensure perfect isolation
         self.app = Flask(__name__)
         self.app.register_blueprint(core_bp)
         self.client = self.app.test_client()
         self.headers = {"X-AES-API-KEY": "test-key-123"}
-        
+
         # Absolute authoritative patching for backend config during unit tests
         eval_runner.config.DASHBOARD_API_KEY = "test-key-123"
         patcher_root = patch("eval_runner.config.PROJECT_ROOT", _ROOT)
         patcher_root.start()
         self.addCleanup(patcher_root.stop)
-        
+
         # Bypass auth decorators globally for unit tests
-        patcher_auth = patch("eval_runner.console.auth_manager.require_permission", lambda p: lambda f: f)
+        patcher_auth = patch(
+            "eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f
+        )
         patcher_auth.start()
         self.addCleanup(patcher_auth.stop)
-        
+
         DebuggerStateStore.reset()
         from eval_runner.catalog import ScenarioCatalog
+
         ScenarioCatalog.clear_instance()
 
     def test_get_loan_demo_context(self):
@@ -83,7 +86,9 @@ class TestRoutes(unittest.TestCase):
     @patch("subprocess.run")
     def test_execute_demo_command_whitelist(self, mock_run):
         mock_run.return_value = MagicMock(returncode=0, stdout="ok", stderr="")
-        res = self.client.post("/api/demo/execute", json={"command": "cat loan_prd.md"}, headers=self.headers)
+        res = self.client.post(
+            "/api/demo/execute", json={"command": "cat loan_prd.md"}, headers=self.headers
+        )
         self.assertEqual(res.status_code, 200, res.data)
 
     @patch("eval_runner.console.routes.ScenarioCatalog")
@@ -96,7 +101,10 @@ class TestRoutes(unittest.TestCase):
 
     def test_list_runs(self):
         log_file = _RUNS / "test_run.jsonl"
-        log_file.write_text('{"event": "run_start", "run_id": "run_123", "scenario": "Test", "timestamp": "1970-01-01T00:00:00"}\n', encoding="utf-8")
+        log_file.write_text(
+            '{"event": "run_start", "run_id": "run_123", "scenario": "Test", "timestamp": "1970-01-01T00:00:00"}\n',  # noqa: E501, T00
+            encoding="utf-8",
+        )
         res = self.client.get("/api/runs", headers=self.headers)
         data = res.get_json()
         self.assertTrue(len(data["runs"]) > 0)
@@ -110,7 +118,9 @@ class TestRoutes(unittest.TestCase):
         scen_file = _ROOT / "scenarios" / "test.json"
         scen_file.parent.mkdir(parents=True, exist_ok=True)
         scen_file.write_text("{}", encoding="utf-8")
-        res = self.client.post("/api/evaluate", json={"path": "scenarios/test.json"}, headers=self.headers)
+        res = self.client.post(
+            "/api/evaluate", json={"path": "scenarios/test.json"}, headers=self.headers
+        )
         self.assertEqual(res.status_code, 200)
 
     def test_save_scenario(self):
@@ -118,7 +128,7 @@ class TestRoutes(unittest.TestCase):
             "scenario_id": "new-scen",
             "industry": "healthcare",
             "title": "New",
-            "tasks": [{"task_id": "t1", "description": "desc", "expected_outcome": "win"}]
+            "tasks": [{"task_id": "t1", "description": "desc", "expected_outcome": "win"}],
         }
         res = self.client.post("/api/scenarios", json=payload, headers=self.headers)
         self.assertEqual(res.status_code, 200)
@@ -128,9 +138,13 @@ class TestRoutes(unittest.TestCase):
 
     def test_debugger_state_lifecycle(self):
         # Post a valid event to hydrate the store
-        res = self.client.post("/api/debugger/state", json={"event": "world_state_change", "data": {"state": {"hp": 100}}}, headers=self.headers)
+        res = self.client.post(
+            "/api/debugger/state",
+            json={"event": "world_state_change", "data": {"state": {"hp": 100}}},
+            headers=self.headers,
+        )
         self.assertEqual(res.status_code, 200)
-        
+
         res = self.client.get("/api/debugger/state", headers=self.headers)
         data = res.get_json()
         self.assertIsNotNone(data.get("data"))
@@ -142,7 +156,9 @@ class TestRoutes(unittest.TestCase):
 
     def test_get_debugger_state_historical(self):
         log_file = _RUNS / "run_456.jsonl"
-        log_file.write_text('{"event": "world_state_change", "state": {"val": 1}}\n', encoding="utf-8")
+        log_file.write_text(
+            '{"event": "world_state_change", "state": {"val": 1}}\n', encoding="utf-8"
+        )
         res = self.client.get("/api/debugger/state?run_id=run_456", headers=self.headers)
         self.assertEqual(res.status_code, 200)
         log_file.unlink()
@@ -164,5 +180,6 @@ class TestRoutes(unittest.TestCase):
         res = self.client.get("/api/docs/../../../etc/passwd", headers=self.headers)
         self.assertEqual(res.status_code, 403)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

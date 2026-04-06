@@ -6,16 +6,14 @@ Orchestrates eval-harness CLI runs and captures Flight Recorder logs.
 """
 
 import argparse
-import subprocess
+import hashlib
 import json
 import os
-import random
-import hashlib
-import time
 import shutil
-from pathlib import Path
-from multiprocessing import Pool
+import subprocess
 from datetime import datetime
+from multiprocessing import Pool
+from pathlib import Path
 
 
 def run_worker(task):
@@ -108,7 +106,7 @@ class Conductor:
 
         idx = 0
         for scenario in scenarios:
-            for i in range(runs_per_scenario):
+            for i in range(runs_per_scenario):  # noqa: B007
                 run_id = f"run_{idx:03d}"
                 seed = (self.args.seed or 42) + idx
                 tasks.append(
@@ -155,9 +153,7 @@ class Conductor:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", default="scenarios/", help="Scenario directory")
-    parser.add_argument(
-        "--agent-name", default="Generic-Adapter", help="Target agent name"
-    )
+    parser.add_argument("--agent-name", default="Generic-Adapter", help="Target agent name")
     parser.add_argument("--protocol", default="http", help="Protocol")
     parser.add_argument(
         "--agent", default="http://localhost:5001/execute_task", help="Agent endpoint"

@@ -1,61 +1,63 @@
 import json
 import os
-import sys
 from pathlib import Path
 
 # Paths relative to project root
 REGISTRY_PATH = Path("spec/aes/standards.json")
 METADATA_SCHEMA_PATH = Path("spec/aes/definitions/metadata.json")
 
+
 def load_registry():
     """Returns the categorized standards registry as a nested dictionary."""
     if not REGISTRY_PATH.exists():
         return {"industries": {}}
-    
-    with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
+
+    with open(REGISTRY_PATH, encoding="utf-8") as f:
         data = json.load(f)
-    
+
     # Map disk structure (categories/list) to scaffold expectations (industries/dict)
     transformed = {"industries": {}}
     categories = data.get("categories", {})
     for cat_name, cat_data in categories.items():
         transformed["industries"][cat_name] = {
             "description": cat_data.get("description", ""),
-            "standards": {s["id"]: s for s in cat_data.get("standards", [])}
+            "standards": {s["id"]: s for s in cat_data.get("standards", [])},
         }
         # Add subcategories as flattened top-level industries for simplicity in scaffold lookup
         for subcat in cat_data.get("subcategories", []):
             sub_name = f"{cat_name} - {subcat.get('name', 'Sub')}"
             transformed["industries"][sub_name] = {
                 "description": subcat.get("description", ""),
-                "standards": {s["id"]: s for s in subcat.get("standards", [])}
+                "standards": {s["id"]: s for s in subcat.get("standards", [])},
             }
-            
+
     return transformed
+
 
 def get_registry_ids():
     """Extracts all standard IDs from the categorized registry."""
     if not REGISTRY_PATH.exists():
         return []
-    
-    with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
+
+    with open(REGISTRY_PATH, encoding="utf-8") as f:
         registry = json.load(f)
-    
+
     ids = []
     # registry["categories"] is a dict in standards.json
     categories = registry.get("categories", {})
-    for cat_name, cat_data in categories.items():
+    for _cat_name, cat_data in categories.items():
         # Some categories might have subcategories (list) or just standards (list)
         # For our current standard.json, it's just 'standards'
         for standard in cat_data.get("standards", []):
             ids.append(standard["id"])
-            
+
         # Support recursive subcategories if we ever add them
         for subcat in cat_data.get("subcategories", []):
             for standard in subcat.get("standards", []):
                 ids.append(standard["id"])
-                
+
     return sorted(list(set(ids)))
+
 
 def ensure_schema_sync(force=False):
     """
@@ -76,31 +78,32 @@ def ensure_schema_sync(force=False):
     if not ids:
         return
 
-    with open(METADATA_SCHEMA_PATH, "r", encoding="utf-8") as f:
+    with open(METADATA_SCHEMA_PATH, encoding="utf-8") as f:
         metadata_schema = json.load(f)
 
     # Update the enum in the correct path: properties -> standards_registry -> items -> enum
     try:
         metadata_schema["properties"]["standards_registry"]["items"]["enum"] = ids
-        
+
         with open(METADATA_SCHEMA_PATH, "w", encoding="utf-8") as f:
             json.dump(metadata_schema, f, indent=2)
-        
+
         # Touch metadata file to ensure mtime is strictly greater than registry
         os.utime(METADATA_SCHEMA_PATH, (reg_mtime + 1, reg_mtime + 1))
         print(f"✅ Synced {len(ids)} standards to {METADATA_SCHEMA_PATH.name}")
     except KeyError as e:
         print(f"❌ Failed to sync: Schema structure mismatch at {e}")
 
+
 def add_standard_to_registry(standard_id, name, industry, description, category=None):
     """Adds a new standard to the registry, categorizing it, and triggers a sync."""
     if not REGISTRY_PATH.exists():
         print("❌ Registry not found.")
         return False
-    
-    with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
+
+    with open(REGISTRY_PATH, encoding="utf-8") as f:
         registry = json.load(f)
-    
+
     # Check if exists
     ids = get_registry_ids()
     if standard_id in ids:
@@ -109,31 +112,30 @@ def add_standard_to_registry(standard_id, name, industry, description, category=
 
     # Minimal placement logic
     categories = registry.get("categories", {})
-    
+
     # Use industry as the top-level category if category is not provided
     target_category_name = category or industry or "Global Standards"
-    
+
     if target_category_name not in categories:
         categories[target_category_name] = {
             "description": f"Standards related to {target_category_name}.",
-            "standards": []
+            "standards": [],
         }
-    
+
     # Add new standard to the chosen category
-    categories[target_category_name]["standards"].append({
-        "id": standard_id,
-        "name": name,
-        "description": description
-    })
-    
+    categories[target_category_name]["standards"].append(
+        {"id": standard_id, "name": name, "description": description}
+    )
+
     with open(REGISTRY_PATH, "w", encoding="utf-8") as f:
         json.dump(registry, f, indent=2)
-    
+
     print(f"✅ Added {standard_id} to {target_category_name}")
-    
+
     # Immediate sync to update metadata.json enum
     ensure_schema_sync(force=True)
     return True
+
 
 if __name__ == "__main__":
     ensure_schema_sync(force=True)

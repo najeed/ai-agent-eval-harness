@@ -1,7 +1,7 @@
 import numpy as np
-from typing import List
 
-def dual_moment_correct(data: List[float], target_mean: float, target_std: float) -> List[float]:
+
+def dual_moment_correct(data: list[float], target_mean: float, target_std: float) -> list[float]:
     """
     Standardizes data and rescales to target mean/std to ensure zero-drift.
     """

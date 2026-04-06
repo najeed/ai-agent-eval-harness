@@ -1,0 +1,40 @@
+{
+    "metadata": {
+        "scenario_id": "test_scenario_1",
+        "title": "Mock Success Scenario",
+        "industry": "finance",
+        "timestamp": "2026-04-05T12:00:00Z"
+    },
+    "results": [
+        {
+            "task_id": "task_1",
+            "metrics": [
+                {
+                    "metric": "reliability",
+                    "score": 0.95,
+                    "threshold": 0.8,
+                    "success": true
+                },
+                {
+                    "metric": "path_parsimony",
+                    "score": 1.0,
+                    "threshold": 0.5,
+                    "success": true
+                }
+            ],
+            "conversation_history": [
+                {
+                    "role": "user",
+                    "content": "Analyze these results"
+                },
+                {
+                    "role": "agent",
+                    "content": {
+                        "action": "calculate_risk",
+                        "summary": "Risk is low"
+                    }
+                }
+            ]
+        }
+    ]
+}

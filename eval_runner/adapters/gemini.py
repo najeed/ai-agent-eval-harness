@@ -1,8 +1,7 @@
-import aiohttp
-import os
-from typing import Any, Dict
-from ..plugins import BaseEvalPlugin
+from typing import Any
+
 from .. import config
+from ..plugins import BaseEvalPlugin
 
 
 class GeminiAdapterPlugin(BaseEvalPlugin):
@@ -16,7 +15,9 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Gemini adapter via on_discover_adapters hook.")
         registry.register("gemini", self.execute_gemini_query)
 
-    async def execute_gemini_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
+    async def execute_gemini_query(
+        self, payload: dict[str, Any], url: str = None
+    ) -> dict[str, Any]:
         """
         Executes a query against the Google Gemini API using the modern google-genai SDK.
         """
@@ -25,10 +26,12 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
 
         api_key = payload.get("api_key") or config.GOOGLE_API_KEY
         model = payload.get("model", config.GEMINI_MODEL)
-        
+
         # Check if Vertex AI is requested via base_url or metadata
-        vertexai = "vertex" in (url or "").lower() or payload.get("metadata", {}).get("vertexai", False)
-        
+        vertexai = "vertex" in (url or "").lower() or payload.get("metadata", {}).get(
+            "vertexai", False
+        )
+
         client = genai.Client(api_key=api_key, vertexai=vertexai)
 
         prompt = payload.get("task_description") or ""
@@ -40,7 +43,7 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
                 contents.append(
                     types.Content(
                         role="user" if m["role"] == "user" else "model",
-                        parts=[types.Part(text=m["content"])]
+                        parts=[types.Part(text=m["content"])],
                     )
                 )
         else:
@@ -55,7 +58,7 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
                     temperature=payload.get("temperature", 0.7),
                     top_p=payload.get("top_p", 0.95),
                     max_output_tokens=payload.get("max_tokens", 2048),
-                )
+                ),
             )
 
             if not response or not response.text:
@@ -68,9 +71,9 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
                 "status": "success",
                 "output": response.text.strip(),
                 "metadata": {
-                    "model": model, 
-                    "framework": "gemini", 
-                    "usage": response.usage_metadata.to_json() if response.usage_metadata else {}
+                    "model": model,
+                    "framework": "gemini",
+                    "usage": response.usage_metadata.to_json() if response.usage_metadata else {},
                 },
             }
         except Exception as e:

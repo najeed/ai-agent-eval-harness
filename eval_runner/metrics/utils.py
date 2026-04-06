@@ -1,8 +1,7 @@
 import re
-from typing import List, Set
 
 
-def extract_numbers(text: str) -> List[float]:
+def extract_numbers(text: str) -> list[float]:
     """
     Extracts all numbers (integers and floats) from a string.
     Handles commas as thousands separators and periods as decimal points.

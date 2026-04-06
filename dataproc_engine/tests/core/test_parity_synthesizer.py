@@ -1,10 +1,11 @@
-import pytest
-import pandas as pd
 import numpy as np
-from dataproc_engine.core.paritygen.parity_synthesizer import ParitySynthesizer
-from dataproc_engine.core.paritygen.validation import validate_parity
-from dataproc_engine.core.paritygen.utils import dual_moment_correct
+import pandas as pd
+import pytest
+
 from dataproc_engine.core.base_provider import StandardSchema
+from dataproc_engine.core.paritygen.parity_synthesizer import ParitySynthesizer
+from dataproc_engine.core.paritygen.utils import dual_moment_correct
+from dataproc_engine.core.paritygen.validation import validate_parity
 
 
 def test_dual_moment_correction():
@@ -44,7 +45,10 @@ def test_parity_validation_success():
     metrics = validate_parity(df_a, df_b)
     assert "val" in metrics
     # Close distributions should produce PASS status from KS-test (p-value > 0.05)
-    assert metrics["val"]["status"] in ("PASS", "DRIFT_WARN")  # graceful: PASS expected for close data
+    assert metrics["val"]["status"] in (
+        "PASS",
+        "DRIFT_WARN",
+    )  # graceful: PASS expected for close data
 
 
 def test_parity_validation_failure():

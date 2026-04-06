@@ -5,12 +5,12 @@ Unit tests for Milestone 4 features: Path Parsimony and Trajectory Capturing.
 Aligned with OpenCore modular architecture and typed contexts.
 """
 
-import os
 import json
+from unittest.mock import AsyncMock, patch
+
 import pytest
-from pathlib import Path
-from unittest.mock import patch, AsyncMock
-from eval_runner import metrics, engine, reporter
+
+from eval_runner import engine, metrics, reporter
 
 
 def test_path_parsimony_calculation():
@@ -39,7 +39,7 @@ async def test_engine_captures_state_transitions():
                     "required_tools": ["update_status"],
                 }
             ],
-            "edges": []
+            "edges": [],
         },
         "initial_state": {"status": "idle"},
         "tools": {
@@ -57,17 +57,21 @@ async def test_engine_captures_state_transitions():
         "tool_params": {"status": "active"},
     }
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, \
-         patch("eval_runner.plugins.manager.plugins", []):
+    with (
+        patch(
+            "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+        ) as mock_call,
+        patch("eval_runner.plugins.manager.plugins", []),
+    ):
         # Turn 1: Tool call
         # Turn 2: Signal final_answer
         mock_call.side_effect = [
             mock_response,
             {"action": "final_answer", "summary": "Done"},
         ]
-        
+
         # We also need to avoid real ToolSandbox.execute if it tries to do anything fancy,
-        # but the default ToolSandbox doesn't require Docker. 
+        # but the default ToolSandbox doesn't require Docker.
         # The logs showed EnterprisePlugin was the one doing it.
         # So mocking plugins list should fix it.
 
@@ -100,11 +104,8 @@ def test_mermaid_generation():
 def test_trajectory_json_export(tmp_path):
     """Verifies JSON export structure."""
     scenario = {
-        "scenario_id": "test_hitl_ci", 
-        "workflow": {
-            "nodes": [{"id": "task1", "task_description": "test"}],
-            "edges": []
-        }
+        "scenario_id": "test_hitl_ci",
+        "workflow": {"nodes": [{"id": "task1", "task_description": "test"}], "edges": []},
     }
     results = [{"task_id": "t1", "metrics": []}]
 
@@ -117,7 +118,7 @@ def test_trajectory_json_export(tmp_path):
     import traceback
 
     try:
-        with open(export_files[0], "r") as f:
+        with open(export_files[0]) as f:
             content = f.read()
             print(f"\n[DEBUG] Read {len(content)} bytes from {export_files[0]}")
             data = json.loads(content)

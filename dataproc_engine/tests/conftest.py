@@ -1,12 +1,16 @@
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock
+
 from dataproc_engine.core.llm_manager import LLMManager
+
 
 class IndustryHeuristicMock:
     """
-    A state-aware mock for LLM operations that generates deterministic, 
+    A state-aware mock for LLM operations that generates deterministic,
     industry-compliant StandardSchema records and simulates failure modes.
     """
+
     def __init__(self):
         self.failure_mode = None
         self.call_count = 0
@@ -35,7 +39,7 @@ class IndustryHeuristicMock:
                 "industry": industry,
                 "data": {"signal": 0.85, "status": "stable", "index": i},
                 "metadata": {"source": "heuristic_mock", "version": "v2.0"},
-                "integrity_hash": "sha256_mock_hash"
+                "integrity_hash": "sha256_mock_hash",
             }
             if self.failure_mode == "schema_violation":
                 del record["id"]
@@ -46,15 +50,19 @@ class IndustryHeuristicMock:
         self._check_failure()
         return data
 
+
 @pytest.fixture
 def heuristic_mock():
     return IndustryHeuristicMock()
+
 
 @pytest.fixture
 def patched_llm_manager(heuristic_mock):
     """Fixture that patches LLMManager to use our IndustryHeuristicMock."""
     mock_mgr = MagicMock(spec=LLMManager)
     # Patch main entry points
-    mock_mgr.extract_structured_data = AsyncMock(side_effect=heuristic_mock.mock_extract_structured_data)
+    mock_mgr.extract_structured_data = AsyncMock(
+        side_effect=heuristic_mock.mock_extract_structured_data
+    )
     mock_mgr._verify_schema = MagicMock(side_effect=heuristic_mock.mock_verify_schema)
     return mock_mgr

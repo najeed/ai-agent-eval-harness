@@ -8,11 +8,10 @@ Enables "Flight Recorder" patterns where plugins can subscribe to
 state transitions without modifying the main engine loop.
 """
 
-import json
-import re
-from datetime import datetime
-from typing import Dict, Any, List, Callable, Optional
-from abc import ABC, abstractmethod
+import re  # noqa: E402
+from collections.abc import Callable  # noqa: E402
+from datetime import datetime  # noqa: E402
+from typing import Any  # noqa: E402
 
 
 def sanitize_payload(data: dict) -> dict:
@@ -52,13 +51,13 @@ def sanitize_payload(data: dict) -> dict:
 class Event:
     """Base event structure."""
 
-    def __init__(self, name: str, data: Dict[str, Any], span_context: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
         self.name = name
         self.data = data
         self.span_context = span_context
         self.timestamp = datetime.now().astimezone().isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         base = {"event": self.name, "timestamp": self.timestamp, **self.data}
         if self.span_context:
             base["span_context"] = self.span_context
@@ -68,7 +67,7 @@ class Event:
 class EventEmitter:
     """Centralized event bus."""
 
-    _subscribers: List[Callable[[Event], None]] = []
+    _subscribers: list[Callable[[Event], None]] = []
 
     @classmethod
     def subscribe(cls, subscriber: Callable[[Event], None]):
@@ -82,7 +81,7 @@ class EventEmitter:
         cls._subscribers = []
 
     @classmethod
-    def emit(cls, name: str, data: Dict[str, Any], span_context: Optional[Dict[str, Any]] = None):
+    def emit(cls, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
         """Emit an event to all subscribers with optional tracing context."""
         sanitized_data = sanitize_payload(data)
         event = Event(name, sanitized_data, span_context=span_context)

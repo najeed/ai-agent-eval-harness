@@ -1,12 +1,12 @@
-import pytest
-import asyncio
 import os
-from unittest.mock import MagicMock, patch, AsyncMock, ANY
-from eval_runner.session import SessionManager
+from unittest.mock import ANY, AsyncMock, patch
+
+import pytest
+
+from eval_runner.context import EvaluationContext
 from eval_runner.exporter import HFExporter
 from eval_runner.reporting_plugin import ReportingPlugin
-from eval_runner.context import EvaluationContext
-from eval_runner.engine import AgentAdapterRegistry
+from eval_runner.session import SessionManager
 
 
 @pytest.mark.asyncio
@@ -14,26 +14,24 @@ async def test_hitl_interactive_input():
     """Verifies that SessionManager correctly handles HITL interactive input."""
     scenario = {
         "scenario_id": "test_hitl",
-        "workflow": {
-            "nodes": [{"id": "task1", "task_description": "Do something"}],
-            "edges": []
-        },
+        "workflow": {"nodes": [{"id": "task1", "task_description": "Do something"}], "edges": []},
     }
 
     # Mock agent response with hitl_pause
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.return_value = {
             "action": "hitl_pause",
             "prompt": "Custom HITL Prompt",
         }
 
         # Mock input()
-        with patch("builtins.input", return_value="Approved by test") as mock_input, patch(
-            "sys.stdin.isatty", return_value=True
-        ), patch.dict(
-            os.environ, {"CI": ""}
+        with (
+            patch("builtins.input", return_value="Approved by test") as mock_input,
+            patch("sys.stdin.isatty", return_value=True),
+            patch.dict(os.environ, {"CI": ""}),
         ):  # Ensure not in CI mode
-
             session = SessionManager(scenario)
             session.max_turns = 1
 
@@ -52,16 +50,16 @@ async def test_hitl_interactive_input():
 async def test_hitl_ci_auto_resume():
     """Verifies that SessionManager auto-resumes in CI mode."""
     scenario = {
-        "scenario_id": "test_hitl_ci", 
-        "workflow": {
-            "nodes": [{"id": "task1", "task_description": "test"}],
-            "edges": []
-        }
+        "scenario_id": "test_hitl_ci",
+        "workflow": {"nodes": [{"id": "task1", "task_description": "test"}], "edges": []},
     }
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, \
-         patch.dict(os.environ, {"CI": "true"}):
-
+    with (
+        patch(
+            "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+        ) as mock_call,
+        patch.dict(os.environ, {"CI": "true"}),
+    ):
         mock_call.return_value = {"action": "hitl_pause"}
         session = SessionManager(scenario)
         session.max_turns = 1
@@ -80,7 +78,7 @@ def test_exporter_hf_push(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     dummy_file = tmp_path / "dummy.json"
     dummy_file.write_text("{}", encoding="utf-8")
-    
+
     with patch("huggingface_hub.HfApi") as MockApi:
         mock_api_instance = MockApi.return_value
 
@@ -128,18 +126,21 @@ async def test_reporting_plugin_notifications():
 @pytest.mark.asyncio
 async def test_adapter_guards():
     """Verifies that adapters handle missing frameworks gracefully."""
-    from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
     from eval_runner.adapters.crewai import CrewAIAdapterPlugin
+    from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
 
     lg_plugin = LangGraphAdapterPlugin()
     crew_plugin = CrewAIAdapterPlugin()
 
     # Force import error for these tests by manipulating sys.modules
     # Note: We must also patch the adapter modules to trigger the ImportError in the execute method
-    with patch.dict("sys.modules", {
-        "langgraph": None,
-        "crewai": None,
-    }):
+    with patch.dict(
+        "sys.modules",
+        {
+            "langgraph": None,
+            "crewai": None,
+        },
+    ):
         lg_res = await lg_plugin.execute_langgraph_node({"node_id": "test"})
         assert lg_res["status"] == "error"
         assert "not installed" in lg_res["message"]

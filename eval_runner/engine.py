@@ -7,20 +7,13 @@ Core evaluation engine.
 Updated for universal extensibility via registries, hooks, and typed contexts.
 """
 
-import os
-import json
-import aiohttp
-import asyncio
-import inspect
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, Any, List, Optional, Callable
-from eval_runner import plugins
-from . import metrics
-from .context import EvaluationContext, TurnContext
-from .tool_sandbox import ToolSandbox
+import os  # noqa: E402
+from collections.abc import Callable  # noqa: E402
+from typing import Any  # noqa: E402
 
-from . import config
+from eval_runner import plugins  # noqa: E402
+
+from . import config  # noqa: E402
 
 # Security Guardrails
 MAX_ENGINE_ATTEMPTS = config.MAX_ENGINE_ATTEMPTS
@@ -29,7 +22,7 @@ MAX_TURNS = config.EVAL_MAX_TURNS
 
 # Dynamic Adapter Registry for Agent Communication
 class AgentAdapterRegistry:
-    _adapters: Dict[str, Callable] = {}
+    _adapters: dict[str, Callable] = {}
     _discovered: bool = False
 
     @classmethod
@@ -49,6 +42,7 @@ class AgentAdapterRegistry:
             return
 
         from eval_runner import adapters
+
         # 1. Register Core Adapters (Hardcoded for stability)
         cls.register("http", adapters.http_adapter)
         cls.register("local", adapters.local_subprocess_adapter)
@@ -56,6 +50,7 @@ class AgentAdapterRegistry:
 
         # 2. Dynamically Load Ecosystem Adapters
         from . import discovery
+
         discovery.scan_package_for_adapters(adapters, cls.register)
 
         # 3. Register default human adapter
@@ -63,13 +58,14 @@ class AgentAdapterRegistry:
             cls._adapters["human"] = AgentAdapterRegistry._human_adapter
 
         cls._discovered = True
-        
+
         # 4. Trigger plugin discovery to allow third-party protocol injections
         from eval_runner import plugins
+
         plugins.manager.trigger("on_discover_adapters", cls)
 
     @staticmethod
-    async def _human_adapter(payload: dict, endpoint: Optional[str] = None, **kwargs):
+    async def _human_adapter(payload: dict, endpoint: str | None = None, **kwargs):
         """Standard adapter for Human-In-The-Loop intervention."""
         # Provides structured metadata to the session loop
         return {
@@ -84,9 +80,15 @@ class AgentAdapterRegistry:
     _plugins_discovered: bool = False
 
     @classmethod
-    async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None, span_context: Optional[Dict[str, Any]] = None):
+    async def call_agent(
+        cls,
+        payload: dict,
+        protocol="http",
+        endpoint: str | None = None,
+        span_context: dict[str, Any] | None = None,
+    ):
         cls._discover()
-        
+
         if protocol not in cls._adapters and not cls._plugins_discovered:
             # Lazy plugin discovery: only triggered if core adapters don't suffice
             plugins.manager.trigger("on_discover_adapters", cls)
@@ -112,20 +114,21 @@ class AgentAdapterRegistry:
         return await adapter(payload, endpoint, span_context=span_context)
 
 
-async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None, max_turns: Optional[int] = None) -> list:
+async def run_evaluation(
+    scenario: dict, attempts: int = 1, metadata: dict | None = None, max_turns: int | None = None
+) -> list:
     """Entry point for evaluation. Delegates to the Runner strategy."""
     from .runner import DefaultRunner
 
     if attempts > MAX_ENGINE_ATTEMPTS:
         print(
-            f"[Engine] Security WARNING: requested attempts ({attempts}) exceeds MAX_ENGINE_ATTEMPTS ({MAX_ENGINE_ATTEMPTS}). Capping."
+            f"[Engine] Security WARNING: requested attempts ({attempts}) exceeds MAX_ENGINE_ATTEMPTS ({MAX_ENGINE_ATTEMPTS}). Capping."  # noqa: E501
         )
         attempts = MAX_ENGINE_ATTEMPTS
 
     # Load internal plugins if not already loaded (like FlightRecorder and ReportingPlugin)
     from .flight_recorder import FlightRecorderPlugin
     from .reporting_plugin import ReportingPlugin
-    from .publication_plugin import PublicationPlugin
 
     if not any(isinstance(p, FlightRecorderPlugin) for p in plugins.manager.plugins):
         plugins.manager.plugins.append(FlightRecorderPlugin())

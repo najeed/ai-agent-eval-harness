@@ -7,10 +7,10 @@ Defines the environment in which the agent's tool calls are executed.
 Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 """
 
-import json
-from typing import Any, Optional, Dict
-from abc import ABC, abstractmethod
-from . import config
+from abc import ABC, abstractmethod  # noqa: E402
+from typing import Any  # noqa: E402
+
+from . import config  # noqa: E402
 
 
 class SharedStateRegistry:
@@ -28,7 +28,10 @@ class SharedStateRegistry:
         agent_config = self.topology.get(agent_name, {})
         allowed_writes = agent_config.get("writes", [])
 
-        if any(self._match_namespace(namespace, pattern) for pattern in allowed_writes) or "*" in allowed_writes:
+        if (
+            any(self._match_namespace(namespace, pattern) for pattern in allowed_writes)
+            or "*" in allowed_writes
+        ):
             self.registry[path] = value
             return True
         return False
@@ -40,7 +43,10 @@ class SharedStateRegistry:
         agent_config = self.topology.get(agent_name, {})
         allowed_reads = agent_config.get("reads", [])
 
-        if any(self._match_namespace(namespace, pattern) for pattern in allowed_reads) or "*" in allowed_reads:
+        if (
+            any(self._match_namespace(namespace, pattern) for pattern in allowed_reads)
+            or "*" in allowed_reads
+        ):
             # Track redundant reads (reading same value multiple times)
             # This is a metric mentioned in the roadmap
             return self.registry.get(path)
@@ -70,10 +76,10 @@ class AbstractSandbox(ABC):
 
         # Phase 2: Grounding Coverage Tracking
         # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
-        self.grounding_hits: Dict[str, Dict[str, int]] = {"policies": {}, "tools": {}}
+        self.grounding_hits: dict[str, dict[str, int]] = {"policies": {}, "tools": {}}
 
         # Cache for state-aware world simulators
-        self._simulator_cache: Optional[Dict[str, Any]] = None
+        self._simulator_cache: dict[str, Any] | None = None
 
     def setup(self):
         """Perform one-time setup: Create workspace directory."""
@@ -93,19 +99,19 @@ class AbstractSandbox(ABC):
             ws_path = Path(self.workspace_dir)
             if ws_path.exists():
                 shutil.rmtree(ws_path)
-                print(f"      [Sandbox] Workspace cleaned up.")
+                print("      [Sandbox] Workspace cleaned up.")
 
         # Explicitly teardown all simulators to release resources
         if self._simulator_cache:
             for sim in self._simulator_cache.values():
                 try:
                     sim.cleanup()
-                except:
+                except:  # noqa: E722
                     pass
-            print(f"      [Sandbox] All simulators cleaned up (Registry Teardown).")
+            print("      [Sandbox] All simulators cleaned up (Registry Teardown).")
 
     @abstractmethod
-    def execute(self, tool_name: str, params: dict, agent_name: Optional[str] = None) -> dict:
+    def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
         """Executes a tool and returns the result."""
         pass
 
@@ -116,7 +122,7 @@ class ToolSandbox(AbstractSandbox):
     Uses a static mapping of tool behaviors defined in the scenario.
     """
 
-    def execute(self, tool_name: str, params: dict, agent_name: Optional[str] = None) -> dict:
+    def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
         """
         Executes a tool based on the mock behaviors defined in the scenario.
         Updates the internal state and shared state registry.
@@ -141,7 +147,9 @@ class ToolSandbox(AbstractSandbox):
         policies = self.scenario.get("policies", {})
         if tool_name in policies:
             # Record hit for Policy enforcement
-            self.grounding_hits["policies"][tool_name] = self.grounding_hits["policies"].get(tool_name, 0) + 1
+            self.grounding_hits["policies"][tool_name] = (
+                self.grounding_hits["policies"].get(tool_name, 0) + 1
+            )
             limit = policies[tool_name].get("max_limit")
             if limit and params.get("amount", 0) > limit:
                 return {
@@ -192,7 +200,7 @@ class ToolSandbox(AbstractSandbox):
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
 
         # Notify observers of internal state changes
-        from .events import EventEmitter, CoreEvents
+        from .events import EventEmitter
 
         # Sandbox Escape Prevention: Chroot/Virtualize paths before emitting
         # Security: Sanitize both keys AND values; strip shell meta-characters (Audit Point #5)
@@ -226,7 +234,7 @@ class ToolSandbox(AbstractSandbox):
         if self._simulator_cache is not None:
             return self._simulator_cache
 
-        from . import simulators, config
+        from . import config, simulators
 
         # Instantiate the fresh registry for this sandbox session
         registry = simulators.get_simulator_registry()

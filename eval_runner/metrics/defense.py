@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Any
+
 from . import MetricRegistry
 
 
@@ -7,7 +8,9 @@ from . import MetricRegistry
 @MetricRegistry.register("decision_making_correctness")
 @MetricRegistry.register("roe_compliance_score")
 @MetricRegistry.register("supply_chain_resilience_index")
-async def calculate_defense_high_fidelity_metric(criterion: Dict[str, Any], agent_summary: str) -> float:
+async def calculate_defense_high_fidelity_metric(
+    criterion: dict[str, Any], agent_summary: str
+) -> float:
     """
     High-fidelity defense evaluation.
     Maps to 'policy_adherence' or a custom defense rubric if complexity demands.

@@ -1,18 +1,18 @@
-import pytest
 import os
-import json
-import pandas as pd
-from unittest.mock import patch, AsyncMock, MagicMock
-from dataproc_engine.core.llm_manager import LLMManager
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from dataproc_engine.core.correlator import DataCorrelator
-from dataproc_engine.core.base_provider import StandardSchema
+from dataproc_engine.core.llm_manager import LLMManager
+
 
 @pytest.mark.asyncio
 async def test_llm_manager_perfection():
     """Targeted coverage for every remaining line in LLMManager."""
     llm = LLMManager({"llm_strategy": "auto", "llm_provider": "openai"})
     schema = {"revenue": "number"}
-    
+
     # 1. Cloud API except blocks (Lines 169-171, 189-191, 215-217, 236-238)
     with patch("aiohttp.ClientSession.post", side_effect=Exception("API Down")):
         # OpenAI
@@ -67,17 +67,18 @@ async def test_llm_manager_perfection():
     # schema has 'revenue', content has 'revenue 123'
     assert llm._try_heuristics("revenue 123", {"revenue": "number"}) == {"revenue": "123"}
 
+
 @pytest.mark.asyncio
 async def test_correlator_perfection(tmp_path):
     """Targeted coverage for DataCorrelator missing lines."""
     correlator = DataCorrelator()
     target_dir = str(tmp_path / "fail_correlate")
     os.makedirs(target_dir)
-    
+
     # Create a directory where a file is expected (pd.read_csv will fail)
     bad_file = os.path.join(target_dir, "bad_file.csv")
     os.makedirs(bad_file)
-        
+
     datasets = {}
     correlator.correlate(datasets, target_dir=target_dir)
     # Hits line 43: logger.warning

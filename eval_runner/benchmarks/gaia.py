@@ -1,14 +1,12 @@
 # eval_runner/benchmarks/gaia.py
-import json
-from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 
 class GAIABenchmark:
     """Loader and Adapter for the GAIA (General AI Assistants) dataset."""
 
     @staticmethod
-    def load(uri: str) -> List[Dict[str, Any]]:
+    def load(uri: str) -> list[dict[str, Any]]:
         # uri format: gaia://2023_all (or similar)
         # For now, we expect the user to have the gaia parquet/json locally or we'd fetch from HF
         # Mocking the fetch logic for v1.0 RC
@@ -20,15 +18,15 @@ class GAIABenchmark:
             {
                 "scenario_id": "gaia_validation_001",
                 "title": "GAIA: Complex Information Extraction",
-                "description": "The agent must find the total population of a specific city in 2022 and compare it to its neighboring city.",
+                "description": "The agent must find the total population of a specific city in 2022 and compare it to its neighboring city.",  # noqa: E501
                 "use_case": "Research & Extraction",
                 "core_function": "Multi-hop Reasoning",
                 "industry": "General Intelligence",
                 "tasks": [
                     {
                         "task_id": "step_1",
-                        "description": "Identify the 2022 population for San Francisco and San Jose.",
-                        "expected_outcome": "Correct population counts retrieved from a reliable source.",
+                        "description": "Identify the 2022 population for San Francisco and San Jose.",  # noqa: E501
+                        "expected_outcome": "Correct population counts retrieved from a reliable source.",  # noqa: E501
                         "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}],
                     }
                 ],
@@ -36,7 +34,7 @@ class GAIABenchmark:
             {
                 "scenario_id": "gaia_validation_002",
                 "title": "GAIA: Tool-Enabled Cross-Referencing",
-                "description": "Given a list of scientific papers, find the most cited one and extract its main conclusion.",
+                "description": "Given a list of scientific papers, find the most cited one and extract its main conclusion.",  # noqa: E501
                 "use_case": "Academic Research",
                 "core_function": "Academic Synthesis",
                 "industry": "General Intelligence",

@@ -5,9 +5,6 @@ Test suite for the ToolSandbox mock tool execution environment.
 Aligned with OpenCore modular architecture and explicit tool definitions.
 """
 
-import pytest
-import sys
-import shutil
 from pathlib import Path
 
 from eval_runner.tool_sandbox import ToolSandbox
@@ -26,8 +23,10 @@ def test_sandbox_known_tool():
             }
         },
         "workflow": {
-            "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["get_customer_details"]}],
-            "edges": []
+            "nodes": [
+                {"id": "t1", "task_description": "task", "required_tools": ["get_customer_details"]}
+            ],
+            "edges": [],
         },
     }
     sandbox = ToolSandbox(scenario)
@@ -41,8 +40,10 @@ def test_sandbox_unknown_tool():
     """Test that an unknown tool returns a default or success message (per current impl)."""
     scenario = {
         "workflow": {
-            "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["get_customer_details"]}],
-            "edges": []
+            "nodes": [
+                {"id": "t1", "task_description": "task", "required_tools": ["get_customer_details"]}
+            ],
+            "edges": [],
         }
     }
     sandbox = ToolSandbox(scenario)
@@ -58,7 +59,7 @@ def test_sandbox_state_initialization():
         "initial_state": {"customer_name": "Jane Doe", "balance": 100},
         "workflow": {
             "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["any_tool"]}],
-            "edges": []
+            "edges": [],
         },
     }
     sandbox = ToolSandbox(scenario)
@@ -77,7 +78,7 @@ def test_sandbox_state_mutation():
         },
         "workflow": {
             "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["update_plan"]}],
-            "edges": []
+            "edges": [],
         },
     }
     sandbox = ToolSandbox(scenario)

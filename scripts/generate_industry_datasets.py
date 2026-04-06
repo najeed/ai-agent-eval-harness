@@ -1,15 +1,15 @@
 """
 generate_industry_datasets.py
 
-Utility to generate realistic, synthetic CSV datasets for all 44 supported industries in the harness.
+Utility to generate realistic, synthetic CSV datasets for all 44 supported industries in the harness.  # noqa: E501
 """
 
-import os
 import csv
+import os
 import random
 import uuid
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
 
 INDUSTRIES_DIR = Path("industries")
 
@@ -53,9 +53,7 @@ PRIORITIES = ["Low", "Medium", "High", "Critical"]
 def get_random_date(start_days_ago=365):
     """Generates a random date in ISO format."""
     now = datetime.utcnow()
-    delta = timedelta(
-        days=random.randint(0, start_days_ago), hours=random.randint(0, 23)
-    )
+    delta = timedelta(days=random.randint(0, start_days_ago), hours=random.randint(0, 23))
     return (now - delta).isoformat() + "Z"
 
 
@@ -92,9 +90,7 @@ def generate_healthcare_dataset(num_rows=100) -> list:
                 "appointment_type": random.choice(
                     ["Routine", "Follow-up", "Urgent", "Surgical Consult"]
                 ),
-                "status": random.choice(
-                    ["Scheduled", "Completed", "No-show", "Cancelled"]
-                ),
+                "status": random.choice(["Scheduled", "Completed", "No-show", "Cancelled"]),
                 "insurance_cleared": random.choice(["Yes", "No", "Pending"]),
                 "date": get_random_date(30),
             }
@@ -110,9 +106,7 @@ def generate_ecommerce_dataset(num_rows=100) -> list:
             {
                 "order_id": f"ORD-{random.randint(10000, 99999)}",
                 "customer_uuid": str(uuid.uuid4()),
-                "item_category": random.choice(
-                    ["Electronics", "Apparel", "Home Goods", "Books"]
-                ),
+                "item_category": random.choice(["Electronics", "Apparel", "Home Goods", "Books"]),
                 "total_value_usd": round(random.uniform(10.0, 1500.0), 2),
                 "fulfillment_status": random.choice(
                     ["Shipped", "Processing", "Backordered", "Delivered", "Returned"]

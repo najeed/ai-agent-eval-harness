@@ -5,11 +5,11 @@ Test suite for the publication aggregator.
 Verifies real latency calculation and cost metrics.
 """
 
-import pytest
 import json
-import os
-from pathlib import Path
 from datetime import datetime, timedelta
+
+import pytest
+
 from scripts.publication_suite.aggregator import Aggregator
 
 
@@ -57,7 +57,7 @@ def test_latency_calculation(mock_manifest_and_logs):
     agg = Aggregator(str(manifest_path))
     output_path = agg.process()
 
-    with open(output_path, "r") as f:
+    with open(output_path) as f:
         results = json.load(f)
 
     # Find any scenario entry
@@ -95,7 +95,7 @@ def test_missing_timestamp_fallback(mock_manifest_and_logs):
         f.write(json.dumps({"event": "evaluation", "success": True}) + "\n")
         f.write(json.dumps({"event": "run_end", "timestamp": "invalid"}) + "\n")
 
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         man = json.load(f)
     man["runs"][0]["log_path"] = str(bad_log)
     with open(manifest_path, "w") as f:
@@ -104,7 +104,7 @@ def test_missing_timestamp_fallback(mock_manifest_and_logs):
     agg = Aggregator(str(manifest_path))
     agg.process()
 
-    with open(base_dir / "aggregated_results.json", "r") as f:
+    with open(base_dir / "aggregated_results.json") as f:
         res = json.load(f)
 
     assert len(res["scenarios"]) > 0

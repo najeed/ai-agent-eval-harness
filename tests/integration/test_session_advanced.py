@@ -1,8 +1,8 @@
 import pytest
-import asyncio
-from eval_runner.engine import AgentAdapterRegistry, run_evaluation
+
+from eval_runner.engine import AgentAdapterRegistry
+from eval_runner.events import CoreEvents, EventEmitter
 from eval_runner.plugins import BaseEvalPlugin, manager
-from eval_runner.events import EventEmitter, CoreEvents
 from eval_runner.session import SessionManager
 
 
@@ -23,7 +23,9 @@ async def test_advanced_adapter_discovery():
     try:
         # AgentAdapterRegistry._discovered should be reset for clean test
         AgentAdapterRegistry._discovered = False
-        response = await AgentAdapterRegistry.call_agent({}, protocol="mock_proto", endpoint="dummy")
+        response = await AgentAdapterRegistry.call_agent(
+            {}, protocol="mock_proto", endpoint="dummy"
+        )
         assert response["content"] == "Mock discovery works!"
     finally:
         manager.plugins.remove(plugin)
@@ -44,12 +46,16 @@ async def test_hitl_pause_resume(monkeypatch):
                 {
                     "id": "t1",
                     "task_description": "test task",
-                    "expected_outcome": {"type": "typed_value", "data_type": "string", "value": "Done"},
+                    "expected_outcome": {
+                        "type": "typed_value",
+                        "data_type": "string",
+                        "value": "Done",
+                    },
                     "required_tools": [],
-                    "success_criteria": []
+                    "success_criteria": [],
                 }
             ],
-            "edges": []
+            "edges": [],
         },
         "max_turns": 2,
     }
@@ -96,12 +102,16 @@ async def test_trajectory_branching(monkeypatch):
                 {
                     "id": "t1",
                     "task_description": "start",
-                    "expected_outcome": {"type": "typed_value", "data_type": "string", "value": "Done"},
+                    "expected_outcome": {
+                        "type": "typed_value",
+                        "data_type": "string",
+                        "value": "Done",
+                    },
                     "required_tools": [],
-                    "success_criteria": []
+                    "success_criteria": [],
                 }
             ],
-            "edges": []
+            "edges": [],
         },
         "max_turns": 2,
     }

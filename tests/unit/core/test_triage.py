@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_triage_connection_error():
     from eval_runner.triage import TriageEngine
 
@@ -27,7 +24,9 @@ def test_triage_policy_violation():
         {
             "task_id": "t1",
             "metrics": [{"success": False}],
-            "conversation_history": [{"role": "environment", "content": {"status": "policy_violation"}}],
+            "conversation_history": [
+                {"role": "environment", "content": {"status": "policy_violation"}}
+            ],
         }
     ]
     TriageEngine.apply_triage(results)
@@ -100,6 +99,7 @@ def test_identify_root_cause_metric_failure():
 def test_triage_engine_inconclusive_flow():
     """Verify that triage returns inconclusive when no clear deviation is found."""
     from eval_runner.triage import TriageEngine
+
     engine = TriageEngine()
     # Scenario: Run starts but never ends (missing run_end)
     events = [{"event": "run_start"}]
@@ -112,6 +112,7 @@ def test_triage_engine_inconclusive_flow():
 def test_triage_apply_triage_error_handling():
     """Verify that apply_triage handles malformed result items gracefully."""
     from eval_runner.triage import TriageEngine
+
     # Test apply_triage when a result item is malformed (missing required keys)
     results = [{"not_a_task": True}]
     TriageEngine.apply_triage(results)

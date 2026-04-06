@@ -1,8 +1,10 @@
 import os
+from typing import Any
+
 import aiohttp
-from typing import Dict, Any
-from ..plugins import BaseEvalPlugin
+
 from .. import config
+from ..plugins import BaseEvalPlugin
 
 
 class GrokAdapterPlugin(BaseEvalPlugin):
@@ -16,7 +18,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Grok adapter via on_discover_adapters hook.")
         registry.register("grok", self.execute_grok_query)
 
-    async def execute_grok_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
+    async def execute_grok_query(self, payload: dict[str, Any], url: str = None) -> dict[str, Any]:
         """
         Calls the xAI Grok API.
         Standardizes the output to match the harness expectations.

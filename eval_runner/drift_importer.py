@@ -6,11 +6,11 @@ drift_importer.py
 Utility to import production traces (JSON) as evaluation scenarios.
 """
 
-import json
-import uuid
-from pathlib import Path
-from typing import Optional, Dict, Any
-from .trace_utils import load_events
+import json  # noqa: E402
+import uuid  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from .trace_utils import load_events  # noqa: E402
 
 
 def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) -> Path:
@@ -23,7 +23,7 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
     try:
         trace_data = load_events(trace_path)
     except Exception as e:
-        raise ValueError(f"Failed to parse trace: {e}")
+        raise ValueError(f"Failed to parse trace: {e}")  # noqa: B904
 
     if isinstance(trace_data, dict):
         history = trace_data.get("history", [])

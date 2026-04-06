@@ -1,7 +1,8 @@
-import jwt
 import datetime
 import functools
-from flask import Blueprint, jsonify, request, current_app
+
+import jwt
+from flask import Blueprint, jsonify, request
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
@@ -51,8 +52,8 @@ def get_handoff_token():
 def login():
     """Standard PBAC Login Gate for the Visual Suite."""
     from flask import session
+
     from .auth_manager import get_auth_provider
-    from .. import config
 
     data = request.json or {}
     api_key = data.get("apiKey")
@@ -69,14 +70,12 @@ def login():
     # Populate industrial-grade PBAC session
     session["user"] = user
     # Ensure cookie is marked for security
-    session.permanent = True 
-    
-    return jsonify({
-        "status": "success",
-        "message": "Authenticated successfully",
-        "user": {
-            "name": user["name"],
-            "id": user["id"],
-            "permissions": user["permissions"]
+    session.permanent = True
+
+    return jsonify(
+        {
+            "status": "success",
+            "message": "Authenticated successfully",
+            "user": {"name": user["name"], "id": user["id"], "permissions": user["permissions"]},
         }
-    })
+    )

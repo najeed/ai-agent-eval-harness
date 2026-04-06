@@ -2,10 +2,11 @@
 Test suite for scenario loading and validation functionality.
 """
 
-import pytest
 import json
 import tempfile
 from pathlib import Path
+
+import pytest
 
 from eval_runner import loader
 
@@ -20,10 +21,7 @@ def test_load_valid_scenario(tmp_path):
         "description": "A test scenario.",
         "use_case": "Testing",
         "core_function": "Unit Test",
-        "metadata": {
-            "name": "test_scenario",
-            "compliance_level": "Standard"
-        },
+        "metadata": {"name": "test_scenario", "compliance_level": "Standard"},
         "workflow": {
             "nodes": [
                 {
@@ -32,13 +30,13 @@ def test_load_valid_scenario(tmp_path):
                     "expected_outcome": {
                         "type": "typed_value",
                         "data_type": "string",
-                        "value": "Task completes successfully."
+                        "value": "Task completes successfully.",
                     },
                     "required_tools": [],
                     "success_criteria": [],
                 }
             ],
-            "edges": []
+            "edges": [],
         },
     }
     scenario_file = tmp_path / "scenario.json"
@@ -51,7 +49,7 @@ def test_load_invalid_scenario(tmp_path):
     """Test error handling when loading a scenario file with invalid JSON."""
     scenario_file = tmp_path / "bad.json"
     scenario_file.write_text("{not: valid json}")
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: B017
         loader.load_scenario(scenario_file)
 
 

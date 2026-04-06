@@ -1,6 +1,8 @@
-import pytest
 import os
 from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from eval_runner.adapters.autogen import AutoGenAdapterPlugin
 from eval_runner.adapters.grok import GrokAdapterPlugin
 

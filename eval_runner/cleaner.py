@@ -4,9 +4,9 @@ cleaner.py
 Utility for cleaning up old trace files and logs.
 """
 
-import os
 import time
 from pathlib import Path
+
 
 def cleanup_traces(dir_path: str = "runs", days: int = 7, force: bool = False):
     """

@@ -7,18 +7,16 @@ Manages the state and trajectory of an evaluation session.
 Handles conversation history, tool results, and plugin interception.
 """
 
-import os
-import json
-import asyncio
-import copy
-from typing import List, Dict, Any, Optional
-from dataclasses import replace
-from .context import TurnContext
-from .events import EventEmitter, CoreEvents
-from . import plugins
-from . import metrics
+import asyncio  # noqa: E402
+import copy  # noqa: E402
+import json  # noqa: E402
+import os  # noqa: E402
+from dataclasses import replace  # noqa: E402
+from typing import Any  # noqa: E402
 
-from . import config
+from . import config, metrics, plugins  # noqa: E402
+from .context import TurnContext  # noqa: E402
+from .events import CoreEvents, EventEmitter  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
@@ -28,7 +26,7 @@ MAX_FORK_BREADTH = config.MAX_FORK_BREADTH
 class SessionManager:
     """Manages a single evaluation attempt's lifecycle."""
 
-    def __init__(self, scenario: dict, metadata: Optional[dict] = None):
+    def __init__(self, scenario: dict, metadata: dict | None = None):
         from .engine import MAX_TURNS
 
         self.scenario = scenario
@@ -37,11 +35,11 @@ class SessionManager:
         self.max_turns = int(scenario.get("max_turns", MAX_TURNS))
         self.fork_depth = scenario.get("_fork_depth", 0)
 
-    async def execute_tasks(self, attempt_number: int) -> List[Dict[str, Any]]:
+    async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
+        from graphlib import CycleError, TopologicalSorter
+
         from .engine import AgentAdapterRegistry
         from .tool_sandbox import ToolSandbox
-
-        from graphlib import TopologicalSorter, CycleError
 
         all_task_results = []
         executed_nodes = set()
@@ -54,7 +52,11 @@ class SessionManager:
             edges = workflow.get("edges", [])
 
             # 1. Build Dependency Graph
-            EventEmitter.emit(CoreEvents.PHASE_START, {"phase": "workflow_sort"}, span_context=self.session_metadata.get("span_context"))
+            EventEmitter.emit(
+                CoreEvents.PHASE_START,
+                {"phase": "workflow_sort"},
+                span_context=self.session_metadata.get("span_context"),
+            )
             graph = {node_id: set() for node_id in nodes_data}
             for edge in edges:
                 if edge["to"] in graph:
@@ -68,29 +70,35 @@ class SessionManager:
                 print(f"      [Session] Cycle Error in workflow: {e}")
                 # Fallback or strict fail? User requested "real implementation".
                 # We should fail the session as DAGs by definition are acyclic.
-                raise ValueError(f"Workflow contains cyclic dependencies: {e}")
+                raise ValueError(f"Workflow contains cyclic dependencies: {e}")  # noqa: B904
             finally:
-                EventEmitter.emit(CoreEvents.PHASE_END, {"phase": "workflow_sort"}, span_context=self.session_metadata.get("span_context"))
+                EventEmitter.emit(
+                    CoreEvents.PHASE_END,
+                    {"phase": "workflow_sort"},
+                    span_context=self.session_metadata.get("span_context"),
+                )
 
             # 3. Handle Empty Workflow
             if not nodes_data:
-                raise ValueError("Scenario missing required 'workflow' block (Unified Standard v1.2)")
+                raise ValueError(
+                    "Scenario missing required 'workflow' block (Unified Standard v1.2)"
+                )
             for node_id in execution_order:
                 node = nodes_data.get(node_id)
                 if not node:
-                    continue # Should not happen with built graph
+                    continue  # Should not happen with built graph
 
                 task_description = node.get("task_description")
-                
+
                 EventEmitter.emit(
                     CoreEvents.TASK_START,
                     {"task_id": node_id, "attempt": attempt_number},
-                    span_context=self.session_metadata.get("span_context")
+                    span_context=self.session_metadata.get("span_context"),
                 )
                 EventEmitter.emit(
                     CoreEvents.SUBTASK_START,
                     {"subtask_id": f"subtask-{node_id}", "type": "agent_reasoning"},
-                    span_context=self.session_metadata.get("span_context")
+                    span_context=self.session_metadata.get("span_context"),
                 )
 
                 conversation_history = []
@@ -111,7 +119,7 @@ class SessionManager:
                         "agent": endpoint,
                         "agent_name": agent_name,
                     },
-                    span_context=self.session_metadata.get("span_context")
+                    span_context=self.session_metadata.get("span_context"),
                 )
                 conversation_history.append({"role": "user", "content": current_message})
 
@@ -128,7 +136,11 @@ class SessionManager:
                         span_context=self.session_metadata.get("span_context"),
                     )
 
-                    EventEmitter.emit(CoreEvents.TURN_START, {"turn": turn, "task_id": node_id}, span_context=turn_ctx.span_context)
+                    EventEmitter.emit(
+                        CoreEvents.TURN_START,
+                        {"turn": turn, "task_id": node_id},
+                        span_context=turn_ctx.span_context,
+                    )
                     plugins.manager.trigger("on_agent_turn_start", turn_ctx)
 
                     try:
@@ -145,50 +157,75 @@ class SessionManager:
                                 endpoint = config.AGENT_API_URL
                             elif protocol == "local":
                                 endpoint = os.getenv("AGENT_LOCAL_CMD")
-                        
-                        EventEmitter.emit(CoreEvents.ACTION_START, {"action_type": "llm_inference", "protocol": protocol}, span_context=turn_ctx.span_context)
-                        agent_response = await AgentAdapterRegistry.call_agent(
-                            payload, protocol=protocol, endpoint=endpoint, span_context=turn_ctx.span_context
+
+                        EventEmitter.emit(
+                            CoreEvents.ACTION_START,
+                            {"action_type": "llm_inference", "protocol": protocol},
+                            span_context=turn_ctx.span_context,
                         )
-                        EventEmitter.emit(CoreEvents.ACTION_END, {"action_type": "llm_inference", "status": "success"}, span_context=turn_ctx.span_context)
+                        agent_response = await AgentAdapterRegistry.call_agent(
+                            payload,
+                            protocol=protocol,
+                            endpoint=endpoint,
+                            span_context=turn_ctx.span_context,
+                        )
+                        EventEmitter.emit(
+                            CoreEvents.ACTION_END,
+                            {"action_type": "llm_inference", "status": "success"},
+                            span_context=turn_ctx.span_context,
+                        )
                         turns_taken = turn
 
                         if not agent_name:
-                             # Discover name...
-                             agent_name = (
-                                 agent_response.get("name") 
-                                 or agent_response.get("agent_name") 
-                                 or agent_response.get("metadata", {}).get("name")
-                                 or "Agent"
-                             )
-                             self.session_metadata["agent_name"] = agent_name
+                            # Discover name...
+                            agent_name = (
+                                agent_response.get("name")
+                                or agent_response.get("agent_name")
+                                or agent_response.get("metadata", {}).get("name")
+                                or "Agent"
+                            )
+                            self.session_metadata["agent_name"] = agent_name
 
                         turn_ctx = replace(turn_ctx, agent_response=agent_response)
                         EventEmitter.emit(
-                            CoreEvents.AGENT_RESPONSE, 
-                            {
-                                "step": turn, 
-                                "response": agent_response,
-                                "agent_name": agent_name
-                            },
-                            span_context=turn_ctx.span_context
+                            CoreEvents.AGENT_RESPONSE,
+                            {"step": turn, "response": agent_response, "agent_name": agent_name},
+                            span_context=turn_ctx.span_context,
                         )
                     except Exception as e:
                         EventEmitter.emit(CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"})
                         break
 
-                    conversation_history.append({"role": "agent", "content": self._sanitize_for_history(agent_response)})
+                    conversation_history.append(
+                        {"role": "agent", "content": self._sanitize_for_history(agent_response)}
+                    )
                     action = agent_response.get("action", "")
 
                     if action == "call_tool":
-                        await self._handle_tool_call(turn, agent_response, sandbox, conversation_history, agent_actions, turn_ctx)
+                        await self._handle_tool_call(
+                            turn,
+                            agent_response,
+                            sandbox,
+                            conversation_history,
+                            agent_actions,
+                            turn_ctx,
+                        )
                         current_message = self._get_last_env_message(conversation_history)
                     elif action == "call_multiple_tools":
-                        await self._handle_multiple_tools(turn, agent_response, sandbox, conversation_history, agent_actions, turn_ctx)
+                        await self._handle_multiple_tools(
+                            turn,
+                            agent_response,
+                            sandbox,
+                            conversation_history,
+                            agent_actions,
+                            turn_ctx,
+                        )
                         current_message = self._get_last_env_message(conversation_history)
                     elif action == "hitl_pause":
                         # Guardrail 4.6.4: Interactive Recovery
-                        human_response = await self._handle_hitl(node_id, agent_response.get("prompt", "Agent requested intervention."))
+                        human_response = await self._handle_hitl(
+                            node_id, agent_response.get("prompt", "Agent requested intervention.")
+                        )
                         conversation_history.append({"role": "human", "content": human_response})
                         current_message = human_response
                     elif action in ("final_answer", "provide_instructions", "error"):
@@ -210,11 +247,15 @@ class SessionManager:
                 all_task_results.append(task_results)
                 executed_nodes.add(node_id)
                 EventEmitter.emit(
-                    CoreEvents.SUBTASK_END, 
-                    {"subtask_id": f"subtask-{node_id}"}, 
-                    span_context=self.session_metadata.get("span_context")
+                    CoreEvents.SUBTASK_END,
+                    {"subtask_id": f"subtask-{node_id}"},
+                    span_context=self.session_metadata.get("span_context"),
                 )
-                EventEmitter.emit(CoreEvents.TASK_END, {"task_id": node_id, "results": task_results}, span_context=self.session_metadata.get("span_context"))
+                EventEmitter.emit(
+                    CoreEvents.TASK_END,
+                    {"task_id": node_id, "results": task_results},
+                    span_context=self.session_metadata.get("span_context"),
+                )
 
         finally:
             sandbox.teardown()
@@ -227,7 +268,9 @@ class SessionManager:
 
         # Interception Hook
         # Note: In a real implementation, we'd check if any plugin returns False
-        allowed = plugins.manager.trigger_interceptor("on_tool_request", turn_ctx, tool_name, tool_params)
+        allowed = plugins.manager.trigger_interceptor(
+            "on_tool_request", turn_ctx, tool_name, tool_params
+        )
         if not allowed:
             EventEmitter.emit(
                 CoreEvents.ERROR,
@@ -241,13 +284,25 @@ class SessionManager:
         )
         actions["used_tools"].append(tool_name)
 
-        EventEmitter.emit(CoreEvents.ACTION_START, {"action_type": "tool_execution", "tool": tool_name}, span_context=turn_ctx.span_context)
+        EventEmitter.emit(
+            CoreEvents.ACTION_START,
+            {"action_type": "tool_execution", "tool": tool_name},
+            span_context=turn_ctx.span_context,
+        )
         state_before = sandbox.state.copy()
         result = sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
-        EventEmitter.emit(CoreEvents.ACTION_END, {"action_type": "tool_execution", "tool": tool_name}, span_context=turn_ctx.span_context)
+        EventEmitter.emit(
+            CoreEvents.ACTION_END,
+            {"action_type": "tool_execution", "tool": tool_name},
+            span_context=turn_ctx.span_context,
+        )
 
-        EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tool_name, "result": result}, span_context=turn_ctx.span_context)
+        EventEmitter.emit(
+            CoreEvents.TOOL_RESULT,
+            {"step": turn, "tool": tool_name, "result": result},
+            span_context=turn_ctx.span_context,
+        )
 
         history.append(
             {
@@ -259,7 +314,9 @@ class SessionManager:
         )
         plugins.manager.trigger("on_tool_result", turn_ctx, tool_name, result)
 
-    async def _handle_multiple_tools(self, turn, agent_response, sandbox, history, actions, turn_ctx):
+    async def _handle_multiple_tools(
+        self, turn, agent_response, sandbox, history, actions, turn_ctx
+    ):
         tool_names = agent_response["tool_names"]
         actions["used_tools"].extend(tool_names)
 
@@ -276,7 +333,9 @@ class SessionManager:
                 all_tool_results.append(res)
                 EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tn, "result": res})
             else:
-                all_tool_results.append({"status": "blocked", "message": f"Tool {tn} blocked by plugin."})
+                all_tool_results.append(
+                    {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
+                )
         state_after = sandbox.state.copy()
 
         history.append(
@@ -291,8 +350,9 @@ class SessionManager:
     async def _handle_hitl(self, task_id: str, prompt: str) -> str:
         """Handles Human-In-The-Loop interaction."""
         import os
-        from .events import EventEmitter, CoreEvents
-        
+
+        from .events import CoreEvents, EventEmitter
+
         # Guardrail 4.6.4: CI Auto-Approval
         if os.getenv("CI", "").lower() == "true":
             response = f"Auto-approved (CI-Override): {prompt}"
@@ -302,9 +362,10 @@ class SessionManager:
 
         # Standard interactive input
         EventEmitter.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
-        
+
         # Check if we are in a TTY or have a way to get input
         import sys
+
         if sys.stdin.isatty():
             print(f"\n      [HITL] Agent is requesting intervention for task '{task_id}':")
             print(f"      > {prompt}")
@@ -315,7 +376,9 @@ class SessionManager:
             return response
         else:
             summary = prompt[:50] + "..." if len(prompt) > 50 else prompt
-            response = f"[Simulation] Interaction for '{summary}' acknowledged in non-interactive mode."
+            response = (
+                f"[Simulation] Interaction for '{summary}' acknowledged in non-interactive mode."
+            )
             EventEmitter.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
             print(f"      [HITL] Non-interactive environment: {response}")
             return response
@@ -344,12 +407,16 @@ class SessionManager:
         # v1.2 Hardened Metrics: Pre-condition check (State Hygiene)
         sh = node.get("state_hygiene", {})
         if sh:
-            EventEmitter.emit(CoreEvents.STEP_START, {"step_name": "state_hygiene_check"}, span_context=self.session_metadata.get("span_context"))
+            EventEmitter.emit(
+                CoreEvents.STEP_START,
+                {"step_name": "state_hygiene_check"},
+                span_context=self.session_metadata.get("span_context"),
+            )
             hygiene_results = []
             for rule in sh.get("rules", []):
                 path = rule.get("path")
                 expected = rule.get("expected")
-                op = rule.get("op", "eq") # eq, exists, not_exists, contains
+                op = rule.get("op", "eq")  # eq, exists, not_exists, contains
 
                 # Resolve nested path in sandbox.state
                 parts = path.split(".")
@@ -360,7 +427,8 @@ class SessionManager:
                             # Handle dict/list indexing: e.g. "git[file_tree]"
                             key = part.split("[")[1].split("]")[0].strip("'\"")
                             part = part.split("[")[0]
-                            if part: val = val.get(part, {})
+                            if part:
+                                val = val.get(part, {})
                             val = val.get(key)
                         else:
                             val = val.get(part)
@@ -368,29 +436,33 @@ class SessionManager:
                     val = None
 
                 success = False
-                if op == "eq": success = val == expected
-                elif op == "exists": success = val is not None
-                elif op == "not_exists": success = val is None
-                elif op == "contains": success = expected in val if val else False
-                
-                hygiene_results.append({
-                    "path": path,
-                    "op": op,
-                    "success": success
-                })
-            
+                if op == "eq":
+                    success = val == expected
+                elif op == "exists":
+                    success = val is not None
+                elif op == "not_exists":
+                    success = val is None
+                elif op == "contains":
+                    success = expected in val if val else False
+
+                hygiene_results.append({"path": path, "op": op, "success": success})
+
             # Record hygiene as a meta-metric or log it
             if hygiene_results:
                 results["state_hygiene"] = hygiene_results
-            EventEmitter.emit(CoreEvents.STEP_END, {"step_name": "state_hygiene_check"}, span_context=self.session_metadata.get("span_context"))
+            EventEmitter.emit(
+                CoreEvents.STEP_END,
+                {"step_name": "state_hygiene_check"},
+                span_context=self.session_metadata.get("span_context"),
+            )
 
         # Parse success_criteria from node if it exists (for compatibility)
         # or use the v1.2 expected_outcome
-        outcome = node.get("expected_outcome", {})
-        
+        node.get("expected_outcome", {})
+
         # Mapping legacy-like success criteria if still present in the node
         criteria = node.get("success_criteria", []).copy()
-        
+
         for criterion in criteria:
             try:
                 m_name = criterion.get("metric")
@@ -404,9 +476,13 @@ class SessionManager:
 
                 score = 0.0
                 if m_name == "tool_call_correctness" and metric_func:
-                    score = await _invoke(metric_func, node.get("required_tools", []), actions["used_tools"])
+                    score = await _invoke(
+                        metric_func, node.get("required_tools", []), actions["used_tools"]
+                    )
                 elif m_name == "state_verification" and metric_func:
-                    score = await _invoke(metric_func, node.get("expected_state_changes", []), sandbox.state)
+                    score = await _invoke(
+                        metric_func, node.get("expected_state_changes", []), sandbox.state
+                    )
                 elif m_name == "policy_compliance" and metric_func:
                     score = await _invoke(metric_func, history)
                 elif m_name == "path_parsimony" and metric_func:
@@ -417,12 +493,14 @@ class SessionManager:
                 else:
                     continue
 
-                results["metrics"].append({
-                    "metric": m_name,
-                    "score": score,
-                    "threshold": threshold,
-                    "success": score >= threshold
-                })
+                results["metrics"].append(
+                    {
+                        "metric": m_name,
+                        "score": score,
+                        "threshold": threshold,
+                        "success": score >= threshold,
+                    }
+                )
             except Exception as e:
                 print(f"      [Metric Error] {node_id}: {e}")
 
@@ -435,12 +513,18 @@ class SessionManager:
         last_content = agent_msgs[-1].get("content", "")
         if isinstance(last_content, dict):
             # Try to find a meaningful string across common fields
-            return last_content.get("summary") or last_content.get("instructions") or last_content.get("content") or ""
+            return (
+                last_content.get("summary")
+                or last_content.get("instructions")
+                or last_content.get("content")
+                or ""
+            )
         return str(last_content)
 
     def _sanitize_for_history(self, obj: Any) -> Any:
         """Coerces objects (especially Mocks) into plain serializable types for history safety."""
         from .trace_utils import AESJsonEncoder
+
         encoder = AESJsonEncoder()
 
         if isinstance(obj, dict):
@@ -449,7 +533,7 @@ class SessionManager:
             return [self._sanitize_for_history(i) for i in obj]
         elif isinstance(obj, (str, int, float, bool, type(None))):
             return obj
-        
+
         try:
             # Leverage the specialized encoder's default logic for leaf values
             return encoder.default(obj)
@@ -457,7 +541,7 @@ class SessionManager:
             # Fallback to string representation for anything else
             return str(obj)
 
-    def fork(self, history: List[Dict[str, Any]], sandbox_state: Dict[str, Any]) -> SessionManager:
+    def fork(self, history: list[dict[str, Any]], sandbox_state: dict[str, Any]) -> SessionManager:
         """
         Creates a clone of the current session at a specific checkpoint.
         Supports research into non-linear trajectories.

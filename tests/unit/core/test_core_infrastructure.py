@@ -4,13 +4,14 @@ tests/test_architecture.py
 Verifies the Zero-Touch Core architectural improvements.
 """
 
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-import asyncio
-from unittest.mock import MagicMock, AsyncMock
-from eval_runner.events import EventEmitter, CoreEvents
-from eval_runner.runner import DefaultRunner
-from eval_runner.plugins import BaseEvalPlugin, manager
+
 from eval_runner.context import TurnContext
+from eval_runner.events import CoreEvents, EventEmitter
+from eval_runner.plugins import BaseEvalPlugin, manager
+from eval_runner.runner import DefaultRunner
 
 
 @pytest.mark.asyncio
@@ -32,17 +33,16 @@ async def test_plugin_interception():
     # Attempt to detect Docker availability
     import socket
 
-    docker_available = False
     try:
         # Check for typical Docker Desktop pipe/socket
-        s = (
+        (
             socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             if hasattr(socket, "AF_UNIX")
             else socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         )
-        # On Windows, we just try to catch the failure in the test itself or skip if not on Linux if we are strict.
-        # But here I'll just skip specifically if the "failed to connect to the docker API" error occurs.
-    except:
+        # On Windows, we just try to catch the failure in the test itself or skip if not on Linux if we are strict., E501, E501  # noqa: E501
+        # But here I'll just skip specifically if the "failed to connect to the docker API" error occurs., E501, E501  # noqa: E501
+    except:  # noqa: E722
         pass
 
     # Setup blocking plugin
@@ -89,10 +89,7 @@ async def test_runner_orchestration(monkeypatch):
 
     scenario = {
         "scenario_id": "test_scenario",
-        "workflow": {
-            "nodes": [{"id": "t1", "task_description": "test task"}],
-            "edges": []
-        }
+        "workflow": {"nodes": [{"id": "t1", "task_description": "test task"}], "edges": []},
     }
 
     runner = DefaultRunner()

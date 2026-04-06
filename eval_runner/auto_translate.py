@@ -8,10 +8,10 @@ NOTE: This feature requires a local LLM running via Ollama to function.
 """
 
 import json
-import uuid
 import re
+import uuid
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
 
 import aiohttp
 
@@ -21,21 +21,21 @@ def extract_text(file_path: Path) -> str:
     ext = file_path.suffix.lower()
 
     if ext in [".txt", ".md", ".csv", ".json"]:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             return f.read()
 
     elif ext == ".pdf":
         try:
-            import PyPDF2
+            import pypdf
 
             with open(file_path, "rb") as f:
-                reader = PyPDF2.PdfReader(f)
+                reader = pypdf.PdfReader(f)
                 text = []
                 for page in reader.pages:
                     text.append(page.extract_text() or "")
                 return "\n".join(text)
         except ImportError:
-            raise ImportError("PyPDF2 is required to parse PDF files. Run: pip install PyPDF2")
+            raise ImportError("pypdf is required to parse PDF files. Run: pip install pypdf")  # noqa: B904
 
     elif ext == ".docx":
         try:
@@ -44,7 +44,9 @@ def extract_text(file_path: Path) -> str:
             doc = docx.Document(file_path)
             return "\n".join([paragraph.text for paragraph in doc.paragraphs])
         except ImportError:
-            raise ImportError("python-docx is required to parse DOCX files. Run: pip install python-docx")
+            raise ImportError(  # noqa: B904
+                "python-docx is required to parse DOCX files. Run: pip install python-docx"
+            )
 
     else:
         raise ValueError(f"Unsupported file extension: {ext}. Supported: txt, md, pdf, docx.")
@@ -54,13 +56,15 @@ async def translate_to_scenario(
     text: str,
     model: str = "llama3",
     api_url: str = "http://localhost:11434/api/generate",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Uses a local Ollama LLM to synthesize a scenario JSON from raw text."""
 
     prompt = f"""
-You are an expert evaluator converting raw unstructured requirement documents into structured JSON scenarios for the MultiAgentEval.
+You are an expert evaluator converting raw unstructured requirement documents into structured 
+JSON scenarios for the MultiAgentEval.
 
-Your task is to analyze the following document and synthesize a valid JSON scenario that meets the official AES (Agent Eval Specification) schema. 
+Your task is to analyze the following document and synthesize a valid JSON scenario that meets 
+the official AES (Agent Eval Specification) schema.
 
 The schema requires:
 - `scenario_id`: A unique string identifier.
@@ -71,9 +75,11 @@ The schema requires:
   - `task_id`: String identifier (e.g., "t1")
   - `description`: Instructions for the task
   - `expected_outcome`: What should happen
-  - `success_criteria`: A list of objects with "metric" and "threshold" keys (e.g., {{"metric": "tool_correctness", "threshold": 1.0}})
+  - `success_criteria`: A list of objects with "metric" and "threshold" keys 
+    (e.g., {{"metric": "tool_correctness", "threshold": 1.0}})
 
-Output ONLY valid JSON. Do not include markdown formatting or explanations. The response should start with {{ and end with }}.
+Output ONLY valid JSON. Do not include markdown formatting or explanations. 
+The response should start with {{ and end with }}.
 
 --- BEGIN DOCUMENT ---
 {text}
@@ -112,12 +118,14 @@ JSON Output:
                 return parsed_json
 
     except aiohttp.ClientConnectorError:
-        raise ConnectionError(f"Could not connect to Ollama at {api_url}. Is Ollama running?")
+        raise ConnectionError(f"Could not connect to Ollama at {api_url}. Is Ollama running?")  # noqa: B904
     except json.JSONDecodeError as e:
-        raise ValueError(f"Ollama returned invalid JSON: {e}\nRaw Response: {response_text[:200]}...")
+        raise ValueError(  # noqa: B904
+            f"Ollama returned invalid JSON: {e}\nRaw Response: {response_text[:200]}..."
+        )
 
 
-def save_scenario(scenario: Dict[str, Any], output_path: Path):
+def save_scenario(scenario: dict[str, Any], output_path: Path):
     """Saves the translated JSON scenario to disk."""
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)

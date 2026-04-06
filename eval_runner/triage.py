@@ -6,14 +6,14 @@ triage.py
 Categorizes and explains evaluation failures based on trajectory patterns.
 """
 
-from typing import List, Dict, Any
+from typing import Any  # noqa: E402
 
 
 class TriageEngine:
     """Analyzes evaluation results to categorize failures."""
 
     @staticmethod
-    def categorize_failure(task_result: Dict[str, Any]) -> str:
+    def categorize_failure(task_result: dict[str, Any]) -> str:
         """
         Heuristic-based categorization of a failed task.
         """
@@ -40,7 +40,10 @@ class TriageEngine:
         ]
         if len(agent_actions) >= 3:
             for i in range(len(agent_actions) - 2):
-                if agent_actions[i] == agent_actions[i + 1] == agent_actions[i + 2] and agent_actions[i] is not None:
+                if (
+                    agent_actions[i] == agent_actions[i + 1] == agent_actions[i + 2]
+                    and agent_actions[i] is not None
+                ):
                     return "STALL"
 
         # Check for Tool Errors (Environment status 'error')
@@ -61,7 +64,7 @@ class TriageEngine:
             return "TIMEOUT"
 
     @staticmethod
-    def identify_root_cause(history: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def identify_root_cause(history: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Pinpoints the root cause with a confidence score and explanation.
         """
@@ -69,8 +72,9 @@ class TriageEngine:
             return {"index": -1, "confidence": 0, "reason": "No history"}
 
         # 0. Check for failure signature (Include 'failure' and 'failed' and results)
-        has_failure = any(
-            turn.get("event") in ("run_end", "evaluation") or turn.get("role") == "run_end" for turn in history
+        any(
+            turn.get("event") in ("run_end", "evaluation") or turn.get("role") == "run_end"
+            for turn in history
         )
 
         # Explicit fail status check
@@ -88,7 +92,7 @@ class TriageEngine:
                 return {
                     "index": i,
                     "confidence": 1.0,
-                    "reason": f"Explicit policy violation detected at turn {i}: {content.get('message', 'Unspecified violation')}",
+                    "reason": f"Explicit policy violation detected at turn {i}: {content.get('message', 'Unspecified violation')}",  # noqa: E501
                 }
         # 1. High Confidence: Explicitly marked failures (policy, safety, validation)
         for i, turn in enumerate(history):
@@ -118,11 +122,15 @@ class TriageEngine:
                     "suggestion": "Check the evaluation guardrails and input sanitization.",
                 }
             # Check evaluation events for policy compliance failure (common in tests)
-            if ev == "evaluation" and turn.get("metric") == "policy_compliance" and turn.get("value") == 0.0:
+            if (
+                ev == "evaluation"
+                and turn.get("metric") == "policy_compliance"
+                and turn.get("value") == 0.0
+            ):
                 return {
                     "index": i,
                     "confidence": 1.0,
-                    "reason": "Policy Violation (Safety/Privacy Guardrail) detected via evaluation metrics.",
+                    "reason": "Policy Violation (Safety/Privacy Guardrail) detected via evaluation metrics.",  # noqa: E501
                     "suggestion": "Review the agent's safety filters or policy constraints.",
                 }
 
@@ -131,17 +139,20 @@ class TriageEngine:
             if turn.get("event") == "evaluation" and turn.get("success") is False:
                 # Find the last agent action before this evaluation
                 for j in range(i - 1, -1, -1):
-                    if history[j].get("role") == "agent" or history[j].get("event") in ("agent_response", "tool_call"):
+                    if history[j].get("role") == "agent" or history[j].get("event") in (
+                        "agent_response",
+                        "tool_call",
+                    ):
                         return {
                             "index": j,
                             "confidence": 0.9,
-                            "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}). Deviation pinpointed to agent action at turn {j}.",
-                            "suggestion": "Review the agent's reasoning leading to this specific metric failure.",
+                            "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}). Deviation pinpointed to agent action at turn {j}.",  # noqa: E501
+                            "suggestion": "Review the agent's reasoning leading to this specific metric failure.",  # noqa: E501
                         }
                 return {
                     "index": i,
                     "confidence": 0.8,
-                    "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}).",
+                    "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}).",  # noqa: E501
                     "suggestion": "Review the evaluation criteria for this scenario.",
                 }
 
@@ -151,7 +162,8 @@ class TriageEngine:
                 return {
                     "index": i,
                     "confidence": 1.0,
-                    "reason": turn.get("root_cause_reason") or "Explicitly marked as root cause by evaluation plugin.",
+                    "reason": turn.get("root_cause_reason")
+                    or "Explicitly marked as root cause by evaluation plugin.",
                     "suggestion": turn.get("root_cause_suggestion")
                     or "Review the specific metric failure in the report.",
                 }
@@ -162,7 +174,8 @@ class TriageEngine:
             if turn.get("event") == "tool_result" or turn.get("role") == "environment":
                 content = turn.get("content") or {}
                 raw_result = str(
-                    turn.get("result") or (content.get("message") if isinstance(content, dict) else content)
+                    turn.get("result")
+                    or (content.get("message") if isinstance(content, dict) else content)
                 )
                 result_val = raw_result.lower()
 
@@ -176,8 +189,8 @@ class TriageEngine:
                     return {
                         "index": i,
                         "confidence": 0.85,
-                        "reason": f"Tool Timeout: {turn.get('tool') or 'unknown'}. Result: {raw_result}",
-                        "suggestion": "Increase the tool sandbox timeout or optimize the backend service.",
+                        "reason": f"Tool Timeout: {turn.get('tool') or 'unknown'}. Result: {raw_result}",  # noqa: E501
+                        "suggestion": "Increase the tool sandbox timeout or optimize the backend service.",  # noqa: E501
                     }
                 if is_error:
                     # Trace back to agent if possible
@@ -190,25 +203,27 @@ class TriageEngine:
                             return {
                                 "index": j,
                                 "confidence": 0.85,
-                                "reason": f"{inner_reason} (triggered by agent decision at turn {j})",
-                                "suggestion": "Debug the tool implementation or check for missing environment variables.",
+                                "reason": f"{inner_reason} (triggered by agent decision at turn {j})",  # noqa: E501
+                                "suggestion": "Debug the tool implementation or check for missing environment variables.",  # noqa: E501
                             }
                     return {
                         "index": i,
                         "confidence": 0.7,
                         "reason": inner_reason,
-                        "suggestion": "Debug the tool implementation or check for missing environment variables.",
+                        "suggestion": "Debug the tool implementation or check for missing environment variables.",  # noqa: E501
                     }
 
         # 4. Connection Error or System Failure
         for i, turn in enumerate(history):
             if turn.get("role") == "system" or turn.get("event") == "system_error":
                 content = turn.get("content") or {}
-                if (isinstance(content, dict) and content.get("status") == "error") or "error" in str(content).lower():
+                if (
+                    isinstance(content, dict) and content.get("status") == "error"
+                ) or "error" in str(content).lower():
                     return {
                         "index": i,
                         "confidence": 0.9,
-                        "reason": f"System/Connection Error: {content.get('message') or str(content) if isinstance(content, dict) else str(content)}",
+                        "reason": f"System/Connection Error: {content.get('message') or str(content) if isinstance(content, dict) else str(content)}",  # noqa: E501
                         "suggestion": "Check agent connectivity, API keys, or infrastructure logs.",
                     }
 
@@ -221,16 +236,24 @@ class TriageEngine:
         if len(agent_actions) >= 3:
             for i in range(len(agent_actions) - 2):
                 idx, act = agent_actions[i]
-                if act == agent_actions[i + 1][1] == agent_actions[i + 2][1] and act is not None and act != "thought":
+                if (
+                    act == agent_actions[i + 1][1] == agent_actions[i + 2][1]
+                    and act is not None
+                    and act != "thought"
+                ):
                     return {
                         "index": idx,
                         "confidence": 0.8,
-                        "reason": f"Agent Stall Detected: Repeatedly calling '{act}' without progress.",
-                        "suggestion": "Review the agent's tool-use logic or check if the tool is providing sufficient feedback.",
+                        "reason": f"Agent Stall Detected: Repeatedly calling '{act}' without progress.",  # noqa: E501
+                        "suggestion": "Review the agent's tool-use logic or check if the tool is providing sufficient feedback.",  # noqa: E501
                     }
 
         # 6. Infinite Loop Detection
-        prompts = [e.get("content") for e in history if e.get("event") == "prompt" or e.get("role") == "user"]
+        prompts = [
+            e.get("content")
+            for e in history
+            if e.get("event") == "prompt" or e.get("role") == "user"
+        ]
         if len(prompts) > 10:
             unique_prompts = set([str(p) for p in prompts])
             if len(unique_prompts) < len(prompts) / 2:
@@ -238,7 +261,7 @@ class TriageEngine:
                     "index": 0,
                     "confidence": 0.9,
                     "reason": "Infinite Loop Detected (Repetitive Interaction Pattern).",
-                    "suggestion": "Review agent logic for circular reasoning or missing termination guards.",
+                    "suggestion": "Review agent logic for circular reasoning or missing termination guards.",  # noqa: E501
                 }
 
         # 4. Final Fallback: If run_end says failure but nothing else found
@@ -257,8 +280,8 @@ class TriageEngine:
                         return {
                             "index": i,
                             "confidence": 0.5,
-                            "reason": "Target Task Not Completed. Identified last substantive agent action before run failure.",
-                            "suggestion": "Increase EVAL_MAX_TURNS or refine the agent's prompt to be more specific.",
+                            "reason": "Target Task Not Completed. Identified last substantive agent action before run failure.",  # noqa: E501
+                            "suggestion": "Increase EVAL_MAX_TURNS or refine the agent's prompt to be more specific.",  # noqa: E501
                         }
             # Catch-all for failed status even without agent actions in history
             return {
@@ -281,12 +304,12 @@ class TriageEngine:
         }
 
     @staticmethod
-    def identify_root_cause_index(history: List[Dict[str, Any]]) -> int:
+    def identify_root_cause_index(history: list[dict[str, Any]]) -> int:
         """Backwards compatible wrapper for the index only."""
         return TriageEngine.identify_root_cause(history)["index"]
 
     @classmethod
-    def apply_triage(cls, all_results: List[Dict[str, Any]]):
+    def apply_triage(cls, all_results: list[dict[str, Any]]):
         """Adds triage tags to all failed results."""
         for result in all_results:
             metrics = result.get("metrics", [])

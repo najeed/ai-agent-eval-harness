@@ -1,7 +1,9 @@
 import json
-import pytest
 from pathlib import Path
+
+import pytest
 from jsonschema import validate
+
 from eval_runner import scaffold
 
 # Resolve paths
@@ -11,7 +13,7 @@ SCHEMA_PATH = BASE_DIR / "schemas" / "scenario.schema.json"
 
 @pytest.fixture
 def scenario_schema():
-    with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
+    with open(SCHEMA_PATH, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -36,7 +38,7 @@ def test_generated_scenario_compliance(tmp_path, scenario_schema, monkeypatch):
     assert gen_file.exists()
 
     # Validate against schema
-    with open(gen_file, "r", encoding="utf-8") as f:
+    with open(gen_file, encoding="utf-8") as f:
         generated_json = json.load(f)
 
     # This will raise ValidationError if invalid

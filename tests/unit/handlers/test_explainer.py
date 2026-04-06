@@ -1,6 +1,6 @@
-import pytest
 from pathlib import Path
 from unittest.mock import MagicMock
+
 from eval_runner.explainer import explain_trace
 
 

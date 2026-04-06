@@ -1,10 +1,11 @@
-import pytest
-import os
-from pathlib import Path
 import json
+
+import pytest
+
 from eval_runner import catalog
 
 ScenarioCatalog = catalog.ScenarioCatalog
+
 
 @pytest.fixture(autouse=True)
 def reset_catalog():
@@ -34,7 +35,7 @@ def test_catalog_indexing(tmp_path):
     catalog.build_index(root_dir=str(industries_dir))
     assert index_file.exists()
 
-    with open(index_file, "r") as f:
+    with open(index_file) as f:
         data = json.load(f)
         assert len(data["scenarios"]) == 1
         assert data["scenarios"][0]["id"] == "scen_1"

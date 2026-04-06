@@ -1,6 +1,5 @@
 import pytest
-import json
-from pathlib import Path
+
 from eval_runner.analyzer import analyze_repo
 
 
@@ -24,6 +23,6 @@ async def test_analyze_repo_finance(tmp_path, monkeypatch):
     results = await analyze_repo("http://github.com/finance-agent")
     assert len(results) > 0
     assert "market.py" in results[1]["metadata"]["source_file"]
-    
+
     auto_dir = tmp_path / "scenarios" / "auto"
     assert len(list(auto_dir.glob("*.json"))) >= 2

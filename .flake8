@@ -1,0 +1,21 @@
+[flake8]
+max-line-length = 100
+exclude = 
+    .git,
+    __pycache__,
+    venv,
+    .venv,
+    node_modules,
+    dist,
+    build,
+    walkthroughs,
+    docs,
+    examples,
+    sample_agent,
+    .aes,
+    reports,
+    results,
+    runs
+extend-ignore = E203, W503
+max-complexity = 15
+select = B,C,E,F,W,T4,B9

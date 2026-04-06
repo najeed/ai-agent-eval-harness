@@ -1,19 +1,26 @@
 import json
 import logging
 from pathlib import Path
-import sys
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger("scenario_enricher")
 
-INDUSTRIES_TO_ENRICH = ["telecom", "finance", "healthcare", "manufacturing", "energy", "defense", "public-sector"]
+INDUSTRIES_TO_ENRICH = [
+    "telecom",
+    "finance",
+    "healthcare",
+    "manufacturing",
+    "energy",
+    "defense",
+    "public-sector",
+]
 
 
 def enrich_scenario(file_path: Path) -> bool:
     """Injects state, governance, and state verification metrics into the scenario."""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
 
         # Check if already enriched
@@ -47,9 +54,7 @@ def enrich_scenario(file_path: Path) -> bool:
                 if not has_state_metric:
                     # Add dummy state change to test state_verification
                     if "expected_state_changes" not in node:
-                        node["expected_state_changes"] = [
-                            {"path": "task_completed", "value": True}
-                        ]
+                        node["expected_state_changes"] = [{"path": "task_completed", "value": True}]
 
                     if "success_criteria" not in node:
                         node["success_criteria"] = []
@@ -59,9 +64,7 @@ def enrich_scenario(file_path: Path) -> bool:
                     )
                     modified = True
 
-        if (
-            modified or "initial_state" not in data
-        ):  # Save if we modified nodes or added state
+        if modified or "initial_state" not in data:  # Save if we modified nodes or added state
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
             return True
@@ -86,9 +89,7 @@ def main():
             if enrich_scenario(scenario_file):
                 total_enriched += 1
 
-    logger.info(
-        f"Successfully enriched {total_enriched} scenarios across Gold Tier industries."
-    )
+    logger.info(f"Successfully enriched {total_enriched} scenarios across Gold Tier industries.")
 
 
 if __name__ == "__main__":

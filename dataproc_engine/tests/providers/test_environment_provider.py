@@ -2,10 +2,11 @@
 test_environment_provider.py
 Coverage for EnvironmentProvider — NOAA and Copernicus modes.
 """
+
 import pytest
-from unittest.mock import patch
-from dataproc_engine.providers.public_sector.environment import EnvironmentProvider
+
 from dataproc_engine.core.llm_manager import LLMManager
+from dataproc_engine.providers.public_sector.environment import EnvironmentProvider
 
 
 @pytest.mark.asyncio
@@ -97,18 +98,35 @@ async def test_environment_noaa_no_simulation_returns_empty():
 def test_environment_validate_celsius_bounds():
     """validate() rejects temperatures outside physically plausible Celsius range."""
     from dataproc_engine.core.base_provider import StandardSchema
+
     config = {"environment_mode": "noaa"}
     provider = EnvironmentProvider(config, llm_manager=LLMManager({"llm_strategy": "mock"}))
 
     valid_record = StandardSchema(
-        id="r1", industry="environment",
-        data={"location": "NYC", "timestamp": "2023-01-01", "metric": "TMAX", "value": 20.0, "unit": "Celsius"},
-        provenance={}, checksum=""
+        id="r1",
+        industry="environment",
+        data={
+            "location": "NYC",
+            "timestamp": "2023-01-01",
+            "metric": "TMAX",
+            "value": 20.0,
+            "unit": "Celsius",
+        },
+        provenance={},
+        checksum="",
     )
     out_of_range_record = StandardSchema(
-        id="r2", industry="environment",
-        data={"location": "NYC", "timestamp": "2023-01-01", "metric": "TMAX", "value": 75.0, "unit": "Celsius"},
-        provenance={}, checksum=""
+        id="r2",
+        industry="environment",
+        data={
+            "location": "NYC",
+            "timestamp": "2023-01-01",
+            "metric": "TMAX",
+            "value": 75.0,
+            "unit": "Celsius",
+        },
+        provenance={},
+        checksum="",
     )
     assert provider.validate([valid_record]) is True
     assert provider.validate([out_of_range_record]) is False
@@ -117,20 +135,35 @@ def test_environment_validate_celsius_bounds():
 def test_environment_validate_kelvin_bounds():
     """validate() rejects Kelvin values outside physically plausible range."""
     from dataproc_engine.core.base_provider import StandardSchema
+
     config = {"environment_mode": "copernicus"}
     provider = EnvironmentProvider(config, llm_manager=LLMManager({"llm_strategy": "mock"}))
 
     valid_k = StandardSchema(
-        id="r1", industry="environment",
-        data={"location": "52.5, 13.4", "timestamp": "2023-01-01T12:00:00Z",
-              "metric": "Temperature (2m)", "value": 280.1, "unit": "K"},
-        provenance={}, checksum=""
+        id="r1",
+        industry="environment",
+        data={
+            "location": "52.5, 13.4",
+            "timestamp": "2023-01-01T12:00:00Z",
+            "metric": "Temperature (2m)",
+            "value": 280.1,
+            "unit": "K",
+        },
+        provenance={},
+        checksum="",
     )
     invalid_k = StandardSchema(
-        id="r2", industry="environment",
-        data={"location": "52.5, 13.4", "timestamp": "2023-01-01T12:00:00Z",
-              "metric": "Temperature (2m)", "value": 10.0, "unit": "K"},  # <150 K → invalid
-        provenance={}, checksum=""
+        id="r2",
+        industry="environment",
+        data={
+            "location": "52.5, 13.4",
+            "timestamp": "2023-01-01T12:00:00Z",
+            "metric": "Temperature (2m)",
+            "value": 10.0,
+            "unit": "K",
+        },  # <150 K → invalid
+        provenance={},
+        checksum="",
     )
     assert provider.validate([valid_k]) is True
     assert provider.validate([invalid_k]) is False

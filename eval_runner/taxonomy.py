@@ -6,7 +6,7 @@ Maps trajectory patterns to industry-standard failure categories.
 """
 
 import re
-from typing import Dict, Any, List
+from typing import Any
 
 CATEGORIES = [
     "tool_call_error",
@@ -22,7 +22,7 @@ class FailureTaxonomy:
     """Classifies agent failures based on conversation history and tool results."""
 
     @staticmethod
-    def classify(task_result: Dict[str, Any]) -> str:
+    def classify(task_result: dict[str, Any]) -> str:
         """Determines the specific failure category for a non-successful run."""
         metrics = task_result.get("metrics", [])
         history = task_result.get("conversation_history", [])

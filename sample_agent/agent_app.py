@@ -2,7 +2,7 @@
 # A simple, rule-based AI agent simulator using the Flask web framework.
 # This agent is designed to handle the "Home Internet Troubleshooting - Slow Speed" scenario.
 
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
 
 # --- 1. Agent Setup ---
 # Initialize the Flask application
@@ -137,14 +137,11 @@ def execute_task():
         print(f"\nAGENT: Received task: '{task_desc}'")
 
         # Rule-based decision logic
-        if (
-            "tools returned" in task_desc
-            or "modem is receiving full speed" in task_desc
-        ):
+        if "tools returned" in task_desc or "modem is receiving full speed" in task_desc:
             print("AGENT: Decided that task is complete.")
             agent_response = {
                 "action": "final_answer",
-                "summary": "The diagnostic tests are complete. I have identified the customer and verified the connection status.",
+                "summary": "The diagnostic tests are complete. I have identified the customer and verified the connection status.",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
@@ -156,7 +153,7 @@ def execute_task():
                 "tool_name": "get_customer_details",
                 "tool_params": {"customer_id": customer_id},
                 "tool_output": tool_result,
-                "summary": f"Identified customer {tool_result['customer_name']} on plan {tool_result['plan']}.",
+                "summary": f"Identified customer {tool_result['customer_name']} on plan {tool_result['plan']}.",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
@@ -168,7 +165,7 @@ def execute_task():
                 "action": "call_multiple_tools",
                 "tool_names": ["run_line_test", "run_remote_speed_test"],
                 "tool_outputs": [line_result, speed_result],
-                "summary": f"Remote diagnostics complete. Modem is receiving full speed ({speed_result['download_speed_mbps']} Mbps).",
+                "summary": f"Remote diagnostics complete. Modem is receiving full speed ({speed_result['download_speed_mbps']} Mbps).",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
@@ -176,7 +173,7 @@ def execute_task():
             print("AGENT: Decided to provide instructions.")
             agent_response = {
                 "action": "provide_instructions",
-                "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com.",
+                "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com.",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
@@ -188,7 +185,7 @@ def execute_task():
                 "tool_name": "provide_wifi_optimization_guide",
                 "tool_params": {"customer_id": customer_id},
                 "tool_output": tool_result,
-                "summary": f"The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: {tool_result['guide_url']}",
+                "summary": f"The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: {tool_result['guide_url']}",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
@@ -202,7 +199,7 @@ def execute_task():
                 "tool_name": "get_order_details",
                 "tool_params": {"order_id": "OM-5566"},
                 "tool_output": tool_result,
-                "summary": f"Order #OM-5566 found with status '{tool_result['status_label']}' and amount ${tool_result['amount']}.",
+                "summary": f"Order #OM-5566 found with status '{tool_result['status_label']}' and amount ${tool_result['amount']}.",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
@@ -244,7 +241,7 @@ def execute_task():
                     "message": "Your refund for order #OM-5566 has been processed.",
                 },
                 "tool_output": tool_result,
-                "summary": "Notified the customer jane.doe@example.com about the refund and apologized for the delay.",
+                "summary": "Notified the customer jane.doe@example.com about the refund and apologized for the delay.",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
@@ -254,9 +251,11 @@ def execute_task():
             print("AGENT: Decided to use 'get_provider_record'")
             tool_result = get_provider_record("AUTH-99")
             # Handle angry persona sub-context if present
-            summary = f"Retrieved AUTH-99 from general hospital. Status is {tool_result['auth_status']}."
+            summary = (
+                f"Retrieved AUTH-99 from general hospital. Status is {tool_result['auth_status']}."
+            )
             if "yelling" in task_desc:
-                summary = "I have professionally de-escalated the yelling patient and retrieved the AUTH-99 record from General Hospital as requested."
+                summary = "I have professionally de-escalated the yelling patient and retrieved the AUTH-99 record from General Hospital as requested."  # noqa: E501
 
             agent_response = {
                 "action": "call_tool",
@@ -275,15 +274,13 @@ def execute_task():
                 "tool_name": "check_insurance_authorization",
                 "tool_params": {"auth_code": "AUTH-99"},
                 "tool_output": tool_result,
-                "summary": f"Insurance audit complete. AUTH-99 is {tool_result['auth_status']} due to {tool_result['reason']}.",
+                "summary": f"Insurance audit complete. AUTH-99 is {tool_result['auth_status']} due to {tool_result['reason']}.",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
         elif "propose a 'correction request'" in task_desc:
             print("AGENT: Decided to use 'submit_claim_correction'")
-            tool_result = submit_claim_correction(
-                "AUTH-99", {"reason": "Data Reconciled"}
-            )
+            tool_result = submit_claim_correction("AUTH-99", {"reason": "Data Reconciled"})
             agent_response = {
                 "action": "call_tool",
                 "tool_name": "submit_claim_correction",
@@ -292,20 +289,18 @@ def execute_task():
                     "updates": {"reason": "Data Reconciled"},
                 },
                 "tool_output": tool_result,
-                "summary": "Successfully submitted a claim correction for AUTH-99. Status is now 'Under Review'.",
+                "summary": "Successfully submitted a claim correction for AUTH-99. Status is now 'Under Review'.",  # noqa: E501
                 "name": "Luna-Sample-Agent",
             }
 
-        elif (
-            "notify john smith" in task_desc or "notify the angry patient" in task_desc
-        ):
+        elif "notify john smith" in task_desc or "notify the angry patient" in task_desc:
             print("AGENT: Decided to use 'send_patient_update'")
             tool_result = send_patient_update(
                 "john.smith@example.com", "Your claim correction has been submitted."
             )
             summary = "Notified John Smith about the claim correction."
             if "threatened to post a negative viral review" in task_desc:
-                summary = "Provided an extremely apologetic and professional update to the patient, preventing the negative review and confirming the correction status."
+                summary = "Provided an extremely apologetic and professional update to the patient, preventing the negative review and confirming the correction status."  # noqa: E501
 
             agent_response = {
                 "action": "call_tool",

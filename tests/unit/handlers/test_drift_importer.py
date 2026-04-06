@@ -1,6 +1,7 @@
 import json
+
 import pytest
-from pathlib import Path
+
 from eval_runner.drift_importer import import_trace_as_scenario
 
 
@@ -22,7 +23,7 @@ def test_import_trace_as_scenario(tmp_path):
 
     # Verify output
     assert scenario_path.exists()
-    with open(scenario_path, "r") as f:
+    with open(scenario_path) as f:
         scenario = json.loads(f.read())
 
     assert scenario["version"] == "2.0.0"

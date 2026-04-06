@@ -1,5 +1,7 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+
 from eval_runner.metrics import MetricRegistry
 
 # Note: These tests are written prior to implementation (TDD).
@@ -53,7 +55,9 @@ async def test_planning_quality_uses_correct_rubric(mock_factory):
     with patch("eval_runner.rubrics.RubricRegistry.get") as mock_rubric_get:
         mock_rubric_get.return_value = "Mock Planning Rubric {expected_outcome} {agent_summary}"
 
-        await calculate_planning_quality({"expected_outcome": "Plan A", "required": True}, "Agent Plan B")
+        await calculate_planning_quality(
+            {"expected_outcome": "Plan A", "required": True}, "Agent Plan B"
+        )
 
         # Verify it requested the correct rubric
         mock_rubric_get.assert_called_with("strategic_planning")

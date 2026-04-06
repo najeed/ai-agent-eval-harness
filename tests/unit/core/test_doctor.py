@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 import pytest
-import os
-from unittest.mock import patch, AsyncMock
+
 from eval_runner.doctor import check_agent_reachable, run_doctor
 
 
@@ -31,6 +32,7 @@ async def test_run_doctor_smoke():
 @pytest.mark.asyncio
 async def test_run_doctor_old_python():
     from collections import namedtuple
+
     VersionInfo = namedtuple("VersionInfo", ["major", "minor", "micro"])
     with patch("sys.version_info", VersionInfo(3, 8, 0)):
         with patch("builtins.print") as mock_print:

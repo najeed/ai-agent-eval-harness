@@ -7,9 +7,11 @@ Processes run.jsonl files from a batch and computes publication metrics.
 
 import json
 import math
-import yaml
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
+
+import yaml
+
 try:
     from .taxonomy import FailureTaxonomy
 except ImportError:
@@ -19,7 +21,7 @@ except ImportError:
 class Aggregator:
     def __init__(self, manifest_path: str):
         self.manifest_path = Path(manifest_path)
-        with open(self.manifest_path, "r") as f:
+        with open(self.manifest_path) as f:
             self.manifest = json.load(f)
         self.config = self._load_config()
 
@@ -27,16 +29,16 @@ class Aggregator:
         suite_dir = Path(__file__).parent.absolute()
         config_path = suite_dir / "config.yaml"
         if config_path.exists():
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return yaml.safe_load(f)
         return {"pricing": {}, "confidence_level": 0.95}
 
-    def _calculate_cost(self, events: List[Dict[str, Any]]):
+    def _calculate_cost(self, events: list[dict[str, Any]]):
         # Scan events for token usage or tool calls
         total_tokens = 0
         for e in events:
             if e.get("event") == "agent_response":
-                # Use a character-based heuristic (standard in LLM pricing when token counts aren't logged)
+                # Use a character-based heuristic (standard in LLM pricing when token counts aren't logged), E501, E501
                 # 1 token ~= 4 characters for English text.
                 total_tokens += len(str(e.get("content", ""))) // 4
 
@@ -54,7 +56,7 @@ class Aggregator:
             return 0.0
         z = 1.96
         denominator = 1 + z**2 / n
-        centre_adj_probability = p + z**2 / (2 * n)
+        p + z**2 / (2 * n)
         adjusted_standard_deviation = math.sqrt((p * (1 - p) + z**2 / (4 * n)) / n)
         return (z * adjusted_standard_deviation) / denominator
 
@@ -72,7 +74,7 @@ class Aggregator:
                 continue
 
             events = []
-            with open(log_path, "r") as f:
+            with open(log_path) as f:
                 for line in f:
                     if line.strip():
                         events.append(json.loads(line))
@@ -90,25 +92,16 @@ class Aggregator:
 
             # Determine success from events
             eval_events = [e for e in events if e.get("event") == "evaluation"]
-            is_success = (
-                all(e.get("success", False) for e in eval_events)
-                if eval_events
-                else False
-            )
+            is_success = all(e.get("success", False) for e in eval_events) if eval_events else False
             res["passes"].append(is_success)
 
             # Latency: time between run_start and run_end
-            start_event = next(
-                (e for e in events if "start" in str(e.get("event")).lower()), None
-            )
-            end_event = next(
-                (e for e in events if "end" in str(e.get("event")).lower()), None
-            )
+            start_event = next((e for e in events if "start" in str(e.get("event")).lower()), None)
+            end_event = next((e for e in events if "end" in str(e.get("event")).lower()), None)
 
             duration = 2.5  # Default fallback
             if start_event and end_event:
                 try:
-                    from datetime import datetime
                     from datetime import datetime
 
                     def parse_ts(ts):
@@ -162,13 +155,9 @@ class Aggregator:
                 "pass_rate": pass_rate,
                 "confidence_interval_95": self._wilson_score_interval(pass_rate, n),
                 "avg_latency": (
-                    sum(data["latencies"]) / len(data["latencies"])
-                    if data["latencies"]
-                    else 0
+                    sum(data["latencies"]) / len(data["latencies"]) if data["latencies"] else 0
                 ),
-                "avg_cost": (
-                    sum(data["costs"]) / len(data["costs"]) if data["costs"] else 0
-                ),
+                "avg_cost": (sum(data["costs"]) / len(data["costs"]) if data["costs"] else 0),
                 "failure_distribution": (
                     {
                         cat: data["failures"].count(cat) / len(data["failures"])

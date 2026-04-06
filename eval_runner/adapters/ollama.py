@@ -1,7 +1,9 @@
+from typing import Any
+
 import aiohttp
-from typing import Any, Dict
-from ..plugins import BaseEvalPlugin
+
 from .. import config
+from ..plugins import BaseEvalPlugin
 
 
 class OllamaAdapterPlugin(BaseEvalPlugin):
@@ -15,7 +17,9 @@ class OllamaAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Ollama adapter via on_discover_adapters hook.")
         registry.register("ollama", self.execute_ollama_query)
 
-    async def execute_ollama_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
+    async def execute_ollama_query(
+        self, payload: dict[str, Any], url: str = None
+    ) -> dict[str, Any]:
         """
         Executes a query against a local Ollama instance.
         Expects payload to contain 'model' and 'task' (or 'messages').

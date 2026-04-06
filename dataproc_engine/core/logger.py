@@ -1,23 +1,24 @@
-﻿import json
-import logging
 import datetime
-from typing import Any, Dict
+import json
+import logging
+
 
 class StructuredLogger:
     """
     Standardized logger for dataproc-engine that outputs JSON for machine-readability.
     """
+
     def __init__(self, name: str):
         self.logger = logging.getLogger(name)
         self.name = name
 
     def _log(self, level: int, event: str, **kwargs):
         log_entry = {
-            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
             "level": logging.getLevelName(level),
             "logger": self.name,
             "event": event,
-            **kwargs
+            **kwargs,
         }
         self.logger.log(level, json.dumps(log_entry))
 
@@ -32,8 +33,3 @@ class StructuredLogger:
 
     def critical(self, event: str, **kwargs):
         self._log(logging.CRITICAL, event, **kwargs)
-
-
-
-
-

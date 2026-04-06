@@ -1,8 +1,8 @@
 {
   "metadata": {
     "last_scanned_count": 5055,
-    "last_scanned_mtime": 1775261747.7530043,
-    "updated_at": "2026-04-04T05:45:49.387344+05:30"
+    "last_scanned_mtime": 1775465856.6001997,
+    "updated_at": "2026-04-06T14:27:52.537769+05:30"
   },
   "scenarios": [
     {
@@ -60408,7 +60408,7 @@
       "difficulty": 1,
       "tags": [],
       "path": "scenarios/index.json",
-      "mtime": 1775261747.7530043,
+      "mtime": 1775465856.6001997,
       "description": "",
       "lint_score": 100,
       "status": "pass"

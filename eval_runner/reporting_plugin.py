@@ -5,13 +5,12 @@ Handles evaluation reports, reproduction scripts, and notifications.
 Moved out of the core to allow Enterprise hot-swapping.
 """
 
-from .plugins import BaseEvalPlugin
-from .context import EvaluationContext
-from . import reporter
-from . import triage
-from . import metrics
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+from . import metrics, reporter, triage
+from .context import EvaluationContext
+from .plugins import BaseEvalPlugin
 
 
 class ReportingPlugin(BaseEvalPlugin):
@@ -22,7 +21,7 @@ class ReportingPlugin(BaseEvalPlugin):
         if len(all_attempt_results) < 2:
             return
 
-        print(f"   [ReportingPlugin] Calculating cross-attempt consistency...")
+        print("   [ReportingPlugin] Calculating cross-attempt consistency...")
 
         # Calculate consistency per task
         num_tasks = len(all_attempt_results[0])
@@ -36,7 +35,7 @@ class ReportingPlugin(BaseEvalPlugin):
 
             consistency_score = metrics.calculate_consistency_score(summaries)
 
-            # Inject consistency metric into the last attempt's results for backward compat with tests
+            # Inject consistency metric into the last attempt's results for backward compat with tests, E501, E501  # noqa: E501
             last_task_res = all_attempt_results[-1][t_idx]
             last_task_res["metrics"].append(
                 {
@@ -74,7 +73,9 @@ class ReportingPlugin(BaseEvalPlugin):
 
         # 1. Standard Summary Report
         print("\n   [ReportingPlugin] Generating summary report...")
-        reporter.generate_report(scenario, display_results, export_trajectory=True, metadata=context.metadata)
+        reporter.generate_report(
+            scenario, display_results, export_trajectory=True, metadata=context.metadata
+        )
 
         # 2. Reproduction Script (Mock implementation)
         self.generate_repro_script(context)
@@ -122,7 +123,7 @@ class ReportingPlugin(BaseEvalPlugin):
 
         # Strip potential arbitrary execution
         content = f"""# Reproduction script for {scenario_id}
-# Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+# Generated on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 # 
 # Usage:
 # 1. Ensure you have the multiagent-eval installed: pip install .
@@ -161,11 +162,11 @@ multiagent-eval run --scenario {scenario_path}
                 successes += 1
 
         payload = {
-            "text": f"🚀 *Evaluation Complete*\n*Scenario*: {context.scenario_id}\n*Success Rate*: {successes}/{total} tasks passed.",
+            "text": f"🚀 *Evaluation Complete*\n*Scenario*: {context.scenario_id}\n*Success Rate*: {successes}/{total} tasks passed.",  # noqa: E501
             "attachments": [
                 {
                     "title": "View Report",
-                    "text": f"Reproduction script generated: reports/repro/repro_{context.scenario_id}.txt",
+                    "text": f"Reproduction script generated: reports/repro/repro_{context.scenario_id}.txt",  # noqa: E501
                 }
             ],
         }

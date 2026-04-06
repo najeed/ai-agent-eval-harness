@@ -7,12 +7,11 @@ Supports parallel execution, seeded randomness, retry logic, and publication dat
 
 import argparse
 import asyncio
-import subprocess
 import json
-import os
 import random
-from pathlib import Path
+import subprocess
 from multiprocessing import Pool
+from pathlib import Path
 
 
 def run_single_eval(args_tuple):
@@ -43,9 +42,7 @@ def run_single_eval(args_tuple):
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
             return True
-        print(
-            f"   [Retry] Attempt {attempt+1} failed for {scenario_path.name}. Retrying..."
-        )
+        print(f"   [Retry] Attempt {attempt + 1} failed for {scenario_path.name}. Retrying...")
 
     return False
 
@@ -53,22 +50,12 @@ def run_single_eval(args_tuple):
 async def main():
     parser = argparse.ArgumentParser(description="MultiAgentEval Scale Runner")
     parser.add_argument("--path", required=True, help="Path to scenario directory")
-    parser.add_argument(
-        "--agent-name", default="Scale-Agent-X", help="Name for leaderboard"
-    )
+    parser.add_argument("--agent-name", default="Scale-Agent-X", help="Name for leaderboard")
     parser.add_argument("--protocol", default="http", help="Agent protocol")
-    parser.add_argument(
-        "--agent", default="http://localhost:5001/execute_task", help="Agent URL"
-    )
-    parser.add_argument(
-        "--runs", type=int, default=10, help="Number of total runs to perform"
-    )
-    parser.add_argument(
-        "--parallel", type=int, default=4, help="Number of parallel workers"
-    )
-    parser.add_argument(
-        "--pilot", action="store_true", help="Quick-run mode (3 runs, 1 worker)"
-    )
+    parser.add_argument("--agent", default="http://localhost:5001/execute_task", help="Agent URL")
+    parser.add_argument("--runs", type=int, default=10, help="Number of total runs to perform")
+    parser.add_argument("--parallel", type=int, default=4, help="Number of parallel workers")
+    parser.add_argument("--pilot", action="store_true", help="Quick-run mode (3 runs, 1 worker)")
     parser.add_argument("--resume", action="store_true", help="Resume from checkpoint")
     parser.add_argument("--seed", type=int, help="Base seed for reproducibility")
     parser.add_argument(
@@ -113,13 +100,13 @@ async def main():
                 task_idx += 1
 
     print(
-        f"[ScaleRunner] Starting scale run: {len(all_tasks)} total evaluations across {args.parallel} workers (Base Seed: {base_seed})..."
+        f"[ScaleRunner] Starting scale run: {len(all_tasks)} total evaluations across {args.parallel} workers (Base Seed: {base_seed})..."  # noqa: E501
     )
 
     checkpoint_path = Path("reports/scale_checkpoint.json")
     completed = 0
     if args.resume and checkpoint_path.exists():
-        with open(checkpoint_path, "r") as f:
+        with open(checkpoint_path) as f:
             completed = json.load(f).get("completed", 0)
             print(f"[ScaleRunner] Resuming from task {completed}...")
             all_tasks = all_tasks[completed:]
@@ -132,16 +119,14 @@ async def main():
                     try:
                         with open(checkpoint_path, "w") as f:
                             json.dump({"completed": completed}, f)
-                    except:
+                    except:  # noqa: E722
                         pass
-                    print(
-                        f"[ScaleRunner] Progress: {completed}/{args.runs} runs completed."
-                    )
+                    print(f"[ScaleRunner] Progress: {completed}/{args.runs} runs completed.")
 
     print("\n" + "=" * 40)
-    print(f"[ScaleRunner] Scale campaign finished!")
+    print("[ScaleRunner] Scale campaign finished!")
     print(f"[ScaleRunner] Total Successful Runs: {completed}")
-    print(f"[ScaleRunner] Results aggregated in reports/publication_data.json")
+    print("[ScaleRunner] Results aggregated in reports/publication_data.json")
     print("=" * 40)
 
 

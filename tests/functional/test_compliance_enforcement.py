@@ -1,13 +1,15 @@
-import pytest
 import json
-import jsonschema
 from pathlib import Path
+
+import jsonschema
+import pytest
+
 
 @pytest.fixture
 def scenario_schema():
     """Robustly locate the scenario schema across diverse execution environments."""
     from eval_runner import config
-    
+
     # Cascade discovery:
     # 1. Authoritative config path
     # 2. Repo-relative path (from tests/functional/)
@@ -15,34 +17,38 @@ def scenario_schema():
     candidates = [
         config.PROJECT_ROOT / "schemas" / "scenario.schema.json",
         Path(__file__).parents[2] / "schemas" / "scenario.schema.json",
-        Path(__file__).parents[3] / "schemas" / "scenario.schema.json"
+        Path(__file__).parents[3] / "schemas" / "scenario.schema.json",
     ]
-    
+
     schema_path = None
     for cand in candidates:
         if cand.exists():
             schema_path = cand
             break
-            
+
     if not schema_path:
-        # Fallback for strict jails: try to find anything named scenario.schema.json in the whole tree
+        # Fallback for strict jails: try to find anything named scenario.schema.json in the whole tree, E501, E501  # noqa: E501
         # (This is expensive but better than a hard failure in restricted CI)
-        for root, dirs, files in os.walk(config.PROJECT_ROOT):
+        for root, _dirs, files in os.walk(config.PROJECT_ROOT):
             if "scenario.schema.json" in files:
                 schema_path = Path(root) / "scenario.schema.json"
                 break
-    
+
     if not schema_path:
-        pytest.skip("Scenario schema (scenario.schema.json) not found in the current execution environment.")
-        
-    with open(schema_path, "r", encoding="utf-8") as f:
+        pytest.skip(
+            "Scenario schema (scenario.schema.json) not found in the current execution environment."
+        )
+
+    with open(schema_path, encoding="utf-8") as f:
         return json.load(f)
 
-import os
+
+import os  # noqa: E402
+
 
 def test_enforce_min_judges_and_compliance(scenario_schema):
     """Verify that scenarios missing required 1.2 properties fail validation."""
-    
+
     # 1. Valid Scenario (passes)
     valid_scenario = {
         "aes_version": 1.2,
@@ -50,20 +56,10 @@ def test_enforce_min_judges_and_compliance(scenario_schema):
             "scenario_id": "test_pass",
             "name": "Test Scenario",
             "industry": "finance",
-            "compliance_level": "Regulatory_Audit"
+            "compliance_level": "Regulatory_Audit",
         },
-        "workflow": {
-            "nodes": [
-                {"id": "node_1", "task_description": "test task"}
-            ],
-            "edges": []
-        },
-        "evaluation": {
-            "consensus": {
-                "strategy": "Majority_Vote",
-                "min_judges": 1
-            }
-        }
+        "workflow": {"nodes": [{"id": "node_1", "task_description": "test task"}], "edges": []},
+        "evaluation": {"consensus": {"strategy": "Majority_Vote", "min_judges": 1}},
     }
     jsonschema.validate(instance=valid_scenario, schema=scenario_schema)
 

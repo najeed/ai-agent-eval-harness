@@ -5,8 +5,8 @@ Manually/Automated verification of core harness features.
 Generates a capability matrix for publication.
 """
 
-import subprocess
 import json
+import subprocess
 from pathlib import Path
 
 FEATURES = [
@@ -66,9 +66,7 @@ def verify():
     for feature in FEATURES:
         print(f"\n[Verifying] {feature['name']}...")
         try:
-            res = subprocess.run(
-                feature["cmd"], capture_output=True, text=True, timeout=30
-            )
+            res = subprocess.run(feature["cmd"], capture_output=True, text=True, timeout=30)
             status = "PASS" if res.returncode == 0 else "FAIL"
             print(f"   -> Result: {status}")
             if status == "FAIL":
@@ -77,9 +75,7 @@ def verify():
             status = "ERROR"
             print(f"   -> Error: {e}")
 
-        matrix.append(
-            {"feature": feature["name"], "status": status, "id": feature["id"]}
-        )
+        matrix.append({"feature": feature["name"], "status": status, "id": feature["id"]})
 
     output_path = Path("reports/capability_matrix.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)

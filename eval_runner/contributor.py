@@ -1,9 +1,9 @@
-import os
 import json
 from pathlib import Path
-from .linter import ScenarioLinter
-from . import loader
+
 from . import mutator
+from .linter import ScenarioLinter
+
 
 class ContributeWizard:
     """Guided wizard for creating and contributing new agent scenarios."""
@@ -17,8 +17,10 @@ class ContributeWizard:
 
         # 1. Scaffolding
         title = input("1. Enter Scenario Title (e.g., 'Return Policy Inquiries'): ").strip()
-        industry = input("2. Enter Industry (e.g., 'retail', 'finance', 'telecom'): ").strip() or "generic"
-        
+        industry = (
+            input("2. Enter Industry (e.g., 'retail', 'finance', 'telecom'): ").strip() or "generic"
+        )
+
         scenario_id = title.lower().replace(" ", "-")
         filename = f"{scenario_id}.json"
         target_dir = Path("industries") / industry / "scenarios"
@@ -40,9 +42,9 @@ class ContributeWizard:
                     "description": "User asks a basic question about...",
                     "expected_outcome": "Agent provides a clear, accurate answer...",
                     "success_criteria": ["Accuracy", "Clarity"],
-                    "tools": []
+                    "tools": [],
                 }
-            ]
+            ],
         }
 
         with open(target_path, "w", encoding="utf-8") as f:
@@ -54,19 +56,25 @@ class ContributeWizard:
         print("-" * 60)
         linter = ScenarioLinter()
         report = linter.lint(str(target_path))
-        
+
         print(f"File:  {target_path}")
         print(f"Score: {report['score']}/100")
         print(f"Tier:  {report['tier']}")
-        
-        if report['tier'] != "GOLD":
-            print("\n[TIP] To reach GOLD tier, ensure all tasks have success_criteria and complexity_level is set.")
-            for warn in report.get('warnings', []):
+
+        if report["tier"] != "GOLD":
+            print(
+                "\n[TIP] To reach GOLD tier, ensure all tasks have success_criteria and complexity_level is set."  # noqa: E501
+            )
+            for warn in report.get("warnings", []):
                 print(f"  ⚠ {warn}")
 
         # 3. Mutation Pack (Optional)
-        do_mutate = input("\nWould you like to generate adversarial variants (typos, injections)? (y/N): ").strip().lower()
-        if do_mutate == 'y':
+        do_mutate = (
+            input("\nWould you like to generate adversarial variants (typos, injections)? (y/N): ")
+            .strip()
+            .lower()
+        )
+        if do_mutate == "y":
             print("[Mutator] Generating typo variant...")
             mutated = mutator.mutate_scenario(stub, "typo")
             mutated_path = target_path.parent / f"{target_path.stem}_typo.json"

@@ -1,7 +1,6 @@
-import pytest
-from eval_runner.tool_sandbox import ToolSandbox
 from eval_runner.plugins import BaseEvalPlugin, manager
 from eval_runner.simulators import get_simulator_registry
+from eval_runner.tool_sandbox import ToolSandbox
 
 
 class CustomShim:
@@ -29,8 +28,9 @@ def test_shim_hot_swapping():
         # 3. Execute via sandbox
         # Mocking admin approval for 'custom' shim as per new Master Gate architecture
         from unittest.mock import patch
+
         from eval_runner import config
-        
+
         with patch.object(config, "GLOBAL_ENABLED_SHIMS", config.GLOBAL_ENABLED_SHIMS + ["custom"]):
             scenario = {"scenario_id": "test"}
             sandbox = ToolSandbox(scenario)

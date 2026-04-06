@@ -1,8 +1,6 @@
 import asyncio
+
 import aiohttp
-from datetime import datetime
-from . import engine
-from . import reporter
 
 
 async def run_playground(agent_url: str):
@@ -26,7 +24,9 @@ async def run_playground(agent_url: str):
                 # We mock a minimal scenario/task object for the engine logic
                 # to stay consistent with how we track metrics if we wanted to.
                 # For now, let's keep it direct.
-                async with session.post(agent_url, json={"task_description": task}, timeout=10) as response:
+                async with session.post(
+                    agent_url, json={"task_description": task}, timeout=10
+                ) as response:
                     if response.status == 200:
                         data = await response.json()
 

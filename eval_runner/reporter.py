@@ -7,15 +7,15 @@ This module provides reporting utilities for MultiAgentEval.
 It generates summary reports, exports detailed trajectories, and generates Mermaid visualizations.
 """
 
-import json
-import os
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
-from . import config
+import json  # noqa: E402
+import os  # noqa: E402
+from datetime import datetime  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from . import config  # noqa: E402
 
 
-def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = None):
+def save_trajectory(scenario: dict, results: list, base_dir: Path | None = None):
     """
     Saves a detailed JSON trajectory of the evaluation run.
     """
@@ -32,7 +32,7 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
     scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
     title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
     industry = scenario.get("industry") or metadata_block.get("industry")
-    
+
     filename = f"{scenario_id}_{timestamp}.json"
 
     output = {
@@ -48,8 +48,9 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
     filepath = report_dir / filename
     # Industrial Atomicity: Ensure directory exists before write (Resolves FileNotFoundError)
     report_dir.mkdir(parents=True, exist_ok=True)
-    
+
     from .trace_utils import AESJsonEncoder
+
     with open(filepath, "w") as f:
         json.dump(output, f, indent=2, cls=AESJsonEncoder)
 
@@ -123,7 +124,9 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
     return "\n".join(mermaid)
 
 
-def generate_html_report(scenario: dict, results: list, metadata: Optional[dict] = None, standalone: bool = False) -> Path:
+def generate_html_report(
+    scenario: dict, results: list, metadata: dict | None = None, standalone: bool = False
+) -> Path:
     """
     Generates a premium HTML report for the evaluation results.
     """
@@ -133,8 +136,8 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     metadata_block = scenario.get("metadata", {})
     scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
-    title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
-    
+    scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
+
     prefix = "standalone_" if standalone else "report_"
     filename = f"{prefix}{scenario_id}_{timestamp}.html"
     filepath = report_dir / filename
@@ -171,7 +174,9 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
                 break
 
     total_tasks = len(results)
-    successful_tasks = sum(1 for tr in results if tr.get("metrics") and all(m["success"] for m in tr["metrics"]))
+    successful_tasks = sum(
+        1 for tr in results if tr.get("metrics") and all(m["success"] for m in tr["metrics"])
+    )
     success_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0
 
     tasks_html = ""
@@ -187,8 +192,8 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
             m_status = "pass" if m["success"] else "fail"
             metrics_html += f"""
                 <div class="metric {m_status}">
-                    <span class="m-name">{m['metric']}</span>
-                    <span class="m-score">{m['score']:.2f} / {m['threshold']:.2f}</span>
+                    <span class="m-name">{m["metric"]}</span>
+                    <span class="m-score">{m["score"]:.2f} / {m["threshold"]:.2f}</span>
                 </div>
             """
 
@@ -215,35 +220,35 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Eval Report: {scenario.get('title')}</title>
+    <title>Eval Report: {scenario.get("title")}</title>
     <script src="{config.MERMAID_CDN}"></script>
     <script>mermaid.initialize({{startOnLoad:true, theme: '{config.MERMAID_THEME}'}});</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">  # noqa: E501
     <style>
         :root {{
-            --bg: {config.HTML_BG_COLOR}; --card: {config.HTML_CARD_COLOR}; --text: {config.HTML_TEXT_COLOR}; --sub: {config.HTML_SUB_TEXT_COLOR};
-            --success: {config.HTML_SUCCESS_COLOR}; --failure: {config.HTML_FAILURE_COLOR}; --accent: {config.HTML_ACCENT_COLOR};
+            --bg: {config.HTML_BG_COLOR}; --card: {config.HTML_CARD_COLOR}; --text: {config.HTML_TEXT_COLOR}; --sub: {config.HTML_SUB_TEXT_COLOR};  # noqa: E501
+            --success: {config.HTML_SUCCESS_COLOR}; --failure: {config.HTML_FAILURE_COLOR}; --accent: {config.HTML_ACCENT_COLOR};  # noqa: E501
         }}
-        body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px; line-height: 1.6; }}
-        .header {{ border-bottom: 2px solid var(--card); padding-bottom: 20px; margin-bottom: 40px; }}
+        body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px; line-height: 1.6; }}  # noqa: E501
+        .header {{ border-bottom: 2px solid var(--card); padding-bottom: 20px; margin-bottom: 40px; }}  # noqa: E501
         h1 {{ margin: 0; color: var(--accent); font-size: 2.5rem; }}
         .summary-box {{ display: flex; gap: 20px; margin-bottom: 40px; }}
-        .stat {{ background: var(--card); padding: 20px; border-radius: 12px; flex: 1; border: 1px solid rgba(255,255,255,0.05); }}
+        .stat {{ background: var(--card); padding: 20px; border-radius: 12px; flex: 1; border: 1px solid rgba(255,255,255,0.05); }}  # noqa: E501
         .stat-val {{ font-size: 2rem; font-weight: 700; display: block; }}
-        .task-card {{ background: var(--card); border-radius: 16px; padding: 30px; margin-bottom: 30px; border-left: 6px solid var(--sub); }}
+        .task-card {{ background: var(--card); border-radius: 16px; padding: 30px; margin-bottom: 30px; border-left: 6px solid var(--sub); }}  # noqa: E501
         .task-card.success {{ border-left-color: var(--success); }}
         .task-card.failure {{ border-left-color: var(--failure); }}
-        .task-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }}
+        .task-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }}  # noqa: E501
         .badge {{ padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }}
         .badge.success {{ background: rgba(16, 185, 129, 0.2); color: var(--success); }}
         .badge.failure {{ background: rgba(239, 68, 68, 0.2); color: var(--failure); }}
-        .metrics-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }}
-        .metric {{ background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; }}
+        .metrics-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }}  # noqa: E501
+        .metric {{ background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; }}  # noqa: E501
         .metric.pass {{ border: 1px solid var(--success); }}
         .metric.fail {{ border: 1px solid var(--failure); }}
-        .m-name {{ font-size: 0.7rem; color: var(--sub); text-transform: uppercase; font-weight: bold; }}
+        .m-name {{ font-size: 0.7rem; color: var(--sub); text-transform: uppercase; font-weight: bold; }}  # noqa: E501
         .m-score {{ font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }}
-        .mermaid-container {{ background: rgba(15, 23, 42, 0.5); padding: 20px; border-radius: 8px; overflow-x: auto; }}
+        .mermaid-container {{ background: rgba(15, 23, 42, 0.5); padding: 20px; border-radius: 8px; overflow-x: auto; }}  # noqa: E501
         .verified-badge {{ 
             background: linear-gradient(135deg, #FFD700, #DAA520); 
             color: #000; 
@@ -262,7 +267,7 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
                 <h1>Evaluation Report</h1>
-                <p style="color: var(--sub)">Scenario: {scenario.get('title')} ({scenario_id}) • {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
+                <p style="color: var(--sub)">Scenario: {scenario.get("title")} ({scenario_id}) • {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>  # noqa: E501
             </div>
             {"<div class='verified-badge'>VERIFIED RUN</div>" if is_verified else ""}
         </div>
@@ -279,7 +284,7 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
         </div>
         <div class="stat">
             <span class="m-name">Industry</span>
-            <span class="stat-val">{scenario.get('industry', 'N/A').title()}</span>
+            <span class="stat-val">{scenario.get("industry", "N/A").title()}</span>
         </div>
         <div class="stat">
             <span class="m-name">Protocol</span>
@@ -287,7 +292,7 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
         </div>
         <div class="stat">
             <span class="m-name">Agent {"Name" if agent_name else "Target"}</span>
-            <span class="stat-val" style="font-size: 1rem; overflow-wrap: break-word;">{agent_name or agent}</span>
+            <span class="stat-val" style="font-size: 1rem; overflow-wrap: break-word;">{agent_name or agent}</span>  # noqa: E501
         </div>
     </div>
 
@@ -306,7 +311,7 @@ def generate_report(
     results: list,
     export_trajectory: bool = False,
     export_html: bool = True,
-    metadata: Optional[dict] = None,
+    metadata: dict | None = None,
 ):
     """
     Generates and prints a summary report of the evaluation results.
@@ -314,11 +319,11 @@ def generate_report(
     print("\n" + "=" * 50)
     print("EVALUATION REPORT")
     print("=" * 50)
-    
+
     metadata_block = scenario.get("metadata", {})
     scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
     title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
-    
+
     print(f"Scenario: {title} ({scenario_id})")
 
     protocol = (metadata or {}).get("protocol", "http")
@@ -399,14 +404,16 @@ def generate_report(
         html_path = generate_html_report(scenario, results, metadata=metadata, standalone=True)
         print(f"[Reporter] HTML report generated: {html_path}")
 
+
 def cleanup_old_reports(days: int = 7):
     """
     Deletes HTML reports and trajectories older than the specified number of days.
     """
     import time
+
     now = time.time()
     cutoff = now - (days * 86400)
-    
+
     for report_dir in [config.HTML_REPORTS_DIR, config.TRAJECTORIES_DIR]:
         if not report_dir.exists():
             continue

@@ -1,8 +1,9 @@
 # eval_runner/adapters/common.py
 import hashlib
 import json
-from typing import Any, Dict, Optional
-from ..events import EventEmitter, CoreEvents
+from typing import Any
+
+from ..events import CoreEvents, EventEmitter
 
 try:
     from langchain_core.callbacks import BaseCallbackHandler
@@ -10,6 +11,7 @@ except ImportError:
     # Minimal fallback for environments without langchain-core
     class BaseCallbackHandler:
         pass
+
 
 class AESCallbackHandler(BaseCallbackHandler):
     """
@@ -21,7 +23,7 @@ class AESCallbackHandler(BaseCallbackHandler):
         self.adapter_name = adapter_name
         self.identifier = identifier
 
-    def on_chain_start(self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any):
+    def on_chain_start(self, serialized: dict[str, Any], inputs: dict[str, Any], **kwargs: Any):
         # Redacted Summary + State Hash (Audit-ready security)
         try:
             state_str = json.dumps(inputs, sort_keys=True)
@@ -30,27 +32,32 @@ class AESCallbackHandler(BaseCallbackHandler):
         except Exception:
             state_hash = "error_hashing"
             inputs_summary = {"error": "serialization_failed"}
-        
-        EventEmitter.emit(CoreEvents.CHAIN_START, {
-            "adapter": self.adapter_name,
-            "id": self.identifier,
-            "state_hash": state_hash,
-            "inputs_summary": inputs_summary
-        })
 
-    def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any):
-        EventEmitter.emit(CoreEvents.CHAIN_END, {
-            "adapter": self.adapter_name,
-            "id": self.identifier
-        })
+        EventEmitter.emit(
+            CoreEvents.CHAIN_START,
+            {
+                "adapter": self.adapter_name,
+                "id": self.identifier,
+                "state_hash": state_hash,
+                "inputs_summary": inputs_summary,
+            },
+        )
 
-    def on_node_start(self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any):
-        EventEmitter.emit(CoreEvents.NODE_START, {
-            "adapter": self.adapter_name,
-            "node_id": serialized.get("id", ["unknown"])[-1] if isinstance(serialized, dict) else "unknown"
-        })
+    def on_chain_end(self, outputs: dict[str, Any], **kwargs: Any):
+        EventEmitter.emit(
+            CoreEvents.CHAIN_END, {"adapter": self.adapter_name, "id": self.identifier}
+        )
 
-    def on_node_end(self, outputs: Dict[str, Any], **kwargs: Any):
-        EventEmitter.emit(CoreEvents.NODE_END, {
-            "adapter": self.adapter_name
-        })
+    def on_node_start(self, serialized: dict[str, Any], inputs: dict[str, Any], **kwargs: Any):
+        EventEmitter.emit(
+            CoreEvents.NODE_START,
+            {
+                "adapter": self.adapter_name,
+                "node_id": serialized.get("id", ["unknown"])[-1]
+                if isinstance(serialized, dict)
+                else "unknown",
+            },
+        )
+
+    def on_node_end(self, outputs: dict[str, Any], **kwargs: Any):
+        EventEmitter.emit(CoreEvents.NODE_END, {"adapter": self.adapter_name})

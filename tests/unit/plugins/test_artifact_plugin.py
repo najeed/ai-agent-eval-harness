@@ -1,6 +1,7 @@
 import json
 import zipfile
 from pathlib import Path
+
 from eval_runner.artifact_plugin import ArtifactPlugin
 
 
@@ -48,7 +49,7 @@ def test_bundle_artifacts(tmp_path):
         assert "file2.txt" in z.namelist()
 
     # Verify manifest content
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         manifest = json.load(f)
         assert manifest["batch_id"] == tmp_path.name
         assert len(manifest["files"]) == 2

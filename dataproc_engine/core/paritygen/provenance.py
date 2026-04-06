@@ -1,6 +1,6 @@
-import json
 import datetime
-from typing import Dict, Any
+import json
+
 
 def provenance_metadata(license_info: str, synthetic: bool = True, note: str = "") -> str:
     """
@@ -10,10 +10,10 @@ def provenance_metadata(license_info: str, synthetic: bool = True, note: str = "
     meta = {
         "license_info": license_info,
         "generation_method": "statistical_sampling",
-        "provenance_statement": "This dataset consists of statistical samples generated from user-supplied parameters. It contains no raw records.",
-        "compliance_disclaimer": "User is responsible for ensuring compliance with any source dataset license.",
+        "provenance_statement": "This dataset consists of statistical samples generated from user-supplied parameters. It contains no raw records.",  # noqa: E501
+        "compliance_disclaimer": "User is responsible for ensuring compliance with any source dataset license.",  # noqa: E501
         "note": note,
-        "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "parity_framework": "v2.0 High-Signal Statistical Simulator"
+        "generated_at": datetime.datetime.now(datetime.UTC).isoformat(),
+        "parity_framework": "v2.0 High-Signal Statistical Simulator",
     }
     return json.dumps(meta, indent=2)

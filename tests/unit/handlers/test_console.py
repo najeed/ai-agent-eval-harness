@@ -1,11 +1,10 @@
-import pytest
-from flask import Flask
-from eval_runner.console.app import create_app
-from eval_runner.plugins import manager, BaseEvalPlugin
-from unittest.mock import patch, MagicMock, AsyncMock
-from pathlib import Path
-import threading
 import json
+from unittest.mock import patch
+
+import pytest
+
+from eval_runner.console.app import create_app
+from eval_runner.plugins import BaseEvalPlugin, manager
 
 
 # Create a mock plugin to test the lifecycle hook
@@ -116,7 +115,10 @@ def test_evaluate_endpoint(client):
     """Test that the evaluation endpoint is functional."""
     # Use the sample agent demo scenario which is guaranteed to exist
     with patch("pathlib.Path.exists", return_value=True):
-        response = client.post("/api/evaluate", json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"})
+        response = client.post(
+            "/api/evaluate",
+            json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"},
+        )
         assert response.status_code == 200
         data = response.get_json()
         assert data["status"] == "started"
@@ -141,14 +143,28 @@ def test_list_runs_with_query(client, tmp_path):
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir()
     run_log = runs_dir / "run.jsonl"
-    
+
     with open(run_log, "w", encoding="utf-8") as f:
         f.write(
-            json.dumps({"event": "run_start", "run_id": "test-123", "scenario": "scen-A", "timestamp": "2026-01-01"})
+            json.dumps(
+                {
+                    "event": "run_start",
+                    "run_id": "test-123",
+                    "scenario": "scen-A",
+                    "timestamp": "2026-01-01",
+                }
+            )
             + "\n"
         )
         f.write(
-            json.dumps({"event": "run_start", "run_id": "other-456", "scenario": "scen-B", "timestamp": "2026-01-02"})
+            json.dumps(
+                {
+                    "event": "run_start",
+                    "run_id": "other-456",
+                    "scenario": "scen-B",
+                    "timestamp": "2026-01-02",
+                }
+            )
             + "\n"
         )
 
@@ -164,8 +180,10 @@ def test_list_runs_with_query(client, tmp_path):
 def test_evaluate_error_cases(client):
     """Test error handling in evaluate endpoint."""
     # Scenario not found
-    with patch("pathlib.Path.exists", return_value=False), \
-         patch("eval_runner.console.routes.ScenarioCatalog.get_instance") as mock_get_inst:
+    with (
+        patch("pathlib.Path.exists", return_value=False),
+        patch("eval_runner.console.routes.ScenarioCatalog.get_instance") as mock_get_inst,
+    ):
         mock_get_inst.return_value.get_absolute_path.return_value = None
         response = client.post("/api/evaluate", json={"path": "non_existent.json"})
         assert response.status_code == 404
@@ -178,12 +196,19 @@ def test_evaluate_error_cases(client):
 
 def test_save_scenario_success(client, tmp_path):
     """Test successful scenario saving."""
-    payload = {"scenario_id": "new-scen", "title": "New", "industry": "test-ind", "description": "desc"}
+    payload = {
+        "scenario_id": "new-scen",
+        "title": "New",
+        "industry": "test-ind",
+        "description": "desc",
+    }
     # Setup isolated directories
     (tmp_path / "industries" / "test-ind" / "scenarios").mkdir(parents=True)
-    
-    with patch("eval_runner.catalog.ScenarioCatalog.build_index") as mock_build, \
-         patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
+
+    with (
+        patch("eval_runner.catalog.ScenarioCatalog.build_index") as mock_build,
+        patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path),
+    ):
         response = client.post("/api/scenarios", json=payload)
         assert response.status_code == 200
         assert response.get_json()["status"] == "success"
@@ -202,7 +227,9 @@ def test_save_scenario_errors(client):
 
 def test_debugger_state_post(client):
     """Test posting state to debugger."""
-    response = client.post("/api/debugger/state", json={"event": "test_event", "data": {"foo": "bar"}})
+    response = client.post(
+        "/api/debugger/state", json={"event": "test_event", "data": {"foo": "bar"}}
+    )
     assert response.status_code == 200
 
     # Verify it updated
@@ -240,7 +267,7 @@ def test_read_doc_errors(client, tmp_path):
     # Setup isolated docs dir
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
-    
+
     with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
         # Traversal attempt
         assert client.get("/api/docs/%2e%2e%2fconfig.py").status_code == 403

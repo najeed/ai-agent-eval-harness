@@ -1,8 +1,9 @@
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock
-from eval_runner.reporting_plugin import ReportingPlugin
+
 from eval_runner.context import EvaluationContext
+from eval_runner.reporting_plugin import ReportingPlugin
 
 
 class TestReportingPlugin(unittest.TestCase):
@@ -22,7 +23,7 @@ class TestReportingPlugin(unittest.TestCase):
         repro_file = Path("reports/repro/repro_my_test.txt")
         self.assertTrue(repro_file.exists())
 
-        with open(repro_file, "r") as f:
+        with open(repro_file) as f:
             content = f.read()
             self.assertIn("multiagent-eval run --scenario scenarios/finance/my_test.json", content)
 
@@ -38,7 +39,7 @@ class TestReportingPlugin(unittest.TestCase):
         repro_file = Path("reports/repro/repro_default_test.txt")
         self.assertTrue(repro_file.exists())
 
-        with open(repro_file, "r") as f:
+        with open(repro_file) as f:
             content = f.read()
             self.assertIn("multiagent-eval run --scenario scenarios/default_test.json", content)
 

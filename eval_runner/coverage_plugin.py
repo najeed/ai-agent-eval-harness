@@ -5,9 +5,10 @@ Built-in plugin for Grounding Coverage Heatmap generation.
 """
 
 from pathlib import Path
-from .plugins import BaseEvalPlugin
+
 from .context import EvaluationContext
 from .coverage_reporter import generate_coverage_report
+from .plugins import BaseEvalPlugin
 
 
 class CoveragePlugin(BaseEvalPlugin):

@@ -2,11 +2,11 @@
 taxonomy.py (Zero-Touch version)
 
 Stand-alone failure classification for the Publication Suite.
-Categorizes failures into tool_call_error, state_parity_mismatch, hallucination, timeout, sandbox_breach, and partial_pass.
+Categorizes failures into tool_call_error, state_parity_mismatch, hallucination, timeout, sandbox_breach, and partial_pass.  # noqa: E501
 """
 
 import re
-from typing import Dict, Any, List
+from typing import Any
 
 CATEGORIES = [
     "tool_call_error",
@@ -19,10 +19,10 @@ CATEGORIES = [
 
 
 class FailureTaxonomy:
-    """Classifies agent failures based on conversation history and tool results found in run.jsonl."""
+    """Classifies agent failures based on conversation history and tool results found in run.jsonl."""  # noqa: E501
 
     @staticmethod
-    def classify_from_events(events: List[Dict[str, Any]]) -> str:
+    def classify_from_events(events: list[dict[str, Any]]) -> str:
         """Determines the specific failure category for a non-successful run sequence."""
 
         # 1. Partial Pass Detection
@@ -36,10 +36,7 @@ class FailureTaxonomy:
 
         # 2. Sandbox Breach / Policy Violation
         for e in events:
-            if (
-                e.get("event") == "tool_result"
-                and e.get("status") == "policy_violation"
-            ):
+            if e.get("event") == "tool_result" and e.get("status") == "policy_violation":
                 return "sandbox_breach"
 
         # 3. Tool Call Errors
@@ -51,9 +48,7 @@ class FailureTaxonomy:
                 return "tool_call_error"
 
         # 4. Timeout / Max Turns
-        agent_turns = len(
-            [e for e in events if e.get("event") in ["prompt", "agent_response"]]
-        )
+        agent_turns = len([e for e in events if e.get("event") in ["prompt", "agent_response"]])
         if agent_turns >= 10:
             return "timeout"
 

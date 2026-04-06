@@ -1,32 +1,40 @@
-from dotenv import load_dotenv
-# Ensure environment variables are loaded before ANY other imports (R6: Environment Portability)
-load_dotenv()
-
-import os
 import hashlib
+import os
+
 import flask
+from dotenv import load_dotenv
 from flask import Flask, send_from_directory
 from flask_cors import CORS
-from .routes import register_core_routes, core_bp
+
+from eval_runner.plugins import manager
+
+from .. import config
 from .auth import auth_bp
 from .auth_manager import Permission, require_permission
 from .demo_agent import demo_bp
-from eval_runner.plugins import manager
-from .. import config
+from .routes import core_bp, register_core_routes
 
-print(f"--- [v1.2.3-BOOT] Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})", flush=True)
+# Ensure environment variables are loaded before ANY other configuration usage (R6)
+load_dotenv()
+
+print(
+    f"--- [v1.2.3-BOOT] Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})",  # noqa: E501
+    flush=True,
+)
+
 
 def create_app():
     # Eager Hydration: Ensure plugins and scenarios are loaded before the first request
     # This eliminates the "0 scenarios" state on initial load.
     manager.load_plugins()
     from eval_runner.catalog import ScenarioCatalog
+
     ScenarioCatalog.get_instance().load_index()
 
     # Set static_folder using the project root for absolute reliability
     ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
     app = Flask(__name__, static_folder=ui_path, static_url_path="")
-    
+
     # Ensure session persistence (v1.2.3 Stabilization)
     api_key = getattr(config, "DASHBOARD_API_KEY", None)
     if api_key:
@@ -34,8 +42,8 @@ def create_app():
     else:
         # Fallback to a random key if no API key is provided, allowing the app to boot
         app.secret_key = os.urandom(24).hex()
-    
-    CORS(app, supports_credentials=True) # Explicit support for session cookies
+
+    CORS(app, supports_credentials=True)  # Explicit support for session cookies
     app.register_blueprint(auth_bp)
     app.register_blueprint(core_bp)
     app.register_blueprint(demo_bp)
@@ -44,17 +52,26 @@ def create_app():
     @app.errorhandler(404)
     def handle_404(e):
         print(f"   [Trace] 404 Error - Path: {flask.request.path}", flush=True)
-        return flask.jsonify({"error": "Resource Not Found: The API endpoint requested is invalid.", "status": 404}), 404
+        return flask.jsonify(
+            {"error": "Resource Not Found: The API endpoint requested is invalid.", "status": 404}
+        ), 404
 
     @app.errorhandler(405)
     def handle_405(e):
-        return flask.jsonify({"error": "Method Not Allowed: This endpoint does not accept the requested HTTP method.", "status": 405}), 405
+        return flask.jsonify(
+            {
+                "error": "Method Not Allowed: This endpoint does not accept the requested HTTP method.",  # noqa: E501
+                "status": 405,
+            }
+        ), 405
 
     # Hardened Route Precedence (v1.2.3)
     # Explicitly register the login handler to bypass blueprint shadowing/405
     from .auth import login as login_handler
-    app.add_url_rule("/api/auth/login", view_func=login_handler, methods=["POST"], strict_slashes=False)
 
+    app.add_url_rule(
+        "/api/auth/login", view_func=login_handler, methods=["POST"], strict_slashes=False
+    )
 
     # Load external hooks for zero-touch discovery
     manager.load_plugins()
@@ -64,9 +81,10 @@ def create_app():
 
     # Register core routes
     register_core_routes(app, nav_registry)
-    
+
     # Safely initialize debugger event subscription
     from .routes import subscribe_debugger
+
     subscribe_debugger()
 
     # Trigger plugin hook to register additional routes and nav items
@@ -75,22 +93,22 @@ def create_app():
         if method and callable(method):
             try:
                 method(app, nav_registry)
-            except Exception as e:
+            except Exception:
                 pass
 
     # Re-assert core paths to prevent plugin overrides
     core_paths = {
         "community": "https://github.com/najeed/ai-agent-eval-harness",
         "demo": "/demo",
-        "loan_demo": "/demo/loan"
+        "loan_demo": "/demo/loan",
     }
     for item in nav_registry:
-        if item.get('id') in core_paths:
-            item['path'] = core_paths[item['id']]
+        if item.get("id") in core_paths:
+            item["path"] = core_paths[item["id"]]
 
     # Endpoint to serve the unified navigation menu (API Priority)
     app.config["NAV_REGISTRY"] = nav_registry
-    
+
     @app.route("/api/nav")
     @require_permission(Permission.SCENARIOS_READ)
     def get_nav():
@@ -98,7 +116,7 @@ def create_app():
         return flask.jsonify(app.config["NAV_REGISTRY"])
 
     # Frontend Catch-all Routes (Define LAST to prevent API masking)
-    @app.route("/", defaults={'path': ''})
+    @app.route("/", defaults={"path": ""})
     @app.route("/scenarios")
     @app.route("/reports")
     @app.route("/editor")
@@ -107,7 +125,7 @@ def create_app():
     @app.route("/demo/loan")
     @app.route("/docs")
     @app.route("/docs/api")
-    def index(path=''):
+    def index(path=""):
         print(f"DEBUG: SPA Navigation - Obtaining industrial route: {flask.request.path}")
         return send_from_directory(app.static_folder, "index.html")
 

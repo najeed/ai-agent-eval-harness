@@ -10,10 +10,10 @@ Security: Frozen dataclasses with deep-copy protection on mutable nested
 fields to prevent Prototype Pollution (Audit Point #8).
 """
 
-import copy
-import types
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+import copy  # noqa: E402
+import types  # noqa: E402
+from dataclasses import dataclass, field  # noqa: E402
+from typing import Any  # noqa: E402
 
 
 def _freeze_dict(d: dict) -> types.MappingProxyType:
@@ -26,12 +26,16 @@ class EvaluationContext:
     """Context for an entire evaluation scenario."""
 
     scenario_id: str
-    scenario_data: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    global_state: Dict[str, Any] = field(default_factory=dict)
-    plugin_data: Dict[str, Any] = field(default_factory=dict)  # Bucket for plugins to store cross-task data
-    grounding_hits: Dict[str, Dict[str, int]] = field(default_factory=lambda: {"policies": {}, "tools": {}})
-    span_context: Optional[Dict[str, Any]] = None
+    scenario_data: dict[str, Any]
+    metadata: dict[str, Any] = field(default_factory=dict)
+    global_state: dict[str, Any] = field(default_factory=dict)
+    plugin_data: dict[str, Any] = field(
+        default_factory=dict
+    )  # Bucket for plugins to store cross-task data
+    grounding_hits: dict[str, dict[str, int]] = field(
+        default_factory=lambda: {"policies": {}, "tools": {}}
+    )
+    span_context: dict[str, Any] | None = None
 
     def __post_init__(self):
         # Deep-copy and freeze mutable dict fields to prevent Prototype Pollution
@@ -47,10 +51,10 @@ class TurnContext:
     task_id: str
     turn_number: int
     current_message: str
-    history: Tuple[Dict[str, Any], ...]  # Tuple for immutability
-    agent_response: Optional[Dict[str, Any]] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    span_context: Optional[Dict[str, Any]] = None
+    history: tuple[dict[str, Any], ...]  # Tuple for immutability
+    agent_response: dict[str, Any] | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    span_context: dict[str, Any] | None = None
 
     def __post_init__(self):
         # Convert history list to tuple if passed as list

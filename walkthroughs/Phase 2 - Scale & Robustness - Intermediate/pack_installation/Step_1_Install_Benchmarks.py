@@ -1,19 +1,18 @@
-import os
 import subprocess
-from pathlib import Path
+
 
 def main():
     print("============================================")
     print("The Industrial Cargo: Pack Installation")
     print("Scenario: The First Shipment")
     print("============================================")
-    
+
     print("\nWe are deploying the 'Telecom' industrial benchmark pack.")
     print("This will populate your 'industries/telecom' directory and")
     print("automatically re-index the Scenario Catalog.")
-    
+
     input("\n[Press ENTER] to install the 'telecom' pack...")
-    
+
     # Run the install-pack command
     print("\n   [CLI] Running: multiagent-eval install-pack telecom")
     try:
@@ -30,7 +29,6 @@ def main():
     print("Next, we'll demonstrate an 'Industrial Upgrade' in Step 2.")
     print("============================================")
 
+
 if __name__ == "__main__":
     main()
-
-

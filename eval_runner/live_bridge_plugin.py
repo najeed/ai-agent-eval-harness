@@ -1,11 +1,12 @@
-import requests
 import os
-from .plugins import BaseEvalPlugin
-from .events import CoreEvents
-
-
 import socket
 from urllib.parse import urlparse
+
+import requests
+
+from .events import CoreEvents
+from .plugins import BaseEvalPlugin
+
 
 def is_safe_url(url_str: str) -> bool:
     """Checks if a URL refers to a safe, non-internal location."""
@@ -13,16 +14,16 @@ def is_safe_url(url_str: str) -> bool:
         parsed = urlparse(url_str)
         if not parsed.scheme or not parsed.netloc:
             return False
-            
+
         # Resolve to IP
         hostname = parsed.hostname
-        if not hostname: 
+        if not hostname:
             return False
-            
-        # Allow localhost ONLY if explicitly configured by the system, 
+
+        # Allow localhost ONLY if explicitly configured by the system,
         # but block it by default if provided by a scenario/untrusted environment.
         ip = socket.gethostbyname(hostname)
-        
+
         # Block Loopback, Multicast, Link-Local (Cloud Meta), and Private subnets
         # if they originate from an untrusted source.
         # Note: 169.254.169.254 is the standard Cloud Metadata IP.
@@ -34,6 +35,7 @@ def is_safe_url(url_str: str) -> bool:
     except Exception:
         return False
 
+
 class RemoteBridgePlugin(BaseEvalPlugin):
     """
     Zero-Touch Live Bridge Plugin.
@@ -43,21 +45,22 @@ class RemoteBridgePlugin(BaseEvalPlugin):
     def __init__(self, endpoint="http://localhost:5000/api/debugger/state"):
         self.endpoint = os.environ.get("DEBUGGER_ENDPOINT", endpoint)
         # R1.1 Remediation: Validate external/untrusted endpoints
-        # Note: We allow localhost specifically if it matches our default 
+        # Note: We allow localhost specifically if it matches our default
         if self.endpoint != "http://localhost:5000/api/debugger/state":
-             if not is_safe_url(self.endpoint):
-                 print(f"⚠️  Security: Blocking unsafe bridge endpoint: {self.endpoint}")
-                 self.active = False
-                 return
+            if not is_safe_url(self.endpoint):
+                print(f"⚠️  Security: Blocking unsafe bridge endpoint: {self.endpoint}")
+                self.active = False
+                return
 
         self.active = None  # Unknown
 
     def _check_console_active(self):
         """Perform a heartbeat check to see if the Visual Debugger is alive."""
         if self.active is not None:
-             return self.active
+            return self.active
 
         from . import config
+
         headers = {}
         if config.DASHBOARD_API_KEY:
             headers["X-AES-API-KEY"] = config.DASHBOARD_API_KEY
@@ -66,9 +69,11 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             # We use a simple GET on the state endpoint as a heartbeat
             response = requests.get(self.endpoint, headers=headers, timeout=0.2)
             # 200 (Success) means the console is active and accessible.
-            # 401 (Unauthorized) means we have no access, so we should stay inactive to stop looping.
+            # 401 (Unauthorized) means we have no access, so we should stay inactive to stop looping., E501, E501  # noqa: E501
             if response.status_code == 401:
-                print(f"[RemoteBridgePlugin] Unauthorized: Invalid or missing API Key for {self.endpoint}")
+                print(
+                    f"[RemoteBridgePlugin] Unauthorized: Invalid or missing API Key for {self.endpoint}"  # noqa: E501
+                )
                 self.active = False
             else:
                 self.active = response.status_code == 200
@@ -86,14 +91,20 @@ class RemoteBridgePlugin(BaseEvalPlugin):
                 return
 
         from . import config
+
         headers = {}
         if config.DASHBOARD_API_KEY:
             headers["X-AES-API-KEY"] = config.DASHBOARD_API_KEY
 
         try:
-            response = requests.post(self.endpoint, headers=headers, json={"event": event_name, "data": data}, timeout=0.5)
+            response = requests.post(
+                self.endpoint,
+                headers=headers,
+                json={"event": event_name, "data": data},
+                timeout=0.5,
+            )
             if response.status_code == 401:
-                print(f"[RemoteBridgePlugin] Unauthorized: Disabling bridge for this run.")
+                print("[RemoteBridgePlugin] Unauthorized: Disabling bridge for this run.")
                 self.active = False
         except Exception:
             # If the console dies, stop trying for this run

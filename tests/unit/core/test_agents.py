@@ -18,7 +18,6 @@ Example:
     pytest tests/test_agents.py -v
 """
 
-import pytest
 from sample_agent import agent_app
 
 app = agent_app.app
@@ -49,7 +48,9 @@ def test_agent_health_check():
     """
     # Flask test client can check if the app loads
     client = app.test_client()
-    response = client.post("/execute_task", json={"task_description": "identify the customer speed tier"})
+    response = client.post(
+        "/execute_task", json={"task_description": "identify the customer speed tier"}
+    )
     assert response.status_code == 200
     data = response.get_json()
     assert "tool_name" in data or "tool_names" in data or "instructions" in data

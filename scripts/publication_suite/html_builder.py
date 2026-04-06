@@ -7,6 +7,7 @@ Produces a self-contained leaderboard.html with Chart.js and refined styling.
 
 import json
 from pathlib import Path
+
 from jinja2 import Template
 
 HTML_TEMPLATE = """
@@ -17,22 +18,22 @@ HTML_TEMPLATE = """
     <title>AgentEval Comparative Leaderboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e0e0e0; margin: 0; padding: 0; }
-        .hero { background: linear-gradient(135deg, #001f3f 0%, #000c1a 100%); color: #ffffff; padding: 60px 20px; text-align: center; border-bottom: 2px solid #008080; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e0e0e0; margin: 0; padding: 0; }  # noqa: E501
+        .hero { background: linear-gradient(135deg, #001f3f 0%, #000c1a 100%); color: #ffffff; padding: 60px 20px; text-align: center; border-bottom: 2px solid #008080; }  # noqa: E501
         .hero h1 { margin: 0; font-size: 3em; letter-spacing: -1px; }
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .card { background: #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 30px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card { background: #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 30px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }  # noqa: E501
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 16px; text-align: left; border-bottom: 1px solid #333; }
-        th { background: #252525; color: #008080; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; }
+        th { background: #252525; color: #008080; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; }  # noqa: E501
         tr:hover { background: #222; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
         .badge-success { background: #2ecc40; color: #000; }
         .badge-fail { background: #ff4136; color: #fff; }
         .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 40px 0; }
-        .methodology { background: #111; padding: 24px; border-left: 5px solid #008080; margin-top: 60px; border-radius: 0 8px 8px 0; }
-        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); 
-                     font-size: 12em; color: rgba(255, 255, 255, 0.03); pointer-events: none; white-space: nowrap; }
+        .methodology { background: #111; padding: 24px; border-left: 5px solid #008080; margin-top: 60px; border-radius: 0 8px 8px 0; }  # noqa: E501
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);  # noqa: E501
+                     font-size: 12em; color: rgba(255, 255, 255, 0.03); pointer-events: none; white-space: nowrap; }  # noqa: E501
     </style>
 </head>
 <body>
@@ -119,8 +120,8 @@ HTML_TEMPLATE = """
 
         <div class="methodology">
             <h3>Methodology & Disclosure</h3>
-            <p><strong>Environment:</strong> v1.20-Stable | <strong>Iterations:</strong> {{ run_count }} runs/scenario.</p>
-            <p><strong>Pricing:</strong> Mapped to <code>scripts/publication_suite/config.yaml</code> tokenized rates.</p>
+            <p><strong>Environment:</strong> v1.20-Stable | <strong>Iterations:</strong> {{ run_count }} runs/scenario.</p>  # noqa: E501
+            <p><strong>Pricing:</strong> Mapped to <code>scripts/publication_suite/config.yaml</code> tokenized rates.</p>  # noqa: E501
         </div>
     </div>
 
@@ -138,7 +139,7 @@ HTML_TEMPLATE = """
                     backgroundColor: '#008080'
                 }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }  # noqa: E501
         });
 
         // Consistency Chart (Outcome Stability)
@@ -166,7 +167,7 @@ class HTMLBuilder:
         self.paths = [Path(p) for p in aggregated_paths]
         self.agents_data = []
         for p in self.paths:
-            with open(p, "r") as f:
+            with open(p) as f:
                 self.agents_data.append(json.load(f))
         self.is_pilot = is_pilot
 
@@ -196,9 +197,7 @@ class HTMLBuilder:
 
             count = len(scenarios) or 1
             avg_consistency = (
-                sum(consistency_scores) / len(consistency_scores)
-                if consistency_scores
-                else 0
+                sum(consistency_scores) / len(consistency_scores) if consistency_scores else 0
             )
 
             prepared_agents.append(

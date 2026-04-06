@@ -1,11 +1,13 @@
 from __future__ import annotations
-from typing import Dict, Callable, Optional
+
+from collections.abc import Callable
+from typing import Dict, Optional  # noqa: F401, UP035
 
 
 class MetricRegistry:
     """Registry for evaluation metrics."""
 
-    _metrics: Dict[str, Callable] = {}
+    _metrics: dict[str, Callable] = {}
     _discovered: bool = False
 
     @classmethod
@@ -24,11 +26,10 @@ class MetricRegistry:
         if cls._discovered:
             return
         # Modules are imported at end of file to populate registry
-        from . import utils, core, accuracy, planning, defense, technical
         cls._discovered = True
 
     @classmethod
-    def get(cls, name: str) -> Optional[Callable]:
+    def get(cls, name: str) -> Callable | None:
         """Retrieves a metric function by name."""
         cls._discover()
         return cls._metrics.get(name)
@@ -41,31 +42,31 @@ class MetricRegistry:
 
     @classmethod
     def reset(cls):
-        """Resets the metric registry. 
+        """Resets the metric registry.
         Note: We keep the registered metrics as they are static functions.
         We only reset the discovery flag if we want to force re-discovery.
         """
         # cls._metrics = {} # Don't clear static registrations
-        cls._discovered = True # Keep them discovered
+        cls._discovered = True  # Keep them discovered
 
 
 # --- Import sub-modules to trigger registration ---
 # Legacy order matters for shadowing if any (none expected)
-from . import utils, core, accuracy, planning, defense, technical
+from . import accuracy, core, defense, planning, technical, utils  # noqa: E402, F401
+from .accuracy import calculate_luna_judge_score  # noqa: E402, F401
 
-# Re-export core metrics for direct access (MetricRegistry.get is preferred, but tests use direct access)
-from .core import (
-    calculate_tool_call_correctness,
-    calculate_generic_accuracy,
-    calculate_communication_clarity,
-    calculate_state_correctness,
-    calculate_policy_compliance,
-    calculate_path_parsimony,
-    calculate_delegation_latency,
-    calculate_delegation_loop_risk,
-    calculate_consensus_scoring,
-    calculate_pii_safety,
-    calculate_refusal_calibration,
-    calculate_consistency_score,
+# Re-export core metrics for direct access (MetricRegistry.get is preferred, but tests use direct access)  # noqa: E501
+from .core import (  # noqa: E402
+    calculate_communication_clarity,  # noqa: F401
+    calculate_consensus_scoring,  # noqa: F401
+    calculate_consistency_score,  # noqa: F401
+    calculate_delegation_latency,  # noqa: F401
+    calculate_delegation_loop_risk,  # noqa: F401
+    calculate_generic_accuracy,  # noqa: F401
+    calculate_path_parsimony,  # noqa: F401
+    calculate_pii_safety,  # noqa: F401
+    calculate_policy_compliance,  # noqa: F401
+    calculate_refusal_calibration,  # noqa: F401
+    calculate_state_correctness,  # noqa: F401
+    calculate_tool_call_correctness,  # noqa: F401
 )
-from .accuracy import calculate_luna_judge_score

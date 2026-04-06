@@ -4,10 +4,10 @@ linter.py
 Automated quality scoring and linting for AES scenarios.
 """
 
+import hashlib
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-import hashlib
+from typing import Any
 
 
 class ScenarioLinter:
@@ -23,7 +23,7 @@ class ScenarioLinter:
             return "BRONZE"
         return "UNRANKED"
 
-    def lint(self, file_path: str) -> Dict[str, Any]:
+    def lint(self, file_path: str) -> dict[str, Any]:
         """Runs a suite of checks on a scenario file."""
         p = Path(file_path)
         results = {
@@ -41,7 +41,7 @@ class ScenarioLinter:
             return results
 
         try:
-            with open(p, "r", encoding="utf-8") as f:
+            with open(p, encoding="utf-8") as f:
                 data = json.load(f)
         except Exception as e:
             results["status"] = "fail"
@@ -60,21 +60,23 @@ class ScenarioLinter:
                 return results
             else:
                 results["status"] = "fail"
-                results["errors"].append(f"Scenario file must be a JSON object, found list")
+                results["errors"].append("Scenario file must be a JSON object, found list")
                 results["score"] = 0
                 results["tier"] = "UNRANKED"
                 return results
 
         if not isinstance(data, dict):
             results["status"] = "fail"
-            results["errors"].append(f"Scenario file must be a JSON object, found {type(data).__name__}")
+            results["errors"].append(
+                f"Scenario file must be a JSON object, found {type(data).__name__}"
+            )
             results["score"] = 0
             results["tier"] = "UNRANKED"
             return results
 
         aes_version = data.get("aes_version")
         results["aes_version"] = aes_version
-        
+
         if aes_version != 1.2:
             results["errors"].append(f"Invalid aes_version: {aes_version} (Requires 1.2-STABLE)")
             results["status"] = "fail"
@@ -91,11 +93,13 @@ class ScenarioLinter:
         # Metadata Compliance (v1.2 requirement)
         metadata = data.get("metadata", {})
         if not isinstance(metadata, dict):
-             results["errors"].append("Metadata must be a JSON object")
-             results["status"] = "fail"
+            results["errors"].append("Metadata must be a JSON object")
+            results["status"] = "fail"
         else:
             if "attribution" not in metadata:
-                results["warnings"].append("Missing recommended field: 'metadata.attribution' (v2.0-STABLE requirement)")
+                results["warnings"].append(
+                    "Missing recommended field: 'metadata.attribution' (v2.0-STABLE requirement)"
+                )
                 results["score"] -= 10
             if "version" not in metadata:
                 results["warnings"].append("Missing recommended field: 'metadata.version'")
@@ -103,12 +107,16 @@ class ScenarioLinter:
 
         # Recommend complexity_level instead of difficulty
         if "complexity_level" not in data:
-            results["warnings"].append("Missing recommended field: 'complexity_level' (low/medium/high)")
+            results["warnings"].append(
+                "Missing recommended field: 'complexity_level' (low/medium/high)"
+            )
             results["score"] -= 5
 
         # 2. Workflow Validation (Nodes & Edges)
         if "workflow" not in data or not isinstance(data["workflow"], dict):
-            results["errors"].append("Missing or invalid 'workflow' block (Standard requires nodes/edges)")
+            results["errors"].append(
+                "Missing or invalid 'workflow' block (Standard requires nodes/edges)"
+            )
             results["status"] = "fail"
         else:
             wf = data["workflow"]
@@ -137,7 +145,9 @@ class ScenarioLinter:
                         if "from" not in edge or "to" not in edge:
                             results["errors"].append(f"Edge {i} missing 'from' or 'to'")
                         elif edge["from"] not in node_ids or edge["to"] not in node_ids:
-                            results["errors"].append(f"Edge {i} references invalid node: {edge['from']} -> {edge['to']}")
+                            results["errors"].append(
+                                f"Edge {i} references invalid node: {edge['from']} -> {edge['to']}"
+                            )
                             results["status"] = "fail"
 
         # 3. Complexity Calculation
@@ -150,14 +160,14 @@ class ScenarioLinter:
             results["status"] = "fail"
         elif results["warnings"]:
             results["status"] = "warning"
-            
+
         # 4. Final Scoring & Tier
         results["score"] = max(0, results["score"])
         results["tier"] = self.get_quality_tier(results["score"])
 
         return results
 
-    def find_duplicates(self, root_dir: str) -> List[Dict[str, Any]]:
+    def find_duplicates(self, root_dir: str) -> list[dict[str, Any]]:
         """Identifies scenarios with identical task signatures."""
         hashes = {}
         duplicates = []
@@ -165,13 +175,13 @@ class ScenarioLinter:
 
         for p in root.glob("**/*.json"):
             try:
-                with open(p, "r", encoding="utf-8") as f:
+                with open(p, encoding="utf-8") as f:
                     data = json.load(f)
 
                 # Create a signature based on workflow nodes
                 workflow = data.get("workflow", {})
                 sig_payload = workflow.get("nodes", [])
-                
+
                 tasks_str = json.dumps(sig_payload, sort_keys=True)
                 signature = hashlib.md5(tasks_str.encode()).hexdigest()
 

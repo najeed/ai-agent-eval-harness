@@ -6,30 +6,26 @@ Provides a unified interface for conduction, aggregation, and reporting.
 """
 
 import argparse
+import os
 import subprocess
 import sys
-import os
 from pathlib import Path
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="MultiAgentEval - Publication Suite (Zero-Touch)"
-    )
+    parser = argparse.ArgumentParser(description="MultiAgentEval - Publication Suite (Zero-Touch)")
     parser.add_argument(
         "--mode", choices=["pilot", "standard"], default="standard", help="Run mode"
     )
     parser.add_argument("--path", default="scenarios/", help="Scenario path")
-    parser.add_argument(
-        "--agent-name", default="Verified-Adapter-v1", help="Adapter name"
-    )
+    parser.add_argument("--agent-name", default="Verified-Adapter-v1", help="Adapter name")
     parser.add_argument("--protocol", default="http", help="Protocol")
     parser.add_argument(
         "--agent", default="http://localhost:5001/execute_task", help="Agent endpoint"
     )
     parser.add_argument(
         "--compare",
-        help="Path to agents_inventory.yaml for multi-agent benchmark (Default: scripts/publication_suite/agents_inventory.yaml)",
+        help="Path to agents_inventory.yaml for multi-agent benchmark (Default: scripts/publication_suite/agents_inventory.yaml)",  # noqa: E501
     )
     parser.add_argument("--parallel", type=int, default=4, help="Worker count")
 
@@ -57,18 +53,16 @@ def main():
         if not inventory_path.exists():
             print(f"Error: Inventory file {inventory_path} not found.")
             return
-        with open(inventory_path, "r") as f:
+        with open(inventory_path) as f:
             inventory = yaml.safe_load(f)
             agents_to_run = inventory.get("agents", [])
     else:
-        agents_to_run = [
-            {"name": args.agent_name, "protocol": args.protocol, "agent": args.agent}
-        ]
+        agents_to_run = [{"name": args.agent_name, "protocol": args.protocol, "agent": args.agent}]
 
     batch_dirs = []
 
     for agent in agents_to_run:
-        print(f"\n" + "-" * 40)
+        print("\n" + "-" * 40)
         print(f" STARTING BENCHMARK: {agent['name']}")
         print("-" * 40)
 
@@ -145,11 +139,11 @@ def main():
     print(f" Batches Processed: {len(batch_dirs)}")
     if len(batch_dirs) == 1:
         print(
-            f" Leaderboard: {batch_dirs[0] / ('pilot_preview.html' if args.mode == 'pilot' else 'leaderboard.html')}"
+            f" Leaderboard: {batch_dirs[0] / ('pilot_preview.html' if args.mode == 'pilot' else 'leaderboard.html')}"  # noqa: E501
         )
     else:
         print(
-            f" Comparative Leaderboard: {batch_dirs[0].parent / ('pilot_preview.html' if args.mode == 'pilot' else 'leaderboard.html')} (Multi-Agent)"
+            f" Comparative Leaderboard: {batch_dirs[0].parent / ('pilot_preview.html' if args.mode == 'pilot' else 'leaderboard.html')} (Multi-Agent)"  # noqa: E501
         )
     print("=" * 60)
 

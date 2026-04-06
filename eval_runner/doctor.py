@@ -1,8 +1,9 @@
-import sys
-import os
-import aiohttp
 import asyncio
+import os
+import sys
 from pathlib import Path
+
+import aiohttp
 
 
 async def check_agent_reachable(url: str):
@@ -25,22 +26,25 @@ async def check_agent_reachable(url: str):
 def check_security_health():
     """Performs an audit of the security posture (PBAC)."""
     print("  --- Security Audit (PBAC/Industrial) ---")
-    
+
     # 1. API Key Check
     api_key = os.getenv("DASHBOARD_API_KEY")
     if not api_key:
         print("  ❌ DASHBOARD_API_KEY is not set. Console will be inaccessible.")
     elif len(api_key) < 16:
-        print(f"  ⚠ DASHBOARD_API_KEY is weak ({len(api_key)} chars). Recommend 32+ for production.")
+        print(
+            f"  ⚠ DASHBOARD_API_KEY is weak ({len(api_key)} chars). Recommend 32+ for production."
+        )
     else:
         print(f"  ✔ DASHBOARD_API_KEY is configured (Length: {len(api_key)})")
 
     # 2. Auth Provider Integrity
     try:
-        from .console.auth_manager import get_auth_provider, Permission
+        from .console.auth_manager import Permission, get_auth_provider
+
         provider = get_auth_provider()
         print(f"  ✔ Auth Provider active: {provider.__class__.__name__}")
-        
+
         # Test PBAC Node manifest
         if Permission.SCENARIOS_READ == "scenarios:read":
             print("  ✔ PBAC Permission Nodes are healthy")
@@ -54,11 +58,12 @@ def check_security_health():
     if api_key:
         try:
             import hashlib
+
             derived = hashlib.sha256(api_key.encode()).hexdigest()
             if derived:
-                 print("  ✔ Session SECRET_KEY derivation is functional")
+                print("  ✔ Session SECRET_KEY derivation is functional")
         except Exception:
-             print("  ❌ Session Crypto Error")
+            print("  ❌ Session Crypto Error")
     else:
         print("  ⚠ Session Security cannot be verified without an API Key")
 
@@ -69,10 +74,10 @@ async def run_doctor():
 
     # 1. Python Version
     py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-    if sys.version_info >= (3, 9):
-        print(f"  ✔ Python version OK ({py_ver})")
+    if sys.version_info < (3, 11):
+        print(f"  ❌ Python version {py_ver} is too old. Requires 3.11+")
     else:
-        print(f"  ❌ Python version too old ({py_ver}). Need >= 3.9")
+        print(f"  ✔ Python version OK ({py_ver})")
 
     # 2. Dependencies
     deps = ["aiohttp", "flask", "jsonschema", "yaml"]
@@ -109,7 +114,7 @@ async def run_doctor():
     # 6. AES Schema
     schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
     if schema_path.exists():
-        print(f"  ✔ AES schema found")
+        print("  ✔ AES schema found")
     else:
         print(f"  ❌ AES schema missing at {schema_path}")
 

@@ -1,14 +1,12 @@
-import unittest
-from unittest.mock import patch, mock_open, MagicMock
 import json
-import os
-import runpy
+import unittest
+from unittest.mock import MagicMock, mock_open, patch
 
 # SUT
 import eval_runner.registry_sync as registry_sync
 
-class TestRegistrySync(unittest.TestCase):
 
+class TestRegistrySync(unittest.TestCase):
     def setUp(self):
         self.print_patch = patch("builtins.print")
         self.print_patch.start()
@@ -18,7 +16,7 @@ class TestRegistrySync(unittest.TestCase):
 
     def test_load_registry_cases(self):
         mock_reg = MagicMock()
-        
+
         # Line 12-13: File not found
         mock_reg.exists.return_value = False
         with patch.object(registry_sync, "REGISTRY_PATH", mock_reg):
@@ -36,9 +34,9 @@ class TestRegistrySync(unittest.TestCase):
                             {
                                 "name": "Child",
                                 "description": "CDesc",
-                                "standards": [{"id": "S2", "name": "N2", "description": "D2"}]
+                                "standards": [{"id": "S2", "name": "N2", "description": "D2"}],
                             }
-                        ]
+                        ],
                     }
                 }
             }
@@ -51,7 +49,7 @@ class TestRegistrySync(unittest.TestCase):
 
     def test_get_registry_ids_cases(self):
         mock_reg = MagicMock()
-        
+
         # Line 38-39: File not found
         mock_reg.exists.return_value = False
         with patch.object(registry_sync, "REGISTRY_PATH", mock_reg):
@@ -64,7 +62,7 @@ class TestRegistrySync(unittest.TestCase):
                 "categories": {
                     "Cat": {
                         "standards": [{"id": "S1"}],
-                        "subcategories": [{"standards": [{"id": "S2"}]}]
+                        "subcategories": [{"standards": [{"id": "S2"}]}],
                     }
                 }
             }
@@ -75,7 +73,7 @@ class TestRegistrySync(unittest.TestCase):
     def test_ensure_schema_sync_cases(self):
         reg = MagicMock()
         meta = MagicMock()
-        
+
         # Line 65-66: Missing files
         reg.exists.return_value = False
         with patch.object(registry_sync, "REGISTRY_PATH", reg):
@@ -121,19 +119,19 @@ class TestRegistrySync(unittest.TestCase):
 
     def test_add_standard_to_registry_cases(self):
         reg = MagicMock()
-        
+
         # Line 98-99: Registry not found
         reg.exists.return_value = False
         with patch.object(registry_sync, "REGISTRY_PATH", reg):
             self.assertFalse(registry_sync.add_standard_to_registry("S1", "N1", "I1", "D1"))
-        
+
         # Line 106-108: Already exists
         reg.exists.return_value = True
         with patch.object(registry_sync, "REGISTRY_PATH", reg):
             with patch("eval_runner.registry_sync.get_registry_ids", return_value=["S1"]):
                 with patch("builtins.open", mock_open(read_data="{}")):
                     self.assertFalse(registry_sync.add_standard_to_registry("S1", "N1", "I1", "D1"))
-        
+
         # Line 116-121: New category
         with patch.object(registry_sync, "REGISTRY_PATH", reg):
             with patch("eval_runner.registry_sync.get_registry_ids", return_value=[]):
@@ -141,8 +139,11 @@ class TestRegistrySync(unittest.TestCase):
                 m = mock_open(read_data=json.dumps({"categories": {}}))
                 with patch("builtins.open", m):
                     with patch("eval_runner.registry_sync.ensure_schema_sync"):
-                        res = registry_sync.add_standard_to_registry("S_NEW", "Name", "NewInd", "Desc")
+                        res = registry_sync.add_standard_to_registry(
+                            "S_NEW", "Name", "NewInd", "Desc"
+                        )
                         self.assertTrue(res)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -1,21 +1,20 @@
-import unittest
-from unittest.mock import MagicMock, patch, mock_open
-import json
 import concurrent.futures
+import json
 import time
-from pathlib import Path
-import sys
+import unittest
+from unittest.mock import MagicMock, mock_open, patch
 
 # SUT
 import eval_runner.plugins as plugins
+
 
 class MockPlugin(plugins.BaseEvalPlugin):
     def before_evaluation(self, context):
         self.called = True
         self.context = context
 
-class TestPlugins(unittest.TestCase):
 
+class TestPlugins(unittest.TestCase):
     def setUp(self):
         plugins.manager.reset()
         # Suppress prints for cleaner logs
@@ -43,12 +42,16 @@ class TestPlugins(unittest.TestCase):
         self.assertIs(m1, m3)
 
     def test_invoke_with_timeout_success(self):
-        def fast(): return "ok"
+        def fast():
+            return "ok"
+
         res = plugins._invoke_with_timeout(fast)
         self.assertEqual(res, "ok")
 
     def test_invoke_with_timeout_failure(self):
-        def slow(): time.sleep(2)
+        def slow():
+            time.sleep(2)
+
         with patch.object(plugins, "PLUGIN_TIMEOUT", 0.1):
             with self.assertRaises(concurrent.futures.TimeoutError):
                 plugins._invoke_with_timeout(slow)
@@ -63,27 +66,36 @@ class TestPlugins(unittest.TestCase):
         mock_entry_broken = MagicMock()
         mock_entry_broken.load.side_effect = Exception("Broken EP")
         mock_ep.return_value = [mock_entry_good, mock_entry_broken]
-        
+
         # 2. Persistent - cover missing file (Line 100) and broken load (113)
         mock_persistent_path.exists.return_value = True
         mock_data = {"plugins": ["my_mod.MyPlugin", "broken_mod.Broken"]}
         m_open = mock_open(read_data=json.dumps(mock_data))
-        
+
         # 3. Dynamic
         mock_discover.return_value = [MockPlugin()]
-        
+
         # 4. Internal plugins - we want to hit the ImportError blocks (129-152)
         # We need to refined import_module mock to handle 'mock.patch' internals
         orig_import = plugins.importlib.import_module
-        
+
         def import_side(name):
             if name.startswith("eval_runner"):
-                 # Force ImportError for optional internal plugins
-                 if any(x in name for x in ["coverage_plugin", "live_bridge", "publication", "artifact", "triage_plugin"]):
-                     raise ImportError(f"Mocked missing optional: {name}")
-                 # Return a realish mock for others or use original for core infrastructure if needed
-                 # For our purposes, a MagicMock is fine.
-                 return MagicMock()
+                # Force ImportError for optional internal plugins
+                if any(
+                    x in name
+                    for x in [
+                        "coverage_plugin",
+                        "live_bridge",
+                        "publication",
+                        "artifact",
+                        "triage_plugin",
+                    ]
+                ):
+                    raise ImportError(f"Mocked missing optional: {name}")
+                # Return a realish mock for others or use original for core infrastructure if needed
+                # For our purposes, a MagicMock is fine.
+                return MagicMock()
             if "my_mod" in name:
                 m = MagicMock()
                 m.MyPlugin = MockPlugin
@@ -94,10 +106,10 @@ class TestPlugins(unittest.TestCase):
             return orig_import(name)
 
         with patch("builtins.open", m_open):
-             with patch("importlib.import_module", side_effect=import_side):
+            with patch("importlib.import_module", side_effect=import_side):
                 # Ensure internal adapter classes can be instantiated
-                with patch("eval_runner.adapters.openai.OpenAIAdapterPlugin", create=True) as m1:
-                    with patch("eval_runner.adapters.gemini.GeminiAdapterPlugin", create=True) as m2:
+                with patch("eval_runner.adapters.openai.OpenAIAdapterPlugin", create=True):
+                    with patch("eval_runner.adapters.gemini.GeminiAdapterPlugin", create=True):
                         plugins.manager.load_plugins()
                         self.assertTrue(len(plugins.manager.plugins) > 0)
 
@@ -106,10 +118,10 @@ class TestPlugins(unittest.TestCase):
         p.called = False
         plugins.manager.plugins = [p]
         plugins.manager._loaded = True
-        
+
         plugins.manager.trigger("before_evaluation", context="ctx")
         self.assertTrue(p.called)
-        
+
         # Error in hook (Line 189)
         with patch.object(plugins, "_invoke_with_timeout", side_effect=Exception("Hook Boom")):
             plugins.manager.trigger("before_evaluation", context="ctx")
@@ -119,42 +131,43 @@ class TestPlugins(unittest.TestCase):
         p1.check.return_value = True
         p2 = MagicMock()
         p2.check.return_value = False
-        
+
         plugins.manager.plugins = [p1, p2]
         plugins.manager._loaded = True
-        
+
         # Rejection by p2 (Line 203)
         res = plugins.manager.trigger_interceptor("check")
-        self.assertFalse(res) 
-        
+        self.assertFalse(res)
+
         # Exception in interceptor (Line 205) - loop continues
         p1.check.side_effect = Exception("Interceptor Boom")
         # Ensure p2 is still present and rejecting
         res = plugins.manager.trigger_interceptor("check")
-        self.assertFalse(res) # Still False because p2 returned False after p1 boomed
+        self.assertFalse(res)  # Still False because p2 returned False after p1 boomed
 
         # Successfully continue through boom to allow-all
         p2.check.return_value = True
         res = plugins.manager.trigger_interceptor("check")
-        self.assertTrue(res) # True because p1 boomed (silently ignored) and p2 said True
+        self.assertTrue(res)  # True because p1 boomed (silently ignored) and p2 said True
 
     @patch("eval_runner.plugins.PERSISTENT_PLUGINS_PATH")
     def test_persistence_lifecycle(self, mock_path):
         mock_path.exists.return_value = True
         mock_path.parent = MagicMock()
-        
+
         # Registration with existing file
         m_existing = mock_open(read_data=json.dumps({"plugins": ["existing.P"]}))
         with patch("builtins.open", m_existing):
             plugins.manager.register_persistent("new.P")
             # Already exists (Line 222)
             plugins.manager.register_persistent("existing.P")
-            
+
         # Unregistration missing path (Line 238)
         mock_path.exists.return_value = True
         m_unregister = mock_open(read_data=json.dumps({"plugins": ["some.P"]}))
         with patch("builtins.open", m_unregister):
             plugins.manager.unregister_persistent("missing.P")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

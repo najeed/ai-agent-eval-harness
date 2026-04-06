@@ -1,4 +1,5 @@
 import pytest
+
 from eval_runner.taxonomy import FailureTaxonomy
 
 
@@ -15,7 +16,9 @@ def test_taxonomy_classification_logic():
     # 2. Test Sandbox Breach
     task_res_breach = {
         "metrics": [{"success": False}],
-        "conversation_history": [{"role": "environment", "content": {"status": "policy_violation"}}],
+        "conversation_history": [
+            {"role": "environment", "content": {"status": "policy_violation"}}
+        ],
     }
     assert FailureTaxonomy.classify(task_res_breach) == "sandbox_breach"
 
@@ -41,7 +44,9 @@ def test_taxonomy_classification_logic():
     # 5. Test Hallucination
     task_res_hallucination = {
         "metrics": [{"success": False}],
-        "conversation_history": [{"role": "agent", "content": "I cannot find the tool 'super_laser'"}],
+        "conversation_history": [
+            {"role": "agent", "content": "I cannot find the tool 'super_laser'"}
+        ],
     }
     assert FailureTaxonomy.classify(task_res_hallucination) == "hallucination"
 

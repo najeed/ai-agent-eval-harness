@@ -6,10 +6,11 @@ Supports HTTP (default), Local Subprocess, and Socket communication.
 Also acts as a package container for ecosystem-specific adapters.
 """
 
-import json
 import asyncio
+import json
 import shlex
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional  # noqa: F401, UP035
+
 from .. import config
 
 
@@ -52,7 +53,7 @@ async def local_subprocess_adapter(payload: dict, command: str, **kwargs):
     try:
         return json.loads(stdout.decode())
     except json.JSONDecodeError:
-        raise RuntimeError(f"Agent subprocess returned invalid JSON: {stdout.decode()}")
+        raise RuntimeError(f"Agent subprocess returned invalid JSON: {stdout.decode()}")  # noqa: B904
 
 
 async def socket_adapter(payload: dict, address: str, **kwargs):

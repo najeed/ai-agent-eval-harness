@@ -1,12 +1,12 @@
 # eval_runner/benchmarks/assistantbench.py
-from typing import List, Dict, Any
+from typing import Any
 
 
 class AssistantBenchmark:
     """Loader and Adapter for the AssistantBench dataset."""
 
     @staticmethod
-    def load(uri: str) -> List[Dict[str, Any]]:
+    def load(uri: str) -> list[dict[str, Any]]:
         print(f"      [Benchmark] Loading AssistantBench dataset from {uri}...")
         return [
             {

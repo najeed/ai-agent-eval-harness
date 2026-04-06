@@ -5,11 +5,12 @@ A built-in plugin that subscribes to EventEmitter to record run traces.
 This decouples logging from the core engine loop.
 """
 
-import os
 import json
+import os
 from pathlib import Path
+
+from .events import CoreEvents, Event, EventEmitter
 from .plugins import BaseEvalPlugin
-from .events import EventEmitter, CoreEvents, Event
 
 
 class FlightRecorderPlugin(BaseEvalPlugin):
@@ -51,9 +52,10 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         if self.master:
             with open(self.master_log_path, "a", encoding="utf-8") as f:
                 f.write(content)
-            
+
             # --- Master Log Rotation (Industrial Hygiene) ---
             from . import config
+
             limit = config.RUN_LOG_MASTER_LIMIT
             if limit > 0:
                 try:
@@ -61,11 +63,13 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     # For simplicity, we ensure the file doesn't explode in the background.
                     # In a production setting, this would be a RotatingFileHandler.
                     # Here we implement a manual "tail" truncation if limit is exceeded.
-                    with open(self.master_log_path, "r", encoding="utf-8") as rf:
+                    with open(self.master_log_path, encoding="utf-8") as rf:
                         lines = rf.readlines()
-                    
-                    if len(lines) > limit + 50: # Buffer to avoid constant rewriting
-                        print(f"      [FlightRecorder] Rotating master log (Current: {len(lines)} entries, Limit: {limit})")
+
+                    if len(lines) > limit + 50:  # Buffer to avoid constant rewriting
+                        print(
+                            f"      [FlightRecorder] Rotating master log (Current: {len(lines)} entries, Limit: {limit})"  # noqa: E501
+                        )
                         with open(self.master_log_path, "w", encoding="utf-8") as wf:
                             wf.writelines(lines[-limit:])
                 except Exception as e:
@@ -73,7 +77,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     def rotate_logs(self):
         """Keeps only the latest N run-<id>.jsonl files."""
-        run_files = sorted(self.log_dir.glob("*.jsonl"), key=lambda x: x.stat().st_mtime, reverse=True)
+        run_files = sorted(
+            self.log_dir.glob("*.jsonl"), key=lambda x: x.stat().st_mtime, reverse=True
+        )
 
         # Exclude the master log if it exists, and only target files (not directories)
         run_files = [f for f in run_files if f.name != "run.jsonl" and f.is_file()]

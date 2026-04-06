@@ -1,0 +1,1041 @@
+﻿
+FAILED tests/unit/adapters/test_ada
+pters_discovery.py::test_openai_ada
+pter_logic
+FAILED tests/unit/adapters/test_ada
+pters_extended.py::test_autogen_ada
+pter - ...
+FAILED tests/unit/adapters/test_ada
+pters_extended.py::test_grok_adapte
+r - Run...
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_gemini_success
+_stub
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_openai_success
+ - Runt...
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_grok_success 
+- Runtim...
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_crewai_mocks 
+- Runtim...
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_langgraph_mock
+s - Run...
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_http_adapter_c
+ore - R...
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_local_subproce
+ss_adapter
+FAILED tests/unit/adapters/test_ada
+pters_suite.py::test_socket_adapter
+_tcp - ...
+FAILED tests/unit/adapters/test_eng
+ine_adapters.py::test_registry_disc
+overy
+FAILED tests/unit/adapters/test_eng
+ine_adapters.py::test_call_agent_pr
+otocol_selection
+FAILED tests/unit/adapters/test_eng
+ine_adapters.py::test_call_agent_en
+v_fallback
+FAILED tests/unit/adapters/test_lan
+gchain_adapter.py::test_langchain_a
+dapter_registration
+FAILED tests/unit/adapters/test_lan
+gchain_adapter.py::test_langchain_a
+dapter_missing_url
+FAILED tests/unit/adapters/test_lan
+gchain_adapter.py::test_langchain_a
+dapter_exception
+FAILED tests/unit/core/test_analyze
+r.py::test_analyze_repo_telecom - 
+RuntimeE...
+FAILED tests/unit/core/test_analyze
+r.py::test_analyze_repo_finance - 
+RuntimeE...
+FAILED tests/unit/core/test_auto_tr
+anslate.py::test_translate_to_scena
+rio_connection_error
+FAILED tests/unit/core/test_core_cl
+i_doctor.py::test_doctor_success - 
+Runtime...
+FAILED tests/unit/core/test_core_in
+frastructure.py::test_event_emissio
+n - Run...
+FAILED tests/unit/core/test_core_in
+frastructure.py::test_plugin_interc
+eption
+FAILED tests/unit/core/test_core_in
+frastructure.py::test_runner_orches
+tration
+FAILED tests/unit/core/test_doctor.
+py::test_check_agent_reachable_succ
+ess - R...
+FAILED tests/unit/core/test_doctor.
+py::test_check_agent_reachable_fail
+ure - R...
+FAILED tests/unit/core/test_doctor.
+py::test_run_doctor_smoke - 
+RuntimeError: ...
+FAILED tests/unit/core/test_doctor.
+py::test_run_doctor_old_python - 
+RuntimeEr...
+FAILED tests/unit/core/test_doctor.
+py::test_run_doctor_missing_deps - 
+Runtime...
+FAILED tests/unit/core/test_engine.
+py::test_pass_at_k_protocol - 
+RuntimeError...
+FAILED tests/unit/core/test_engine.
+py::test_consistency_score_integrat
+ion - R...
+FAILED tests/unit/core/test_engine.
+py::test_engine_single_tool_call - 
+Runtime...
+FAILED tests/unit/core/test_engine.
+py::test_engine_multiple_tools - 
+RuntimeEr...
+FAILED tests/unit/core/test_engine.
+py::test_engine_final_answer_first_
+turn - ...
+FAILED tests/unit/core/test_engine.
+py::test_engine_max_turns_reached 
+- Runtim...
+FAILED tests/unit/core/test_engine.
+py::test_engine_connection_error - 
+Runtime...
+FAILED tests/unit/core/test_engine.
+py::test_engine_timeout - 
+RuntimeError: Ru...
+FAILED tests/unit/core/test_engine.
+py::test_engine_generic_accuracy_me
+tric - ...
+FAILED tests/unit/core/test_engine.
+py::test_engine_communication_clari
+ty_metric
+FAILED tests/unit/core/test_engine.
+py::test_engine_policy_violation_fe
+edback_loop
+FAILED tests/unit/core/test_engine.
+py::test_engine_state_verification_
+metric
+FAILED tests/unit/core/test_engine_
+runner.py::test_adapter_registry_di
+scovery
+FAILED tests/unit/core/test_engine_
+runner.py::test_adapter_registry_ca
+ll_agent
+FAILED tests/unit/core/test_engine_
+runner.py::test_run_evaluation_caps
+_attempts
+FAILED tests/unit/core/test_engine_
+runner.py::test_default_runner_pass
+_at_k
+FAILED tests/unit/core/test_engine_
+runner.py::test_default_runner_even
+ts - Ru...
+FAILED tests/unit/core/test_engine_
+runner.py::test_run_evaluation_plug
+in_init
+FAILED tests/unit/core/test_llm_pro
+viders.py::test_ollama_provider - 
+RuntimeE...
+FAILED tests/unit/core/test_llm_pro
+viders.py::test_openai_provider - 
+RuntimeE...
+FAILED tests/unit/core/test_llm_pro
+viders.py::test_anthropic_provider 
+- Runti...
+FAILED tests/unit/core/test_llm_pro
+viders.py::test_gemini_provider - 
+RuntimeE...
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_ollama_lis
+t_models
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_ollama_lis
+t_models_error
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_ollama_gen
+erate_error
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_openai_mis
+sing_key
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_openai_mal
+formed_json
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_openai_lis
+t_models
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_openai_lis
+t_models_no_key
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_anthropic_
+missing_key
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_anthropic_
+malformed_json
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_anthropic_
+list_models
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_gemini_mis
+sing_key
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_gemini_mod
+el_normalization
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_gemini_emp
+ty_response
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_gemini_lis
+t_models
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_gemini_lis
+t_models_no_key
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_grok_list_
+models
+FAILED tests/unit/core/test_llm_pro
+viders_coverage.py::test_factory_va
+riants
+FAILED tests/unit/core/test_llm_pro
+viders_extra.py::test_anthropic_pro
+vider_success
+FAILED tests/unit/core/test_llm_pro
+viders_extra.py::test_gemini_provid
+er_success
+FAILED tests/unit/core/test_llm_pro
+viders_extra.py::test_provider_fact
+ory - R...
+FAILED tests/unit/core/test_metrics
+.py::test_calculate_luna_judge_scor
+e_mock
+FAILED tests/unit/core/test_metrics
+.py::test_calculate_luna_judge_scor
+e_fallback
+FAILED tests/unit/core/test_metrics
+.py::test_luna_judge_score - 
+RuntimeError:...
+FAILED tests/unit/core/test_metrics
+.py::test_luna_judge_with_mock_olla
+ma - Ru...
+FAILED tests/unit/core/test_metrics
+_extra.py::test_calculate_luna_judg
+e_score_branches
+FAILED tests/unit/core/test_metrics
+_extra.py::test_defense_metric_bran
+ch - Ru...
+FAILED tests/unit/core/test_metrics
+_extra.py::test_technical_metric_br
+anch - ...
+FAILED tests/unit/core/test_metrics
+_modular.py::test_planning_quality_
+uses_correct_rubric
+FAILED tests/unit/core/test_metrics
+_planning.py::test_calculate_planni
+ng_quality
+FAILED tests/unit/core/test_metrics
+_planning.py::test_calculate_root_c
+ause_analysis
+FAILED tests/unit/core/test_metrics
+_trajectory.py::test_engine_capture
+s_state_transitions
+FAILED tests/unit/core/test_placeho
+lder_fixes.py::test_hitl_interactiv
+e_input
+FAILED tests/unit/core/test_placeho
+lder_fixes.py::test_hitl_ci_auto_re
+sume - ...
+FAILED tests/unit/core/test_placeho
+lder_fixes.py::test_reporting_plugi
+n_notifications
+FAILED tests/unit/core/test_placeho
+lder_fixes.py::test_adapter_guards 
+- Runti...
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_execute_
+tasks_empty_workflow
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_execute_
+tasks_cycle_error
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_execute_
+tasks_happy_path
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_execute_
+tasks_agent_error
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_handle_t
+ool_call_blocked
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_handle_t
+ool_call_success
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_handle_m
+ultiple_tools
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_handle_h
+itl_ci
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_handle_h
+itl_tty
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_handle_h
+itl_non_interactive
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_calculat
+e_metrics_state_hygiene
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_get_last
+_env_message
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_calculat
+e_metrics_errors
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_execute_
+tasks_loop_variants
+FAILED tests/unit/core/test_session
+_all.py::TestSession::test_execute_
+tasks_protocol_defaults
+FAILED tests/unit/core/test_spec_pa
+rser.py::test_parse_valid_markdown 
+- Runti...
+FAILED tests/unit/core/test_spec_pa
+rser.py::test_parse_missing_section
+s - Run...
+FAILED tests/unit/core/test_spec_pa
+rser_all.py::TestSpecParser::test_p
+arse_markdown_llm_synthesis_failure
+FAILED tests/unit/core/test_spec_pa
+rser_all.py::TestSpecParser::test_p
+arse_markdown_llm_synthesis_logic
+FAILED tests/unit/core/test_spec_pa
+rser_all.py::TestSpecParser::test_p
+arse_markdown_minimal_and_empty
+FAILED tests/unit/core/test_spec_pa
+rser_all.py::TestSpecParser::test_p
+arse_markdown_to_scenario_structure
+d
+FAILED tests/unit/core/test_spec_pa
+rser_all.py::TestSpecParser::test_s
+ynthesize_tasks_from_prd_llm_warnin
+g
+FAILED tests/unit/core/test_spec_pa
+rser_all.py::TestSpecParser::test_s
+ynthesize_tasks_from_prd_no_key
+FAILED tests/unit/core/test_spec_pa
+rser_all.py::TestSpecParser::test_s
+ynthesize_tasks_from_prd_success
+FAILED tests/unit/core/test_trace_r
+ecorder.py::test_record_interaction
+_error
+FAILED tests/unit/core/test_utiliti
+es.py::test_doctor_runs_without_err
+or - Ru...
+FAILED tests/unit/handlers/test_aes
+.py::test_aes_validation_success - 
+Runtime...
+FAILED tests/unit/handlers/test_aes
+.py::test_aes_validation_failure - 
+Runtime...
+FAILED tests/unit/handlers/test_aes
+.py::test_aes_validation_with_compl
+exity_level
+FAILED tests/unit/handlers/test_cli
+.py::test_handle_init_success - 
+RuntimeErr...
+FAILED tests/unit/handlers/test_cli
+.py::test_handle_init_scaffolding 
+- Runtim...
+FAILED tests/unit/handlers/test_cli
+_commands_extra.py::test_handle_rep
+ort_exceptions
+FAILED tests/unit/handlers/test_cli
+_commands_extra.py::test_handle_rep
+lay_exceptions
+FAILED tests/unit/handlers/test_cli
+_commands_extra.py::test_handle_run
+_extensions
+FAILED tests/unit/handlers/test_cli
+_commands_extra.py::test_run_evalua
+te_complex_branches
+FAILED tests/unit/handlers/test_cli
+_commands_extra.py::test_handle_aes
+_validate_complex
+FAILED tests/unit/handlers/test_cli
+_commands_more.py::test_handle_spec
+_to_eval_exceptions
+FAILED tests/unit/handlers/test_cli
+_commands_more.py::test_handle_muta
+te_exceptions
+FAILED tests/unit/handlers/test_cli
+_commands_more.py::test_handle_fail
+ures_search_basic
+FAILED tests/unit/handlers/test_cli
+_commands_more.py::test_handle_expl
+ain_basic
+FAILED tests/unit/handlers/test_cli
+_commands_more.py::test_handle_cali
+brate_basic
+FAILED tests/unit/handlers/test_cli
+_extra.py::test_handle_aes_validate
+_dir - ...
+FAILED tests/unit/handlers/test_cli
+_extra.py::test_handle_replay_succe
+ss - Ru...
+FAILED tests/unit/handlers/test_cli
+_extra.py::test_handle_run_success 
+- Runti...
+FAILED tests/unit/handlers/test_cli
+_extra.py::test_run_evaluate_succes
+s - Run...
+FAILED tests/unit/handlers/test_cli
+_extra.py::test_handle_auto_transla
+te_success
+FAILED tests/unit/handlers/test_cli
+_extra.py::test_handle_calibrate_su
+ccess
+FAILED tests/unit/handlers/test_cli
+_extra.py::test_handle_calibrate_pl
+ot - Ru...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_list - 
+RuntimeEr...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_doctor - 
+Runtime...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_cleanup_r
+uns - R...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_inspect 
+- Runtim...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_lint - 
+RuntimeEr...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_export - 
+Runtime...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_taxonomy 
+- Runti...
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_verify_mi
+ssing
+FAILED tests/unit/handlers/test_cli
+_handlers.py::test_handle_import_dr
+ift - R...
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+list_refresh
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+inspect_missing
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+report_missing_trace
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+mutate_all_types
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+cleanup_runs
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+aes_validate_error_paths
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+verify_missing
+FAILED tests/unit/handlers/test_cli
+_handlers_coverage.py::test_handle_
+spec_to_eval_exceptions
+FAILED tests/unit/handlers/test_cli
+_handlers_extra.py::test_handle_reg
+istry_add
+FAILED tests/unit/handlers/test_cli
+_handlers_extra.py::test_handle_reg
+istry_sync
+FAILED tests/unit/handlers/test_cli
+_handlers_extra.py::test_handle_ci_
+generate
+FAILED tests/unit/handlers/test_cli
+_handlers_extra.py::test_handle_ins
+tall - ...
+FAILED tests/unit/handlers/test_cli
+_taxonomy.py::test_handle_taxonomy 
+- Runti...
+FAILED tests/unit/handlers/test_cli
+_taxonomy.py::test_handle_inspect_s
+uccess
+FAILED tests/unit/handlers/test_cli
+_taxonomy.py::test_handle_inspect_f
+ailure
+FAILED tests/unit/handlers/test_cli
+_taxonomy.py::test_handle_catalog_s
+earch
+FAILED tests/unit/handlers/test_cov
+erage_expansion.py::test_handle_ana
+lyze_direct
+FAILED tests/unit/handlers/test_cov
+erage_expansion.py::test_handle_ver
+ify_direct
+FAILED tests/unit/handlers/test_cov
+erage_expansion.py::test_call_agent
+_error_branches
+FAILED tests/unit/handlers/test_cov
+erage_expansion.py::test_human_adap
+ter_branch
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_analyze
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_init_standard
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_init_scaffold
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_install
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_registry_sync
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_plugin_list
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_plugin_register_
+success
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_plugin_unregiste
+r
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_doctor
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_registry_add
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_registry_search
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_ci_generate
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_cleanup_runs
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_export
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_failures_search
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_auto_translate
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_plugin_register_
+errors
+FAILED tests/unit/handlers/test_env
+ironment_all.py::TestEnvironmentHan
+dlers::test_handle_plugin_unregiste
+r_missing
+FAILED tests/unit/handlers/test_gat
+e_cli.py::test_handle_gate_missing_
+vc - Ru...
+FAILED tests/unit/handlers/test_gat
+e_cli.py::test_handle_gate_success 
+- Runti...
+FAILED tests/unit/handlers/test_gat
+e_cli.py::test_handle_gate_hash_mis
+match
+FAILED tests/unit/handlers/test_gat
+e_cli.py::test_handle_gate_asymmetr
+ic_success
+FAILED tests/unit/handlers/test_pla
+yground.py::test_run_playground_err
+or - Ru...
+FAILED tests/unit/handlers/test_qui
+ckstart.py::test_run_quickstart_flo
+w - Run...
+FAILED tests/unit/test_doctor_sync.
+py::test_doctor_sync_loop_drift - 
+RuntimeE...
+FAILED dataproc_engine/tests/benchm
+arks/test_cross_sector_parity.py::t
+est_education_hegemony
+FAILED dataproc_engine/tests/benchm
+arks/test_cross_sector_parity.py::t
+est_energy_hegemony
+FAILED dataproc_engine/tests/benchm
+arks/test_cross_sector_parity.py::t
+est_transportation_hegemony
+FAILED dataproc_engine/tests/benchm
+arks/test_deep_parity_audit.py::tes
+t_agriculture_api_deep_hit
+FAILED dataproc_engine/tests/benchm
+arks/test_deep_parity_audit.py::tes
+t_finance_credit_risk_hit
+FAILED dataproc_engine/tests/benchm
+arks/test_deep_parity_audit.py::tes
+t_healthcare_cms_hit_hardened
+FAILED dataproc_engine/tests/benchm
+arks/test_deep_parity_audit.py::tes
+t_unstructured_ocr_fail_branches_ha
+rdened
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[finance-custom_con
+fig0]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[finance-custom_con
+fig1]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[finance-custom_con
+fig2]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[energy-custom_conf
+ig3]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[healthcare-custom_
+config4]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[healthcare-custom_
+config5]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[telecom-custom_con
+fig6]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[telecom-custom_con
+fig7]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[ecommerce-custom_c
+onfig8]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[ecommerce-custom_c
+onfig9]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[agriculture-custom
+_config10]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[transportation-cus
+tom_config11]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[unstructured-custo
+m_config12]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[demographics-custo
+m_config13]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[labor-custom_confi
+g14]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[environment-custom
+_config15]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[education-custom_c
+onfig16]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[housing-custom_con
+fig17]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[manufacturing-cust
+om_config18]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[media_and_entertai
+nment-custom_config19]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_industry_parity[decision_support-c
+ustom_config20]
+FAILED dataproc_engine/tests/benchm
+arks/test_global_parity_v2.py::test
+_resiliency_layer
+FAILED dataproc_engine/tests/benchm
+arks/test_signal_veracity.py::test_
+correlator_edge_branches
+FAILED dataproc_engine/tests/benchm
+arks/test_signal_veracity.py::test_
+telecom_ookla_hit
+FAILED dataproc_engine/tests/benchm
+arks/test_signal_veracity.py::test_
+unstructured_common_crawl_hit
+FAILED dataproc_engine/tests/benchm
+arks/test_ultimate_parity_zenith.py
+::test_cli_backup_rotation_zenith
+FAILED dataproc_engine/tests/benchm
+arks/test_ultimate_parity_zenith.py
+::test_unstructured_path_traversal_
+gap
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_full
+_pipeline_all_industries
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[finance]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[ecommerce]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[demographics]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[labor]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[environment]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[housing]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[manufacturing]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[media_and_entertainme
+nt]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[decision_support]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[healthcare]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[energy]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[telecom]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[education]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[transportation]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_ulti
+mate_coverage[agriculture]
+FAILED dataproc_engine/tests/core/t
+est_coverage_baseline.py::test_corr
+elator_exhaustion
+FAILED dataproc_engine/tests/core/t
+est_edge_case_robustness.py::test_l
+lm_manager_perfection
+FAILED dataproc_engine/tests/core/t
+est_edge_case_robustness.py::test_c
+orrelator_perfection
+FAILED dataproc_engine/tests/core/t
+est_engine_orchestrator.py::test_ll
+m_manager_v2_token_guard_intercepti
+on
+FAILED dataproc_engine/tests/core/t
+est_engine_orchestrator.py::test_ll
+m_manager_v2_cost_tracking
+FAILED dataproc_engine/tests/core/t
+est_llm_logic.py::test_mock_extract
+ion - R...
+FAILED dataproc_engine/tests/core/t
+est_llm_tiers.py::test_llm_tier_1_c
+loud_success
+FAILED dataproc_engine/tests/core/t
+est_llm_tiers.py::test_llm_tier_2_o
+llama_fallback
+FAILED dataproc_engine/tests/core/t
+est_llm_tiers.py::test_llm_tier_3_h
+euristic_fallback
+FAILED dataproc_engine/tests/core/t
+est_llm_tiers.py::test_sentiment_in
+tensifiers
+FAILED dataproc_engine/tests/core/t
+est_llm_tiers.py::test_universal_se
+ntiment_fallback
+FAILED dataproc_engine/tests/core/t
+est_parity_synthesizer.py::test_sta
+ndard_schema_from_pandas_edge_cases
+FAILED dataproc_engine/tests/e2e/te
+st_coverage_verification.py::test_c
+overage_final_push_mastery
+FAILED dataproc_engine/tests/e2e/te
+st_coverage_verification.py::test_a
+griculture_faostat_hit
+FAILED dataproc_engine/tests/e2e/te
+st_coverage_verification.py::test_f
+inance_sec_edgar_hit
+FAILED dataproc_engine/tests/e2e/te
+st_coverage_verification.py::test_h
+ealthcare_who_hit
+FAILED dataproc_engine/tests/e2e/te
+st_coverage_verification.py::test_c
+li_confirmation_branches
+FAILED dataproc_engine/tests/e2e/te
+st_excellence_final.py::test_indust
+rial_excellence_final_push
+FAILED dataproc_engine/tests/e2e/te
+st_excellence_final.py::test_unstru
+ctured_ocr_final_zenith
+FAILED dataproc_engine/tests/e2e/te
+st_excellence_mastery.py::test_ecom
+merce_macro_sentiment_deep_hit
+FAILED dataproc_engine/tests/e2e/te
+st_excellence_mastery.py::test_tele
+com_fcc_retry_and_e911_hardened
+FAILED dataproc_engine/tests/e2e/te
+st_excellence_mastery.py::test_tran
+sportation_osm_quadkey_hit_hardened
+FAILED dataproc_engine/tests/e2e/te
+st_excellence_mastery.py::test_unst
+ructured_llm_extraction_hit
+FAILED dataproc_engine/tests/e2e/te
+st_final_excellence_suite.py::test_
+housing_fhfa_and_hud_mastery
+FAILED dataproc_engine/tests/e2e/te
+st_final_excellence_suite.py::test_
+finance_world_bank_fallback_mastery
+FAILED dataproc_engine/tests/e2e/te
+st_final_excellence_suite.py::test_
+energy_opsd_fallback_mastery
+FAILED dataproc_engine/tests/e2e/te
+st_final_excellence_suite.py::test_
+transportation_eurostat_mastery
+FAILED dataproc_engine/tests/e2e/te
+st_gap_mitigation.py::test_unstruct
+ured_common_crawl_protocol_hit
+FAILED dataproc_engine/tests/e2e/te
+st_gap_mitigation.py::test_unstruct
+ured_url_extraction_hit
+FAILED dataproc_engine/tests/e2e/te
+st_gap_mitigation.py::test_transpor
+tation_overpass_error_fallback
+FAILED dataproc_engine/tests/functi
+onal/test_cli_backup_safety.py::tes
+t_cli_rotational_backup_integration
+FAILED dataproc_engine/tests/provid
+ers/test_ecommerce_provider.py::tes
+t_ecommerce_olist_production_loop
+FAILED dataproc_engine/tests/provid
+ers/test_ecommerce_provider.py::tes
+t_ecommerce_uci_production_loop
+FAILED dataproc_engine/tests/provid
+ers/test_ecommerce_provider.py::tes
+t_ecommerce_cpi_inflation_impact
+FAILED dataproc_engine/tests/provid
+ers/test_ecommerce_provider.py::tes
+t_ecommerce_web_stream_hit
+FAILED dataproc_engine/tests/provid
+ers/test_education_provider.py::tes
+t_education_provider_no_sim
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_balances_extract_with_api_key
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_balances_extract_no_api_key_n
+o_file
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_balances_extract_with_local_f
+ile
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_balances_transform_valid_data
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_balances_transform_missing_fi
+elds
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_eia_list_format_transform
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_eia_list_format_skips_short_i
+tems
+FAILED dataproc_engine/tests/provid
+ers/test_energy_extended.py::test_e
+nergy_opsd_extract_simulation
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_noaa_extract_simula
+tion
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_noaa_transform
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_copernicus_extract_
+simulation
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_copernicus_transfor
+m
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_copernicus_no_simul
+ation_returns_empty
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_noaa_no_simulation_
+returns_empty
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_full_pipeline_noaa
+FAILED dataproc_engine/tests/provid
+ers/test_environment_provider.py::t
+est_environment_full_pipeline_coper
+nicus
+FAILED dataproc_engine/tests/provid
+ers/test_finance_provider.py::test_
+finance_world_bank_logic
+FAILED dataproc_engine/tests/provid
+ers/test_finance_provider.py::test_
+finance_world_bank_simulation
+FAILED dataproc_engine/tests/provid
+ers/test_manufacturing_specialized.
+py::test_manufacturing_industrial_p
+roduction
+FAILED dataproc_engine/tests/provid
+ers/test_manufacturing_specialized.
+py::test_manufacturing_asm_producti
+on
+FAILED dataproc_engine/tests/provid
+ers/test_manufacturing_specialized.
+py::test_media_and_entertainment_pr
+oduction
+FAILED dataproc_engine/tests/provid
+ers/test_public_sector_providers.py
+::test_demographics_world_bank_prod
+uction
+FAILED dataproc_engine/tests/provid
+ers/test_public_sector_providers.py
+::test_demographics_census_hardened
+FAILED dataproc_engine/tests/provid
+ers/test_public_sector_providers.py
+::test_public_sector_local_load_boo
+st
+FAILED dataproc_engine/tests/provid
+ers/test_public_sector_providers.py
+::test_housing_fhfa_transformation
+FAILED dataproc_engine/tests/provid
+ers/test_sector_edge_cases.py::test
+_energy_provider_series_id_failure
+FAILED dataproc_engine/tests/provid
+ers/test_sector_edge_cases.py::test
+_labor_provider_ilo_fallback
+FAILED dataproc_engine/tests/provid
+ers/test_sector_edge_cases.py::test
+_healthcare_provider_csv_integrity_
+error
+FAILED dataproc_engine/tests/provid
+ers/test_sector_edge_cases.py::test
+_sector_token_limit_handling
+FAILED dataproc_engine/tests/provid
+ers/test_telecom_provider.py::test_
+telecom_itu_production_loop
+FAILED dataproc_engine/tests/provid
+ers/test_telecom_provider.py::test_
+telecom_ookla_production_loop
+FAILED dataproc_engine/tests/provid
+ers/test_telecom_provider.py::test_
+telecom_fcc_api_retry_and_simulatio
+n
+FAILED dataproc_engine/tests/provid
+ers/test_telecom_provider.py::test_
+telecom_validation_branches
+FAILED dataproc_engine/tests/provid
+ers/test_unstructured_extended.py::
+test_unstructured_error_branches
+FAILED dataproc_engine/tests/provid
+ers/test_unstructured_extended.py::
+test_unstructured_pdf_corruption
+FAILED dataproc_engine/tests/provid
+ers/test_unstructured_provider.py::
+test_unstructured_hegemony
+FAILED dataproc_engine/tests/resili
+ency/test_correlator_exhaustion.py:
+:test_correlator_file_discovery
+FAILED dataproc_engine/tests/resili
+ency/test_correlator_exhaustion.py:
+:test_correlator_fuzzy_and_temporal
+FAILED dataproc_engine/tests/resili
+ency/test_correlator_exhaustion.py:
+:test_correlator_normalization
+FAILED dataproc_engine/tests/resili
+ency/test_extraction_surge_robustne
+ss.py::test_agriculture_exception_h
+andler
+FAILED dataproc_engine/tests/resili
+ency/test_extraction_surge_robustne
+ss.py::test_finance_sec_parsing_err
+or
+FAILED dataproc_engine/tests/resili
+ency/test_extraction_surge_robustne
+ss.py::test_healthcare_api_error_br
+anches
+FAILED dataproc_engine/tests/resili
+ency/test_extraction_surge_robustne
+ss.py::test_cli_rotation_policy_mes
+sage
+FAILED dataproc_engine/tests/resili
+ency/test_infra_extraction_resilien
+cy.py::test_energy_api_success_and_
+failures
+FAILED dataproc_engine/tests/resili
+ency/test_infra_extraction_resilien
+cy.py::test_unstructured_ocr_and_pd
+f_mock_hardened
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_tiered_success
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_heuristic_recovery
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_sentiment_loops
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_error_resiliency
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_type_enforcement
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_ollama_json_fail
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_unknown_provider
+FAILED dataproc_engine/tests/resili
+ency/test_llm_fallbacks.py::test_ll
+m_manager_grok_fail_path
+FAILED dataproc_engine/tests/resili
+ency/test_public_resiliency.py::tes
+t_public_sector_resiliency
+
+

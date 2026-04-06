@@ -1,7 +1,8 @@
-import pytest
 import json
-from pathlib import Path
-from eval_runner import reporter, config
+
+import pytest
+
+from eval_runner import config, reporter
 
 
 @pytest.fixture
@@ -30,7 +31,7 @@ def test_save_trajectory(tmp_path, mock_results):
     files = list(traj_dir.glob("s1_*.json"))
     assert len(files) == 1
 
-    with open(files[0], "r") as f:
+    with open(files[0]) as f:
         data = json.load(f)
         assert data["metadata"]["scenario_id"] == "s1"
         assert len(data["results"]) == 1

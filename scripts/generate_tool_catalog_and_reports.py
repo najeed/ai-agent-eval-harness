@@ -1,8 +1,8 @@
-import json
-import glob
-import os
 import collections
 import datetime
+import glob
+import json
+import os
 
 # Paths
 root = os.path.join(os.path.dirname(os.path.dirname(__file__)), "industries")
@@ -11,7 +11,7 @@ root = os.path.join(os.path.dirname(os.path.dirname(__file__)), "industries")
 counts = collections.Counter()
 examples = {}
 for path in glob.glob(os.path.join(root, "**", "scenarios", "*.json"), recursive=True):
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
     sid = data.get("scenario_id")
     for t in data.get("tasks", []):
@@ -44,7 +44,7 @@ with open(json_path, "w", encoding="utf-8") as f:
 # 2) Questionable thresholds report
 report = []
 for path in glob.glob(os.path.join(root, "**", "scenarios", "*.json"), recursive=True):
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
     sid = data.get("scenario_id")
     for t in data.get("tasks", []):
@@ -84,10 +84,10 @@ with open(md_report_path, "w", encoding="utf-8") as f:
     f.write("|---|---|---|---|---|\n")
     for e in report[:200]:
         f.write(
-            f"| {e['scenario_id']} | {e['task_id']} | {e.get('metric','')} | {e['threshold']} | {e['path']} |\n"
+            f"| {e['scenario_id']} | {e['task_id']} | {e.get('metric', '')} | {e['threshold']} | {e['path']} |\n"  # noqa: E501
         )
 
 print(f"Wrote tool catalog: {json_path}")
 print(
-    f"Wrote questionable threshold reports: {json_report_path} and {md_report_path} (entries: {len(report)})"
+    f"Wrote questionable threshold reports: {json_report_path} and {md_report_path} (entries: {len(report)})"  # noqa: E501
 )

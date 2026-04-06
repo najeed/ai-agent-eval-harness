@@ -1,0 +1,43 @@
+﻿........................................................................ [ 25%]
+........................................................................ [ 51%]
+........................................................................ [ 77%]
+...........FFFFFF...............................................         [100%]
+================================== FAILURES ===================================
+__________________________ test_parse_valid_markdown __________________________
+tests\unit\core\test_spec_parser.py:28: in test_parse_valid_markdown
+    assert scenario["metadata"]["name"] == "Test Scenario"
+           ^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'coroutine' object is not subscriptable
+_________________________ test_parse_missing_sections _________________________
+tests\unit\core\test_spec_parser.py:40: in test_parse_missing_sections
+    assert scenario["metadata"]["name"] == "Minimal"
+           ^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'coroutine' object is not subscriptable
+__________ TestSpecParser.test_parse_markdown_llm_synthesis_failure ___________
+tests\unit\core\test_spec_parser_all.py:97: in test_parse_markdown_llm_synthesis_failure
+    self.assertEqual(len(scenario["workflow"]["nodes"]), 1)
+                         ^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'coroutine' object is not subscriptable
+___________ TestSpecParser.test_parse_markdown_llm_synthesis_logic ____________
+tests\unit\core\test_spec_parser_all.py:85: in test_parse_markdown_llm_synthesis_logic
+    self.assertEqual(len(scenario["workflow"]["nodes"]), 2)
+                         ^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'coroutine' object is not subscriptable
+____________ TestSpecParser.test_parse_markdown_minimal_and_empty _____________
+tests\unit\core\test_spec_parser_all.py:69: in test_parse_markdown_minimal_and_empty
+    self.assertEqual(scenario["metadata"]["name"], "Minimal")
+                     ^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'coroutine' object is not subscriptable
+__________ TestSpecParser.test_parse_markdown_to_scenario_structured __________
+tests\unit\core\test_spec_parser_all.py:37: in test_parse_markdown_to_scenario_structured
+    self.assertEqual(scenario["metadata"]["name"], "My Awesome App")
+                     ^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'coroutine' object is not subscriptable
+=========================== short test summary info ===========================
+FAILED tests/unit/core/test_spec_parser.py::test_parse_valid_markdown - TypeE...
+FAILED tests/unit/core/test_spec_parser.py::test_parse_missing_sections - Typ...
+FAILED tests/unit/core/test_spec_parser_all.py::TestSpecParser::test_parse_markdown_llm_synthesis_failure
+FAILED tests/unit/core/test_spec_parser_all.py::TestSpecParser::test_parse_markdown_llm_synthesis_logic
+FAILED tests/unit/core/test_spec_parser_all.py::TestSpecParser::test_parse_markdown_minimal_and_empty
+FAILED tests/unit/core/test_spec_parser_all.py::TestSpecParser::test_parse_markdown_to_scenario_structured
+6 failed, 274 passed, 17 warnings in 39.40s

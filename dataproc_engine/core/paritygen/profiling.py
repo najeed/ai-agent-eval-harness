@@ -1,7 +1,9 @@
-import pandas as pd
-from typing import Dict, Any
+from typing import Any
 
-def profile_data(df: pd.DataFrame) -> Dict[str, Any]:
+import pandas as pd
+
+
+def profile_data(df: pd.DataFrame) -> dict[str, Any]:
     """
     Step 1: Extract Statistical Profiles.
     Compute descriptive statistics, variance, and correlations.
@@ -15,6 +17,6 @@ def profile_data(df: pd.DataFrame) -> Dict[str, Any]:
             for col in df.select_dtypes(include="object")
         },
         "shape": df.shape,
-        "columns": df.columns.tolist()
+        "columns": df.columns.tolist(),
     }
     return stats

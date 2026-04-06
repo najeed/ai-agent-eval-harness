@@ -10,7 +10,7 @@ logger = logging.getLogger("topology_upgrader")
 def upgrade_scenario(file_path: Path) -> bool:
     """Upgrades a scenario to version 2.0.0 and injects agent topology."""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
 
         if data.get("version") == "2.0.0":
@@ -46,16 +46,14 @@ def upgrade_scenario(file_path: Path) -> bool:
 
 
 def main():
-    target_dir = (
-        Path(__file__).parent.parent / "industries" / "logistics_and_warehousing"
-    )
+    target_dir = Path(__file__).parent.parent / "industries" / "logistics_and_warehousing"
     if not target_dir.exists():
         logger.error(f"Target directory {target_dir} not found.")
         return
 
     total_upgraded = 0
 
-    logger.info(f"Upgrading Logistics scenarios to v2.0...")
+    logger.info("Upgrading Logistics scenarios to v2.0...")
     for scenario_file in target_dir.rglob("*.json"):
         if upgrade_scenario(scenario_file):
             total_upgraded += 1

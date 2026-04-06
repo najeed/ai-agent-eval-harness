@@ -1,8 +1,10 @@
 import pytest
+
 from eval_runner.spec_parser import parse_markdown_to_scenario
 
 
-def test_parse_valid_markdown():
+@pytest.mark.asyncio
+async def test_parse_valid_markdown():
     markdown = """# PRD: Test Scenario
 **Industry:** telecom
 **Use Case:** support
@@ -24,7 +26,7 @@ Description of task one.
 ## Policies
 - **tool1:** {"max_limit": 10}
 """
-    scenario = parse_markdown_to_scenario(markdown)
+    scenario = await parse_markdown_to_scenario(markdown)
 
     assert scenario["metadata"]["name"] == "Test Scenario"
     assert scenario["industry"] == "telecom"
@@ -35,9 +37,10 @@ Description of task one.
     assert "tool1" in scenario["metadata"]["policies"]
 
 
-def test_parse_missing_sections():
+@pytest.mark.asyncio
+async def test_parse_missing_sections():
     markdown = "# PRD: Minimal\n## Tasks\n### 1. T1\n- **Tools:** t1"
-    scenario = parse_markdown_to_scenario(markdown)
+    scenario = await parse_markdown_to_scenario(markdown)
     assert scenario["metadata"]["name"] == "Minimal"
     assert "workflow" in scenario
     assert len(scenario["workflow"]["nodes"]) == 1

@@ -5,18 +5,20 @@ Core Compliance Layer: Artifact & Regulatory Guardrails.
 Provides first-class support for Source of Truth bundling and integrity verification.
 """
 
+import base64
 import hashlib
 import json
-import zipfile
 import os
-from pathlib import Path
-from typing import List, Dict, Any, Optional
+import zipfile
 from datetime import datetime
-import base64
+from pathlib import Path
+from typing import Any
+
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
-from .plugins import BaseEvalPlugin
+
 from . import config
+from .plugins import BaseEvalPlugin
 
 
 class ArtifactPlugin(BaseEvalPlugin):
@@ -35,7 +37,7 @@ class ArtifactPlugin(BaseEvalPlugin):
         """Retrieves or generates the system private key for signing."""
         key_dir = config.PROJECT_ROOT / ".aes" / "keys"
         key_path = key_dir / "system_id.pem"
-        
+
         # Priority 1: Environment variable
         env_key = os.getenv("AES_PRIVATE_KEY")
         if env_key:
@@ -54,11 +56,13 @@ class ArtifactPlugin(BaseEvalPlugin):
         private_key = ed25519.Ed25519PrivateKey.generate()
         key_dir.mkdir(parents=True, exist_ok=True)
         with open(key_path, "wb") as f:
-            f.write(private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.PKCS8,
-                encryption_algorithm=serialization.NoEncryption()
-            ))
+            f.write(
+                private_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.PKCS8,
+                    encryption_algorithm=serialization.NoEncryption(),
+                )
+            )
         return private_key
 
     def _calculate_sha256(self, file_path: Path) -> str:
@@ -71,10 +75,10 @@ class ArtifactPlugin(BaseEvalPlugin):
     def bundle_artifacts(
         self,
         target_dir: str,
-        files_to_include: List[str],
+        files_to_include: list[str],
         output_filename: str = "publication_artifact_bundle.zip",
         generate_manifest: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Standardized core Service for creating a signed ZIP bundle.
         """
@@ -95,7 +99,9 @@ class ArtifactPlugin(BaseEvalPlugin):
                 if f_path.exists():
                     zipf.write(f_path, arcname=filename)
                     if generate_manifest:
-                        manifest["files"].append({"name": filename, "sha256": self._calculate_sha256(f_path)})
+                        manifest["files"].append(
+                            {"name": filename, "sha256": self._calculate_sha256(f_path)}
+                        )
                 else:
                     print(f"⚠️ [ArtifactPlugin] Skipping missing file: {filename}")
 
@@ -107,8 +113,7 @@ class ArtifactPlugin(BaseEvalPlugin):
             manifest["signature_ed25519"] = base64.b64encode(signature).decode()
             manifest["public_key"] = base64.b64encode(
                 private_key.public_key().public_bytes(
-                    encoding=serialization.Encoding.Raw,
-                    format=serialization.PublicFormat.Raw
+                    encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
                 )
             ).decode()
 
@@ -120,11 +125,13 @@ class ArtifactPlugin(BaseEvalPlugin):
         print(f"✅ [ArtifactPlugin] Bundle created: {zip_path}")
         return {
             "bundle_path": str(zip_path),
-            "manifest_path": (str(base_path / "audit_manifest.json") if generate_manifest else None),
+            "manifest_path": (
+                str(base_path / "audit_manifest.json") if generate_manifest else None
+            ),
             "status": "success",
         }
 
-    def verify_integrity(self, manifest_path: str) -> Dict[str, Any]:
+    def verify_integrity(self, manifest_path: str) -> dict[str, Any]:
         """
         Verifies all files listed in a manifest against their SHA-256 hashes.
         """
@@ -132,7 +139,7 @@ class ArtifactPlugin(BaseEvalPlugin):
         if not path.exists():
             return {"status": "error", "message": "Manifest not found"}
 
-        with open(path, "r") as f:
+        with open(path) as f:
             manifest = json.load(f)
 
         results = []
@@ -155,9 +162,11 @@ class ArtifactPlugin(BaseEvalPlugin):
         # Verify Signature if present
         if is_valid and "signature_ed25519" in manifest:
             try:
-                sig_bytes = base64.b64encode(manifest.pop("signature_ed25519").encode()) # Dummy access to show logic
+                base64.b64encode(
+                    manifest.pop("signature_ed25519").encode()
+                )  # Dummy access to show logic
                 # Real verification requires full manifest dict without sig
-                pass 
+                pass
             except Exception:
                 pass
 

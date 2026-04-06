@@ -1,7 +1,8 @@
 # eval_runner/adapters/crewai.py
-from typing import Any, Dict, Optional
+from typing import Any
+
+from ..events import CoreEvents, EventEmitter
 from ..plugins import BaseEvalPlugin
-from ..events import EventEmitter, CoreEvents
 
 
 class CrewAIAdapterPlugin(BaseEvalPlugin):
@@ -16,7 +17,9 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
         registry.register("crewai", self.execute_crewai_task)
         registry.register("crewai:v1", self.execute_crewai_task)
 
-    async def execute_crewai_task(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
+    async def execute_crewai_task(
+        self, payload: dict[str, Any], endpoint: str = None
+    ) -> dict[str, Any]:
         """
         Executes a CrewAI crew or task with high-fidelity telemetry.
         """
@@ -25,29 +28,27 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
         try:
             # Dynamic import for Zero-Touch Core
             import crewai
-            from crewai import Agent, Task, Crew
+            from crewai import Agent, Crew, Task  # noqa: F401
 
             print(f"      [Adapter] Executing CrewAI kickoff: {task_id}")
-            
+
             # Telemetry Callback handlers
             def on_step(step):
-                EventEmitter.emit(CoreEvents.NODE_START, {
-                    "adapter": "crewai",
-                    "step_id": str(getattr(step, "id", "unknown"))
-                })
+                EventEmitter.emit(
+                    CoreEvents.NODE_START,
+                    {"adapter": "crewai", "step_id": str(getattr(step, "id", "unknown"))},
+                )
                 EventEmitter.emit(CoreEvents.NODE_END, {"adapter": "crewai"})
 
             # Signal start of the multi-agent 'chain'
-            EventEmitter.emit(CoreEvents.CHAIN_START, {
-                "adapter": "crewai",
-                "task_id": task_id,
-                "protocol": "v1"
-            })
+            EventEmitter.emit(
+                CoreEvents.CHAIN_START, {"adapter": "crewai", "task_id": task_id, "protocol": "v1"}
+            )
 
             # In a real environment, we would initialize actual agents and tasks here.
             # We simulate the step-level signals for the auditor.
             on_step({"id": task_id})
-            
+
             EventEmitter.emit(CoreEvents.CHAIN_END, {"adapter": "crewai", "task_id": task_id})
 
             return {
@@ -56,7 +57,7 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
                 "metadata": {
                     "framework": "crewai",
                     "version": getattr(crewai, "__version__", "unknown"),
-                    "protocol": "v1"
+                    "protocol": "v1",
                 },
             }
 

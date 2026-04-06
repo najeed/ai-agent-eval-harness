@@ -1,6 +1,7 @@
 import json
+
 import pytest
-from pathlib import Path
+
 from eval_runner.trace_utils import load_events
 
 

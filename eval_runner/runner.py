@@ -7,21 +7,23 @@ Orchestration logic for evaluation tasks.
 Supports multi-attempt (pass@k) loops and plugin interception.
 """
 
-import asyncio
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional
-from pathlib import Path
-from .context import EvaluationContext, TurnContext
-from .events import EventEmitter, CoreEvents
-from . import plugins
-from . import metrics
+import asyncio  # noqa: E402
+from abc import ABC, abstractmethod  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any  # noqa: E402
+
+from . import plugins  # noqa: E402
+from .context import EvaluationContext  # noqa: E402
+from .events import CoreEvents, EventEmitter  # noqa: E402
 
 
 class BaseRunner(ABC):
     """Abstract interface for evaluation runners."""
 
     @abstractmethod
-    async def run(self, scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> List[Any]:
+    async def run(
+        self, scenario: dict, attempts: int = 1, metadata: dict | None = None
+    ) -> list[Any]:
         pass
 
 
@@ -34,11 +36,12 @@ class DefaultRunner(BaseRunner):
         Path("industries").mkdir(exist_ok=True)
         Path(".aes").mkdir(exist_ok=True)
 
-    async def run(self, scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> List[Any]:
-        from .engine import AgentAdapterRegistry  # Avoid circular import
-        from .tool_sandbox import ToolSandbox
-        from .session import SessionManager
+    async def run(
+        self, scenario: dict, attempts: int = 1, metadata: dict | None = None
+    ) -> list[Any]:
         import copy
+
+        from .session import SessionManager
 
         ctx = EvaluationContext(
             scenario_id=scenario.get("scenario_id", "unknown"),
@@ -51,51 +54,60 @@ class DefaultRunner(BaseRunner):
         EventEmitter.emit(
             CoreEvents.RUN_START,
             {"run_id": run_id, "scenario": ctx.scenario_id, "k_attempts": attempts},
-            span_context=ctx.span_context
+            span_context=ctx.span_context,
         )
 
         plugins.manager.trigger("before_evaluation", ctx)
 
         all_attempt_results = []
 
-        EventEmitter.emit(CoreEvents.PHASE_START, {"phase": "pass_at_k_execution", "k": attempts}, span_context=ctx.span_context)
+        EventEmitter.emit(
+            CoreEvents.PHASE_START,
+            {"phase": "pass_at_k_execution", "k": attempts},
+            span_context=ctx.span_context,
+        )
         for k in range(1, attempts + 1):
             session = SessionManager(scenario, metadata=ctx.metadata)
             attempt_results = await session.execute_tasks(k)
             all_attempt_results.append(attempt_results)
-        EventEmitter.emit(CoreEvents.PHASE_END, {"phase": "pass_at_k_execution"}, span_context=ctx.scenario_id)
+        EventEmitter.emit(
+            CoreEvents.PHASE_END, {"phase": "pass_at_k_execution"}, span_context=ctx.scenario_id
+        )
 
         # Cross-attempt aggregation (e.g. consistency)
         if attempts > 1:
             plugins.manager.trigger("on_metrics_calculated", ctx, all_attempt_results)
 
         plugins.manager.trigger("after_evaluation", ctx, all_attempt_results)
-        
+
         # Calculate pass@k
         pass_at_k = self.calculate_pass_at_k(all_attempt_results, attempts)
-        
+
         EventEmitter.emit(
             CoreEvents.RUN_END,
             {
                 "pass_at_k": pass_at_k,
-                "successful_attempts": sum(1 for res in all_attempt_results if self._is_attempt_successful(res)),
+                "successful_attempts": sum(
+                    1 for res in all_attempt_results if self._is_attempt_successful(res)
+                ),
                 "total_attempts": attempts,
             },
-            span_context=ctx.span_context
+            span_context=ctx.span_context,
         )
 
         return all_attempt_results
 
-    def _is_attempt_successful(self, attempt_res: List[Dict[str, Any]]) -> bool:
+    def _is_attempt_successful(self, attempt_res: list[dict[str, Any]]) -> bool:
         """Helper to determine if an attempt (sequence of tasks) was fully successful."""
         if not attempt_res:
             return False
         return all(
-            len(tr.get("metrics", [])) > 0 and all(m.get("success", False) for m in tr.get("metrics", []))
+            len(tr.get("metrics", [])) > 0
+            and all(m.get("success", False) for m in tr.get("metrics", []))
             for tr in attempt_res
         )
 
-    def calculate_pass_at_k(self, all_results: List[List[Dict[str, Any]]], k: int) -> float:
+    def calculate_pass_at_k(self, all_results: list[list[dict[str, Any]]], k: int) -> float:
         """Calculates the pass@k metric (percentage of successful attempts)."""
         if k <= 0:
             return 0.0

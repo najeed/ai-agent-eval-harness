@@ -18,11 +18,12 @@ Example:
 """
 
 # tests/test_schema_validation.py
-import os
 import json
-import pytest
+import os
 from pathlib import Path
-from jsonschema import validate, ValidationError  # type: ignore
+
+import pytest
+from jsonschema import ValidationError, validate  # type: ignore
 
 # Systemic path resolution
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -53,7 +54,7 @@ def scenario_schema():
         The fixture loads the schema from "schemas/scenario.schema.json"
         and returns it as a Python dictionary for use in validation tests.
     """
-    with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
+    with open(SCHEMA_PATH, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -116,17 +117,17 @@ def test_all_scenarios_are_valid(scenario_schema):
             content = path.read_text(encoding="utf-8")
             if not content.strip():
                 continue
-                
+
             try:
                 scenario = json.loads(content)
             except json.JSONDecodeError:
                 # Per requirement: ignore files that are not valid v1.2 scenarios
                 continue
-            
+
             # Content-based filtering: only validate aes_version 1.2
             if not isinstance(scenario, dict) or scenario.get("aes_version") != 1.2:
                 continue
-                
+
             count += 1
             validate(instance=scenario, schema=scenario_schema)
         except ValidationError as e:

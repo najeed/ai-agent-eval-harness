@@ -1,7 +1,6 @@
 # tests/test_p4_ecosystem.py
-import pytest
 import json
-from pathlib import Path
+
 from eval_runner import loader, plugins
 from eval_runner.exporter import HFExporter
 
@@ -39,7 +38,7 @@ def test_hf_export_parity(tmp_path):
     HFExporter.export(str(trace_path), str(output_path))
 
     assert output_path.exists()
-    with open(output_path, "r") as f:
+    with open(output_path) as f:
         data = json.load(f)
         assert len(data) == 1
         assert data[0]["event_type"] == "run_start"

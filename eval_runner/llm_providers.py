@@ -1,7 +1,7 @@
-import json
-import aiohttp
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any
+
+import aiohttp
+
 from . import config
 
 
@@ -17,7 +17,7 @@ class LLMProvider(ABC):
 class OllamaProvider(LLMProvider):
     """Local Ollama provider."""
 
-    def __init__(self, host: Optional[str] = None, model: Optional[str] = None):
+    def __init__(self, host: str | None = None, model: str | None = None):
         self.host = host or config.OLLAMA_HOST
         self.model = model or config.OLLAMA_MODEL
 
@@ -40,7 +40,7 @@ class OllamaProvider(LLMProvider):
                     else:
                         raise Exception(f"Ollama error: {response.status}")
             except Exception as e:
-                raise Exception(f"Ollama connection failed: {e}")
+                raise Exception(f"Ollama connection failed: {e}")  # noqa: B904
 
     async def list_models(self) -> list:
         """Lists available models in Ollama."""
@@ -52,7 +52,7 @@ class OllamaProvider(LLMProvider):
                         return data.get("models", [])
                     else:
                         return []
-            except:
+            except:  # noqa: E722
                 return []
 
 
@@ -61,9 +61,9 @@ class OpenAIProvider(LLMProvider):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        model: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        model: str | None = None,
     ):
         self.api_key = api_key or config.OPENAI_API_KEY
         self.base_url = base_url or config.OPENAI_BASE_URL
@@ -94,12 +94,12 @@ class OpenAIProvider(LLMProvider):
                         try:
                             return data["choices"][0]["message"]["content"].strip()
                         except (KeyError, IndexError):
-                            raise Exception(f"Unexpected OpenAI response format: {data}")
+                            raise Exception(f"Unexpected OpenAI response format: {data}")  # noqa: B904
                     else:
                         error_body = await response.text()
                         raise Exception(f"OpenAI error {response.status}: {error_body}")
             except Exception as e:
-                raise Exception(f"OpenAI request failed: {e}")
+                raise Exception(f"OpenAI request failed: {e}")  # noqa: B904
 
     async def list_models(self) -> list:
         """Lists available models in OpenAI (with future fallbacks)."""
@@ -110,7 +110,7 @@ class OpenAIProvider(LLMProvider):
         ]
         if not self.api_key:
             return future_models
-            
+
         async with aiohttp.ClientSession() as session:
             try:
                 headers = {"Authorization": f"Bearer {self.api_key}"}
@@ -120,14 +120,16 @@ class OpenAIProvider(LLMProvider):
                         return future_models + data.get("data", [])
                     else:
                         return future_models
-            except:
+            except:  # noqa: E722
                 return future_models
 
 
 class AnthropicProvider(LLMProvider):
     """Anthropic (Claude) provider."""
 
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
+    def __init__(
+        self, api_key: str | None = None, base_url: str | None = None, model: str | None = None
+    ):
         self.api_key = api_key or config.ANTHROPIC_API_KEY
         self.base_url = base_url or config.ANTHROPIC_BASE_URL
         self.model = model or config.ANTHROPIC_MODEL
@@ -159,12 +161,12 @@ class AnthropicProvider(LLMProvider):
                         try:
                             return data["content"][0]["text"].strip()
                         except (KeyError, IndexError):
-                            raise Exception(f"Unexpected Anthropic response format: {data}")
+                            raise Exception(f"Unexpected Anthropic response format: {data}")  # noqa: B904
                     else:
                         error_body = await response.text()
                         raise Exception(f"Anthropic error {response.status}: {error_body}")
             except Exception as e:
-                raise Exception(f"Anthropic request failed: {e}")
+                raise Exception(f"Anthropic request failed: {e}")  # noqa: B904
 
     async def list_models(self) -> list:
         """Lists available models for Anthropic (future series)."""
@@ -183,7 +185,9 @@ class GeminiProvider(LLMProvider):
     for 2026 industrial-grade reliability.
     """
 
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
+    def __init__(
+        self, api_key: str | None = None, base_url: str | None = None, model: str | None = None
+    ):
         self.api_key = api_key or config.GOOGLE_API_KEY
         self.model = model or config.GEMINI_MODEL
         # The SDK handles the base URL automatically, but we can override if needed
@@ -192,6 +196,7 @@ class GeminiProvider(LLMProvider):
     async def _get_client(self):
         """Lazy initialization of the GenAI client."""
         from google import genai
+
         return genai.Client(api_key=self.api_key, vertexai=self.vertex_ai)
 
     async def generate(self, prompt: str, **kwargs) -> str:
@@ -208,16 +213,16 @@ class GeminiProvider(LLMProvider):
                 config=types.GenerateContentConfig(
                     temperature=kwargs.get("temperature", 0.1),
                     max_output_tokens=kwargs.get("max_output_tokens", 1024),
-                )
+                ),
             )
-            
+
             if response and response.text:
                 return response.text.strip()
             else:
                 raise Exception(f"Empty response from Gemini SDK: {response}")
-                
+
         except Exception as e:
-            raise Exception(f"Gemini SDK request failed: {e}")
+            raise Exception(f"Gemini SDK request failed: {e}")  # noqa: B904
 
     async def list_models(self) -> list:
         """Lists available models using the GenAI SDK."""
@@ -238,13 +243,15 @@ class GeminiProvider(LLMProvider):
 class GrokProvider(LLMProvider):
     """xAI Grok provider (OpenAI-compatible)."""
 
-    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+    def __init__(self, api_key: str | None = None, model: str | None = None):
         self.api_key = api_key or config.XAI_API_KEY
         self.model = model or config.XAI_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
         # Grok uses OpenAI-compatible API
-        provider = OpenAIProvider(api_key=self.api_key, base_url=config.XAI_BASE_URL, model=self.model)
+        provider = OpenAIProvider(
+            api_key=self.api_key, base_url=config.XAI_BASE_URL, model=self.model
+        )
         return await provider.generate(prompt, **kwargs)
 
     async def list_models(self) -> list:
@@ -260,7 +267,7 @@ class LLMProviderFactory:
     """Factory for creating LLM providers."""
 
     @staticmethod
-    def create(provider_name: Optional[str] = None) -> LLMProvider:
+    def create(provider_name: str | None = None) -> LLMProvider:
         provider_name = provider_name or config.JUDGE_PROVIDER
         provider_name = provider_name.lower()
 

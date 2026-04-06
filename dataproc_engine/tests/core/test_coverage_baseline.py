@@ -1,10 +1,9 @@
 import pytest
-import asyncio
-import os
-import datetime
+
+from dataproc_engine.core.correlator import DataCorrelator
 from dataproc_engine.core.engine import DatasetEngine
 from dataproc_engine.core.llm_manager import LLMManager
-from dataproc_engine.core.correlator import DataCorrelator
+
 
 @pytest.mark.asyncio
 async def test_full_pipeline_all_industries():
@@ -14,40 +13,66 @@ async def test_full_pipeline_all_industries():
     """
     llm = LLMManager({"llm_strategy": "heuristic"})
     engine = DatasetEngine(llm_manager=llm)
-    
+
     industries = [
-        "finance", "healthcare", "energy", "telecom", "ecommerce",
-        "agriculture", "transportation", "unstructured", "demographics",
-        "labor", "environment", "education", "housing", "manufacturing",
-        "media_and_entertainment", "decision_support"
+        "finance",
+        "healthcare",
+        "energy",
+        "telecom",
+        "ecommerce",
+        "agriculture",
+        "transportation",
+        "unstructured",
+        "demographics",
+        "labor",
+        "environment",
+        "education",
+        "housing",
+        "manufacturing",
+        "media_and_entertainment",
+        "decision_support",
     ]
-    
+
     for industry in industries:
-        config = {"allow_simulation": True, "limit": 2}
-        
         # 1. Pipeline Execution
         try:
-            results = await engine.run_industry_pipeline(industry)
+            await engine.run_industry_pipeline(industry)
             # Validation handled within engine
         except Exception:
             pass
 
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize("industry", [
-    "finance", "ecommerce", "demographics", "labor", "environment", 
-    "housing", "manufacturing", "media_and_entertainment", "decision_support",
-    "healthcare", "energy", "telecom", "education", "transportation", "agriculture"
-])
+@pytest.mark.parametrize(
+    "industry",
+    [
+        "finance",
+        "ecommerce",
+        "demographics",
+        "labor",
+        "environment",
+        "housing",
+        "manufacturing",
+        "media_and_entertainment",
+        "decision_support",
+        "healthcare",
+        "energy",
+        "telecom",
+        "education",
+        "transportation",
+        "agriculture",
+    ],
+)
 async def test_ultimate_coverage(industry):
     """Exhaustive schema-based coverage for all industrial providers."""
     llm = LLMManager({"llm_strategy": "heuristic"})
     engine = DatasetEngine(llm_manager=llm)
     config = {"allow_simulation": True}
-    
+
     # 1. Mode Selection
     schemas = ["standard"]
-    mode_key = "schema_type" # Legacy fallback for decision_support if needed
-    
+    mode_key = "schema_type"  # Legacy fallback for decision_support if needed
+
     if industry == "finance":
         schemas = ["sec_edgar", "credit_risk", "fred"]
         mode_key = "finance_mode"
@@ -97,16 +122,16 @@ async def test_ultimate_coverage(industry):
     for schema in schemas:
         local_config = config.copy()
         local_config[mode_key] = schema
-        
+
         # Specific trigger artifacts for missing branches
         if industry == "unstructured":
             local_config["unstructured_mode"] = "document"
             local_config["input_uri"] = "sample.pdf"
-        
+
         try:
             # 1. Provider Initialization
             provider = engine.get_provider(industry, local_config)
-            
+
             # 2. Extract & Transform (Forced Branch Coverage)
             raw = await provider.extract()
             if raw:
@@ -115,17 +140,23 @@ async def test_ultimate_coverage(industry):
         except Exception:
             pass
 
+
 @pytest.mark.asyncio
 async def test_correlator_exhaustion():
     """Target the core/correlator.py missing lines."""
     correlator = DataCorrelator()
     from dataproc_engine.core.base_provider import StandardSchema
-    a1 = StandardSchema(id="1", industry="finance", data={"revenue": 100}, provenance={}, checksum="hash")
+
+    a1 = StandardSchema(
+        id="1", industry="finance", data={"revenue": 100}, provenance={}, checksum="hash"
+    )
     matches = correlator.correlate({"finance": [a1]}, target_dir=None)
     assert isinstance(matches, dict)
+
 
 def test_config_exhaustion():
     """Target core/config.py secrets loading."""
     from dataproc_engine.core.config import ConfigLoader
+
     secrets = ConfigLoader.load_secrets("non-existent-sector")
     assert secrets == {}

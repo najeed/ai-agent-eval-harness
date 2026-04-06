@@ -26,7 +26,7 @@ def migrate_scenario(file_path: Path) -> int:
     """Reads a scenario, updates deprecated metrics, and returns the number of changes made."""
     changes = 0
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
 
         if "tasks" not in data:
@@ -70,7 +70,7 @@ def run_migration(root_dir: str):
             modified_files += 1
             total_modifications += changes
 
-    logger.info(f"Migration Complete!")
+    logger.info("Migration Complete!")
     logger.info(f"Scanned Files: {total_files}")
     logger.info(f"Modified Files: {modified_files}")
     logger.info(f"Total Metric Replacements: {total_modifications}")

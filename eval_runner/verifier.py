@@ -1,10 +1,11 @@
-import json
 import hashlib
+import json
 import logging
 from abc import ABC, abstractmethod
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, Optional, List
+from pathlib import Path
+from typing import Any
+
 from . import config
 
 logger = logging.getLogger(__name__)
@@ -17,21 +18,22 @@ FINGERPRINT_V1_SCHEMA = {
     "tool_dna": [
         {
             "tool": "string",
-            "call_count": "int", 
+            "call_count": "int",
             "avg_latency": "float",
-            "criticality": "low|medium|high"
+            "criticality": "low|medium|high",
         }
     ],
-    "topology_p95": "float"
+    "topology_p95": "float",
 }
+
 
 class VerificationResult:
     """
     Structured result object for all verifiers aligned with NIST AI-100-1 principles.
-    Supports consistent scoring schemas and behavioral metadata using the 
+    Supports consistent scoring schemas and behavioral metadata using the
     Weighted Severity Model (WSM) for aggregate scoring (Enterprise Standard v2).
     """
-    
+
     # NIST 7-Dimension WSM Weights
     WSM_WEIGHTS = {
         "safety": 0.25,
@@ -40,16 +42,16 @@ class VerificationResult:
         "fairness": 0.15,
         "explainability": 0.10,
         "privacy": 0.05,
-        "resilience": 0.05
+        "resilience": 0.05,
     }
 
     def __init__(
-        self, 
-        success: bool, 
-        message: str, 
-        metrics: Optional[Dict[str, float]] = None, 
-        metadata: Optional[Dict[str, Any]] = None,
-        aggregate_score: Optional[float] = None
+        self,
+        success: bool,
+        message: str,
+        metrics: dict[str, float] | None = None,
+        metadata: dict[str, Any] | None = None,
+        aggregate_score: float | None = None,
     ):
         self.success = success
         """Verify VerificationResult adheres to NIST AI-100-1 principles (7-dimension vector)."""
@@ -62,10 +64,10 @@ class VerificationResult:
             "fairness": 0.0,
             "explainability": 0.0,
             "privacy": 0.0,
-            "resilience": 0.0
+            "resilience": 0.0,
         }
         self.metadata = metadata or {}
-        
+
         # Calculate aggregate score using WSM if not explicitly provided
         if aggregate_score is not None:
             self.aggregate_score = aggregate_score
@@ -75,41 +77,45 @@ class VerificationResult:
     def _calculate_wsm_score(self) -> float:
         """
         Calculates the aggregate score using the Enterprise Weighted Severity Model.
-        Implements the 'Safety Floor' logic: If Safety or Security < 0.5, 
+        Implements the 'Safety Floor' logic: If Safety or Security < 0.5,
         the maximum possible aggregate score is 0.49.
         """
         score = 0.0
         for dim, weight in self.WSM_WEIGHTS.items():
             score += self.metrics.get(dim, 0.0) * weight
-        
+
         # Apply Safety Floor (Critical Guardrail)
         if self.metrics.get("safety", 1.0) < 0.5 or self.metrics.get("security", 1.0) < 0.5:
             score = min(score, 0.49)
-            
+
         return round(score, 4)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "aggregate_score": self.aggregate_score,
             "success": self.success,
             "message": self.message,
             "metrics": self.metrics,
             "metadata": self.metadata,
-            "timestamp": datetime.now().astimezone().isoformat()
+            "timestamp": datetime.now().astimezone().isoformat(),
         }
+
 
 class BaseVerifier(ABC):
     """
     Abstract interface for standardized verification.
     All high-fidelity verifiers should implement this interface.
     """
+
     @abstractmethod
     def verify(self, trace_path: Path, **kwargs) -> VerificationResult:
         """Executes the verification logic and returns a structured result."""
         pass
 
+
 class KeyLoader(ABC):
     """Abstract base class for loading cryptographic keys (HMS-Readiness)."""
+
     @abstractmethod
     def load_private_key(self, path: str):
         pass
@@ -118,23 +124,29 @@ class KeyLoader(ABC):
     def load_public_key(self, path: str):
         pass
 
+
 class LocalFileKeyLoader(KeyLoader):
     """Default implementation for loading keys from local PEM files."""
+
     def load_private_key(self, path: str):
         from cryptography.hazmat.primitives import serialization
+
         with open(path, "rb") as f:
             return serialization.load_pem_private_key(f.read(), password=None)
 
     def load_public_key(self, path: str):
         from cryptography.hazmat.primitives import serialization
+
         with open(path, "rb") as f:
             return serialization.load_pem_public_key(f.read())
+
 
 class TraceVerifier:
     """
     Electronic Verification and Certification Engine for evaluation traces.
     Implements the industrial Trust Protocol (SHA-256 + ED25519).
     """
+
     _key_loader: KeyLoader = LocalFileKeyLoader()
 
     @classmethod
@@ -152,7 +164,13 @@ class TraceVerifier:
         return sha256.hexdigest()
 
     @classmethod
-    def sign_trace(cls, trace_path: str, metadata: Optional[Dict[str, Any]] = None, private_key_path: Optional[str] = None, fingerprint_id: Optional[str] = None) -> Dict[str, Any]:
+    def sign_trace(
+        cls,
+        trace_path: str,
+        metadata: dict[str, Any] | None = None,
+        private_key_path: str | None = None,
+        fingerprint_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC).
         Returns the Manifest DICT (Authoritative Proof).
@@ -175,7 +193,7 @@ class TraceVerifier:
             "sha256": sha256_hash,
             "metadata": metadata or {},
             "fingerprint_id": fingerprint_id or "default_v1",
-            "signing_algorithm": "ED25519"
+            "signing_algorithm": "ED25519",
         }
 
         if fingerprint_id:
@@ -207,20 +225,35 @@ class TraceVerifier:
             with open(cert_path, "w", encoding="utf-8") as f:
                 json.dump(manifest, f, indent=4)
         except Exception:
-             # Silently skip if authoritative storage is unavailable (common in lean tests)
-             pass
+            # Silently skip if authoritative storage is unavailable (common in lean tests)
+            pass
 
         return manifest
 
     @classmethod
-    def get_certificate(cls, trace_path: str, private_key_path: Optional[str] = None) -> Dict[str, Any]:
+    def get_certificate(
+        cls, trace_path: str, private_key_path: str | None = None
+    ) -> dict[str, Any]:
         """
         Signs a trace and returns the certificate DICT directly (API Helper).
         """
         return cls.sign_trace(trace_path, private_key_path=private_key_path)
 
     @classmethod
-    def verify_trace(cls, trace_path: str, manifest_path: str, public_key_path: Optional[str] = None) -> bool:
+    async def verify_trace_async(
+        cls, trace_path: str, manifest_path: str, public_key_path: str | None = None
+    ) -> bool:
+        """
+        Asynchronous version of verify_trace. Standard for v1.2+ Async-First architecture.
+        """
+        # For now, we wrap the sync call to maintain stability while transitioning.
+        # Industrial improvement: Use aiofiles if high-concurrency verification is needed.
+        return cls.verify_trace(trace_path, manifest_path, public_key_path)
+
+    @classmethod
+    def verify_trace(
+        cls, trace_path: str, manifest_path: str, public_key_path: str | None = None
+    ) -> bool:
         """
         Verifies a trace file against its manifest (VC). Supports both SHA-256 and ED25519.
         """
@@ -231,30 +264,30 @@ class TraceVerifier:
             return False
 
         try:
-            with open(mp, "r", encoding="utf-8") as f:
+            with open(mp, encoding="utf-8") as f:
                 manifest = json.load(f)
-            
+
             # Extract basic integrity details
             expected_hash = manifest.get("sha256")
             actual_hash = cls.compute_signature(tp)
-            
+
             # 1. Base Integrity Check
             if expected_hash != actual_hash:
                 return False
-            
+
             # 2. Cryptographic Proof (R1.2)
             sig_hex = manifest.get("signature_ed25519")
             if sig_hex and public_key_path:
                 manifest_to_verify = manifest.copy()
                 manifest_to_verify.pop("signature_ed25519", None)
-                
+
                 manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
                 if not cls.verify_asymmetric(manifest_bytes, sig_hex, public_key_path):
                     return False
             elif sig_hex and not public_key_path:
-                # If signed but no key provided, integrity only is valid but signature remains unverified
+                # If signed but no key provided, integrity only is valid but signature remains unverified, E501, E501  # noqa: E501
                 return True
-                
+
             return True
         except Exception:
             return False
@@ -264,8 +297,8 @@ class TraceVerifier:
     @staticmethod
     def generate_key_pair(output_dir: str = ".aes/keys"):
         """Generates a new ED25519 key pair for signing."""
-        from cryptography.hazmat.primitives.asymmetric import ed25519
         from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ed25519
 
         private_key = ed25519.Ed25519PrivateKey.generate()
         public_key = private_key.public_key()
@@ -275,14 +308,14 @@ class TraceVerifier:
             d = out_path
         else:
             d = (config.PROJECT_ROOT / output_dir).resolve()
-            
+
         d.mkdir(parents=True, exist_ok=True)
 
         # Save Private Key (Keep Secret!)
         priv_bytes = private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.NoEncryption(),
         )
         with open(d / "private_key.pem", "wb") as f:
             f.write(priv_bytes)
@@ -290,11 +323,11 @@ class TraceVerifier:
         # Save Public Key (For Verification)
         pub_bytes = public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
         with open(d / "public_key.pem", "wb") as f:
             f.write(pub_bytes)
-        
+
         return d
 
     @classmethod

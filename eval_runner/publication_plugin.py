@@ -5,16 +5,17 @@ Advanced publication plugin capturing statistical rigor, cost, and failure taxon
 Supports A/B testing and regression detection.
 """
 
+import hashlib
 import json
 import math
-import hashlib
-import yaml
-from pathlib import Path
 from datetime import datetime
-from .plugins import BaseEvalPlugin
+from pathlib import Path
+
+import yaml
+
 from .context import EvaluationContext
+from .plugins import BaseEvalPlugin
 from .taxonomy import FailureTaxonomy
-from . import config
 
 
 class PublicationPlugin(BaseEvalPlugin):
@@ -30,7 +31,7 @@ class PublicationPlugin(BaseEvalPlugin):
         for p in paths:
             try:
                 if p.exists():
-                    with open(p, "r") as f:
+                    with open(p) as f:
                         return yaml.safe_load(f)
             except Exception:
                 continue
@@ -50,7 +51,9 @@ class PublicationPlugin(BaseEvalPlugin):
         failure_counts = {}
 
         for attempt in attempts:
-            is_success = all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in attempt)
+            is_success = all(
+                all(m.get("success", False) for m in tr.get("metrics", [])) for tr in attempt
+            )
             pass_flags.append(is_success)
 
             # Aggregate per-attempt metrics
@@ -150,7 +153,7 @@ class PublicationPlugin(BaseEvalPlugin):
             return
 
         try:
-            with open(baseline_path, "r") as f:
+            with open(baseline_path) as f:
                 baselines = json.load(f)
 
             s_id = summary["scenario_id"]
@@ -160,8 +163,10 @@ class PublicationPlugin(BaseEvalPlugin):
                 threshold = self.config.get("regression_threshold", 0.03)
 
                 if old_rate - new_rate > threshold:
-                    print(f"   [PublicationPlugin] 🚩 REGRESSION DETECTED on {s_id}: {old_rate:.2f} -> {new_rate:.2f}")
-        except:
+                    print(
+                        f"   [PublicationPlugin] 🚩 REGRESSION DETECTED on {s_id}: {old_rate:.2f} -> {new_rate:.2f}"  # noqa: E501
+                    )
+        except:  # noqa: E722
             pass
 
     def on_register_commands(self, registry):

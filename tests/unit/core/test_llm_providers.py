@@ -1,13 +1,14 @@
-import pytest
-import os
 from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from eval_runner.llm_providers import (
-    LLMProviderFactory,
-    OllamaProvider,
-    OpenAIProvider,
     AnthropicProvider,
     GeminiProvider,
     GrokProvider,
+    LLMProviderFactory,
+    OllamaProvider,
+    OpenAIProvider,
 )
 
 
@@ -64,7 +65,6 @@ async def test_gemini_provider():
 
 
 def test_provider_factory():
-    from eval_runner import config
 
     with patch("eval_runner.config.JUDGE_PROVIDER", "openai"):
         provider = LLMProviderFactory.create()

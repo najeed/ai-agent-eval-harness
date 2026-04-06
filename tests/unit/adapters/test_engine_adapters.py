@@ -1,6 +1,8 @@
-import pytest
 import os
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from eval_runner.engine import AgentAdapterRegistry
 
 
@@ -24,7 +26,9 @@ async def test_call_agent_protocol_selection():
         AgentAdapterRegistry._adapters,
         {"local": AsyncMock(return_value={"action": "final_answer", "content": "ok"})},
     ):
-        result = await AgentAdapterRegistry.call_agent(payload, protocol="local", endpoint="echo 'test'")
+        result = await AgentAdapterRegistry.call_agent(
+            payload, protocol="local", endpoint="echo 'test'"
+        )
         assert result["content"] == "ok"
 
 

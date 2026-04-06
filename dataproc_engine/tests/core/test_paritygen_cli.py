@@ -2,30 +2,36 @@
 test_paritygen_cli.py
 Coverage for dataproc_engine/core/paritygen/cli.py via in-process sys.argv patching.
 """
+
 import json
 import os
 import sys
-import pytest
-import pandas as pd
 from unittest.mock import patch
-from dataproc_engine.core.paritygen.cli import main
 
+import pandas as pd
+import pytest
+
+from dataproc_engine.core.paritygen.cli import main
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
+
 def make_csv(tmp_path, rows=10) -> str:
     """Create a small CSV file for testing."""
-    df = pd.DataFrame({
-        "revenue": [float(i * 100) for i in range(1, rows + 1)],
-        "profit":  [float(i * 10)  for i in range(1, rows + 1)],
-        "sector":  ["tech" if i % 2 == 0 else "health" for i in range(rows)]
-    })
+    df = pd.DataFrame(
+        {
+            "revenue": [float(i * 100) for i in range(1, rows + 1)],
+            "profit": [float(i * 10) for i in range(1, rows + 1)],
+            "sector": ["tech" if i % 2 == 0 else "health" for i in range(rows)],
+        }
+    )
     path = str(tmp_path / "input.csv")
     df.to_csv(path, index=False)
     return path
 
 
 # ─── Error paths ──────────────────────────────────────────────────────────────
+
 
 def test_cli_nonexistent_input_file(tmp_path, capsys):
     """CLI exits with code 1 and prints error when --input file doesn't exist."""
@@ -49,6 +55,7 @@ def test_cli_missing_required_args():
 
 
 # ─── Happy paths ──────────────────────────────────────────────────────────────
+
 
 def test_cli_happy_path_generates_output(tmp_path, capsys):
     """CLI generates synthetic CSV and provenance JSON for a valid input."""
@@ -81,8 +88,17 @@ def test_cli_provenance_json_structure(tmp_path):
     """Provenance JSON from CLI contains required compliance fields."""
     input_path = make_csv(tmp_path)
     output_path = str(tmp_path / "out.csv")
-    test_args = ["cli.py", "--input", input_path, "--output", output_path,
-                 "--license", "CC-BY 4.0", "--n-samples", "5"]
+    test_args = [
+        "cli.py",
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--license",
+        "CC-BY 4.0",
+        "--n-samples",
+        "5",
+    ]
 
     with patch.object(sys, "argv", test_args):
         main()

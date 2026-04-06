@@ -1,8 +1,10 @@
 # eval_runner/adapters/langchain.py
+from typing import Any
+
 import aiohttp
-from typing import Any, Dict, Optional
+
+from ..events import CoreEvents, EventEmitter
 from ..plugins import BaseEvalPlugin
-from ..events import EventEmitter, CoreEvents
 from .common import AESCallbackHandler
 
 
@@ -19,11 +21,15 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
         registry.register("langchain:v1", self.execute_langchain_query)
 
     # Alias for backward compatibility with legacy unit tests
-    async def execute_langserve_query(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
+    async def execute_langserve_query(
+        self, payload: dict[str, Any], endpoint: str = None
+    ) -> dict[str, Any]:
         """Legacy entry point redirected to the new unified execution path."""
         return await self.execute_langchain_query(payload, endpoint)
 
-    async def execute_langchain_query(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
+    async def execute_langchain_query(
+        self, payload: dict[str, Any], endpoint: str = None
+    ) -> dict[str, Any]:
         """
         Executes a LangChain chain locally or via LangServe with telemetry.
         """
@@ -43,14 +49,17 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
         else:
             return await self._execute_remote_langserve(url, input_data, payload)
 
-    async def _execute_local_sdk(self, task_id: str, input_data: Any, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _execute_local_sdk(
+        self, task_id: str, input_data: Any, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Executes a chain using the local LangChain SDK."""
         try:
             import langchain
+
             print(f"      [Adapter] Executing local LangChain ainvoke: {task_id}")
-            
+
             handler = AESCallbackHandler(adapter_name="langchain", identifier=task_id)
-            
+
             # Simulate high-fidelity signals (aligns with LangGraph adapter)
             handler.on_chain_start({}, input_data)
             handler.on_node_start({"id": [task_id]}, input_data)
@@ -63,7 +72,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
                 "metadata": {
                     "framework": "langchain",
                     "version": getattr(langchain, "__version__", "unknown"),
-                    "protocol": "v1"
+                    "protocol": "v1",
                 },
             }
         except ImportError:
@@ -74,23 +83,34 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
                 "metadata": {"framework": "langchain", "mode": "failed"},
             }
 
-    async def _execute_remote_langserve(self, url: str, input_data: Any, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _execute_remote_langserve(
+        self, url: str, input_data: Any, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Executes a query against a remote LangServe endpoint."""
         if not url.endswith("/invoke"):
             url = url.rstrip("/") + "/invoke"
 
         # Signal start of remote execution
-        EventEmitter.emit(CoreEvents.CHAIN_START, {"adapter": "langchain", "mode": "remote", "url": url})
+        EventEmitter.emit(
+            CoreEvents.CHAIN_START, {"adapter": "langchain", "mode": "remote", "url": url}
+        )
 
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json={"input": input_data}, timeout=60) as response:
                     if response.status != 200:
-                        EventEmitter.emit(CoreEvents.ERROR, {"message": f"LangServe {response.status}"})
-                        return {"status": "error", "message": f"LangServe returned {response.status}"}
+                        EventEmitter.emit(
+                            CoreEvents.ERROR, {"message": f"LangServe {response.status}"}
+                        )
+                        return {
+                            "status": "error",
+                            "message": f"LangServe returned {response.status}",
+                        }
 
                     data = await response.json()
-                    EventEmitter.emit(CoreEvents.CHAIN_END, {"adapter": "langchain", "mode": "remote"})
+                    EventEmitter.emit(
+                        CoreEvents.CHAIN_END, {"adapter": "langchain", "mode": "remote"}
+                    )
                     return {
                         "status": "success",
                         "output": str(data.get("output", "")),

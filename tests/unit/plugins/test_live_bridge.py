@@ -1,7 +1,9 @@
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-from eval_runner.live_bridge_plugin import RemoteBridgePlugin
+
 from eval_runner.events import CoreEvents
+from eval_runner.live_bridge_plugin import RemoteBridgePlugin
 
 
 class MockContext:
@@ -15,11 +17,13 @@ class MockContext:
 
 @pytest.fixture
 def plugin():
-    with patch("requests.get") as mock_get, \
-         patch("eval_runner.live_bridge_plugin.is_safe_url", return_value=True):
+    with (
+        patch("requests.get") as mock_get,
+        patch("eval_runner.live_bridge_plugin.is_safe_url", return_value=True),
+    ):
         mock_get.return_value.status_code = 200
         p = RemoteBridgePlugin(endpoint="http://mock-console/api/debugger/state")
-        # In lazy mode, we don't call check yet, but for test consistency 
+        # In lazy mode, we don't call check yet, but for test consistency
         # we can trigger it in the fixture or handle it in tests.
         return p
 
@@ -46,8 +50,7 @@ def test_plugin_posts_events(plugin):
     """Verify that plugin posts events to the endpoint when active."""
     context = MockContext()
 
-    with patch("requests.get") as mock_get, \
-         patch("requests.post") as mock_post:
+    with patch("requests.get") as mock_get, patch("requests.post") as mock_post:
         mock_get.return_value.status_code = 200
         plugin.before_evaluation(context)
 

@@ -1,77 +1,96 @@
-import aiohttp
-import os
-import logging
+import datetime
 import hashlib
 import json
-import pandas as pd
-import datetime
-from typing import List, Dict, Any, Optional
+import logging
+import os
+from typing import Any
+
+import aiohttp
+
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
-from dataproc_engine.core.llm_manager import LLMManager
 
 logger = logging.getLogger("UnstructuredProvider")
+
 
 class UnstructuredProvider(BaseProvider):
     """
     Provider for unstructured documents (Local Files or URLs).
     """
-    def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
+
+    def __init__(self, config: dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
         self.input_uri = config.get("input_uri")
-        self.unstructured_mode = config.get("unstructured_mode", "document") # document, common_crawl
+        self.unstructured_mode = config.get(
+            "unstructured_mode", "document"
+        )  # document, common_crawl
 
-    async def extract(self) -> List[RawArtifact]:
+    async def extract(self) -> list[RawArtifact]:
         if self.unstructured_mode == "common_crawl":
             # Gold Standard: Common Crawl (Web Archive)
             snapshot = self.config.get("snapshot", "2023-50")
             url = f"https://data.commoncrawl.org/crawl-data/CC-MAIN-{snapshot}/"
-            
+
             # Simulated Common Crawl Data (Zero-Bundling)
-            sim_crawl = "<html><body><h1>Global AI Trends 2024</h1><p>Market growth expected in all sectors.</p></body></html>"
-            return [RawArtifact(
-                id=f"CC-{snapshot}",
-                source_url=url,
-                content=sim_crawl,
-                metadata={"warc_type": "response", "target_uri": "https://example.com/trends", "simulation": True},
-                timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
-            )]
+            sim_crawl = "<html><body><h1>Global AI Trends 2024</h1><p>Market growth expected in all sectors.</p></body></html>"  # noqa: E501
+            return [
+                RawArtifact(
+                    id=f"CC-{snapshot}",
+                    source_url=url,
+                    content=sim_crawl,
+                    metadata={
+                        "warc_type": "response",
+                        "target_uri": "https://example.com/trends",
+                        "simulation": True,
+                    },
+                    timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
+                )
+            ]
 
         """
         Extract content from local path or web URL, supporting PDF and raw text.
         """
         if not self.input_uri:
             if self.allow_simulation:
-                return [self.create_simulated_artifact(
-                    id="sim-DOC-generic",
-                    content="This is a simulated industrial document for testing purposes.",
-                    source_url="local://simulation",
-                    metadata={"type": "text/plain"}
-                )]
+                return [
+                    self.create_simulated_artifact(
+                        id="sim-DOC-generic",
+                        content="This is a simulated industrial document for testing purposes.",
+                        source_url="local://simulation",
+                        metadata={"type": "text/plain"},
+                    )
+                ]
             logger.error("No input URI provided.")
             return []
 
         logger.info(f"Extracting raw content from: {self.input_uri}")
-        
+
         content = ""
         if self.input_uri.startswith(("http://", "https://")):
             async with aiohttp.ClientSession() as session:
+
                 async def fetch_url():
                     async with session.get(self.input_uri) as resp:
                         if resp.status == 200:
                             return await resp.text()
                         return None
+
                 content = await self.request_with_retry(fetch_url)
                 if not content:
                     if self.allow_simulation:
                         # Ensure snapshot and url are defined for the simulation fallback
                         snapshot = self.config.get("snapshot", "2023-50")
                         url = f"https://data.commoncrawl.org/crawl-data/CC-MAIN-{snapshot}/"
-                        return [self.create_simulated_artifact(
-                            id=f"CC-{snapshot}",
-                            content="<html><body><h1>Global AI Trends 2024</h1></body></html>",
-                            source_url=url,
-                            metadata={"warc_type": "response", "target_uri": "https://example.com/trends"}
-                        )]
+                        return [
+                            self.create_simulated_artifact(
+                                id=f"CC-{snapshot}",
+                                content="<html><body><h1>Global AI Trends 2024</h1></body></html>",
+                                source_url=url,
+                                metadata={
+                                    "warc_type": "response",
+                                    "target_uri": "https://example.com/trends",
+                                },
+                            )
+                        ]
                     return []
         else:
             path = self.input_uri
@@ -93,17 +112,18 @@ class UnstructuredProvider(BaseProvider):
                 if path.lower().endswith(".pdf"):
                     try:
                         from pypdf import PdfReader
+
                         reader = PdfReader(path)
                         text_parts = []
-                        for i, page in enumerate(reader.pages):
+                        for _i, page in enumerate(reader.pages):
                             text = page.extract_text()
                             if text:
                                 text_parts.append(text)
-                        
+
                         content = "\n\n".join(text_parts)
                         doc_metadata = {
                             "pages": len(reader.pages),
-                            "author": reader.metadata.author if reader.metadata else "Unknown"
+                            "author": reader.metadata.author if reader.metadata else "Unknown",
                         }
                     except Exception as e:
                         logger.error(f"PDF extraction failed for {path}: {e}")
@@ -114,10 +134,12 @@ class UnstructuredProvider(BaseProvider):
                         try:
                             import pytesseract
                             from PIL import Image
+
                             content = pytesseract.image_to_string(Image.open(path))
                         except Exception:
                             import easyocr
-                            reader = easyocr.Reader(['en'])
+
+                            reader = easyocr.Reader(["en"])
                             results = reader.readtext(path)
                             content = " ".join([res[1] for res in results])
                         doc_metadata = {"type": "image", "ocr_engine": "tesseract/easyocr"}
@@ -125,7 +147,7 @@ class UnstructuredProvider(BaseProvider):
                         logger.error(f"OCR failed for {path}: {e}")
                         return []
                 else:
-                    with open(path, "r", encoding="utf-8") as f:
+                    with open(path, encoding="utf-8") as f:
                         content = f.read()
             else:
                 logger.error(f"Input path not found: {path}")
@@ -134,31 +156,36 @@ class UnstructuredProvider(BaseProvider):
         # Safety check for hashlib (requires bytes-like object)
         hash_input = content if isinstance(content, (str, bytes)) else str(content)
         id_content = f"{self.input_uri}-{hashlib.md5(hash_input.encode()).hexdigest()[:8]}"
-        
-        return [RawArtifact(
-            id=f"doc-{id_content}",
-            source_url=self.input_uri,
-            content=content,
-            metadata=doc_metadata if 'doc_metadata' in locals() else {},
-            timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
-        )]
 
-    async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
+        return [
+            RawArtifact(
+                id=f"doc-{id_content}",
+                source_url=self.input_uri,
+                content=content,
+                metadata=doc_metadata if "doc_metadata" in locals() else {},
+                timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
+            )
+        ]
+
+    async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
         """
         Extract and verify data using LLMManager (Unified Async Path).
         """
         import hashlib
-        import json
+
         results = []
-        target_schema = self.config.get("target_schema", {
-            "entity_name": "string",
-            "revenue": "number",
-            "assets": "number",
-            "status": "string",
-            "sentiment_score": "number",
-            "strategic_signals": "string"
-        })
-        
+        target_schema = self.config.get(
+            "target_schema",
+            {
+                "entity_name": "string",
+                "revenue": "number",
+                "assets": "number",
+                "status": "string",
+                "sentiment_score": "number",
+                "strategic_signals": "string",
+            },
+        )
+
         if self.unstructured_mode == "common_crawl":
             TARGET_SCHEMA = {"web_title": "string", "web_source": "string", "web_domain": "string"}
             for raw in raw_artifacts:
@@ -166,31 +193,37 @@ class UnstructuredProvider(BaseProvider):
                 raw_data = {
                     "web_title": "Global AI Trends 2024",
                     "web_source": raw.metadata.get("target_uri"),
-                    "web_domain": "example.com"
+                    "web_domain": "example.com",
                 }
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    results.append(StandardSchema(
-                        id=hashlib.md5(f"CC-{raw_data['web_source']}".encode()).hexdigest()[:16],
-                        industry="unstructured",
-                        data=verified,
-                        provenance={"source": raw.source_url, "provider": "Common Crawl"},
-                        checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
-                    ))
+                    results.append(
+                        StandardSchema(
+                            id=hashlib.md5(f"CC-{raw_data['web_source']}".encode()).hexdigest()[
+                                :16
+                            ],
+                            industry="unstructured",
+                            data=verified,
+                            provenance={"source": raw.source_url, "provider": "Common Crawl"},
+                            checksum=hashlib.sha256(
+                                json.dumps(verified, sort_keys=True).encode()
+                            ).hexdigest(),
+                        )
+                    )
             return results
 
         for raw in raw_artifacts:
             # 1. Security: Scrub PII before LLM ingestion
             safe_content = self.scrub_pii(raw.content)
-            
+
             # 2. Extraction via LLM (Tiers: Cloud -> Local -> Heuristic)
-            source_hint = f"Industry: {self.config.get('industry', 'generic')} | Source: {raw.source_url}"
-            extracted_data = await self.llm_manager.extract_structured_data(
-                safe_content, 
-                target_schema,
-                source_hint=source_hint
+            source_hint = (
+                f"Industry: {self.config.get('industry', 'generic')} | Source: {raw.source_url}"
             )
-            
+            extracted_data = await self.llm_manager.extract_structured_data(
+                safe_content, target_schema, source_hint=source_hint
+            )
+
             # 2.1 V2: Heuristic Fallback — produce a minimal record if all LLM tiers fail
             if extracted_data is None:
                 logger.warning(f"LLM extraction failed for {raw.id}. Applying heuristic fallback.")
@@ -204,34 +237,35 @@ class UnstructuredProvider(BaseProvider):
                     "sentiment_score": self.llm_manager._heuristic_sentiment(content_str),
                     "strategic_signals": self._derive_strategic_pivot(content_str),
                 }
-                
+
             # 2.5 V2: Deep Signal Layer (Sentiment & Signal Weighting)
             if "sentiment_score" not in extracted_data:
-                extracted_data["sentiment_score"] = await self.llm_manager.analyze_sentiment(safe_content)
-            
+                extracted_data["sentiment_score"] = await self.llm_manager.analyze_sentiment(
+                    safe_content
+                )
+
             # Weighted Signal Context (e.g., Finance + Energy correlation)
             if "strategic_signals" not in extracted_data or not extracted_data["strategic_signals"]:
-                 extracted_data["strategic_signals"] = self._derive_strategic_pivot(safe_content)
-                
+                extracted_data["strategic_signals"] = self._derive_strategic_pivot(safe_content)
+
             # 3. Strict Verification (Post-Process)
             if self._verify_domain_integrity(extracted_data):
                 # Robust data-aware checksum
                 raw_str = json.dumps(extracted_data, sort_keys=True)
                 data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
-                
-                results.append(StandardSchema(
-                    id=raw.id,
-                    industry=self.config.get("industry", "generic"),
-                    data=extracted_data,
-                    provenance={
-                        "source": raw.source_url,
-                        "retrieved_at": raw.timestamp
-                    },
-                    checksum=data_checksum
-                ))
+
+                results.append(
+                    StandardSchema(
+                        id=raw.id,
+                        industry=self.config.get("industry", "generic"),
+                        data=extracted_data,
+                        provenance={"source": raw.source_url, "retrieved_at": raw.timestamp},
+                        checksum=data_checksum,
+                    )
+                )
             else:
                 logger.error(f"Domain integrity check failed for {raw.id}")
-                
+
         return results
 
     def _derive_strategic_pivot(self, content: str) -> str:
@@ -245,10 +279,10 @@ class UnstructuredProvider(BaseProvider):
             signals.append("M&A_ACTIVITY")
         if any(w in content.lower() for w in ["decline", "risk", "reduction"]):
             signals.append("MARKET_HEADWINDS")
-            
+
         return "|".join(signals) if signals else "STABLE_OPERATIONS"
 
-    def _verify_domain_integrity(self, data: Dict[str, Any]) -> bool:
+    def _verify_domain_integrity(self, data: dict[str, Any]) -> bool:
         """
         Domain-specific validation (e.g., non-negative financials).
         """
@@ -258,7 +292,7 @@ class UnstructuredProvider(BaseProvider):
                 return False
         return True
 
-    def validate(self, transformed_data: List[StandardSchema]) -> bool:
+    def validate(self, transformed_data: list[StandardSchema]) -> bool:
         """
         Validate the transformed records.
         """
@@ -267,8 +301,3 @@ class UnstructuredProvider(BaseProvider):
             if not record.data:
                 return False
         return True
-
-
-
-
-

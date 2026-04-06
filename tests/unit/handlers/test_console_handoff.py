@@ -1,8 +1,10 @@
-import pytest
-from eval_runner.console.auth import generate_handoff_token, SECRET_KEY
-from eval_runner.console.app import create_app
-import jwt
 from unittest.mock import patch
+
+import jwt
+import pytest
+
+from eval_runner.console.app import create_app
+from eval_runner.console.auth import SECRET_KEY, generate_handoff_token
 
 
 @pytest.fixture
@@ -47,8 +49,9 @@ def test_nav_metadata(client):
 def test_secure_route_protection(client):
     # This requires a decorated route. We can mock one or use a real one if available.
     # For now, just verifying the decorator logic exists in auth.py
-    from eval_runner.console.auth import handoff_required
     from flask import Flask, jsonify
+
+    from eval_runner.console.auth import handoff_required
 
     app = Flask(__name__)
 

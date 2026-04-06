@@ -4,9 +4,8 @@ coverage_reporter.py
 Generates HTML heatmaps from grounding coverage data.
 """
 
-import json
 from pathlib import Path
-from typing import Dict, Any, List
+
 from .context import EvaluationContext
 
 HTML_TEMPLATE = """
@@ -17,14 +16,14 @@ HTML_TEMPLATE = """
     <style>
         body {{ font-family: sans-serif; margin: 20px; background: #f4f4f9; }}
         h1, h2 {{ color: #333; }}
-        .card {{ background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }}
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }}
-        .item {{ padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #ddd; }}
+        .card {{ background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }}  # noqa: E501
+        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }}  # noqa: E501
+        .item {{ padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #ddd; }}  # noqa: E501
         .hit {{ background: #d4edda; color: #155724; border-color: #c3e6cb; }}
         .miss {{ background: #f8d7da; color: #721c24; border-color: #f5c6cb; }}
         .count {{ font-size: 0.8em; display: block; margin-top: 5px; opacity: 0.7; }}
         .legend {{ margin-bottom: 10px; font-size: 0.9em; }}
-        .dot {{ height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }}
+        .dot {{ height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }}  # noqa: E501
     </style>
 </head>
 <body>

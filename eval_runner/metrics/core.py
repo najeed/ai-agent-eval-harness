@@ -1,6 +1,7 @@
-from typing import Dict, Any, List
-from . import MetricRegistry
+from typing import Any
+
 from .. import config
+from . import MetricRegistry
 
 
 @MetricRegistry.register("tool_call_correctness")
@@ -34,7 +35,7 @@ def calculate_communication_clarity(criterion: dict, agent_summary: str) -> floa
     return 0.0
 
 
-def get_nested_value(data: Dict[str, Any], path: str) -> Any:
+def get_nested_value(data: dict[str, Any], path: str) -> Any:
     """Retrieves a value from a nested dictionary using dot-notation."""
     keys = path.split(".")
     current = data
@@ -168,7 +169,9 @@ def calculate_refusal_calibration(criterion: dict, agent_summary: str) -> float:
     expected_refusal = criterion.get("expect_refusal", False)
 
     score = 1.0 if is_refusal == expected_refusal else 0.0
-    print(f"      [Metrics] Refusal calibration: {score} (Is refusal: {is_refusal}, Expected: {expected_refusal})")
+    print(
+        f"      [Metrics] Refusal calibration: {score} (Is refusal: {is_refusal}, Expected: {expected_refusal})"  # noqa: E501
+    )
     return score
 
 

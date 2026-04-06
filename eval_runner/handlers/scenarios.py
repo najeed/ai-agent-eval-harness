@@ -4,21 +4,23 @@ handlers/scenarios.py
 Logic for scenario-related commands (AES, lint, inspect, etc.)
 """
 
-import os
 import json
-import yaml
+import os
 from pathlib import Path
-from typing import Dict, Any
-from .. import loader, linter, catalog, spec_parser, mutator, drift_importer
 
-def handle_aes_validate(args):
+import yaml
+
+from .. import catalog, drift_importer, linter, loader, mutator, spec_parser
+
+
+async def handle_aes_validate(args):
     """Handler for 'aes validate' command."""
-    from jsonschema import validate, RefResolver
-    
+    from jsonschema import RefResolver, validate
+
     schema_path = Path(__file__).parent.parent.parent / "schemas" / "scenario.schema.json"
-    with open(schema_path, "r") as f:
+    with open(schema_path) as f:
         schema = json.load(f)
-        
+
     resolver = RefResolver(f"file:///{schema_path.parent.as_posix()}/", schema)
 
     path = Path(args.path)
@@ -29,7 +31,7 @@ def handle_aes_validate(args):
 
     for f_path in files:
         try:
-            with open(f_path, "r") as f:
+            with open(f_path) as f:
                 if f_path.suffix == ".yaml" or f_path.suffix == ".aes.yaml":
                     data = yaml.safe_load(f)
                 else:
@@ -39,7 +41,7 @@ def handle_aes_validate(args):
             print(f"✔ {f_path.name}: Valid (AES v1.2-STABLE)")
 
             # Industrial Export Logic (v1.2.3)
-            if getattr(args, 'export', None):
+            if getattr(args, "export", None):
                 export_path = Path(args.export)
                 export_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(export_path, "w", encoding="utf-8") as yf:
@@ -48,9 +50,10 @@ def handle_aes_validate(args):
         except Exception as e:
             print(f"✘ {f_path.name}: Invalid - {str(e)}")
 
-def handle_inspect(args):
+
+async def handle_inspect(args):
     """Handler for 'inspect' command."""
-    path = Path(args.scenario_path)
+    path = Path(getattr(args, "scenario_path", None) or getattr(args, "path", ""))
     if not path.exists():
         print(f"[ERROR] Scenario file not found: {path}")
         return
@@ -70,11 +73,13 @@ def handle_inspect(args):
     except Exception as e:
         print(f"[ERROR] Failed to inspect scenario: {e}")
 
-def handle_lint(args):
+
+async def handle_lint(args):
     """Handler for 'lint' command."""
     linter.run_lint(args.target)
 
-def handle_list(args):
+
+async def handle_list(args):
     """Handler for 'list' command."""
     cat = catalog.ScenarioCatalog()
     if getattr(args, "refresh", False):
@@ -83,49 +88,55 @@ def handle_list(args):
         cat.load_index()
     catalog.list_scenarios(query=getattr(args, "search", None))
 
-def handle_catalog_search(args):
+
+async def handle_catalog_search(args):
     """Handler for 'catalog-search' command."""
     cat = catalog.ScenarioCatalog()
     results = cat.search(args.query)
     for r in results:
         print(f" - {r.get('id', 'unknown')}: {r.get('title', 'Untitled')}")
 
-def handle_mutate(args):
+
+async def handle_mutate(args):
     """Handler for 'mutate' command."""
     if not os.path.exists(args.input):
         print(f"[ERROR] Mutation input file not found: {args.input}")
         return
-    with open(args.input, "r", encoding="utf-8") as f:
+    with open(args.input, encoding="utf-8") as f:
         scenario = json.load(f)
     mutated = mutator.mutate_scenario(scenario, args.type)
     mutator.save_mutated_scenario(mutated, Path(args.output or "mutated.json"))
+
 
 async def handle_spec_to_eval(args):
     """Handler for 'spec-to-eval' command."""
     if not os.path.exists(args.input):
         print(f"[ERROR] Spec input file not found: {args.input}")
         return
-    with open(args.input, "r", encoding="utf-8") as f:
+    with open(args.input, encoding="utf-8") as f:
         markdown_text = f.read()
-    scenario = spec_parser.parse_markdown_to_scenario(markdown_text)
+    scenario = await spec_parser.parse_markdown_to_scenario(markdown_text)
     spec_parser.save_scenario_json(scenario, Path(args.output or "scenario.json"))
 
-def handle_import_drift(args):
+
+async def handle_import_drift(args):
     """Handler for 'import-drift' command."""
-    from pathlib import Path
-    out_dir = Path(getattr(args, 'output_dir', 'scenarios'))
+    out_dir = Path(getattr(args, "output_dir", "scenarios"))
     drift_importer.import_trace_as_scenario(Path(args.input), args.industry, out_dir)
 
-def handle_scenario_generate(args):
+
+async def handle_scenario_generate(args):
     """Handler for 'scenario generate' command."""
     from .. import scaffold
     scaffold.generate_interactive()
 
-def handle_catalog_refresh(args):
+
+async def handle_catalog_refresh(args):
     """Handler for 'catalog-refresh' command."""
     cat = catalog.ScenarioCatalog()
     cat.build_index()
     print("✅ Catalog index refreshed.")
+
 
 def classify_scenario(scenario: dict) -> dict:
     """
@@ -134,6 +145,7 @@ def classify_scenario(scenario: dict) -> dict:
     """
     try:
         from sentence_transformers import SentenceTransformer
+
         model = SentenceTransformer("all-MiniLM-L6-v2")
         text = f"{scenario.get('title', '')} {scenario.get('description', '')}"
         _ = model.encode([text])  # For feature parity / coverage

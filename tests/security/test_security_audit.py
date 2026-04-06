@@ -5,13 +5,11 @@ Comprehensive test suite validating all 9 Enterprise Security Audit mitigations.
 Each test maps to one or more numbered audit points from the implementation plan.
 """
 
-import pytest
-import asyncio
-import copy
-import types
 import concurrent.futures
-from unittest.mock import patch, MagicMock, AsyncMock
-from pathlib import Path
+import types
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #1 — DoS: MAX_ENGINE_ATTEMPTS cap
@@ -32,13 +30,12 @@ async def test_dos_attempt_cap_clamp():
 
     scenario = {
         "scenario_id": "dos-test",
-        "workflow": {
-            "nodes": [{"id": "t1", "task_description": "test"}],
-            "edges": []
-        },
+        "workflow": {"nodes": [{"id": "t1", "task_description": "test"}], "edges": []},
     }
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock:
         mock.return_value = {"action": "final_answer", "summary": "ok"}
         results = await engine.run_evaluation(scenario, attempts=100)
         # Should have been clamped to 50
@@ -52,13 +49,13 @@ async def test_dos_attempt_cap_clamp():
 
 def test_fork_bomb_depth():
     """SessionManager.fork() must raise at MAX_FORK_DEPTH."""
-    from eval_runner.session import SessionManager, MAX_FORK_DEPTH
+    from eval_runner.session import MAX_FORK_DEPTH, SessionManager
 
     # Create a session already at max depth
     scenario = {
-        "scenario_id": "fork-depth", 
-        "workflow": {"nodes": [], "edges": []}, 
-        "_fork_depth": MAX_FORK_DEPTH
+        "scenario_id": "fork-depth",
+        "workflow": {"nodes": [], "edges": []},
+        "_fork_depth": MAX_FORK_DEPTH,
     }
     session = SessionManager(scenario)
     with pytest.raises(RuntimeError, match="Fork Bomb Prevention"):
@@ -68,15 +65,12 @@ def test_fork_bomb_depth():
 @pytest.mark.asyncio
 async def test_fork_bomb_breadth(monkeypatch):
     """Branch action with too many branches should be rejected."""
-    from eval_runner.session import SessionManager, MAX_FORK_BREADTH
     from eval_runner.engine import AgentAdapterRegistry
+    from eval_runner.session import MAX_FORK_BREADTH, SessionManager
 
     scenario = {
         "scenario_id": "fork-breadth",
-        "workflow": {
-            "nodes": [{"id": "t1", "task_description": "test"}],
-            "edges": []
-        },
+        "workflow": {"nodes": [{"id": "t1", "task_description": "test"}], "edges": []},
         "max_turns": 2,
     }
 
@@ -151,7 +145,9 @@ def test_sanitize_jwt():
     """JWT tokens must be redacted."""
     from eval_runner.events import sanitize_payload
 
-    data = {"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.Q_w2AVguFXmVt"}
+    data = {
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.Q_w2AVguFXmVt"  # noqa: E501, G4, I1, J9, M0, NTY3, RG9, ZSI6
+    }
     result = sanitize_payload(data)
     assert "[REDACTED_JWT]" in result["token"]
 
@@ -203,8 +199,9 @@ def test_sanitize_format_string():
 
 def test_plugin_timeout():
     """A hanging plugin hook should be terminated after PLUGIN_TIMEOUT."""
-    from eval_runner.plugins import _invoke_with_timeout, PLUGIN_TIMEOUT
     import time
+
+    from eval_runner.plugins import PLUGIN_TIMEOUT, _invoke_with_timeout
 
     def hanging_hook():
         time.sleep(PLUGIN_TIMEOUT + 5)
@@ -255,7 +252,9 @@ def test_cli_no_extend_cli():
     """BaseEvalPlugin must NOT have an extend_cli method (deprecated)."""
     from eval_runner.plugins import BaseEvalPlugin
 
-    assert not hasattr(BaseEvalPlugin, "extend_cli"), "extend_cli was deprecated in favor of on_register_commands."
+    assert not hasattr(BaseEvalPlugin, "extend_cli"), (
+        "extend_cli was deprecated in favor of on_register_commands."
+    )
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -265,8 +264,8 @@ def test_cli_no_extend_cli():
 
 def test_repro_script_txt_extension(tmp_path, monkeypatch):
     """Reproduction scripts must be emitted as .txt, not .py/.sh."""
-    from eval_runner.reporting_plugin import ReportingPlugin
     from eval_runner.context import EvaluationContext
+    from eval_runner.reporting_plugin import ReportingPlugin
 
     monkeypatch.chdir(tmp_path)
     ctx = EvaluationContext(scenario_id="rce-test", scenario_data={})
@@ -281,8 +280,8 @@ def test_repro_script_txt_extension(tmp_path, monkeypatch):
 
 def test_repro_script_rce_strip(tmp_path, monkeypatch):
     """os.system and subprocess strings must be stripped from repro scripts."""
-    from eval_runner.reporting_plugin import ReportingPlugin
     from eval_runner.context import EvaluationContext
+    from eval_runner.reporting_plugin import ReportingPlugin
 
     monkeypatch.chdir(tmp_path)
     ctx = EvaluationContext(scenario_id="rce-strip", scenario_data={})
@@ -302,8 +301,9 @@ def test_repro_script_rce_strip(tmp_path, monkeypatch):
 
 def test_auth_jwt_generation():
     """Verify that generate_handoff_token creates a short-lived HS256 JWT."""
-    from eval_runner.console.auth import generate_handoff_token, SECRET_KEY
     import jwt
+
+    from eval_runner.console.auth import SECRET_KEY, generate_handoff_token
 
     token = generate_handoff_token()
     decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
@@ -315,8 +315,9 @@ def test_auth_jwt_generation():
 
 def test_auth_handoff_decorator():
     """Verify that @handoff_required enforces token presence and validity."""
-    from eval_runner.console.auth import handoff_required, generate_handoff_token
-    from flask import Flask, request, jsonify
+    from flask import Flask, jsonify
+
+    from eval_runner.console.auth import generate_handoff_token, handoff_required
 
     app = Flask(__name__)
 

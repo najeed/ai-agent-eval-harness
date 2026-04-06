@@ -4,10 +4,11 @@ dashboard/app.py
 Streamlit application for visualizing MultiAgentEval trajectories and metrics.
 """
 
-import streamlit as st
 import json
 import os
 from pathlib import Path
+
+import streamlit as st
 
 # Set page configuration for a premium look
 st.set_page_config(
@@ -41,7 +42,7 @@ st.markdown(
 st.title("🤖 MultiAgentEval Lab: Trajectory Dashboard")
 
 # Trajectory discovery
-TRAJECTORY_DIR = Path("reports/trajectories")
+TRAJECTORY_DIR = Path(os.environ.get("TRAJECTORY_DIR", "reports/trajectories"))
 if not TRAJECTORY_DIR.exists():
     TRAJECTORY_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -54,12 +55,10 @@ if not files:
     st.stop()
 
 # Sidebar selection
-selected_file = st.sidebar.selectbox(
-    "Select Evaluation Run", files, format_func=lambda x: x.name
-)
+selected_file = st.sidebar.selectbox("Select Evaluation Run", files, format_func=lambda x: x.name)
 
 # Load data
-with open(selected_file, "r") as f:
+with open(selected_file) as f:
     data = json.loads(f.read())
 
 metadata = data.get("metadata", {})
@@ -91,7 +90,7 @@ with col1:
 with col2:
     st.metric(
         "Success Rate",
-        f"{(success_count/total_tasks)*100:.1f}%" if total_tasks else "0%",
+        f"{(success_count / total_tasks) * 100:.1f}%" if total_tasks else "0%",
     )
 with col3:
     st.metric("Avg Parsimony", f"{avg_parsimony:.2f}")
@@ -111,14 +110,13 @@ with t_col1:
     for m in task_result["metrics"]:
         status_color = "green" if m["success"] else "red"
         st.markdown(
-            f"**{m['metric']}**: :{status_color}[{m['score']:.2f}] (Threshold: {m['threshold']:.2f})"
+            f"**{m['metric']}**: :{status_color}[{m['score']:.2f}] "
+            f"(Threshold: {m['threshold']:.2f})"
         )
 
     st.subheader("Conversation History")
     for msg in task_result.get("conversation_history", []):
-        with st.expander(
-            f"{msg['role'].capitalize()}: {str(msg.get('content'))[:50]}..."
-        ):
+        with st.expander(f"{msg['role'].capitalize()}: {str(msg.get('content'))[:50]}..."):
             st.json(msg)
 
 with t_col2:
@@ -156,10 +154,11 @@ with t_col2:
 
     mermaid_code.append(f"  {prev_node} --> End((End))")
 
-    # Render using the built-in mermaid support if available or fallback to text
+    # Render using the built-in mermaid support if available or fallback
     st.code("\n".join(mermaid_code), language="mermaid")
     st.info(
-        "💡 Paste the code above into [Mermaid Live Editor](https://mermaid.live) for a full visual render."
+        "💡 Paste the code above into [Mermaid Live Editor]"
+        "(https://mermaid.live) for a full visual render."
     )
 
 st.sidebar.markdown("---")

@@ -4,7 +4,6 @@ analyzer.py
 Logic for scanning agent repositories to identify tools, endpoints, and patterns.
 """
 
-import re
 import json
 from pathlib import Path
 
@@ -14,8 +13,8 @@ async def analyze_repo(repo_url: str) -> list:
     Scans a repository (simulated) to identify agentic patterns and scaffold AES scenarios.
     For the demo, we simulate scanning the local project or a mock structure.
     """
-    # Patterns to look for
-    patterns = {
+    # Patterns to look for (Simulation Mode)
+    _ = {
         "tool_definition": r"@tool|def .*_tool\(",
         "api_endpoint": r"@app\.route\(['\"]/api/.*['\"]|@bp\.route\(['\"]/api/.*['\"]",
         "agent_init": r"Agent\(|AgentExecutor\(|initialize_agent\(",
@@ -79,7 +78,7 @@ async def analyze_repo(repo_url: str) -> list:
                 "nodes": [
                     {
                         "id": "t1",
-                        "task_description": f"Interact with {pattern['match']} and verify its output.",
+                        "task_description": f"Interact with {pattern['match']} and verify its output.",  # noqa: E501
                     }
                 ],
                 "edges": [],

@@ -1,2 +1,2 @@
 # Package eval_runner.hitl
-from .registry import HitlRegistry, global_hitl_registry
+from .registry import HitlRegistry, global_hitl_registry  # noqa: F401

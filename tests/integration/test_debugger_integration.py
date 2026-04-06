@@ -1,10 +1,10 @@
+from unittest.mock import patch
+
 import pytest
-import json
+
 from eval_runner.console.app import create_app
 from eval_runner.console.routes import DebuggerStateStore
 
-
-from unittest.mock import patch
 
 @pytest.fixture
 def client():
@@ -13,10 +13,9 @@ def client():
     # Reset store for each test
     DebuggerStateStore._events = []
     DebuggerStateStore._last_state = {"message": "Waiting for evaluation..."}
-    
+
     # Mock API Key for integration tests
     api_key = "test-integration-key"
-    from eval_runner import config
     with patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key):
         with app.test_client() as client:
             client.environ_base["HTTP_X_AES_API_KEY"] = api_key

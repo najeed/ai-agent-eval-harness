@@ -7,7 +7,6 @@ Creates a signed ZIP artifact bundle with SHA-256 manifest.
 
 import argparse
 import sys
-import os
 from pathlib import Path
 
 # Add project root to sys.path to access eval_runner
@@ -15,8 +14,8 @@ project_root = Path(__file__).parent.parent.parent.absolute()
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from eval_runner.plugins import manager
-from eval_runner.artifact_plugin import ArtifactPlugin
+from eval_runner.artifact_plugin import ArtifactPlugin  # noqa: E402
+from eval_runner.plugins import manager  # noqa: E402
 
 
 class Bundler:
@@ -29,9 +28,7 @@ class Bundler:
         print(f"📦 [Bundler CLI] Targeting batch: {self.batch_dir.name}")
 
         # Locate the ArtifactPlugin instance
-        artifact_svc = next(
-            (p for p in manager.plugins if isinstance(p, ArtifactPlugin)), None
-        )
+        artifact_svc = next((p for p in manager.plugins if isinstance(p, ArtifactPlugin)), None)
 
         if not artifact_svc:
             print("❌ [Bundler CLI] Error: ArtifactPlugin not found in core.")
@@ -50,9 +47,7 @@ class Bundler:
         )
 
         if result["status"] == "success":
-            print(
-                f"✅ [Bundler CLI] Core-powered bundle created: {result['bundle_path']}"
-            )
+            print(f"✅ [Bundler CLI] Core-powered bundle created: {result['bundle_path']}")
         else:
             print(f"❌ [Bundler CLI] Failure: {result.get('message')}")
 

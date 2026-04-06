@@ -1,108 +1,169 @@
+import asyncio
+import datetime
 import hashlib
 import json
-import asyncio
-import aiohttp
 import os
+from typing import Any
+
+import aiohttp
 import pandas as pd
-import datetime
-from typing import List, Dict, Any
+
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
 
 logger = StructuredLogger("HealthcareProvider")
 
+
 class HealthcareProvider(BaseProvider):
     """
     Deepened Consumer for CMS Hospital Data - Multi-dataset support.
     """
-    def __init__(self, config: Dict[str, Any], llm_manager: Any = None):
+
+    def __init__(self, config: dict[str, Any], llm_manager: Any = None):
         super().__init__(config, llm_manager=llm_manager)
         # Support multiple CMS datasets (General, Patient Exp, Mortality)
-        self.csv_paths = config.get("input_uris", [config.get("input_uri", "Hospital_General_Information.csv")])
-        self.healthcare_mode = config.get("healthcare_mode", "cms") # cms, clinical, who
+        self.csv_paths = config.get(
+            "input_uris", [config.get("input_uri", "Hospital_General_Information.csv")]
+        )
+        self.healthcare_mode = config.get("healthcare_mode", "cms")  # cms, clinical, who
 
-    async def extract(self) -> List[RawArtifact]:
+    async def extract(self) -> list[RawArtifact]:
         if self.healthcare_mode == "who":
             # Gold Standard: WHO Global Health Observatory (GHO)
-            indicator = self.config.get("indicator", "WHOSIS_000001") # Life expectancy at birth
+            indicator = self.config.get("indicator", "WHOSIS_000001")  # Life expectancy at birth
             url = f"https://ghoapi.azureedge.net/api/{indicator}"
-            
+
             async with aiohttp.ClientSession() as session:
+
                 async def fetch_who():
                     async with session.get(url) as resp:
                         if resp.status == 200:
                             return await resp.json()
                         raise Exception(f"WHO API Error: {resp.status}")
-                
+
                 try:
                     content = await self.request_with_retry(fetch_who)
                     if content and "value" in content:
-                        return [RawArtifact(
-                            id=f"WHO-{indicator}",
-                            source_url=url,
-                            content=content["value"][: self.config.get("limit", 20)],
-                            metadata={"indicator": indicator, "source": "WHO-GHO-API"},
-                            timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
-                        )]
+                        return [
+                            RawArtifact(
+                                id=f"WHO-{indicator}",
+                                source_url=url,
+                                content=content["value"][: self.config.get("limit", 20)],
+                                metadata={"indicator": indicator, "source": "WHO-GHO-API"},
+                                timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
+                            )
+                        ]
                 except Exception as e:
                     logger.error("who_extraction_failed", indicator=indicator, error=str(e))
-            
+
             if self.allow_simulation:
-                mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "healthcare", "mock_who.json")
+                mock_path = os.path.join(
+                    os.path.dirname(__file__),
+                    "..",
+                    "..",
+                    "industries",
+                    "healthcare",
+                    "mock_who.json",
+                )
                 if os.path.exists(mock_path):
-                    with open(mock_path, "r") as f:
+                    with open(mock_path) as f:
                         simulated_who = json.load(f)
                 else:
                     simulated_who = [
-                        {"SpatialDim": "USA", "NumericValue": 78.5, "TimeDim": "2021", "IndicatorCode": indicator},
-                        {"SpatialDim": "JPN", "NumericValue": 84.6, "TimeDim": "2021", "IndicatorCode": indicator}
+                        {
+                            "SpatialDim": "USA",
+                            "NumericValue": 78.5,
+                            "TimeDim": "2021",
+                            "IndicatorCode": indicator,
+                        },
+                        {
+                            "SpatialDim": "JPN",
+                            "NumericValue": 84.6,
+                            "TimeDim": "2021",
+                            "IndicatorCode": indicator,
+                        },
                     ]
-                return [self.create_simulated_artifact(
-                    id=f"WHO-{indicator}",
-                    content=simulated_who,
-                    source_url=url,
-                    metadata={"indicator": indicator}
-                )]
+                return [
+                    self.create_simulated_artifact(
+                        id=f"WHO-{indicator}",
+                        content=simulated_who,
+                        source_url=url,
+                        metadata={"indicator": indicator},
+                    )
+                ]
             return []
 
         if self.healthcare_mode == "clinical":
             # Gold Standard: Clinical Research Data (Simulated)
-            dataset_version = "CLINICAL-V1" # Unified Clinical Schema
-            
+            dataset_version = "CLINICAL-V1"  # Unified Clinical Schema
+
             # Unified Data Acquisition (Local or Web URL)
             path = self.config.get("input_uri") or ""
             df = self.load_raw_data(path)
-            
+
             if df is not None:
-                return [RawArtifact(
-                    id=f"{dataset_version}-USER",
-                    source_url=path,
-                    content=df.to_dict(orient="records"),
-                    metadata={"dataset": f"{dataset_version} Clinical Database", "source": "User-Provided"},
-                    timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
-                )]
-            
+                return [
+                    RawArtifact(
+                        id=f"{dataset_version}-USER",
+                        source_url=path,
+                        content=df.to_dict(orient="records"),
+                        metadata={
+                            "dataset": f"{dataset_version} Clinical Database",
+                            "source": "User-Provided",
+                        },
+                        timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
+                    )
+                ]
+
             if self.allow_simulation:
-                mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "healthcare", "mock_clinical.json")
+                mock_path = os.path.join(
+                    os.path.dirname(__file__),
+                    "..",
+                    "..",
+                    "industries",
+                    "healthcare",
+                    "mock_clinical.json",
+                )
                 if os.path.exists(mock_path):
-                    with open(mock_path, "r") as f:
+                    with open(mock_path) as f:
                         sim_content = json.load(f)
                 else:
                     sim_content = [
-                        {"subject_id": "1001", "hadm_id": "210001", "lab_item": "Glucose", "value": 112, "uom": "mg/dL", "flag": "normal", "module": "hosp"},
-                        {"subject_id": "1002", "hadm_id": "210002", "lab_item": "Creatinine", "value": 1.4, "uom": "mg/dL", "flag": "abnormal", "module": "hosp"}
+                        {
+                            "subject_id": "1001",
+                            "hadm_id": "210001",
+                            "lab_item": "Glucose",
+                            "value": 112,
+                            "uom": "mg/dL",
+                            "flag": "normal",
+                            "module": "hosp",
+                        },
+                        {
+                            "subject_id": "1002",
+                            "hadm_id": "210002",
+                            "lab_item": "Creatinine",
+                            "value": 1.4,
+                            "uom": "mg/dL",
+                            "flag": "abnormal",
+                            "module": "hosp",
+                        },
                     ]
-                return [self.create_simulated_artifact(
-                    id=f"{dataset_version}",
-                    content=sim_content,
-                    source_url="https://clinical.data.example.org/",
-                    metadata={"dataset": f"{dataset_version} Clinical Database", "type": "lab_events"}
-                )]
+                return [
+                    self.create_simulated_artifact(
+                        id=f"{dataset_version}",
+                        content=sim_content,
+                        source_url="https://clinical.data.example.org/",
+                        metadata={
+                            "dataset": f"{dataset_version} Clinical Database",
+                            "type": "lab_events",
+                        },
+                    )
+                ]
             return []
 
         limit = self.config.get("limit", 50)
         artifacts = []
-        
+
         async def fetch_csv(path):
             try:
                 # For the pilot, we assume local CSV access, but structured for remote expansion
@@ -115,26 +176,45 @@ class HealthcareProvider(BaseProvider):
                 else:
                     if self.allow_simulation:
                         logger.warning("cms_file_missing_using_sim", path=path)
-                        mock_path = os.path.join(os.path.dirname(__file__), "..", "..", "industries", "healthcare", "mock_cms.csv")
+                        mock_path = os.path.join(
+                            os.path.dirname(__file__),
+                            "..",
+                            "..",
+                            "industries",
+                            "healthcare",
+                            "mock_cms.csv",
+                        )
                         if os.path.exists(mock_path):
                             df = pd.read_csv(mock_path)
                             content = df.head(limit).to_dict(orient="records")
                         else:
                             content = [
-                                {"Hospital Name": "SIM CLINIC A", "Provider ID": "001", "Hospital overall rating": 4, "Mortality national comparison": "Same"},
-                                {"Hospital Name": "SIM CLINIC B", "Provider ID": "002", "Hospital overall rating": 5, "Mortality national comparison": "Above"}
+                                {
+                                    "Hospital Name": "SIM CLINIC A",
+                                    "Provider ID": "001",
+                                    "Hospital overall rating": 4,
+                                    "Mortality national comparison": "Same",
+                                },
+                                {
+                                    "Hospital Name": "SIM CLINIC B",
+                                    "Provider ID": "002",
+                                    "Hospital overall rating": 5,
+                                    "Mortality national comparison": "Above",
+                                },
                             ]
                     else:
                         return None
-                
-                content_hash = hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()[:12]
-                
+
+                content_hash = hashlib.sha256(
+                    json.dumps(content, sort_keys=True).encode()
+                ).hexdigest()[:12]
+
                 return RawArtifact(
                     id=f"cms-{content_hash}",
                     source_url=path,
                     content=content,
                     metadata={"source": "CMS", "type": "hospital_metrics"},
-                    timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
+                    timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
                 )
             except Exception as e:
                 logger.error("cms_extraction_failed", path=path, error=str(e))
@@ -143,37 +223,50 @@ class HealthcareProvider(BaseProvider):
         # Fix paths if they are placeholders
         actual_paths = [p for p in self.csv_paths if os.path.exists(p)]
         if not actual_paths:
-            actual_paths = ["sim_cms.csv"] # Trigger simulation in fetch_csv
+            actual_paths = ["sim_cms.csv"]  # Trigger simulation in fetch_csv
 
         tasks = [fetch_csv(p) for p in actual_paths]
         results = await asyncio.gather(*tasks)
         artifacts = [r for r in results if r]
-        
+
         return artifacts
 
-    async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
+    async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
         results = []
         is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
         if self.healthcare_mode == "who":
-            TARGET_SCHEMA = {"country": "string", "indicator": "string", "value": "number", "year": "string"}
+            TARGET_SCHEMA = {
+                "country": "string",
+                "indicator": "string",
+                "value": "number",
+                "year": "string",
+            }
             for artifact in raw_artifacts:
                 for row in artifact.content:
                     raw_data = {
                         "country": row.get("SpatialDim", "Unknown"),
                         "indicator": row.get("IndicatorCode", "Unknown"),
                         "value": float(row.get("NumericValue", 0)),
-                        "year": str(row.get("TimeDim", "0000"))
+                        "year": str(row.get("TimeDim", "0000")),
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
+                    verified = self.llm_manager._verify_schema(
+                        raw_data, TARGET_SCHEMA, strict=is_strict
+                    )
                     if verified:
-                        results.append(StandardSchema(
-                            id=hashlib.md5(f"WHO-{raw_data['country']}-{raw_data['year']}".encode()).hexdigest()[:16],
-                            industry="healthcare",
-                            data=verified,
-                            provenance={"source": artifact.source_url, "provider": "WHO-GHO"},
-                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
-                        ))
+                        results.append(
+                            StandardSchema(
+                                id=hashlib.md5(
+                                    f"WHO-{raw_data['country']}-{raw_data['year']}".encode()
+                                ).hexdigest()[:16],
+                                industry="healthcare",
+                                data=verified,
+                                provenance={"source": artifact.source_url, "provider": "WHO-GHO"},
+                                checksum=hashlib.sha256(
+                                    json.dumps(verified, sort_keys=True).encode()
+                                ).hexdigest(),
+                            )
+                        )
             return results
 
         if self.healthcare_mode == "clinical":
@@ -185,7 +278,7 @@ class HealthcareProvider(BaseProvider):
                 "result_value": "number",
                 "result_unit": "string",
                 "status_flag": "string",
-                "data_module": "string"
+                "data_module": "string",
             }
             for artifact in raw_artifacts:
                 for row in artifact.content:
@@ -196,18 +289,29 @@ class HealthcareProvider(BaseProvider):
                         "result_value": float(row.get("value", 0)),
                         "result_unit": row.get("uom"),
                         "status_flag": row.get("flag"),
-                        "data_module": row.get("module", "hosp")
+                        "data_module": row.get("module", "hosp"),
                     }
-                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
+                    verified = self.llm_manager._verify_schema(
+                        raw_data, TARGET_SCHEMA, strict=is_strict
+                    )
                     if verified:
-                        record_id = hashlib.md5(f"{dataset_version}-{row.get('subject_id')}-{row.get('hadm_id')}".encode()).hexdigest()[:16]
-                        results.append(StandardSchema(
-                            id=record_id,
-                            industry="healthcare",
-                            data=verified,
-                            provenance={"source": artifact.source_url, "schema": dataset_version},
-                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
-                        ))
+                        record_id = hashlib.md5(
+                            f"{dataset_version}-{row.get('subject_id')}-{row.get('hadm_id')}".encode()
+                        ).hexdigest()[:16]
+                        results.append(
+                            StandardSchema(
+                                id=record_id,
+                                industry="healthcare",
+                                data=verified,
+                                provenance={
+                                    "source": artifact.source_url,
+                                    "schema": dataset_version,
+                                },
+                                checksum=hashlib.sha256(
+                                    json.dumps(verified, sort_keys=True).encode()
+                                ).hexdigest(),
+                            )
+                        )
             return results
 
         TARGET_SCHEMA = {
@@ -216,60 +320,78 @@ class HealthcareProvider(BaseProvider):
             "overall_rating": "number",
             "mortality_metric": "string",
             "patient_experience": "string",
-            "location": "string"
+            "location": "string",
         }
-        
+
         for artifact in raw_artifacts:
             rows = artifact.content
             for row in rows:
                 # Deterministic ID based on Provider ID or Patient ID
-                p_id = str(row.get("Provider ID") or row.get("provider_id") or row.get("patient_id") or "NA")
-                facility_name = self.scrub_pii(row.get("Hospital Name") or row.get("hospital_name") or row.get("department", "Unknown"))
-                
+                p_id = str(
+                    row.get("Provider ID")
+                    or row.get("provider_id")
+                    or row.get("patient_id")
+                    or "NA"
+                )
+                facility_name = self.scrub_pii(
+                    row.get("Hospital Name")
+                    or row.get("hospital_name")
+                    or row.get("department", "Unknown")
+                )
+
                 # Deterministic ID for cross-dataset record linking
                 record_id = hashlib.md5(f"{p_id}-{facility_name}".encode()).hexdigest()[:16]
-                
+
                 raw_data = {
                     "facility_name": facility_name,
                     "provider_id": p_id,
-                    "overall_rating": row.get("Hospital overall rating", 0) or row.get("rating", 0) or 4.0, # Default rating for patient data
+                    "overall_rating": row.get("Hospital overall rating", 0)
+                    or row.get("rating", 0)
+                    or 4.0,  # Default rating for patient data
                     "mortality_metric": row.get("Mortality national comparison", "Not Available"),
-                    "patient_experience": row.get("Patient experience national comparison", row.get("status", "Not Available")),
-                    "location": self.scrub_pii(str(row.get("Address") or row.get("location", "Unknown")))
+                    "patient_experience": row.get(
+                        "Patient experience national comparison", row.get("status", "Not Available")
+                    ),
+                    "location": self.scrub_pii(
+                        str(row.get("Address") or row.get("location", "Unknown"))
+                    ),
                 }
-                
+
                 # Strict Schema Verification
-                verified_data = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=is_strict)
+                verified_data = self.llm_manager._verify_schema(
+                    raw_data, TARGET_SCHEMA, strict=is_strict
+                )
                 if verified_data:
                     raw_str = json.dumps(verified_data, sort_keys=True)
                     data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
 
-                    results.append(StandardSchema(
-                        id=record_id,
-                        industry="healthcare",
-                        data=verified_data,
-                        provenance={
-                            "source": "CMS dataset",
-                            "file": artifact.source_url,
-                            "provider_id": p_id
-                        },
-                        checksum=data_checksum
-                    ))
+                    results.append(
+                        StandardSchema(
+                            id=record_id,
+                            industry="healthcare",
+                            data=verified_data,
+                            provenance={
+                                "source": "CMS dataset",
+                                "file": artifact.source_url,
+                                "provider_id": p_id,
+                            },
+                            checksum=data_checksum,
+                        )
+                    )
         return results
 
-    def validate(self, normalized_data: List[StandardSchema]) -> bool:
+    def validate(self, normalized_data: list[StandardSchema]) -> bool:
         for record in normalized_data:
             if self.healthcare_mode == "clinical":
-                if not record.data.get("subject_id"): return False
+                if not record.data.get("subject_id"):
+                    return False
             elif self.healthcare_mode == "who":
-                if not record.data.get("country"): return False
+                if not record.data.get("country"):
+                    return False
             else:
                 if not record.data.get("facility_name"):
-                    logger.warning("validation_failed", record_id=record.id, reason="Missing facility name")
+                    logger.warning(
+                        "validation_failed", record_id=record.id, reason="Missing facility name"
+                    )
                     return False
         return True
-
-
-
-
-

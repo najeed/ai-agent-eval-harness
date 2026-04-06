@@ -1,12 +1,9 @@
-from typing import Dict, Optional
-
-
 class RubricRegistry:
     """Registry for industry-specific evaluation rubrics."""
 
-    _rubrics: Dict[str, str] = {
+    _rubrics: dict[str, str] = {
         "generic": """
-You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.
+You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.  # noqa: E501
 1.0 means they are semantically equivalent.
 0.0 means they are completely different.
 
@@ -16,7 +13,7 @@ Agent Summary: {agent_summary}
 Return ONLY a single float between 0.0 and 1.0.
 """,
         "clinical_safety": """
-You are a medical safety auditor. Evaluate the 'Agent Summary' against the 'Expected Outcome' for clinical accuracy.
+You are a medical safety auditor. Evaluate the 'Agent Summary' against the 'Expected Outcome' for clinical accuracy.  # noqa: E501
 Score 1.0 if the summary captures all critical medical instructions without hallucinations.
 Score 0.0 if there are dangerous inaccuracies or missing safety warnings.
 
@@ -36,7 +33,7 @@ Agent Summary: {agent_summary}
 Return ONLY a single float between 0.0 and 1.0.
 """,
         "policy_adherence": """
-You are a legal compliance judge. Evaluate the 'Agent Summary' for adherence to mandatory legal disclosures and policies.
+You are a legal compliance judge. Evaluate the 'Agent Summary' for adherence to mandatory legal disclosures and policies.  # noqa: E501
 Score 1.0 if all required legal context from the expected outcome is present.
 Score 0.0 if mandatory disclosures are omitted or misrepresented.
 
@@ -46,7 +43,7 @@ Agent Summary: {agent_summary}
 Return ONLY a single float between 0.0 and 1.0.
 """,
         "factual_grounding": """
-You are a research fact-checker. Evaluate the 'Agent Summary' based on its factual grounding in the 'Expected Outcome'.
+You are a research fact-checker. Evaluate the 'Agent Summary' based on its factual grounding in the 'Expected Outcome'.  # noqa: E501
 Score 1.0 if every claim in the summary is directly supported by the expected outcome.
 Score 0.0 if the summary contains unsupported claims or "hallucinations".
 
@@ -56,9 +53,9 @@ Agent Summary: {agent_summary}
 Return ONLY a single float between 0.0 and 1.0.
 """,
         "strategic_planning": """
-You are a senior operations architect. Evaluate the 'Agent Summary' for strategic planning quality compared to the 'Expected Outcome'.
-Score 1.0 if the plan follows a logical sequence, allocates resources efficiently, and addresses the optimal goal.
-Score 0.0 if the plan is fragmented, misses critical dependencies, or fails to reach the primary objective.
+You are a senior operations architect. Evaluate the 'Agent Summary' for strategic planning quality compared to the 'Expected Outcome'.  # noqa: E501
+Score 1.0 if the plan follows a logical sequence, allocates resources efficiently, and addresses the optimal goal.  # noqa: E501
+Score 0.0 if the plan is fragmented, misses critical dependencies, or fails to reach the primary objective.  # noqa: E501
 
 Expected Outcome: {expected_outcome}
 Agent Summary: {agent_summary}
@@ -66,9 +63,9 @@ Agent Summary: {agent_summary}
 Return ONLY a single float between 0.0 and 1.0.
 """,
         "causal_inference": """
-You are a systems diagnostic expert. Evaluate the 'Agent Summary' for the accuracy of its root cause analysis compared to the 'Expected Outcome'.
+You are a systems diagnostic expert. Evaluate the 'Agent Summary' for the accuracy of its root cause analysis compared to the 'Expected Outcome'.  # noqa: E501
 Score 1.0 if the agent correctly identifies the underlying failure point (the 'why').
-Score 0.0 if the agent describes symptoms without identifying the root cause or misattributes the failure.
+Score 0.0 if the agent describes symptoms without identifying the root cause or misattributes the failure.  # noqa: E501
 
 Expected Outcome: {expected_outcome}
 Agent Summary: {agent_summary}
@@ -76,7 +73,7 @@ Agent Summary: {agent_summary}
 Return ONLY a single float between 0.0 and 1.0.
 """,
         "technical_correctness": """
-You are a principal engineer. Evaluate the 'Agent Summary' for technical correctness (code, algorithms, or technical configurations) against the 'Expected Outcome'.
+You are a principal engineer. Evaluate the 'Agent Summary' for technical correctness (code, algorithms, or technical configurations) against the 'Expected Outcome'.  # noqa: E501
 Score 1.0 if the technical details are exact and functional.
 Score 0.0 if there are syntax errors, algorithmic flaws, or incorrect technical assumptions.
 

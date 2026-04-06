@@ -1,7 +1,7 @@
-import pytest
 import json
-import asyncio
-from pathlib import Path
+
+import pytest
+
 from eval_runner.trace_recorder import record_interaction
 
 
@@ -15,10 +15,12 @@ async def test_record_interaction_flow(tmp_path, monkeypatch, adapter_stub, caps
 
     # Mock 'input' to return a task then 'exit'
     inputs = ["Tell me a joke", "exit"]
+
     def mock_input(_):
         if not inputs:
             return "exit"
         return inputs.pop(0)
+
     monkeypatch.setattr("builtins.input", mock_input)
 
     # Execute
@@ -31,7 +33,7 @@ async def test_record_interaction_flow(tmp_path, monkeypatch, adapter_stub, caps
     log_file = list(runs_dir.glob("run-*.jsonl"))[0]
     assert log_file.exists()
 
-    with open(log_file, "r") as f:
+    with open(log_file) as f:
         events = [json.loads(line) for line in f]
 
     # Expected events: run_start, agent_request, agent_response
@@ -59,10 +61,12 @@ async def test_record_interaction_error(tmp_path, monkeypatch, capsys):
 
     # Mock 'input' to return a task then 'exit'
     inputs = ["Break it", "exit"]
+
     def mock_input(_):
         if not inputs:
             return "exit"
         return inputs.pop(0)
+
     monkeypatch.setattr("builtins.input", mock_input)
 
     await record_interaction(agent_url)

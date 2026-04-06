@@ -5,8 +5,7 @@ Verifies that the EventEmitter correctly broadcasts core events and that
 subscribers receive them properly.
 """
 
-import pytest
-from eval_runner.events import EventEmitter, CoreEvents
+from eval_runner.events import CoreEvents, EventEmitter
 
 
 def test_event_subscription():

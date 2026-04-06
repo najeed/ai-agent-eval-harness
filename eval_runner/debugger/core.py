@@ -5,16 +5,17 @@ Hardened Debugger implementation for the AES v1.2 engine.
 Provides breakpoint management and world-state snapshot capture.
 """
 
-from typing import Dict, Any, Set, Optional
 import time
+from typing import Any
+
 
 class Debugger:
     """Master debugger for the evaluation session."""
-    
+
     def __init__(self):
-        self.breakpoints: Set[str] = set()
+        self.breakpoints: set[str] = set()
         self.paused = False
-        self.snapshots: Dict[str, Any] = {}
+        self.snapshots: dict[str, Any] = {}
 
     def add_breakpoint(self, node_id: str):
         """Register a node for breakpoint monitoring."""
@@ -40,13 +41,17 @@ class Debugger:
         """Check if the debugger is currently paused."""
         return self.paused
 
-    def capture_snapshot(self, sandbox: Any, node_id: str) -> Dict[str, Any]:
+    def capture_snapshot(self, sandbox: Any, node_id: str) -> dict[str, Any]:
         """Capture the current world state and registry for a specific node."""
         snapshot = {
             "node_id": node_id,
             "timestamp": time.time(),
             "state": (sandbox.state.copy() if hasattr(sandbox, "state") else {}),
-            "shared_state": (sandbox.shared_state.registry.copy() if hasattr(sandbox, "shared_state") and hasattr(sandbox.shared_state, "registry") else {}),
+            "shared_state": (
+                sandbox.shared_state.registry.copy()
+                if hasattr(sandbox, "shared_state") and hasattr(sandbox.shared_state, "registry")
+                else {}
+            ),
         }
         self.snapshots[node_id] = snapshot
         return snapshot

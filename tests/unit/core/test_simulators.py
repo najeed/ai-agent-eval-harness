@@ -2,7 +2,6 @@
 Test suite for hardened simulation objects.
 """
 
-import pytest
 from eval_runner import simulators
 
 

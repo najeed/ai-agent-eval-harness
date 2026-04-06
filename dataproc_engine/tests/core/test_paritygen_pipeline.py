@@ -3,42 +3,48 @@ test_paritygen_pipeline.py
 Full pipeline coverage for the paritygen sub-package:
   profiling -> modeling -> sampling -> validation -> provenance -> synthesizer
 """
+
 import json
-import pytest
+
 import pandas as pd
-import numpy as np
+import pytest
 
-from dataproc_engine.core.paritygen.profiling import profile_data
 from dataproc_engine.core.paritygen.modeling import fit_multivariate_model
-from dataproc_engine.core.paritygen.sampling import generate_synthetic
-from dataproc_engine.core.paritygen.provenance import provenance_metadata
-from dataproc_engine.core.paritygen.validation import validate_parity
 from dataproc_engine.core.paritygen.parity_synthesizer import ParitySynthesizer
-
+from dataproc_engine.core.paritygen.profiling import profile_data
+from dataproc_engine.core.paritygen.provenance import provenance_metadata
+from dataproc_engine.core.paritygen.sampling import generate_synthetic
+from dataproc_engine.core.paritygen.validation import validate_parity
 
 # ─── Fixtures ────────────────────────────────────────────────────────────────
+
 
 @pytest.fixture
 def numeric_df():
     """Simple numeric DataFrame for pipeline tests."""
-    return pd.DataFrame({
-        "revenue": [100.0, 200.0, 150.0, 300.0, 250.0],
-        "profit":  [10.0,  25.0,  15.0,  40.0,  30.0],
-    })
+    return pd.DataFrame(
+        {
+            "revenue": [100.0, 200.0, 150.0, 300.0, 250.0],
+            "profit": [10.0, 25.0, 15.0, 40.0, 30.0],
+        }
+    )
 
 
 @pytest.fixture
 def mixed_df():
     """Mixed numeric + categorical DataFrame."""
-    return pd.DataFrame({
-        "revenue":  [100.0, 200.0, 300.0, 150.0],
-        "profit":   [10.0,  30.0,  50.0,  20.0],
-        "sector":   ["tech", "health", "tech", "finance"],
-        "region":   ["US",  "EU",    "US",   "APAC"],
-    })
+    return pd.DataFrame(
+        {
+            "revenue": [100.0, 200.0, 300.0, 150.0],
+            "profit": [10.0, 30.0, 50.0, 20.0],
+            "sector": ["tech", "health", "tech", "finance"],
+            "region": ["US", "EU", "US", "APAC"],
+        }
+    )
 
 
 # ─── Step 1: Profiling ────────────────────────────────────────────────────────
+
 
 def test_profile_data_numeric_only(numeric_df):
     """profile_data extracts mean, variance, correlation for numeric columns."""
@@ -75,6 +81,7 @@ def test_profile_data_empty_df():
 
 # ─── Step 2: Modeling ─────────────────────────────────────────────────────────
 
+
 def test_fit_multivariate_model_structure(numeric_df):
     """fit_multivariate_model returns a dict with numeric and categorical keys."""
     model = fit_multivariate_model(numeric_df)
@@ -107,6 +114,7 @@ def test_fit_model_covariance_is_symmetric(numeric_df):
 
 
 # ─── Step 3: Sampling ─────────────────────────────────────────────────────────
+
 
 def test_generate_synthetic_shape(numeric_df):
     """generate_synthetic produces the requested number of rows."""
@@ -141,6 +149,7 @@ def test_generate_synthetic_numeric_plausibility(numeric_df):
 
 # ─── Step 4: Validation — Categorical Drift Branch ───────────────────────────
 
+
 def test_validate_parity_categorical_pass():
     """validate_parity detects no drift when categorical frequencies match."""
     df_a = pd.DataFrame({"cat": ["A", "B", "A", "B", "A", "B"]})
@@ -155,7 +164,7 @@ def test_validate_parity_categorical_pass():
 def test_validate_parity_categorical_drift():
     """validate_parity detects significant categorical drift."""
     df_a = pd.DataFrame({"cat": ["A"] * 10 + ["B"] * 0})  # 100% A
-    df_b = pd.DataFrame({"cat": ["A"] * 5 + ["B"] * 5})   # 50% A
+    df_b = pd.DataFrame({"cat": ["A"] * 5 + ["B"] * 5})  # 50% A
     metrics = validate_parity(df_a, df_b)
     assert "cat" in metrics
     assert metrics["cat"]["max_freq_drift"] > 0.40
@@ -173,14 +182,15 @@ def test_validate_parity_mixed_numeric_and_categorical():
 
 def test_validate_parity_correlation_drift():
     """validate_parity captures correlation matrix drift."""
-    df_a = pd.DataFrame({"a": [1, 2, 3, 4, 5], "b": [2, 4, 6, 8, 10]})   # perfect corr
-    df_b = pd.DataFrame({"a": [1, 2, 3, 4, 5], "b": [10, 1, 8, 2, 5]})   # random
+    df_a = pd.DataFrame({"a": [1, 2, 3, 4, 5], "b": [2, 4, 6, 8, 10]})  # perfect corr
+    df_b = pd.DataFrame({"a": [1, 2, 3, 4, 5], "b": [10, 1, 8, 2, 5]})  # random
 
     metrics = validate_parity(df_a, df_b)
     assert "_correlation_max_drift" in metrics
 
 
 # ─── Step 5: Provenance Metadata ──────────────────────────────────────────────
+
 
 def test_provenance_metadata_structure():
     """provenance_metadata returns valid JSON with required compliance fields."""
@@ -213,17 +223,21 @@ def test_provenance_metadata_is_deterministic_structure():
 
 # ─── Step 6: ParitySynthesizer — All Models ───────────────────────────────────
 
-@pytest.mark.parametrize("model_id", [
-    "world_bank_gdp",
-    "sec_fundamentals",
-    "clinical",
-    "macro_energy_balances",
-    "industrial_sector_stats",
-    "ecommerce_transaction_parity",
-    "agri_stats_parity",
-    "media_metadata_parity",
-    "network_performance_parity",
-])
+
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "world_bank_gdp",
+        "sec_fundamentals",
+        "clinical",
+        "macro_energy_balances",
+        "industrial_sector_stats",
+        "ecommerce_transaction_parity",
+        "agri_stats_parity",
+        "media_metadata_parity",
+        "network_performance_parity",
+    ],
+)
 def test_parity_synthesizer_all_models(model_id):
     """ParitySynthesizer generates valid records for every registered model."""
     synth = ParitySynthesizer()
@@ -268,10 +282,8 @@ def test_parity_synthesizer_unknown_model_raises():
         synth.generate_statistical_twin("non_existent_model_xyz")
 
 
-
-
-
 # ─── Step 7: Full E2E Pipeline ────────────────────────────────────────────────
+
 
 def test_full_paritygen_pipeline_e2e(tmp_path, mixed_df):
     """End-to-end: profile → model → sample → validate → provenance."""
