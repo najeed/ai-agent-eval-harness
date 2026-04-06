@@ -13,6 +13,27 @@ This guide is for engineers building on or extending the harness.
 - `runs/` — Recorded execution traces (`run.jsonl`)
 - `docs/guides/help/` — Documentation for users and contributors
 - `tests/` — Unit & integration tests
+- **Decoupled Shims**: Most infrastructure shims (CLI, Docker, API) are in `eval_runner/simulators.py`.
+
+---
+
+## 1.5 Zero-Hardcode Versioning (SSOT)
+
+To maintain industrial auditability, AgentEval follows a **Single Source of Truth (SSOT)** for all versioning. Do NOT hardcode version strings (e.g. `1.3.0`) in logic or tests.
+
+### Programmatic Access
+Always import the authoritative version from the core config:
+```python
+from eval_runner import config
+print(f"Harness Version: {config.VERSION}")
+```
+
+### Bumping the Version
+The version is defined in exactly ONE place: **`pyproject.toml`**.
+1.  Update the `version` field in `pyproject.toml`.
+2.  The `config.py` module will automatically resolve and propagate this to all simulators, verifiers, and exporters.
+
+**Warning**: Hardcoding version strings in logic will cause the **Forensic Consistency Tests** to fail in CI.
 
 ---
 
@@ -54,8 +75,9 @@ The core has been refactored into a decoupled, event-driven architecture to supp
 2. **SessionManager (`session.py`)**: Manages individual evaluation attempts, conversation trajectories, and tool execution.
 4. **AgentAdapterRegistry** (`adapter_registry.py`): Dynamically discovers and registers agent protocols at runtime.
 5. **Plugins (`plugins.py`)**: Flexible hooks that can observe or intercept core behavior.
-6. **ToolSandbox (`tool_sandbox.py`)**: Managed execution environment with automated workspace lifecycle.
-7. **Loader & Catalog (`loader.py`, `catalog.py`)**: Support for **Path Decoupling**, enabling scenarios to be loaded from any location with relative dataset resolution and automatic industry tagging (`local`, `unclassified`).
+6. **ToolSandbox (`tool_sandbox.py`)**: Managed execution environment with automated workspace lifecycle and **Environmental DNA** snapshotting.
+7. **Registry Manager (`config.py`)**: Authoritative source for the decoupled **Hybrid Registry**, enabling environment-agnostic benchmark portability.
+8. **Loader & Catalog (`loader.py`, `catalog.py`)**: Support for **Path Decoupling**, enabling scenarios to be loaded from any location with relative dataset resolution and automatic industry tagging (`local`, `unclassified`).
 
 ### 3.2 Immutability
 `EvaluationContext` and `TurnContext` are **frozen** dataclasses. You cannot modify them directly inside hooks; instead, use `dataclasses.replace` if you need to pass a modified state upstream.
@@ -198,6 +220,17 @@ def my_score(criterion, summary):
 # Ensure the module containing this function is imported in eval_runner/metrics/__init__.py
 ```
 
+Every identification includes a `reason` and `confidence` score, providing transparency into the automatic diagnostics process.
+
+### 8.4 High-Granularity Telemetry (Behavioral DNA)
+
+To capture the "Behavioral DNA" of internal agent logic, the harness supports native framework signals.
+
+*   **`CHAIN_START` / `CHAIN_END`**: Captures high-level orchestrator transitions (e.g., LangChain chains).
+*   **`NODE_START` / `NODE_END`**: Captures graph-level state transitions (e.g., LangGraph nodes).
+
+These events are emitted on the `EventEmitter` and recorded in the `run.jsonl` trace as first-class evaluation events, enabling the Visual Debugger to reconstruct the agent's internal reasoning path.
+
 ---
 
 ## 🛠️ 9 Sandbox Workspace Lifecycle
@@ -242,8 +275,6 @@ The core auth logic is defined in `eval_runner/console/auth_manager.py`.
 - **`AuthManager` (Base)**: An abstract interface for `authenticate()` and `has_permission()`.
 - **`StaticKeyProvider` (Default)**: Uses the `DASHBOARD_API_KEY` environment variable as a Root/Master credential, mapping automatically to the full set of PBAC nodes.
 
-### 11.2 Implementing Custom SSO/PBAC
-To integrate with an Enterprise Identity Provider (e.g., Okta, Azure AD, Ping), subclass `AuthManager` and override the factory method in `auth_manager.py`:
 ### 11.2 Extending Authentication & PBAC
 
 For enterprise/SaaS scenarios, the `AuthManager` can be replaced with a custom provider (e.g., Okta, Azure AD).

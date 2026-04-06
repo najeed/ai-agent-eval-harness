@@ -1,5 +1,5 @@
 {
-  "aes_version": 1.2,
+  "aes_version": 1.3,
   "metadata": {
     "name": "Book an ADR Session for an Actor",
     "compliance_level": "Standard"

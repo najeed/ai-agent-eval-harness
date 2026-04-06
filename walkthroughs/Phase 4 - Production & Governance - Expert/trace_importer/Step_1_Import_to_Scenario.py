@@ -67,7 +67,7 @@ def main():
         # Manual creation if the command failed (for demo parity)
         if not output_path.exists():
             dummy_scenario = {
-                "aes_version": 1.2,
+                "aes_version": 1.3,
                 "metadata": {"name": "Imported Incident 001", "id": "prod_001"},
                 "workflow": {
                     "nodes": [

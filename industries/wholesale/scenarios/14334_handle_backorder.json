@@ -1,5 +1,5 @@
 {
-  "aes_version": 1.2,
+  "aes_version": 1.3,
   "metadata": {
     "name": "Handle a Backordered Item on an Order",
     "compliance_level": "Standard"

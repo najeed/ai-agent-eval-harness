@@ -51,7 +51,7 @@ def test_enforce_min_judges_and_compliance(scenario_schema):
 
     # 1. Valid Scenario (passes)
     valid_scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {
             "scenario_id": "test_pass",
             "name": "Test Scenario",

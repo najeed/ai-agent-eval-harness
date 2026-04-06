@@ -1,12 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Agent Eval Specification (AES) v1.2",
+  "title": "Agent Eval Specification (AES) v1.3",
   "type": "object",
   "required": ["aes_version", "metadata", "workflow"],
   "properties": {
     "aes_version": {
       "type": "number",
-      "const": 1.2
+      "const": 1.3
     },
     "metadata": {
       "$ref": "definitions/metadata.json"
@@ -16,6 +16,10 @@
     },
     "evaluation": {
       "$ref": "definitions/evaluation.json"
+    },
+    "environmental_snapshot": {
+      "type": "object",
+      "description": "A resolved snapshot of the environmental provisioning registry (shim_resources.json) captured at run start."
     }
   }
 }

@@ -12,7 +12,7 @@ The "Zero-Touch Core" is a design philosophy ensuring the central evaluation eng
 ┌───────────────────────────┐  ┌──────────────────────┐  ┌───────────────────────┐
 │     Loader (loader.py)    │  │  AES Spec (/spec)    │  │ Drift (drift_importer)│
 │ • Universal Registry      │  │ • DAG Workflows      │  │ • Production Traces   │
-│ • Auto-Shim               │  │ • Typed Outcomes     │  │ • Scenario Conversion │
+│ • Hybrid Registry (v1.3)  │  │ • Forensic DNA       │  │ • Scenario Conversion │
 └──────────────┬────────────┘  └──────────┬───────────┘  └──────────┬────────────┘
                │                          │                         │
                └──────────────────────────┼─────────────────────────┘
@@ -52,6 +52,8 @@ The "Zero-Touch Core" is a design philosophy ensuring the central evaluation eng
 | Module | File | Purpose |
 |--------|------|---------|
 | Integrated Visual Suite | `eval_runner/console/` & `ui/visual-debugger/` | Flask proxy API (Background Eval) and Unified React SPA |
+| Registry Manager | `eval_runner/config.py` | [v1.3] Authoritative loading and deep-merging of `shim_resources.json` |
+| PBAC Manager | `eval_runner/auth_manager.py` | [v1.2.3] Permission-Based Access Control and session governance |
 | Rubrics | `eval_runner/rubrics.py` | Registry for industry-standard evaluation prompts |
 ### `EventEmitter` Bus: Passive Observation
 The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness - from the start of a run to a tool call or an agent response - is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
@@ -62,6 +64,7 @@ The core engine is built around a central `EventEmitter` (see `eval_runner/event
 - `PHASE_START` / `PHASE_END`: Hierarchical macro-segments (**Behavioral DNA**).
 - `SUBTASK_START` / `SUBTASK_END`: Discrete logic units (**Behavioral DNA**).
 - `ACTION_START` / `ACTION_END`: Individual tool executions or agent decisions.
+- `CHAIN_START` / `NODE_START`: Native framework telemetry for items like LangGraph flows (**Behavioral DNA**).
 - `STEP_START` / `STEP_END`: Atomic processing steps.
 - `PROMPT`: when the harness sends a request to the agent.
 - `AGENT_RESPONSE`: when the agent returns an action.
@@ -94,6 +97,30 @@ The `PluginManager` triggers these hooks synchronously, ensuring a deterministic
 | Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |
 | Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
 | Trace Verifier | `eval_runner/verifier.py` | Asymmetric signing and integrity verification (ED25519) |
+
+## Hybrid Core Registry & Forensic DNA (v1.3)
+
+v1.3 introduces a "Hybrid" approach to environment orchestration, decoupling the physical infrastructure state from the functional evaluation logic.
+
+### Decoupled Configuration Protocol
+The framework now consumes a centralized **Hybrid Registry** (`shim_resources.json`) that serves as the authoritative source for all environmental resources (API endpoints, DB credentials, Git branches).
+
+1.  **Declarative Manifest (`shim_resources.json`)**: Version-controlled, environment-agnostic resource definitions.
+2.  **Local Secrets Overlay (`shim_resources.local.json`)**: Git-ignored, developer-specific credential storage (replaces `.env`).
+3.  **Cloud-Native Overrides**: Support for `AES_SHIM_RESOURCES_JSON` environment variables for stateless containerized execution (Docker/K8s).
+4.  **Multi-Source Merging**: The `RegistryManager` perform recursive deep-merges across all sources to resolve the final "Provisioning State."
+
+### Environmental DNA & Provisioning Snapshots
+To satisfy high-stakes regulatory audits, every evaluation now captures an immutable **Environmental DNA** snapshot:
+
+*   **Point-in-Time Snapshot**: The `ToolSandbox` captures the *resolved* state of all registry resources at the exact moment of initialization.
+*   **Provisioning Hash (SHA-256)**: A cryptographic hash of the registry snapshot is recorded in the `metadata` block of the `run.jsonl`.
+*   **Forensic Auditing**: Auditors can verify that the environment state during the run matches the expected configuration, preventing "Configuration Drift" from invalidating benchmark results.
+
+### Async Execution Hardening
+The simulation layer (`eval_runner/simulators.py`) has been fully migrated to **Asynchronous Execution**. This ensures that high-latency industrial simulators (e.g., remote API calls, large repository clones) do not block the core evaluation loop.
+
+---
 
 ## Regulatory Alignment Layer: NIST AI-100-1 Principles
 
@@ -134,7 +161,8 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 - **Native HITL (Human-In-The-Loop)**: The `human` adapter allows scenarios to pause and wait for human intervention. This is integrated directly into the `SessionManager` loop, emitting `HITL_PAUSE` and `HITL_RESUME` events.
 - **Non-Linear Trajectories**: `SessionManager.fork()` enables creators to explore multiple agent paths from a single checkpoint. This is essential for studying agent decision-making under ambiguity.
 - **Universal Agent Adapters**: The `AgentAdapterRegistry` allows switching between `http`, `local` (subprocess), and `socket` protocols. High-level metadata is propagated from the CLI to ensure the correct communication shim is used.
-- **Advanced Adapter Discovery**: The registry supports plugin-driven discovery. External plugins can register custom protocols using the `on_discover_adapters` hook. Discovery is deferred until execution to maintain CLI performance.
+- **Native Framework Adapters**: Built-in support for industrial frameworks including **LangChain**, **LangGraph**, **Microsoft AutoGen** (via `autogen://`), and **CrewAI**.
+- **Advanced Adapter Discovery**: The registry supports plugin-driven discovery. External plugins can register custom protocols using the `on_discover_adapters` hook.
 - **Scenario Catalog & Intelligence**: A centralized indexer (`catalog.py`) enables high-performance discovery across thousands of scenarios. It supports keyword search and powers the Visual Suite "Scenario Explorer".
 - **AES Quality Linter**: The `linter.py` module implements automated quality scoring, ensuring scenarios have required metadata, balanced task counts, and no duplicates.
 - **Visual Debugger Hook**: A dedicated `DebuggerStateStore` in the console backend captures live world state and tool signals via the `EventEmitter` for real-time UI synchronization.
@@ -218,3 +246,46 @@ The `TriageEngine` uses a multi-layered forensic approach to identify the root c
 3.  **Level 3: Heuristic Divergence (50% Confidence)**: Identifying the last substantive decision before a run's failure signature.
 
 Every identification includes a `reason` and `confidence` score, providing transparency into the automatic diagnostics process.
+
+## Hybrid Core Registry & Forensic DNA (v1.3.0)
+
+v1.3 introduces a "Hybrid" approach to environment orchestration, decoupling the physical infrastructure state from the functional evaluation logic.
+
+### Decoupled Configuration Protocol
+The framework now consumes a centralized **Hybrid Registry** (`shim_resources.json`) that serves as the authoritative source for all environmental resources (API endpoints, DB credentials, Git branches).
+
+1.  **Declarative Manifest (`shim_resources.json`)**: Version-controlled, environment-agnostic resource definitions.
+2.  **Local Overlays (`shim_resources.local.json`)**: Machine-specific overrides for sensitive credentials or developer overrides.
+3.  **Environment Variables**: Cloud-native overrides (`AES_REGISTRY__<SHIM>__<KEY>`) for CI/CD injection.
+
+### Forensic Environmental DNA
+To ensure result integrity, the `ToolSandbox` captures the resolved registry state at the start of every evaluation.
+
+*   **Snapshotting**: The exact configuration of every simulated world shim is embedded directly into the `run.jsonl` trace under `metadata.environmental_snapshot`.
+*   **Provisioning Hash**: A SHA-256 hash of this snapshot is generated and cryptographically linked to the **Trust Protocol (ED25519)** signing step. This provides mathematical proof that the environment was not modified during execution.
+
+## Regulatory Alignment Layer: NIST AI-100-1 Principles
+
+v1.3.0 elevates the harness into a **Verification OS** for mission-critical industries, aligned with the **NIST AI-100-1** trustworthiness framework:
+
+*   **Auditability**: Asymmetric cryptographic signatures (ED25519) on all traces.
+*   **Transparency**: Full behavioral DNA telemetry (`PHASE`, `SUBTASK`, `ACTION`, `STEP`).
+*   **Governance**: Granular **Permission-Based Access Control (PBAC)** for least-privilege deployment.
+
+## Operational Governance & Resiliency
+
+v1.3.0 stabilizes the engine for high-concurrency, regulated industrial environments through advanced operational controls.
+
+### Operational Throttling (`EVAL_TURN_THROTTLE`)
+To prevent resource exhaustion and satisfy rate-limiting requirement in sensitive sectors (e.g., Banking APIs), the harness implements a tunable **Turn Throttle**.
+*   **Mechanism**: Artificial delay (seconds) injected between agent turns.
+*   **Use Case**: Simulating human-speed interactions or protecting upstream LLM quotas.
+
+### Async Simulation Hardening
+The simulation layer (`eval_runner/simulators.py`) uses a **Non-Blocking Async Architecture**. High-latency operations (Git clones, remote API calls) execute concurrently, ensuring that the evaluation engine remains responsive even during heavy infrastructure simulation.
+
+### Stratified Failure Taxonomy (NIST-Aligned)
+Replaced brittle error string matching with a formal **Enum-Based Failure Registry**. Failures are classified into hierarchical categories (Infrastructure, Logic, Policy, Security), enabling precise, audit-grade root-cause diagnostics across thousands of runs.
+
+### HMS-Ready Key Management
+The `KeyLoader` has been refactored to support **Enterprise KMS/HSM** integrations. Private keys for the **Trust Protocol (ED25519)** can be dynamically loaded from secure hardware modules, moving away from plaintext local `.pem` files for production-grade security.

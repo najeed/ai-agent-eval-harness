@@ -1,4 +1,6 @@
 import os
+import json
+import yaml
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -11,17 +13,18 @@ PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent))
 
 
 def _get_project_version() -> str:
-    """Safely extract version from pyproject.toml (Industrial Standard)."""
+    """Authoritative version resolver (Single Source of Truth from pyproject.toml)."""
     try:
+        from pathlib import Path
         import tomllib
 
         target = PROJECT_ROOT / "pyproject.toml"
         if target.exists():
             with open(target, "rb") as f:
-                return tomllib.load(f).get("project", {}).get("version", "1.2.3")
-    except Exception:
+                return tomllib.load(f).get("project", {}).get("version", "1.3.0")
+    except (FileNotFoundError, AttributeError, KeyError, ImportError):
         pass
-    return "1.2.4"
+    return "1.3.0"
 
 
 VERSION = _get_project_version()
@@ -179,6 +182,87 @@ DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 
 # Industrial Feature Toggles (v1.2.4)
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
+
+# --- Shim Registry Manager ---
+SHIM_RESOURCES_PATH = PROJECT_ROOT / "shim_resources.json"
+SHIM_RESOURCES_LOCAL_PATH = PROJECT_ROOT / "shim_resources.local.json"
+_SHIM_REGISTRY_CACHE = None
+
+
+class RegistryManager:
+    """Manages the lifecycle and hygiene of the authoritative shim configuration manifest."""
+
+    @staticmethod
+    def get_resolved_registry() -> dict:
+        """Loads and merges all registry sources (Base -> Local -> Env Overrides)."""
+        global _SHIM_REGISTRY_CACHE
+        if _SHIM_REGISTRY_CACHE is not None:
+            return _SHIM_REGISTRY_CACHE
+
+        registry = {"shims": {}}
+
+        # 1. Base Manifest (shim_resources.json)
+        for path in [SHIM_RESOURCES_PATH, SHIM_RESOURCES_PATH.with_suffix(".yaml")]:
+            if path.exists():
+                try:
+                    with open(path) as f:
+                        content = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                        if content:
+                            registry.update(content)
+                except Exception as e:
+                    print(f"      [Config] Warning: Failed to load base registry at {path}: {e}")
+                break
+
+        # 2. Local Secrets Overlay (shim_resources.local.json)
+        for path in [SHIM_RESOURCES_LOCAL_PATH, SHIM_RESOURCES_LOCAL_PATH.with_suffix(".yaml")]:
+            if path.exists():
+                try:
+                    with open(path) as f:
+                        local = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                        if local:
+                            registry = RegistryManager._deep_merge(registry, local)
+                except Exception as e:
+                    print(f"      [Config] Warning: Failed to load local registry at {path}: {e}")
+                break
+
+        # 3. Cloud-Native Environment Override
+        env_json = os.getenv("AES_SHIM_RESOURCES_JSON")
+        if env_json:
+            try:
+                env_override = json.loads(env_json)
+                registry = RegistryManager._deep_merge(registry, env_override)
+            except Exception as e:
+                print(f"      [Config] Warning: Failed to parse AES_SHIM_RESOURCES_JSON: {e}")
+
+        _SHIM_REGISTRY_CACHE = registry
+        return registry
+
+    @staticmethod
+    def reload():
+        """Clears the internal cache, forcing a re-load of the registry state."""
+        global _SHIM_REGISTRY_CACHE
+        _SHIM_REGISTRY_CACHE = None
+        return RegistryManager.get_resolved_registry()
+
+    @staticmethod
+    def _deep_merge(base: dict, overlay: dict) -> dict:
+        """Performs a nested merge of configuration dictionaries."""
+        import copy
+        result = copy.deepcopy(base)
+        for k, v in overlay.items():
+            if k in result and isinstance(result[k], dict) and isinstance(v, dict):
+                result[k] = RegistryManager._deep_merge(result[k], v)
+            else:
+                result[k] = copy.deepcopy(v)
+        return result
+
+
+def get_shim_config(shim_name: str) -> dict:
+    """Standard protocol for shims to retrieve their environmental state from the registry."""
+    registry = RegistryManager.get_resolved_registry()
+    shim_def = registry.get("shims", {}).get(shim_name, {})
+    return shim_def.get("resources", {})
+
 
 # Throttle between agent turns (seconds) to prevent resource exhaustion
 # and satisfy rate-limiting requirements in sensitive industrial sectors.

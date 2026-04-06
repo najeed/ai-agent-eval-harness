@@ -183,10 +183,10 @@ class TraceVerifier:
         sha256_hash = cls.compute_signature(p)
         run_id = p.stem
 
-        # 2. Build the Manifest (Standardized v1.2.3)
+        # 2. Build the Manifest (Standardized)
         manifest = {
-            "harness_version": "1.2.3",
-            "version": "1.2.3",  # Aliased for modern consumers
+            "harness_version": config.VERSION,
+            "version": config.VERSION,  # Aliased for modern consumers
             "timestamp": datetime.now().astimezone().isoformat(),
             "run_id": run_id,
             "trace_file": p.name,

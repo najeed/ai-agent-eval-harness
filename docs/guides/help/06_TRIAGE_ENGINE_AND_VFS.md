@@ -38,3 +38,21 @@ By combining these, AgentEval can distinguish between an agent that hallucinated
 *   **Safety**: No risk of an agent accidentally deleting a production database or emailing a real customer.
 *   **Determinism**: You can force the shim to "fail" (e.g., simulate a 500 Internal Server Error) to see how the agent handles errors.
 *   **Speed**: Simulated responses are near-instant, vs. waiting for real network latency.
+ 
+---
+
+## 4. Stratified Failure Taxonomy (v1.3)
+
+To achieve industrial-grade diagnostics, AgentEval has transitioned from brittle error string matching to a formal, **NIST-aligned Failure Registry**.
+
+### Hierarchical Root-Cause Analysis
+Failures are no longer treated as "generic errors." They are stratified into hierarchical categories:
+1.  **INFRASTRUCTURE**: Simulator crashes, timeouts, or adapter connectivity issues.
+2.  **LOGIC**: Reasoning loops, planning errors, or refusal to perform a task.
+3.  **POLICY**: Violation of explicit tool-level or safety guardrails.
+4.  **SECURITY**: Data leaks, PII exposure, or unauthorized access attempts.
+
+### 🎯 Patient Zero Identification
+The `TriageEngine` correlates these Enum-based failure codes with the **Behavioral DNA** telemetry (`CHAIN_START`, `NODE_START`). This allows the system to identify the **Patient Zero**—the exact step, turn, and tool-call responsible for the cascade. 
+
+📖 See the full specification: [`docs/spec/failure_taxonomy.md`](../spec/failure_taxonomy.md)

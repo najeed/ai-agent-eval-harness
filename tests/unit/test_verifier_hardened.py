@@ -3,6 +3,7 @@ import json
 import pytest
 
 from eval_runner import config
+from eval_runner import config
 from eval_runner.verifier import TraceVerifier
 
 
@@ -43,7 +44,7 @@ def test_verifier_end_to_end_signing(tmp_path):
         )
 
         # 4. Schema Hardening Checks
-        assert manifest["harness_version"] == "1.2.3"
+        assert manifest["harness_version"] == config.VERSION
         assert manifest["behavioral_fingerprint_id"] == fingerprint
         assert "signature_ed25519" in manifest
         assert manifest["signing_algorithm"] == "ED25519"

@@ -67,7 +67,7 @@ multiagent-eval evaluate --path industries/telecom
 ```
 
 ### 4. Validate Benchmarks
-Ensure your custom benchmarks are AES v1.2 compliant.
+Ensure your custom benchmarks are AES v1.3 compliant.
 ```bash
 multiagent-eval aes validate --path my_benchmarks
 ```

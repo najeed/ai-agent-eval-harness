@@ -77,12 +77,12 @@ class ScenarioLinter:
         aes_version = data.get("aes_version")
         results["aes_version"] = aes_version
 
-        if aes_version != 1.2:
-            results["errors"].append(f"Invalid aes_version: {aes_version} (Requires 1.2-STABLE)")
+        if aes_version not in [1.2, 1.3]:
+            results["errors"].append(f"Invalid aes_version: {aes_version} (Requires 1.3 or 1.2)")
             results["status"] = "fail"
             results["score"] -= 50
 
-        # Mandatory Top-Level Fields (v1.2-STABLE)
+        # Mandatory Top-Level Fields (v1.3)
         mandatory_fields = ["aes_version", "metadata", "workflow", "industry"]
         for field in mandatory_fields:
             if field not in data or not data[field]:
@@ -90,7 +90,7 @@ class ScenarioLinter:
                 results["status"] = "fail"
                 results["score"] -= 20
 
-        # Metadata Compliance (v1.2 requirement)
+        # Metadata Compliance (v1.3 requirement)
         metadata = data.get("metadata", {})
         if not isinstance(metadata, dict):
             results["errors"].append("Metadata must be a JSON object")
@@ -98,7 +98,7 @@ class ScenarioLinter:
         else:
             if "attribution" not in metadata:
                 results["warnings"].append(
-                    "Missing recommended field: 'metadata.attribution' (v2.0-STABLE requirement)"
+                    "Missing recommended field: 'metadata.attribution'"
                 )
                 results["score"] -= 10
             if "version" not in metadata:

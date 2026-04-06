@@ -92,8 +92,14 @@ class GitSimulator(BaseSimulator):
                 import shutil
                 shutil.rmtree(dest)
                 
-            self._repo = Repo.clone_from(url, dest)
-            return {"status": "success", "message": f"Cloned {url} into {dest}"}
+            # [RFC-002 Hybrid Registry]
+            from . import config
+            registry_resources = config.get_shim_config("git")
+            default_branch = registry_resources.get("default_branch", "main")
+            depth = 1 if registry_resources.get("shallow_clone", False) else None
+            
+            self._repo = Repo.clone_from(url, dest, branch=default_branch, depth=depth)
+            return {"status": "success", "message": f"Cloned {url} into {dest} (branch={default_branch})"}
         except Exception as e:
             return {"status": "error", "message": f"Git Clone Error: {str(e)}"}
 
@@ -164,9 +170,19 @@ class ApiSimulator(BaseSimulator):
         if url and not url.startswith(("http://", "https://", "ws://", "wss://")):
             url = f"http://{url}"
         
+        # [Iteration 6: RFC-002 Hybrid Registry]
+        # Pull declarative resources from the central registry
+        registry_resources = config.get_shim_config("api")
+        
+        # Merge registry headers into request
+        default_headers = registry_resources.get("default_headers", {})
+        headers = {**default_headers, **headers}
+
         # [Iteration 5: Resilience] Enforce Industrial Timeout
         try:
-            timeout_str = os.getenv("SHIM_TIMEOUT", "30.0")
+            # Fallback hierarchy: Registry -> Environment -> Default
+            reg_timeout = registry_resources.get("global_timeout")
+            timeout_str = os.getenv("SHIM_TIMEOUT", str(reg_timeout) if reg_timeout else "30.0")
             timeout = float(timeout_str) if timeout_str.replace(".", "", 1).isdigit() else 30.0
         except (ValueError, TypeError):
             timeout = 30.0

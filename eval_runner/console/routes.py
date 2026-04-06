@@ -651,7 +651,7 @@ def save_scenario():
 
     # Structure the AES JSON (v1.2 compliant)
     scenario_obj = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {
             "id": safe_id,
             "name": data.get("title") or metadata_block.get("name") or "Untitled Scenario",

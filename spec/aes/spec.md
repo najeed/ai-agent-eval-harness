@@ -1,13 +1,14 @@
-# Agent Eval Specification (AES) v0.2
+# Agent Eval Specification (AES) v1.3
 
-AES is a standardized format for defining portable and robust AI agent benchmarks. v0.2 adds **World Shim configuration**, **multi-agent topology**, and **complexity classification** to the v0.1 enterprise validation features.
+AES is a standardized format for defining portable and robust AI agent benchmarks. v1.3 introduces **Environmental DNA**, **Provisioning Snapshots**, and a **Decoupled Hybrid Registry** architecture for enterprise-grade forensic auditing.
 
 ## Core Principles
-1. **Determinism**: Scenarios should be reproducible and verifiable.
-2. **Portability**: The format is framework-agnostic (LangGraph, CrewAI, etc.).
+1. **Determinism**: Scenarios should be reproducible and verifiable across diverse environments.
+2. **Portability**: The format is framework-agnostic (LangGraph, CrewAI, AutoGen, etc.).
 3. **Structured Metrics**: Success is measured via standardized metrics, thresholds, and weights.
 4. **Environment Isolation**: Lifecycle hooks manage environment-side dependencies.
-5. **VFS-Aware Simulation**: World Shims provide stateful, safe environment simulation.
+5. **Forensic Provenance**: Every run captures an immutable Environmental DNA snapshot, ensuring result integrity.
+6. **Decoupled State**: Infrastructure configuration is decoupled from scenario logic via a central registry.
 
 ## Key Sections
 

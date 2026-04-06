@@ -12,7 +12,7 @@ from eval_runner import mutator
 def test_mutator_typo():
     """Verify typo mutation replaces characters."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "typo_test",
         "title": "Typo Test",
         "industry": "test",
@@ -32,7 +32,7 @@ def test_mutator_typo():
 def test_mutator_ambiguity():
     """Verify ambiguity mutation adds confusing phrases."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "ambiguity_test",
         "title": "Ambiguity Test",
         "industry": "test",
@@ -50,7 +50,7 @@ def test_mutator_ambiguity():
 def test_mutator_injection():
     """Verify injection mutation adds adversarial instructions."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "injection_test",
         "title": "Injection Test",
         "industry": "test",

@@ -67,7 +67,7 @@ class TestEvaluationEngine:
     def sample_scenario(self):
         """Provide a sample scenario for testing."""
         return {
-            "aes_version": 1.2,
+            "aes_version": 1.3,
             "metadata": {"name": "Test Scenario"},
             "workflow": {
                 "nodes": [

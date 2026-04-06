@@ -14,7 +14,7 @@ from unittest.mock import MagicMock
 async def test_git_state_persistence_in_sandbox():
     """Verify git_add then git_commit in the same sandbox session."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "persistence_test",
         "title": "Persistence Test",
         "industry": "test",
@@ -56,7 +56,7 @@ async def test_git_state_persistence_in_sandbox():
 async def test_jira_state_persistence_in_sandbox():
     """Verify jira_create then jira_update in the same sandbox session."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "persistence_test",
         "metadata": {"name": "persistence_test", "compliance_level": "Standard"},
         "workflow": {"nodes": [], "edges": []},

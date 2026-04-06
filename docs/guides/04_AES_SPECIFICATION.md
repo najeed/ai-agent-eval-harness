@@ -1,4 +1,4 @@
-# Guide: Agent Eval Specification (AES) v1.2
+# Guide: Agent Eval Specification (AES) v1.3
 
 AES is the foundational standard for shareable, deterministic agent benchmarks.
 
@@ -8,7 +8,7 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 - **CI Ready**: Validatable via JSON Schema.
 - **Deterministic DAGs**: Support for non-linear workflow execution with dependency gating.
 
-## 2. Core Components (v1.2)
+## 2. Core Components (v1.3)
 
 ### DAG-Based Execution (workflow)
 Scenarios define a directed acyclic graph (DAG) of `nodes` and `edges`, enabling complex multi-stage evaluations with dependency tracking.
@@ -38,7 +38,7 @@ High-fidelity sector labs (e.g., Bank, EHR/HL7) load mock data dynamically from 
 - `pre_eval`: Command run before evaluation starts.
 - `post_eval`: Command run after completion.
 
-## 4. World Shim Configuration (`enabled_shims`)
+## 4. Environment & World Shims (First-Class Member)
 Scenarios can declare which World Shims (environment simulators) they require.
 
 - If `enabled_shims` is **omitted**, all 20 built-in shims are available by default.
@@ -67,7 +67,7 @@ multiagent-eval replay --path runs/run.jsonl
 
 ## 7. Complete Example (Loan Approval)
 
-Below is a production-grade AES v1.2 scenario demonstrating a multi-stage loan approval process with tool requirements and policy constraints.
+Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan approval process with tool requirements and policy constraints.
 
 ```json
 {
@@ -102,7 +102,7 @@ Below is a production-grade AES v1.2 scenario demonstrating a multi-stage loan a
           {"metric": "path_parsimony", "threshold": 0.5}
         ]
       }
-    },
+    ],
     "edges": [
       { "from": "task-1", "to": "task-2" }
     ]
@@ -113,7 +113,8 @@ Below is a production-grade AES v1.2 scenario demonstrating a multi-stage loan a
  
  ## 8. Behavioral Fingerprinting (V1)
  
- To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.2 introduces the **Fingerprint Schema**. This provides a verifiable "baseline" for agent behavior.
+### 🛡️ Environmental DNA & Forensic Verification
+To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.3 introduces the **Environmental DNS Snapshot**. This provides a verifiable "baseline" for the physical world state (IDs, API keys, and simulator configurations) during the evaluation.
  
  | Field | Description |
  | :--- | :--- |
@@ -125,6 +126,100 @@ Below is a production-grade AES v1.2 scenario demonstrating a multi-stage loan a
  | `fingerprint_v1` | A cryptographic digest ensuring the behavioral baseline was not tampered with. |
  
  These fingerprints are used by the `gate` command to verify that a `run.jsonl` trace was generated against a sanctioned version of the scenario and tools.
+
+---
+ 
+ ## 9. Forensic Environmental DNA (v1.3) 
+ 
+ v1.3 elevates the environment from a background configuration to a **First-Class Member** of the evaluation trace.
+ 
+ ### The Hybrid Registry Manager
+ Infrastructure state is now managed via a decoupled **Hybrid Registry** (`shim_resources.json`), separate from the scenario logic. This allows a single AES benchmark to be portable across diverse physical environments (local dev, staging, production) by simply swapping the registry overlay.
+ 
+ ### Provisioning Snapshots
+ Every `run.jsonl` trace now includes:
+ 1.  **`environmental_snapshot`**: A point-in-time capture of the resolved registry state.
+ 2.  **`provisioning_hash`**: A SHA-256 cryptographic link ensuring that the environment used for evaluation has not drifted from the sanctioned baseline.
+ 
+ These features ensure that results are not just "reproducible" but "forensically verifiable" in regulated sectors like Finance and Healthcare.
  
  > [!IMPORTANT]
  > **Trust Protocol Alignment**: While the Open Core provides the *verification* logic for these fingerprints, the *generation* of advanced high-fidelity Behavioral DNA remains a feature of the Enterprise Edition to ensure proprietary industrial logic is protected.
+ 
+ ---
+ 
+ ## 10. Industrial Standards Registry
+ 
+ To support high-stakes AI evaluations, the harness includes a centralized **Standards Registry**. This system allows practitioners to bootstrap evaluation environments that are pre-aligned with recognized global standards.
+ 
+ ### Scaffold Environments
+ ```bash
+ multiagent-eval init --standard ISO_20022
+ ```
+ 
+ - **Standards Coverage**: Finance (ISO 20022), Healthcare (HL7 FHIR), Manufacturing (Digital Twins), Logistics (JSON-LD Traceability).
+ - **Compliance Mapping**: Scenarios scaffolded via the registry are automatically populated with the necessary `compliance_level` and metadata required for regulatory auditability.
+ - **Infrastructure Alignment**: Registry-driven scaffolding ensures all required **World Shims** (databases, APIs, security vaults) are correctly mounted.
+ 
+ ---
+ 
+## 11. Versioning & Provenance (v1.3.0)
+
+To support high-stakes industrial audits, AgentEval strictly decouples the **Standard Specification** from the **Execution Engine**:
+
+### `aes_version` (The Standard)
+Refers to the **Agent Eval Standard** itself (e.g., `1.3`). It defines the schema and vocabulary of the [scenario.json](/eval_runner/loader.py).
+- **v1.2**: Legacy-Stable. Supports basic tasks and simulators.
+- **v1.3**: Current-Stable. Supports **Forensic DNA**, **Registry Overlays**, and **PBAC**.
+
+### `harness_version` (The Engine)
+Refers to the **MultiAgent-Eval Engine** build (e.g., `1.3.0`). This is automatically injected into the [run.jsonl](/eval_runner/verifier.py) and manifest by the "Referee."
+
+> [!IMPORTANT]
+> **Industrial Rule**: A single `aes_version` standard can be satisfied by multiple `harness_version` engine builds (bugfixes, optimizations), but a trace is only **Forensically Valid** if the `harness_version` supports the requested `aes_version`.
+
+---
+
+ ## 12. Forensic Trace Logging (`run.jsonl`)
+ 
+ Every evaluation generates a machine-readable `run.jsonl` file. This log is the "Flight Recorder" for the agent's behavior.
+ 
+ ### Event-Stream Architecture
+ The log is a stream of JSON objects, each representing an atomic event in the evaluation lifecycle.
+ 
+ #### 🚀 `run_start` (The Forensic DNA)
+ The first event in every trace. In **v1.3**, this event is hardened for auditability:
+ ```json
+ {
+   "event": "run_start",
+   "timestamp": "2026-04-06T20:00:00Z",
+   "payload": {
+     "scenario_id": "fintech_11198",
+     "aes_version": 1.3,
+     "environmental_snapshot": {
+       "shims": { "database": { "url": "..." }, "api": { ... } },
+       "provisioning_hash": "sha256:abcd..."
+     }
+   }
+ }
+ ```
+ 
+ #### 🛠️ `tool_call` & `tool_result`
+ Captured for every interaction with a **World Shim**.
+ - **`tool`**: The registry key of the simulator used.
+ - **`action`**: The specific action invoked.
+ - **`observation`**: The raw return value from the shim.
+ 
+ #### 🏁 `run_end`
+ Contains the final evaluation results, including the NIST-aligned **VerificationResult**.
+ 
+ ---
+ 
+ ## 13. Regulatory Compliance Gating (`gate`)
+ The `gate` command validates these traces against the **Trust Protocol**. It ensures that:
+ 1. The trace has a valid **ED25519 signature**.
+ 2. The `provisioning_hash` matches the currently sanctioned environment configuration.
+ 3. The `harness_version` is compatible with the `aes_version` of the scenario.
+ 
+ > [!SUCCESS]
+ > **Certification Complete**: A trace that passes the `gate` command is considered a **Certified Industrial Artifact**, ready for regulatory submission.

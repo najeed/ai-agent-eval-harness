@@ -35,7 +35,7 @@ async def test_advanced_adapter_discovery():
 async def test_hitl_pause_resume(monkeypatch):
     """Verify HITL pause and resume logic in SessionManager."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "hitl_test",
         "title": "HITL Test",
         "industry": "test",
@@ -91,7 +91,7 @@ async def test_hitl_pause_resume(monkeypatch):
 async def test_trajectory_branching(monkeypatch):
     """Verify non-linear branching logic."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "branch_test",
         "title": "Branch Test",
         "industry": "test",

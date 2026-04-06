@@ -28,7 +28,7 @@ def reset_global_state():
 async def test_pass_at_k_protocol():
     """Verify that engine runs k attempts and calculates pass@k. (Migrated from test_phase3.py)"""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "test-k",
         "metadata": {"name": "test-k", "compliance_level": "Standard"},
         "workflow": {
@@ -80,7 +80,7 @@ async def test_pass_at_k_protocol():
 async def test_consistency_score_integration():
     """Verify that consistency score is calculated across attempts. (Migrated from test_phase3.py)"""  # noqa: E501
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "test-consistency",
         "metadata": {"name": "test-consistency", "compliance_level": "Standard"},
         "workflow": {"nodes": [{"id": "task-1", "task_description": "Do something"}], "edges": []},
@@ -112,7 +112,7 @@ async def test_consistency_score_integration():
 def _make_scenario(required_tools=None):
     """Create a minimal scenario for testing."""
     return {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "scenario_id": "test-scenario",
         "metadata": {"name": "Test Scenario", "compliance_level": "Standard"},
         "industry": "test",
@@ -272,7 +272,7 @@ async def test_engine_timeout():
 async def test_engine_generic_accuracy_metric():
     """Verify generic accuracy metric is dispatched for non-tool metrics."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {"name": "accuracy-test", "compliance_level": "Standard"},
         "scenario_id": "accuracy-test",
         "industry": "test",
@@ -313,7 +313,7 @@ async def test_engine_generic_accuracy_metric():
 async def test_engine_communication_clarity_metric():
     """Verify communication_clarity metric is dispatched correctly."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {"name": "clarity-test", "compliance_level": "Standard"},
         "scenario_id": "clarity-test",
         "industry": "test",
@@ -350,7 +350,7 @@ async def test_engine_communication_clarity_metric():
 async def test_engine_policy_violation_feedback_loop():
     """Verify that a policy violation is sent back to the agent as feedback."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {"name": "policy-test", "compliance_level": "Standard"},
         "scenario_id": "policy-test",
         "industry": "test",
@@ -393,7 +393,7 @@ async def test_engine_policy_violation_feedback_loop():
 async def test_engine_state_verification_metric():
     """Verify that state_verification metric is calculated and reported."""
     scenario = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {"name": "state-test", "compliance_level": "Standard"},
         "scenario_id": "state-test",
         "industry": "test",

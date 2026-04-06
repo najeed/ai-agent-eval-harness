@@ -124,8 +124,8 @@ def test_all_scenarios_are_valid(scenario_schema):
                 # Per requirement: ignore files that are not valid v1.2 scenarios
                 continue
 
-            # Content-based filtering: only validate aes_version 1.2
-            if not isinstance(scenario, dict) or scenario.get("aes_version") != 1.2:
+            # Content-based filtering: only validate aes_version 1.2 or 1.3
+            if not isinstance(scenario, dict) or scenario.get("aes_version") not in [1.2, 1.3]:
                 continue
 
             count += 1

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from .trace_utils import load_events
+from . import config
 
 
 class HFExporter:
@@ -24,7 +25,7 @@ class HFExporter:
             commit = "unknown"
 
         canonical_meta = {
-            "harness_version": "1.2.0-opencore",
+            "harness_version": config.VERSION,
             "commit": commit,
             "export_timestamp": (
                 Path(trace_path).stat().st_mtime if Path(trace_path).exists() else None
@@ -58,7 +59,8 @@ class HFExporter:
             print(f"      [Exporter] Success! Dataset saved to {output_path}")
 
     @staticmethod
-    def generate_dataset_card(repo_id: str, harness_version: str = "1.2.0-opencore") -> str:
+    def generate_dataset_card(repo_id: str, harness_version: str = None) -> str:
+        harness_version = harness_version or config.VERSION
         """Generates a professional HuggingFace Dataset Card (README.md)."""
         card = f"""---
 language:

@@ -24,10 +24,10 @@ MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.2.4 (April 2026 Industrial Baseline) |
+| **Version** | v1.3.0 (April 2026 Industrial Baseline) |
 | **Trust Model** | [Behavioral DNA & WSM](docs/architecture.md) |
 | **Architecture** | [Zero-Touch Core](docs/architecture.md) |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.2 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.3 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### 🛡️ Add the Badge to Your Agent
 
@@ -99,15 +99,16 @@ The harness is organized into the following key components:
 -   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).
--   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.2.
+-   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.3.
 -   `/schemas`: JSON Schema definitions for cross-platform scenario validation.
 -   `/docs`: Deep-dive guides, architecture, and API specifications.
 -   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
 -   `/sample_agent`: Reference implementation for benchmark testing.
 
-- **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring.
+- **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring and forensic **Environmental DNA** snapshots.
 - **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
-- **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
+- **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making, including native `CHAIN_START` and `NODE_START` signals for LangGraph.
+- **Asymmetric Trust Protocol (ED25519)**: Traces are signed with private keys and verified via public keys, enabling non-repudiable audit trails. Supports **HMS-Ready Architecture** for secure enterprise key storage.
 
 ## Getting Started
 
@@ -204,11 +205,15 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **20-Shim Enterprise Suite**: High-fidelity simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more.
+- **Schema-Driven Core Registry**: Decoupled environmental state management using declarative manifests (`shim_resources.json`) with **Async Simulation Hardening** for non-blocking non-linear evaluations.
+- **Industrial PBAC & Operational Governance**: Granular **Permission-Based Access Control** (v1.2.3) and **Operational Throttling** (`EVAL_TURN_THROTTLE`) for regulated enterprise environments.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
 - **Benchmark Ecosystem**: Native loaders for GAIA (HuggingFace Integration) and AssistantBench. Supports benchmark URI schemes (e.g., `gaia://2023`, `assistantbench://v1`) for zero-config execution.
+- **Native Framework Adapters**: Full industrial-grade support for **LangChain**, **LangGraph**, **Microsoft AutoGen** (via `autogen://`), and **CrewAI** via a dynamic plugin-discovery system.
 - **High-Fidelity Industry Metrics**: Modular, pluggable evaluators for Defense (ROE, C2, Intelligence Fusion), Healthcare, and Finance. Features high-precision numerical extraction and domain-specific LLM rubrics.
 - **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification.
 - **Integrated Visual Suite**: Unified React dashboard for live trace replay and visual debugging.
+- **Stratified Failure Taxonomy**: Formal, Enum-based failure registry (NIST-aligned) for precise, audit-grade root-cause diagnostics.
 - **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
 - **Judge Guarding**: Model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
 
@@ -220,6 +225,8 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **`ci generate`**: One-click scaffolding of GitHub Actions workflows for evaluation-on-PR.
 - **`failures search`**: Intelligence-driven retrieval of edge cases from the global failure corpus.
 - **`explain`**: AI-powered trace diagnostics (loops, timeouts, PII leaks) via `--path <run.jsonl>`.
+- **`verify`**: Verify the cryptographic integrity of a run trace against a public key.
+- **`gate`**: Industrial "Hard Gating" tool for CI/CD pipelines to enforce signature and hash matches.
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 - **`aes add-standard`**: Expand the global industrial registry with new standard definitions (ID, Name, Industry, Description).
 - **`init --standard <id>`**: Rapidly scaffold a dedicated, industry-compliant evaluation environment for a specific standard (e.g., `init --standard ISO_20022`).

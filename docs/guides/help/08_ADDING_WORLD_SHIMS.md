@@ -56,6 +56,8 @@ Each scenario can further restrict its environment using the `enabled_shims` pro
 - This only has an effect if the shim is also allowed by the Global Override.
 - If missing, it defaults to `*` (respecting the Global limit).
 
+---
+
 ## Adding a New Shim (Zero-Touch Plugin Method)
 The preferred way to add a shim is via a **Plugin**. This keeps the core harness immutable.
 
@@ -67,6 +69,8 @@ class MyCustomSimulator:
     def execute(self, action: str, params: dict) -> dict:
         return {"status": "success", "result": "Action executed!"}
 ```
+
+---
 
 ### 2. Register via Plugin Hook
 In your [BaseEvalPlugin](https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/plugins.py) subclass, override the [on_register_simulators](https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/plugins.py) hook:
@@ -82,7 +86,37 @@ class MyEcoPlugin(BaseEvalPlugin):
 
 ---
 
-### 3. Verify on Dashboard
+### 3. Configure via the Hybrid Registry (v1.3)
+To make your custom shim configurable via the **Hybrid Registry**, add a entry for it in `shim_resources.json`. This allows you to decouple its physical address (URL, port) from its logic.
+
+#### `shim_resources.json` (Declarative Baseline)
+```json
+{
+  "custom": {
+    "name": "Industrial IoT Sensor",
+    "url": "http://localhost:8080/v1",
+    "managed_lifecycle": true,
+    "metadata": {
+      "protocol": "mqtt",
+      "standard": "ISO_8000"
+    }
+  }
+}
+```
+
+#### `shim_resources.local.json` (Sensitive Overlays)
+For sensitive credentials like API keys, always use the local overlay (ignored by Git):
+```json
+{
+  "custom": {
+    "api_key": "sk-12345-secret-key"
+  }
+}
+```
+
+---
+
+### 4. Verify on Dashboard
 Restart the console or run `multiagent-eval console`. Your shim will be automatically discovered and reflected in the "World Shims" count.
 
 ## Using the Shim in Scenarios

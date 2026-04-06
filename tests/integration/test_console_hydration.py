@@ -14,7 +14,7 @@ def test_scenario_index_hydration_on_load(tmp_path):
 
     scenario_path = finance_dir / "test_hydrated.json"
     scenario_data = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {
             "id": "test_hydrated",
             "name": "Hydrated Scenario",

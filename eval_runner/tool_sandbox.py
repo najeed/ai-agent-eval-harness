@@ -85,8 +85,24 @@ class AbstractSandbox(ABC):
 
         # [Turn 2 Hardening] Session-Scoped Terminal Jail
         import eval_runner.config as config
+        import json
+        import hashlib
+        
         self.run_id = self.scenario.get("run_id", "unknown_run")
         self.terminal_jail = (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
+
+        # [RFC-002 Hybrid Registry] Environmental DNA Snapshot
+        # Capture the authoritative resolved state of all shims for this run
+        self.provisioning_snapshot = config.RegistryManager.get_resolved_registry()
+        snapshot_json = json.dumps(self.provisioning_snapshot, sort_keys=True)
+        self.provisioning_hash = hashlib.sha256(snapshot_json.encode()).hexdigest()
+
+        # Inject into scenario for first-class status in run traces (Metadata DNA)
+        if "metadata" not in self.scenario:
+            self.scenario["metadata"] = {"name": "unnamed", "compliance_level": "Standard"}
+        
+        self.scenario["metadata"]["provisioning_hash"] = self.provisioning_hash
+        self.scenario["environmental_snapshot"] = self.provisioning_snapshot
 
     def setup(self):
         """Perform one-time setup: Create workspace and terminal_jail directories."""

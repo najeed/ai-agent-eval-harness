@@ -13,7 +13,7 @@ class MockArgs:
 @pytest.mark.asyncio
 async def test_aes_validation_success(tmp_path, capsys):
     aes_data = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {"name": "test", "compliance_level": "Standard"},
         "description": "test description",
         "industry": "general",
@@ -27,7 +27,7 @@ async def test_aes_validation_success(tmp_path, capsys):
     await handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "✔ valid.aes.yaml: Valid (AES v1.2-STABLE)" in captured.out
+    assert "✔ valid.aes.yaml: Valid (AES v1.3)" in captured.out
 
 
 @pytest.mark.asyncio
@@ -51,7 +51,7 @@ async def test_aes_validation_failure(tmp_path, capsys):
 async def test_aes_validation_with_complexity_level(tmp_path, capsys):
     """v1.2: metadata is the primary container for governance."""
     aes_data = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {
             "name": "complexity_test",
             "compliance_level": "Regulatory_Audit",
@@ -69,4 +69,4 @@ async def test_aes_validation_with_complexity_level(tmp_path, capsys):
     await handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "✔ complexity.aes.yaml: Valid (AES v1.2-STABLE)" in captured.out
+    assert "✔ complexity.aes.yaml: Valid (AES v1.3)" in captured.out

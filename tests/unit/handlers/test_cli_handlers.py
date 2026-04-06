@@ -60,7 +60,7 @@ async def test_handle_inspect(mock_args, capsys, tmp_path):
     scen_path.write_text(
         json.dumps(
             {
-                "aes_version": 1.2,
+                "aes_version": 1.3,
                 "metadata": {"name": "Inspect Me", "compliance_level": "Standard"},
                 "workflow": {
                     "nodes": [{"id": "t1", "task_description": "First Task"}],
@@ -82,7 +82,7 @@ async def test_handle_lint(mock_args, capsys, tmp_path):
     scen_path.write_text(
         json.dumps(
             {
-                "aes_version": 1.2,
+                "aes_version": 1.3,
                 "metadata": {"name": "Lint Me", "compliance_level": "Standard"},
                 "workflow": {
                     "nodes": [{"id": "t1", "task_description": "Valid Task"}],

@@ -28,7 +28,7 @@ async def test_handle_inspect_success(tmp_path, capsys):
     """Verifies scenario inspector correctly extracts AES metadata. Forensic: v1.2 Sync."""
     scen_path = tmp_path / "inspect_me.json"
     scen_data = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {"name": "Inspection Test", "compliance_level": "Standard"},
         "industry": "finance",
         "description": "Verify it prints everything.",

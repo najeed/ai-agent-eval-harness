@@ -1,0 +1,19 @@
+{
+  "shims": {
+    "api": {
+      "resources": {
+        "global_timeout": 30.0,
+        "default_headers": {
+          "X-Industrial-Source": "aes-v1.3",
+          "X-Registry-Version": "1.0.0"
+        }
+      }
+    },
+    "git": {
+      "resources": {
+        "default_branch": "main",
+        "shallow_clone": true
+      }
+    }
+  }
+}

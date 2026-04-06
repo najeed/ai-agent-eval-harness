@@ -128,6 +128,8 @@ multiagent-eval evaluate --path industries/telecom --format jsonl --output repor
 | `plugin` | `list`, `register <path>` | Manage external and built-in plugins |
 | `registry` | `sync`, `add --url` | Synchronize industry scenario registries |
 | `ci generate` | (none) | Generate GitHub Actions workflows for the environment |
+| **Industrial Standards Registry** | | |
+| `init --standard` | `--id`, `--dir` | Scaffold a benchmark environment aligned with a global standard (ISO 20022, HL7 FHIR) |
 
 ### 🧩 `run` — single scenario
 
@@ -152,6 +154,7 @@ The harness records every event (agent messages, tool calls, metrics) into trace
 | `RUN_LOG_PER_RUN` | `true` | Save each run to a separate file. |
 | `RUN_LOG_MASTER` | `true` | Append all runs to a master `run.jsonl`. |
 | `RUN_LOG_ROTATE_COUNT` | `0` | Number of per-run files to keep. `0` means keep all. |
+| `EVAL_TURN_THROTTLE` | `0` | Operational: Delay (seconds) between agent turns for rate-limiting. |
 
 ---
 
@@ -183,7 +186,7 @@ The **Integrated Visual Suite** is a unified React-powered SPA that provides a p
 Located within the **Builder** tab, this tool allows you to design complex, multi-turn agentic evaluation logic without writing a single line of JSON.
 - **Drag-and-Drop Nodes**: Construct sequences of tasks and tool-call expectations.
 - **Real-time Validation**: The builder prevents structural errors before saving.
-- **One-Click Export**: Save production-ready AES v1.2 JSON directly to your industry catalog.
+- **One-Click Export**: Save production-ready AES v1.3 JSON directly to your industry catalog.
 
 ### 🔍 Interactive Visual Debugger
 Replay agent trajectories with professional-grade precision:
@@ -328,10 +331,18 @@ multiagent-eval run --scenario industries/<your_industry>/scenarios/<file>.json
 multiagent-eval evaluate --path industries/<your_industry>
 ```
 
-### 🔎 Tip
-Keep `scenario_id` unique within the industry and prefer descriptive file names like `scenario_<short-name>.json`.
+## 🛡️ Industrial Registry Overlays (v1.3)
 
-### 🧩 Agent Topology (Multi-Agent Scenarios)
+For enterprise deployments, the harness separates core infrastructure definitions from sensitive local credentials.
+
+1.  **`shim_resources.json`**: Checked into source control. Contains non-sensitive metadata and default URL patterns.
+2.  **`shim_resources.local.json`**: (Ignored by Git). Place this file in your root to override specific parameters for your local environment (e.g., actual API keys or private DB endpoints).
+
+The `RegistryManager` automatically deep-merges these files at runtime, ensuring your local secrets never leak into the repository.
+
+---
+
+## 🧩 Agent Topology (Multi-Agent Scenarios)
 When a scenario involves more than one agent, you can define an `agent_topology` object to control which agents can read or write which parts of the shared state.
 This prevents agents from unintentionally interfering with each other and enables fine-grained multi-agent evaluation.
 

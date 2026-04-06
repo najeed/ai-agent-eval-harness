@@ -42,7 +42,7 @@ def test_linter_v1_2_missing_workflow(tmp_path):
     """Test v1.2 scenario missing workflow block."""
     linter = ScenarioLinter()
     p = tmp_path / "v12_bad.json"
-    p.write_text(json.dumps({"aes_version": 1.2, "description": "test", "industry": "finance"}))
+    p.write_text(json.dumps({"aes_version": 1.3, "description": "test", "industry": "finance"}))
 
     res = linter.lint(str(p))
     assert res["status"] == "fail"
@@ -56,7 +56,7 @@ def test_linter_v1_2_invalid_nodes(tmp_path):
     p.write_text(
         json.dumps(
             {
-                "aes_version": 1.2,
+                "aes_version": 1.3,
                 "workflow": {"nodes": "not-a-list"},
                 "description": "test",
                 "industry": "finance",
@@ -75,7 +75,7 @@ def test_linter_v1_2_incomplete_node(tmp_path):
     p.write_text(
         json.dumps(
             {
-                "aes_version": 1.2,
+                "aes_version": 1.3,
                 "workflow": {"nodes": [{"id": "1"}]},  # missing task_description
                 "description": "test",
                 "industry": "finance",
@@ -105,7 +105,7 @@ def test_linter_duplicates_v1_2(tmp_path):
     s2 = tmp_path / "s2.json"
 
     content = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "workflow": {"nodes": [{"id": "n1", "task_description": "do X"}]},
         "description": "d",
         "industry": "i",
@@ -126,7 +126,7 @@ def test_run_lint_cli_directory(tmp_path, capsys):
         json.dumps(
             {
                 "scenario_id": "test",
-                "aes_version": 1.2,
+                "aes_version": 1.3,
                 "description": "test",
                 "industry": "finance",
                 "workflow": {"nodes": [{"id": "t1", "task_description": "task"}], "edges": []},

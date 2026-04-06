@@ -4,6 +4,7 @@ import pytest
 
 from eval_runner import config
 from eval_runner.console.app import create_app
+from eval_runner import config
 from eval_runner.verifier import TraceVerifier
 
 
@@ -51,7 +52,7 @@ def test_public_certificate_endpoint(client, tmp_path):
         data = response.get_json()
 
         assert data["run_id"] == trace_run_id
-        assert data["harness_version"] == "1.2.3"
+        assert data["harness_version"] == config.VERSION
         assert data["behavioral_fingerprint_id"] == "dna_integration_hardened"
         assert "signature_ed25519" in data
         assert data["signing_algorithm"] == "ED25519"

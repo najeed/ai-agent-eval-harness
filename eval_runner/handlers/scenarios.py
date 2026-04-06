@@ -38,7 +38,8 @@ async def handle_aes_validate(args):
                     data = json.load(f)
 
             validate(instance=data, schema=schema, resolver=resolver)
-            print(f"✔ {f_path.name}: Valid (AES v1.2-STABLE)")
+            ver = data.get("aes_version", "unknown")
+            print(f"✔ {f_path.name}: Valid (AES v{ver})")
 
             # Industrial Export Logic (v1.2.3)
             if getattr(args, "export", None):

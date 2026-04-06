@@ -40,8 +40,25 @@ To remain compliant with these licenses, the following steps are handled automat
 > [!WARNING]
 > While the `datasets` library is Apache 2.0, individual datasets (e.g., loaded via `load_dataset`) may have their own licenses (CC-BY, GPL, etc.). **Always verify the specific dataset terms before commercial use.**
 
-## 4. Practical Implementation
+## 5. Forensic Governance & NIST Alignment
+The MultiAgent- **Trace Verifiability**: Evaluation traces (`run.jsonl`) are signed via **ED25519** asymmetric cryptography, providing non-repudiable proof of origin and integrity.
+- **Environmental Provenance**: v1.3 introduces **Environmental DNA** snapshots. Every trace is mathematically bound to a **Provisioning Hash** of the registry state, ensuring the physical environment (API versions, DB schemas) matches the benchmark design.
+- **Hard Gating**: Deployment pipelines are enforced via the `multiagent-eval gate` command, which blocks promotion if cryptographic signatures or forensic hashes fail to match the sanctioned baseline.
+
+### Environmental DNA Snapshotting
+- [x] **Registry Snapshots**: Every evaluation captures a point-in-time snapshot of the resolved environment registry (`shim_resources.json`).
+- [x] **Cryptographic Provenance**: A SHA-256 `provisioning_hash` is embedded in the `run.jsonl` trace to link evaluation results with physical infrastructure state.
+- [x] **Decoupled Architecture**: Separation of infrastructure config (Registry) from scenario logic (AES) ensures immutable, portable benchmarks.
+
+### Audit Readiness
+The framework satisfies industrial audit requirements by providing:
+1. **WORM Logs**: Write-Once-Read-Many flight recorder logs (`run.jsonl`).
+2. **Behavioral DNA**: High-granularity event tracing (PHASE, ACTION, STEP).
+3. **Provisioning Provenance**: Mathematical proof of the environment state during the run.
+
+## 6. Practical Implementation
 Developers should maintain this structure by:
 1. Updating the versions in `pyproject.toml` and this document simultaneously.
 2. Adding any new third-party dependency licenses to the `LICENSES/` directory.
 3. Updating the [NOTICE](NOTICE) file when adding new dependencies.
+4. Ensuring `shim_resources.json` contains no raw secrets; use `.local.json` or Environment Variables.

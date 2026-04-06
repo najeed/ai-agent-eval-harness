@@ -16,7 +16,7 @@ class TestScenarioEvaluation:
     def simple_scenario(self):
         """A simple scenario for basic testing."""
         return {
-            "aes_version": 1.2,
+            "aes_version": 1.3,
             "metadata": {"name": "Simple Test Scenario"},
             "workflow": {
                 "nodes": [
@@ -54,7 +54,7 @@ class TestScenarioEvaluation:
         """Test scenario with multiple tasks."""
         # Arrange
         scenario = {
-            "aes_version": 1.2,
+            "aes_version": 1.3,
             "workflow": {
                 "nodes": [
                     {"id": "task_1", "task_description": "Task 1", "required_tools": ["search"]},
@@ -159,7 +159,7 @@ class TestNetworkErrorHandling:
             mock_post.side_effect = exception_class("Test error")
             
             scenario = {
-                "aes_version": 1.2,
+                "aes_version": 1.3,
                 "workflow": {"nodes": [{"id": "task_1", "task_description": "Test task"}], "edges": []}
             }
             

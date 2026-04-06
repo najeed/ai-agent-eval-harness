@@ -284,7 +284,10 @@ async def test_api_url_normalization():
             mock_client_instance.request.assert_called_with(
                 method="GET", 
                 url="http://api.test/v1", 
-                headers={}
+                headers={
+                    'X-Industrial-Source': 'aes-v1.3',
+                    'X-Registry-Version': '1.0.0'
+                }
             )
 
 @pytest.mark.asyncio

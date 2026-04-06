@@ -47,7 +47,7 @@ def generate_interactive():
         tpl = templates[(i - 1) % len(templates)]
         scenario_id = f"gen_{industry}_{capability.replace(' ', '_')}_{i}"
         scenario = {
-            "aes_version": 1.2,
+            "aes_version": 1.3,
             "metadata": {
                 "name": f"Generated {capability.replace('_', ' ').title()} Scenario {i}",
                 "compliance_level": "Standard",
@@ -162,7 +162,7 @@ def scaffold_benchmark(dir_path: str, industry: str, protocol: str):
 
     # Generate starter scenario using v1.2 schema
     starter = {
-        "aes_version": 1.2,
+        "aes_version": 1.3,
         "metadata": {"name": "Starter Scenario", "compliance_level": "Standard"},
         "description": "A basic starter scenario focusing on interaction.",
         "industry": industry or "general",
