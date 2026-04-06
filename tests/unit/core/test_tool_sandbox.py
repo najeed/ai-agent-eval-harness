@@ -5,12 +5,14 @@ Test suite for the ToolSandbox mock tool execution environment.
 Aligned with OpenCore modular architecture and explicit tool definitions.
 """
 
+import pytest
 from pathlib import Path
 
 from eval_runner.tool_sandbox import ToolSandbox
 
 
-def test_sandbox_known_tool():
+@pytest.mark.asyncio
+async def test_sandbox_known_tool():
     """Test that a known tool returns the expected result from the scenario."""
     scenario = {
         "tools": {
@@ -31,12 +33,13 @@ def test_sandbox_known_tool():
     }
     sandbox = ToolSandbox(scenario)
 
-    result = sandbox.execute("get_customer_details", {"customer_id": "cust_123"})
+    result = await sandbox.execute("get_customer_details", {"customer_id": "cust_123"})
     assert result["status"] == "success"
     assert result["tool_name"] == "get_customer_details"
 
 
-def test_sandbox_unknown_tool():
+@pytest.mark.asyncio
+async def test_sandbox_unknown_tool():
     """Test that an unknown tool returns a default or success message (per current impl)."""
     scenario = {
         "workflow": {
@@ -48,12 +51,13 @@ def test_sandbox_unknown_tool():
     }
     sandbox = ToolSandbox(scenario)
 
-    result = sandbox.execute("nonexistent_tool", {})
+    result = await sandbox.execute("nonexistent_tool", {})
     assert result["status"] == "success"  # Default behavior in updated tool_sandbox.py
     assert "Executed nonexistent_tool" in result["message"]
 
 
-def test_sandbox_state_initialization():
+@pytest.mark.asyncio
+async def test_sandbox_state_initialization():
     """Test that state is initialized correctly from the scenario."""
     scenario = {
         "initial_state": {"customer_name": "Jane Doe", "balance": 100},
@@ -66,7 +70,8 @@ def test_sandbox_state_initialization():
     assert sandbox.state == {"customer_name": "Jane Doe", "balance": 100}
 
 
-def test_sandbox_state_mutation():
+@pytest.mark.asyncio
+async def test_sandbox_state_mutation():
     """Test that explicit 'state_changes' mutate the state."""
     scenario = {
         "initial_state": {"current_plan": "Basic"},
@@ -83,11 +88,12 @@ def test_sandbox_state_mutation():
     }
     sandbox = ToolSandbox(scenario)
 
-    sandbox.execute("update_plan", {"current_plan": "Premium"})
+    await sandbox.execute("update_plan", {"current_plan": "Premium"})
     assert sandbox.state["current_plan"] == "Premium"
 
 
-def test_sandbox_lifecycle(tmp_path):
+@pytest.mark.asyncio
+async def test_sandbox_lifecycle(tmp_path):
     """Verify setup/teardown with a controlled tmp directory."""
     test_ws = tmp_path / "sandbox_test_ws"
     scenario = {
@@ -101,11 +107,12 @@ def test_sandbox_lifecycle(tmp_path):
     sandbox.setup()
     assert Path(sandbox.workspace_dir).exists()
 
-    sandbox.teardown()
+    await sandbox.teardown()
     assert not Path(sandbox.workspace_dir).exists()
 
 
-def test_sandbox_cleanup_persistence(tmp_path):
+@pytest.mark.asyncio
+async def test_sandbox_cleanup_persistence(tmp_path):
     """Verify that cleanup_workspace=False preserves the directory."""
     test_ws = tmp_path / "persist_test_ws"
     scenario = {"scenario_id": "persist-test", "metadata": {"cleanup_workspace": False}}
@@ -116,7 +123,7 @@ def test_sandbox_cleanup_persistence(tmp_path):
     ws_dir = sandbox.workspace_dir
     assert Path(ws_dir).exists()
 
-    sandbox.teardown()
+    await sandbox.teardown()
     assert Path(ws_dir).exists()  # Should still exist
 
 

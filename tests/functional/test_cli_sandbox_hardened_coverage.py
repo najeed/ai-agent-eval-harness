@@ -1,5 +1,5 @@
+import pytest
 from unittest.mock import AsyncMock, patch
-
 from eval_runner import cli, tool_sandbox
 
 # ==============================================================================
@@ -80,41 +80,45 @@ def test_cli_calibrate_bridge():
 # ==============================================================================
 
 
-def test_sandbox_permission_denied():
+@pytest.mark.asyncio
+async def test_sandbox_permission_denied():
     # Covers lines 34, 156 (shared_write permission error)
     scenario = {"agent_topology": {"agent1": {"writes": []}}}  # No permissions
     sandbox = tool_sandbox.ToolSandbox(scenario)
-    result = sandbox.execute(
+    result = await sandbox.execute(
         "some_tool", {"shared_write": {"path": "ns:key", "value": "val"}}, agent_name="agent1"
     )
     assert result["status"] == "error"
     assert "no write permission" in result["message"]
 
 
-def test_sandbox_read_permission_denied():
+@pytest.mark.asyncio
+async def test_sandbox_read_permission_denied():
     # Covers line 166 (shared_read permission error)
     # We need the key to exist in registry first
     scenario = {"agent_topology": {"admin": {"writes": ["*"]}, "user": {"reads": []}}}
     sandbox = tool_sandbox.ToolSandbox(scenario)
     sandbox.shared_state.write("admin", "global:secret", "value")
 
-    result = sandbox.execute(
+    result = await sandbox.execute(
         "some_tool", {"shared_read": {"path": "global:secret"}}, agent_name="user"
     )
     assert result["status"] == "error"
     assert "no read permission" in result["message"]
 
 
-def test_sandbox_policy_violation_bridge():
+@pytest.mark.asyncio
+async def test_sandbox_policy_violation_bridge():
     # Covers line 134: policy violation amount > limit
     scenario = {
         "policies": {"spend": {"max_limit": 100}},
         "tools": {"spend": {"state_changes": []}},
     }
     sandbox = tool_sandbox.ToolSandbox(scenario)
-    result = sandbox.execute("spend", {"amount": 150})
+    result = await sandbox.execute("spend", {"amount": 150})
     assert result["status"] == "policy_violation"
     assert "exceeds limit" in result["violation"]
+
 
 
 def test_sandbox_match_namespace_branch():

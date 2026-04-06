@@ -9,6 +9,8 @@ Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 
 from abc import ABC, abstractmethod  # noqa: E402
 from typing import Any  # noqa: E402
+import os  # noqa: E402
+
 
 from . import config  # noqa: E402
 
@@ -81,14 +83,23 @@ class AbstractSandbox(ABC):
         # Cache for state-aware world simulators
         self._simulator_cache: dict[str, Any] | None = None
 
+        # [Turn 2 Hardening] Session-Scoped Terminal Jail
+        import eval_runner.config as config
+        self.run_id = self.scenario.get("run_id", "unknown_run")
+        self.terminal_jail = (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
+
     def setup(self):
-        """Perform one-time setup: Create workspace directory."""
+        """Perform one-time setup: Create workspace and terminal_jail directories."""
         from pathlib import Path
 
         Path(self.workspace_dir).mkdir(parents=True, exist_ok=True)
+        # Ensure the terminal_jail exists physically (Iteration 2 Physical Isolation)
+        Path(self.terminal_jail).mkdir(parents=True, exist_ok=True)
+        
         print(f"      [Sandbox] Workspace initialized at: {self.workspace_dir}")
+        print(f"      [Sandbox] Terminal Jail provisioned: {self.terminal_jail}")
 
-    def teardown(self):
+    async def teardown(self):
         """Perform one-time teardown: Clean up workspace (optional)."""
         import shutil
         from pathlib import Path
@@ -101,14 +112,24 @@ class AbstractSandbox(ABC):
                 shutil.rmtree(ws_path)
                 print("      [Sandbox] Workspace cleaned up.")
 
+        # [Iteration 5: Secure Wipe] Cleanup terminal_jail
+        import eval_runner.config as config
+        cleanup_jail = metadata.get("cleanup_terminal_jail", os.getenv("CLEANUP_TERMINAL_JAIL", "true").lower() == "true")
+        
+        if cleanup_jail:
+            jail_path = Path(self.terminal_jail)
+            if jail_path.exists():
+                shutil.rmtree(jail_path)
+                print(f"      [Sandbox] Secure Wipe: Terminal Jail deleted at {jail_path}")
+
         # Explicitly teardown all simulators to release resources
         if self._simulator_cache:
             for sim in self._simulator_cache.values():
                 try:
-                    sim.cleanup()
+                    await sim.cleanup()
                 except:  # noqa: E722
                     pass
-            print("      [Sandbox] All simulators cleaned up (Registry Teardown).")
+            print(f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up (Registry Teardown).")
 
     @abstractmethod
     def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
@@ -122,7 +143,7 @@ class ToolSandbox(AbstractSandbox):
     Uses a static mapping of tool behaviors defined in the scenario.
     """
 
-    def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
+    async def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
         """
         Executes a tool based on the mock behaviors defined in the scenario.
         Updates the internal state and shared state registry.
@@ -138,7 +159,7 @@ class ToolSandbox(AbstractSandbox):
             active_simulators = self.get_active_simulators()
             for sim_name, simulator in active_simulators.items():
                 if tool_name.startswith(f"{sim_name}_"):
-                    return simulator.execute(tool_name, params)
+                    return await simulator.execute(tool_name, params)
 
         # Record hit for Tool/KB access
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
@@ -238,6 +259,11 @@ class ToolSandbox(AbstractSandbox):
 
         # Instantiate the fresh registry for this sandbox session
         registry = simulators.get_simulator_registry()
+
+        # [Turn 2 Hardening] Inject terminal_jail info into all shims
+        for sim in registry.values():
+            if hasattr(sim, "terminal_jail"):
+                sim.terminal_jail = self.terminal_jail
 
         # Layer 1: Global System Filter (from config.py / environment)
         # This acts as the Master Administrative Gate (User's Section 9 Governance).

@@ -18,7 +18,7 @@ from .routes import core_bp, register_core_routes
 load_dotenv()
 
 print(
-    f"--- [v1.2.3-BOOT] Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})",  # noqa: E501
+    f"--- Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})",  # noqa: E501
     flush=True,
 )
 

@@ -516,9 +516,17 @@ def list_runs():
 
     # 3. Scan RUN_LOG_DIR for individual traces (Fix for missing scenario evaluations)
     # This ensures that evals triggered from the UI appear in the history.
-    for p in config.RUN_LOG_DIR.glob("*.jsonl"):
-        if p.name == "run.jsonl":
+    # 3. Scan RUN_LOG_DIR for individual traces (Recursive for industrial isolation)
+    # This handles both top-level <run-id>.jsonl and nested runs/<run-id>/run.jsonl
+    log_paths = list(config.RUN_LOG_DIR.glob("*.jsonl")) + list(
+        config.RUN_LOG_DIR.glob("*/run.jsonl")
+    )
+
+    for p in log_paths:
+        # Skip the master global log to avoid duplicates (filtered in Step 1)
+        if p.name == "run.jsonl" and p.parent == config.RUN_LOG_DIR:
             continue
+
 
         try:
             with open(p, encoding="utf-8") as f:
@@ -536,7 +544,7 @@ def list_runs():
                             "run_id": run_id,
                             "scenario": scenario,
                             "timestamp": event.get("timestamp"),
-                            "path": str(p.name),
+                            "path": str(p.relative_to(config.RUN_LOG_DIR)),
                         }
                     )
         except Exception:

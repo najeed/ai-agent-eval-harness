@@ -8,6 +8,8 @@ This decouples logging from the core engine loop.
 import json
 import os
 from pathlib import Path
+from datetime import datetime
+
 
 from .events import CoreEvents, Event, EventEmitter
 from .plugins import BaseEvalPlugin
@@ -17,7 +19,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
     """Subscribes to all core events and writes them to run.jsonl files."""
 
     def __init__(self):
-        self.log_dir = Path(os.getenv("RUN_LOG_DIR", "runs"))
+        import eval_runner.config as config
+        self.log_dir = Path(os.getenv("RUN_LOG_DIR", config.RUN_LOG_DIR))
         self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
         self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
         self.run_id = "unknown"
@@ -25,12 +28,24 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self.per_run_log_path = None
         self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
 
+        # [Iteration 4: Compliance DNA]
+        self._sequence_number = 0
+        self._private_key_path = os.getenv("EVAL_SIGNING_KEY")
+        self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
+
         # Subscribe to the event bus
         EventEmitter.subscribe(self.handle_event)
 
     def handle_event(self, event: Event):
         """Callback for EventEmitter."""
+        import eval_runner.verifier as verifier
+        
         data = event.to_dict()
+        
+        # [Iteration 4: Compliance DNA]
+        self._sequence_number += 1
+        data["_seq"] = self._sequence_number
+        data["_ts_iso"] = datetime.now().astimezone().isoformat()
 
         # Special handling for RUN_START to set paths
         if event.name == CoreEvents.RUN_START:
@@ -38,9 +53,17 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             self.per_run_log_path = self.log_dir / f"{self.run_id}.jsonl"
             self.log_dir.mkdir(parents=True, exist_ok=True)
 
-            # Perform rotation if configured
             if self.log_rotate_count > 0:
                 self.rotate_logs()
+
+        # [Iteration 4: Signing]
+        if self._audit_level >= 2 and self._private_key_path:
+            try:
+                # Sign the stable JSON representation
+                payload = json.dumps(data, sort_keys=True).encode("utf-8")
+                data["_sig"] = verifier.TraceVerifier.sign_asymmetric(payload, self._private_key_path)
+            except Exception as e:
+                data["_sig_error"] = str(e)
 
         # Serialize and write
         content = json.dumps(data) + "\n"

@@ -72,6 +72,7 @@ class TestSession:
                     with patch("eval_runner.plugins.manager.trigger"):
                         mock_sandbox = mock_sandbox_cls.return_value
                         mock_sandbox.state = {"val": 1}
+                        mock_sandbox.teardown = AsyncMock()
                         mock_call_agent.return_value = {"action": "final_answer", "content": "Done"}
 
                         results = await session.execute_tasks(attempt_number=1)
@@ -89,7 +90,9 @@ class TestSession:
             "eval_runner.engine.AgentAdapterRegistry.call_agent",
             side_effect=Exception("Connection Refused"),
         ):
-            with patch("eval_runner.tool_sandbox.ToolSandbox"):
+            with patch("eval_runner.tool_sandbox.ToolSandbox") as mock_sandbox_cls:
+                mock_sandbox = mock_sandbox_cls.return_value
+                mock_sandbox.teardown = AsyncMock()
                 with patch("eval_runner.events.EventEmitter.emit") as mock_emit:
                     results = await session.execute_tasks(1)
                     assert len(results) >= 1
@@ -128,7 +131,7 @@ class TestSession:
                     mock_ctx = MagicMock(spec=TurnContext)
                     mock_sandbox = MagicMock()
                     mock_sandbox.state = {"cwd": "/"}
-                    mock_sandbox.execute.return_value = {"output": "ok"}
+                    mock_sandbox.execute = AsyncMock(return_value={"output": "ok"})
                     history = []
                     actions = {"used_tools": []}
 
@@ -153,7 +156,7 @@ class TestSession:
                 mock_interceptor.side_effect = [True, False]
                 mock_sandbox = MagicMock()
                 mock_sandbox.state = {}
-                mock_sandbox.execute.return_value = "res"
+                mock_sandbox.execute = AsyncMock(return_value="res")
                 history = []
                 actions = {"used_tools": []}
 

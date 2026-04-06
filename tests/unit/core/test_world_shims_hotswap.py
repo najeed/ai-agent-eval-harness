@@ -1,10 +1,11 @@
+import pytest
 from eval_runner.plugins import BaseEvalPlugin, manager
 from eval_runner.simulators import get_simulator_registry
 from eval_runner.tool_sandbox import ToolSandbox
 
 
 class CustomShim:
-    def execute(self, action, params):
+    async def execute(self, action, params):
         return {"status": "success", "message": "Custom shim executed"}
 
 
@@ -13,7 +14,8 @@ class CustomPlugin(BaseEvalPlugin):
         registry["custom"] = CustomShim()
 
 
-def test_shim_hot_swapping():
+@pytest.mark.asyncio
+async def test_shim_hot_swapping():
     """Verify that a plugin can register a new shim dynamically."""
     # 1. Register a custom plugin
     plugin = CustomPlugin()
@@ -34,7 +36,7 @@ def test_shim_hot_swapping():
         with patch.object(config, "GLOBAL_ENABLED_SHIMS", config.GLOBAL_ENABLED_SHIMS + ["custom"]):
             scenario = {"scenario_id": "test"}
             sandbox = ToolSandbox(scenario)
-            result = sandbox.execute("custom_action", {})
+            result = await sandbox.execute("custom_action", {})
         assert result["status"] == "success"
         assert result["message"] == "Custom shim executed"
     finally:
@@ -64,13 +66,14 @@ def test_shim_filtering_wildcard():
     assert "stripe" in active
 
 
-def test_shim_execution_not_enabled():
+@pytest.mark.asyncio
+async def test_shim_execution_not_enabled():
     """Verify that a shim call fails if it's not in the enabled list."""
     scenario = {"scenario_id": "denial-test", "enabled_shims": ["git"]}
     sandbox = ToolSandbox(scenario)
 
     # database_query is a shim tool, but 'database' is not enabled
-    result = sandbox.execute("database_query", {"query": "SELECT *"})
+    result = await sandbox.execute("database_query", {"query": "SELECT *"})
 
     # Should fall back to the default "Executed database_query" message
     # instead of being routed to the DatabaseSimulator.

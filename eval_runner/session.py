@@ -258,7 +258,7 @@ class SessionManager:
                 )
 
         finally:
-            sandbox.teardown()
+            await sandbox.teardown()
 
         return all_task_results
 
@@ -290,7 +290,7 @@ class SessionManager:
             span_context=turn_ctx.span_context,
         )
         state_before = sandbox.state.copy()
-        result = sandbox.execute(tool_name, tool_params)
+        result = await sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
         EventEmitter.emit(
             CoreEvents.ACTION_END,
@@ -329,7 +329,7 @@ class SessionManager:
             # Note: Single interception for multiple tools could be complex; here we check each
             allowed = plugins.manager.trigger_interceptor("on_tool_request", turn_ctx, tn, {})
             if allowed:
-                res = sandbox.execute(tn, {})
+                res = await sandbox.execute(tn, {})
                 all_tool_results.append(res)
                 EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tn, "result": res})
             else:
