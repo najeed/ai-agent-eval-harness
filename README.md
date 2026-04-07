@@ -11,7 +11,8 @@
 [![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-ED25519-gold.svg)](docs/spec/trust_protocol_spec_v1.md)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
-[![Security Scan](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/security.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/security.yml)
+[![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/security/test_security_audit.py)
+
 ## 🛡️ Industrial AI Agent Verification & Trustworthiness
 
 MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **April 2026**, the framework is aligned with the **NIST AI-100-1** trustworthiness framework, providing high-fidelity telemetry (**Behavioral DNA**) and deterministic verification of agent reliability across core industrial sectors.

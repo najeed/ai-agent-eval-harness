@@ -1361,7 +1361,9 @@ const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo, apiFetch }
                         <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                     </div>
                     <div>
-                        <h3 className="text-4xl font-black mb-1 text-white">{scenarioCount}</h3>
+                        <h3 className="text-4xl font-black mb-1 text-white">
+                            {(systemInfo.scenario_count || parseInt(scenarioCount) || 0).toLocaleString()}
+                        </h3>
                         <div className="flex items-center gap-2">
                             <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Scenarios Index</p>
                             <span className="text-[9px] font-bold text-emerald-500/60 uppercase tracking-widest px-1.5 py-0.5 bg-emerald-500/5 rounded border border-emerald-500/10">Synced {lastSync}</span>

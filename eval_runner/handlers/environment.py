@@ -135,7 +135,7 @@ async def handle_plugin_unregister(args):
 
 async def handle_doctor(args):
     """Handler for 'doctor' command. Safely handles existing loops."""
-    await doctor.run_doctor()
+    await doctor.run_doctor(show_registry=getattr(args, "registry", False))
 
 
 async def handle_ci_generate(args):

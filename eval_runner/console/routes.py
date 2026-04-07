@@ -69,6 +69,28 @@ def get_system_info():
     except Exception:
         last_indexed = "unknown"
 
+    # 4. Security Hardening: Mask absolute paths for remote users
+    def mask_path(path_val):
+        """Sanitize absolute system paths to relative project-root paths."""
+        try:
+            # Ensure we are working with resolved Path objects for robust comparison
+            p = Path(path_val).resolve()
+            root = Path(config.PROJECT_ROOT).resolve()
+            
+            # Windows/NT check: common to have casing drift (c: vs C:)
+            if p.is_relative_to(root) or str(p).lower().startswith(str(root).lower()):
+                # If is_relative_to fails due to casing on some platforms,
+                # we calculate the relative part manually via string slicing or robust fallback.
+                try:
+                    return f"./{p.relative_to(root)}"
+                except ValueError:
+                    # Robust Slice: last resort for Windows casing drift
+                    rel_part = str(p)[len(str(root)):].lstrip("\\/")
+                    return f"./{rel_part}"
+            return p.name # Fallback to basename only for safety
+        except Exception:
+            return "hidden" # Maximum safety fallback
+
     return jsonify(
         {
             "status": "active",
@@ -80,8 +102,8 @@ def get_system_info():
             "world_shims": shims_count,
             "agent_endpoint": agent_endpoint,
             "enable_demo": config.ENABLE_DEMO,
-            "runs_dir": str(config.RUN_LOG_DIR),
-            "trajectories_dir": str(config.TRAJECTORIES_DIR),
+            "runs_dir": mask_path(config.RUN_LOG_DIR),
+            "trajectories_dir": mask_path(config.TRAJECTORIES_DIR),
             "scenario_count": len(catalog.scenarios) if hasattr(catalog, "scenarios") else 0,
             "last_indexed_at": last_indexed,
             "debug_mode": config.DEBUG_MODE,
@@ -443,6 +465,9 @@ def list_scenarios():
     offset = (page - 1) * limit
 
     catalog = get_catalog()
+    # Authoritative Refresh (UI Sync): Ensure catalog is HYDRATED before listing
+    if not catalog.scenarios:
+        catalog.load_index()
 
     print(
         f"DEBUG: /api/scenarios - Query: '{query}', Industry: '{industry}', Page: {page}, Limit: {limit}",  # noqa: E501

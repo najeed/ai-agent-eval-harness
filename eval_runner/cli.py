@@ -405,8 +405,11 @@ Utilities & Environment:
         "--force", action="store_true", help="Bypass confirmation prompt for deletion"
     )
 
-    subparsers.add_parser(
+    doctor_parser = subparsers.add_parser(
         "doctor", help="Audit the local environment for configuration markers and dependencies"
+    )
+    doctor_parser.add_argument(
+        "--registry", action="store_true", help="Display the detailed shim resource registry report"
     )
 
     export_parser = subparsers.add_parser(

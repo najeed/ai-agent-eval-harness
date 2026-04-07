@@ -129,16 +129,20 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
 
 ---
  
- ## 9. Forensic Environmental DNA (v1.3) 
+ ## 9. Forensic Environmental DNA (v1.3.0) 
  
  v1.3 elevates the environment from a background configuration to a **First-Class Member** of the evaluation trace.
  
- ### The Hybrid Registry Manager
- Infrastructure state is now managed via a decoupled **Hybrid Registry** (`shim_resources.json`), separate from the scenario logic. This allows a single AES benchmark to be portable across diverse physical environments (local dev, staging, production) by simply swapping the registry overlay.
+ ### The Cumulative Industrial Registry
+ Infrastructure state is managed via a **Decoupled Cumulative Registry**. Unlike legacy models, the registry is no longer a single file but a layered configuration stack:
+ 1. **Immutable Core Root**: Sanctioned defaults are internalized at [eval_runner/resources/shim_resources.json](/eval_runner/resources/shim_resources.json).
+ 2. **Distributed Extensions**: Extensions safely add or refine logic via the [shim_resources.d/](/shim_resources.d/) directory.
+ 
+ This allows a single AES benchmark to be portable across diverse physical environments (local dev, staging, production) by simply layering the appropriate registry overlay.
  
  ### Provisioning Snapshots
  Every `run.jsonl` trace now includes:
- 1.  **`environmental_snapshot`**: A point-in-time capture of the resolved registry state.
+ 1.  **`environmental_snapshot`**: A point-in-time capture of the final merged registry state.
  2.  **`provisioning_hash`**: A SHA-256 cryptographic link ensuring that the environment used for evaluation has not drifted from the sanctioned baseline.
  
  These features ensure that results are not just "reproducible" but "forensically verifiable" in regulated sectors like Finance and Healthcare.

@@ -102,6 +102,7 @@ runs/
 results/
 reports/
 tmp/
+.tmp/
 
 # --- Dependencies ---
 node_modules/
@@ -127,3 +128,10 @@ tasks/
 
 # --- Cryptographic Keys ---
 .aes/keys/
+*.pem
+*.key
+
+# --- Local Registry & Environment Secrets (v1.3.0) ---
+*.local.json
+*.local.yaml
+*.local.yml

@@ -93,9 +93,12 @@ class AbstractSandbox(ABC):
 
         # [RFC-002 Hybrid Registry] Environmental DNA Snapshot
         # Capture the authoritative resolved state of all shims for this run
-        self.provisioning_snapshot = config.RegistryManager.get_resolved_registry()
-        snapshot_json = json.dumps(self.provisioning_snapshot, sort_keys=True)
+        full_registry = config.RegistryManager.get_resolved_registry()
+        snapshot_json = json.dumps(full_registry, sort_keys=True)
         self.provisioning_hash = hashlib.sha256(snapshot_json.encode()).hexdigest()
+
+        # [REDACTION] Scrub secrets before injecting into the trace (v1.3.0 Hardening)
+        self.provisioning_snapshot = config.RegistryManager.get_sanitized_registry()
 
         # Inject into scenario for first-class status in run traces (Metadata DNA)
         if "metadata" not in self.scenario:

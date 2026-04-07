@@ -1,9 +1,9 @@
-import asyncio
-import os
 import sys
+import os
+import asyncio
 from pathlib import Path
-
 import aiohttp
+from . import config
 
 
 async def check_agent_reachable(url: str):
@@ -68,7 +68,37 @@ def check_security_health():
         print("  ⚠ Session Security cannot be verified without an API Key")
 
 
-async def run_doctor():
+def show_registry_report():
+    """Displays a detailed report of the resolved shim registry."""
+    print("  --- Industrial Registry Audit (v1.3.0) ---")
+    try:
+        registry = config.RegistryManager.get_resolved_registry()
+        shims = registry.get("shims", {})
+        if not shims:
+            print("  ⚠ Registry is empty (No shims defined).")
+            return
+
+        for name, definition in shims.items():
+            resources = definition.get("resources", {})
+            res_keys = ", ".join(resources.keys()) if resources else "None"
+            print(f"  ✔ Shim '{name}': [{res_keys}]")
+
+        # Display sanitized source locations (Security Hardening: No absolute paths)
+        print("\n  Registry Sources:")
+        print(f"    ✔ [Internal] {config.SHIM_RESOURCES_INTERNAL_PATH.name}")
+        
+        if config.SHIM_RESOURCES_D_DIR.exists():
+            try:
+                rel_d = config.SHIM_RESOURCES_D_DIR.relative_to(config.PROJECT_ROOT)
+                print(f"    ✔ [Extensions] ./{rel_d}/")
+            except ValueError:
+                print(f"    ✔ [Extensions] {config.SHIM_RESOURCES_D_DIR.name}/")
+
+    except Exception as e:
+        print(f"  ❌ Registry Diagnostic Error: {e}")
+
+
+async def run_doctor(show_registry: bool = False):
     """Environment validation logic."""
     print("\n[Doctor] MultiAgentEval - Environment Doctor\n")
 
@@ -92,6 +122,10 @@ async def run_doctor():
 
     # 3. Security Audit (New v1.2.4 Section)
     check_security_health()
+
+    # 3.5 Registry Audit (New v1.3.1 Section)
+    if show_registry:
+        show_registry_report()
 
     # 4. Directories
     dirs = ["industries", "scenarios", "runs", "reports"]

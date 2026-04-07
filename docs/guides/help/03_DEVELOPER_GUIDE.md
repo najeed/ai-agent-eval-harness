@@ -164,6 +164,18 @@ class EnterpriseConsolePlugin(BaseEvalPlugin):
         })
 ```
 
+### 4.4 Standard Internal Plugins (Standard Library)
+The harness ships with several internal plugins that handle core platform features. These are registered by default in the `eval_runner` engine:
+
+| Plugin | Responsibility |
+|---|---|
+| `ArtifactPlugin` | **Forensic Integrity**: Handles trace signing, manifest generation, and ED25519-based result verification. |
+| `FlightRecorderPlugin` | **Behavioral DNA**: Intercepts internal agent transitions (chains, graphs, nodes) and records them as first-class events. |
+| `ReportingPlugin` | **High-Fidelity Reports**: Reconstructs standalone HTML/PDF evaluation reports from any `.jsonl` trace. |
+| `CoveragePlugin` | **Industrial Metrics**: Instruments and calculates automated tool-use and state-space coverage scores. |
+| `PublicationPlugin` | **Registry Sync**: Manages the export of signed Verification Certificates (VCs) to external enterprise registries. |
+| `RemoteBridgePlugin` | **Live Sync**: Propagates engine events in real-time to the Visual Debugger via the `/api/debugger` bridge. |
+
 ---
 
 ## 📡 5 VS Code Extension & IDE Integration
@@ -375,6 +387,31 @@ The Visual Suite uses **JIT-Babel** to dynamically load React components (Story 
 Because the backend uses **Permission-Based Access Control (PBAC)**, standard `fetch` calls from Story Modules will fail with a 401/403.
 - All Story Modules **MUST** use `window.apiFetch`.
 - `apiFetch` automatically injects the necessary security headers and handles the auth-refresh handshake.
+
+---
+
+## 🛠️ 15 Cumulative Industrial Registry (v1.3.0)
+
+To support high-stakes, multi-tenant agent evaluations, AgentEval v1.3.0 implements a **Cumulative Distributed Registry**. This architecture ensures that core infrastructure remains stable while allowing custom extensions and local configurations to layer their own state on top of the baseline. They are consumed in the following order:
+
+- `00_*.json` — Core extensions or base infrastructural layers.
+- `10_*.json` — Vertical industry extensions (Fintech, Healthcare).
+- `50_*.json` — Team-wide shared infrastructure state.
+- `99_*.json` — High-priority final overrides.
+
+### 15.1 Additive Deep Merge
+The registry uses a **Recursive Non-Destructive Merge**. If a child layer (e.g. `99_overrides.json`) defines a property for a shim:
+- **If it's a new key**: It is added to the shim's resource block.
+- **If it's an existing key**: Its value is modified.
+- **Preservation**: All other sibling keys in the dictionary are **preserved**. This ensures that adding an API key in an extension does not accidentally "handicap" the shim by removing its core timeout or agent headers.
+
+### 15.2 Forensic Auditing
+Use the environment doctor to inspect the final resolved state of the world:
+```bash
+multiagent-eval doctor --registry
+```
+> [!CAUTION]
+> **Security Hardening**: For security, absolute filesystem paths are **masked** in the diagnostic output to prevent directory structure leakage in shared dashboards.
 
 ---
 

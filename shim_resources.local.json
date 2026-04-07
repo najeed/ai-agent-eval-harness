@@ -1,9 +1,0 @@
-{
-  "shims": {
-    "api": {
-      "resources": {
-        "api_key": "YOUR_SECRET_API_KEY_HERE"
-      }
-    }
-  }
-}

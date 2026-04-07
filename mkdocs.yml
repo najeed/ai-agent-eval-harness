@@ -52,6 +52,7 @@ nav:
       - User Manual: guides/help/02_USER_MANUAL.md
       - Developer Guide: 
           - Architecture & Plugins: guides/help/03_DEVELOPER_GUIDE.md
+          - Standard Internal Plugins: guides/help/03_DEVELOPER_GUIDE.md#44-standard-internal-plugins-standard-library
           - Testing Overview: guides/testing/overview.md
           - Writing Tests: guides/testing/writing-tests.md
           - Running Tests: guides/testing/running-tests.md

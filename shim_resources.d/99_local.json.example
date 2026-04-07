@@ -1,0 +1,16 @@
+{
+  "shims": {
+    "api": {
+      "resources": {
+        "api_key": "YOUR_SECRET_KEY_HERE"
+      }
+    },
+    "git": {
+      "resources": {
+        "auth": {
+          "token": "YOUR_GITHUB_TOKEN_HERE"
+        }
+      }
+    }
+  }
+}

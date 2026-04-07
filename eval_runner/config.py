@@ -183,49 +183,82 @@ DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 # Industrial Feature Toggles (v1.2.4)
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
-# --- Shim Registry Manager ---
-SHIM_RESOURCES_PATH = PROJECT_ROOT / "shim_resources.json"
-SHIM_RESOURCES_LOCAL_PATH = PROJECT_ROOT / "shim_resources.local.json"
+# --- Shim Registry Manager (v1.3.0 Cumulative Mode) ---
+SHIM_RESOURCES_INTERNAL_PATH = Path(__file__).parent / "resources" / "shim_resources.json"
+SHIM_RESOURCES_D_DIR = PROJECT_ROOT / "shim_resources.d"
 _SHIM_REGISTRY_CACHE = None
 
 
 class RegistryManager:
     """Manages the lifecycle and hygiene of the authoritative shim configuration manifest."""
 
+    @classmethod
+    def _redact_sensitive_data(cls, data):
+        """Recursively redact sensitive keys in a dictionary or list."""
+        sensitive_keywords = {
+            "api_key",
+            "token",
+            "secret",
+            "password",
+            "key",
+            "access_key",
+            "bearer",
+            "private_key",
+        }
+
+        if isinstance(data, dict):
+            new_dict = {}
+            for k, v in data.items():
+                # Check if key is sensitive (case-insensitive substring match)
+                if any(kw in k.lower() for kw in sensitive_keywords):
+                    new_dict[k] = "[REDACTED]"
+                else:
+                    new_dict[k] = cls._redact_sensitive_data(v)
+            return new_dict
+        elif isinstance(data, list):
+            return [cls._redact_sensitive_data(item) for item in data]
+        return data
+
+    @classmethod
+    def get_sanitized_registry(cls):
+        """Returns a version of the resolved registry with sensitive data redacted."""
+        registry = cls.get_resolved_registry()
+        return cls._redact_sensitive_data(registry)
+
     @staticmethod
     def get_resolved_registry() -> dict:
-        """Loads and merges all registry sources (Base -> Local -> Env Overrides)."""
+        """Loads and merges all registry sources (Internal -> Cumulative .d Folder -> Env Overrides)."""
         global _SHIM_REGISTRY_CACHE
         if _SHIM_REGISTRY_CACHE is not None:
             return _SHIM_REGISTRY_CACHE
 
         registry = {"shims": {}}
 
-        # 1. Base Manifest (shim_resources.json)
-        for path in [SHIM_RESOURCES_PATH, SHIM_RESOURCES_PATH.with_suffix(".yaml")]:
-            if path.exists():
+        # 1. Internal Package Baseline (Sanctioned Core)
+        if SHIM_RESOURCES_INTERNAL_PATH.exists():
+            try:
+                with open(SHIM_RESOURCES_INTERNAL_PATH) as f:
+                    content = json.load(f)
+                    if content:
+                        registry = RegistryManager._deep_merge(registry, content)
+            except Exception as e:
+                print(f"      [Config] Warning: Failed to load internal baseline: {e}")
+
+        # 2. Distributed Registry Extensions (shim_resources.d/)
+        # This is now the ONLY location for project and environment overrides.
+        if SHIM_RESOURCES_D_DIR.exists() and SHIM_RESOURCES_D_DIR.is_dir():
+            # Alphabetical sort ensures deterministic override priority (e.g., 99_local > 01_)
+            paths = sorted(list(SHIM_RESOURCES_D_DIR.glob("*.json")) + list(SHIM_RESOURCES_D_DIR.glob("*.yaml")))
+            for path in paths:
                 try:
                     with open(path) as f:
-                        content = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
-                        if content:
-                            registry.update(content)
+                        ext = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                        if ext:
+                            registry = RegistryManager._deep_merge(registry, ext)
                 except Exception as e:
-                    print(f"      [Config] Warning: Failed to load base registry at {path}: {e}")
-                break
+                    print(f"      [Config] Warning: Failed to load extension from {path.name}: {e}")
 
-        # 2. Local Secrets Overlay (shim_resources.local.json)
-        for path in [SHIM_RESOURCES_LOCAL_PATH, SHIM_RESOURCES_LOCAL_PATH.with_suffix(".yaml")]:
-            if path.exists():
-                try:
-                    with open(path) as f:
-                        local = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
-                        if local:
-                            registry = RegistryManager._deep_merge(registry, local)
-                except Exception as e:
-                    print(f"      [Config] Warning: Failed to load local registry at {path}: {e}")
-                break
-
-        # 3. Cloud-Native Environment Override
+        # 3. Environment Overrides (Ultimate Authority)
         env_json = os.getenv("AES_SHIM_RESOURCES_JSON")
         if env_json:
             try:

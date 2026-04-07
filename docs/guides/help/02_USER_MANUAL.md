@@ -331,14 +331,35 @@ multiagent-eval run --scenario industries/<your_industry>/scenarios/<file>.json
 multiagent-eval evaluate --path industries/<your_industry>
 ```
 
-## 🛡️ Industrial Registry Overlays (v1.3)
+## Cumulative Industrial Registry (v1.3.0)
 
-For enterprise deployments, the harness separates core infrastructure definitions from sensitive local credentials.
+For high-stakes evaluations, the harness separates core infrastructure definitions from environment-specific overrides using a **Cumulative Layered Model**.
 
-1.  **`shim_resources.json`**: Checked into source control. Contains non-sensitive metadata and default URL patterns.
-2.  **`shim_resources.local.json`**: (Ignored by Git). Place this file in your root to override specific parameters for your local environment (e.g., actual API keys or private DB endpoints).
+### Precedence & Merging (v1.3.0)
+The harness simplifies configuration management by deep-merging two authoritative sources:
+1.  **Immutable Core baseline** (Internal): Sanctioned defaults for API/Git. This ensured the harness works Out-of-the-Box.
+2.  **Distributed Cumulative Folder** (`shim_resources.d/`): The **single source of truth** for all team and project extensions.
+3.  **Environment Injection** (`AES_SHIM_RESOURCES_JSON`): Higher-precedence runtime overrides for CI/CD pipelines.
 
-The `RegistryManager` automatically deep-merges these files at runtime, ensuring your local secrets never leak into the repository.
+### 🧩 The `.d` Extension Folder
+Place your configurations in the `shim_resources.d/` folder as `.json` or `.yaml` files.
+- **Alphabetical Merging**: File loading follows its name (e.g., `01_base.json` is loaded before `99_local.json`). 
+- **Secret Protection**: Naming files `*.local.json` is required for private API keys. Our global `.gitignore` prevents these files from being committed accidentally.
+
+### Choice Matrix: Where should I put my config?
+| Location | Use Case | Git Tracked? |
+| :--- | :--- | :--- |
+| **`shim_resources.d/01_lab.json`** | Team-wide lab configs (endpoints, timeouts). | **Yes** |
+| **`shim_resources.d/99_dev.local.json`** | Personal API keys, private credentials. | **No** |
+| **`AES_SHIM_RESOURCES_JSON`** | Dynamic CI/CD pipeline injections. | **No** |
+
+### 🔍 Auditing Your Registry
+To see exactly how your registry is merged and which sources are contributing to your environment, use the doctor utility:
+```bash
+multiagent-eval doctor --registry
+```
+> [!NOTE]
+> **Security**: Absolute filesystem paths are masked in this report to prevent directory structure leakage.
 
 ---
 
