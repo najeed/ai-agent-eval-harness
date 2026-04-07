@@ -240,3 +240,36 @@ async def handle_quickstart(args):
     from .. import quickstart
 
     await quickstart.run_quickstart()
+
+
+async def handle_certify(args):
+    """
+    Handler for 'certify' command.
+    Generates a Verification Certificate (VC) and sidecar manifest for a trace.
+    """
+    from .. import verifier
+
+    trace_path = Path(args.path)
+    if not trace_path.exists():
+        print(f"❌ Error: Trace file not found: {trace_path}")
+        return
+
+    print(f"[*] Certifying trace: {trace_path}")
+    try:
+        manifest = verifier.TraceVerifier.sign_trace(
+            str(trace_path),
+            private_key_path=getattr(args, "private_key", None)
+        )
+
+        print("✅ Success: Verification Certificate generated.")
+        print(f"    - Run ID: {manifest.get('run_id')}")
+        print(f"    - SHA-256: {manifest.get('sha256')}")
+        if manifest.get("signature_ed25519"):
+            print("    - Signed: Yes (ED25519 Authority)")
+        else:
+            print("    - Signed: No (Integrity-only manifest)")
+
+        print(f"    - Manifest: {trace_path.parent / f'{trace_path.stem}_manifest.json'}")
+
+    except Exception as e:
+        print(f"❌ Error during certification: {e}")

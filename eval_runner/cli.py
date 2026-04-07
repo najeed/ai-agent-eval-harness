@@ -70,6 +70,7 @@ Core Evaluation:
   replay         Replay a previously recorded run trace
   run            Execute evaluation on a single specific scenario
   verify         Verify the cryptographic integrity of a run trace
+  certify        Generate a Verification Certificate (VC) for a specific run trace
   gate           CI/CD "Hard Gate": Enforce verification and signature checks
 
 Specification & Scenarios:
@@ -232,6 +233,14 @@ Utilities & Environment:
     verify_parser.add_argument("--path", required=True, help="Path to the trace file to verify")
     verify_parser.add_argument(
         "--manifest", help="Optional path to the .manifest.json for the trace"
+    )
+
+    certify_parser = subparsers.add_parser(
+        "certify", help="Generate a Verification Certificate (VC) for a specific run trace"
+    )
+    certify_parser.add_argument("--path", required=True, help="Path to the trace file to certify")
+    certify_parser.add_argument(
+        "--private-key", help="Optional path to an ED25519 private key for authoritative signing"
     )
 
     gate_parser = subparsers.add_parser(
@@ -507,6 +516,7 @@ def main():
             "playground",
             "replay",
             "verify",
+            "certify",
             "gate",
             "quickstart",
         ]:
@@ -524,6 +534,8 @@ def main():
                 safe_run_async(h.handle_replay(args))
             elif args.command == "verify":
                 safe_run_async(h.handle_verify(args))
+            elif args.command == "certify":
+                safe_run_async(h.handle_certify(args))
             elif args.command == "gate":
                 safe_run_async(h.handle_gate(args))
             elif args.command == "quickstart":

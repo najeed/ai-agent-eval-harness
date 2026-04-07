@@ -129,13 +129,14 @@ The Trust Protocol provides **immutable proof of run integrity** using a detache
 A **Behavioral Fingerprint** (or Verification Certificate - VC) is a signed JSON snapshot that ensures a run's environment precisely matches the intended evaluation criteria.
 - **Content Integrity**: Uses **SHA-256 content hashing** to generate a unique fingerprint of the raw `.jsonl` trace file. If a single character in the trace is modified post-execution, the hash mismatch invalidates the certificate.
 - **Scenario Topology**: The fingerprint includes a cryptographic binding to the scenario's DAG structure and tool definitions, ensuring the agent was not tested against a weakened or modified variant.
+- **CLI Issuance**: The `certify --path <trace.jsonl>` command is used to issue a non-repudiable Verification Certificate (VC) for a specific run trace.
 
 ### B. Certification API
 The **Certification API** serves as a public "Trust Anchor," allowing external systems and CI/CD gates to verify the authenticity of an evaluation run without requiring administrative access to the harness.
 
 - **Endpoint**: `GET /api/v1/certificates/<run_id>`
 - **Response**: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the **ED25519 signature** from the issuing harness.
-- **Public Verification**: Stakeholders can use the harness's **Public Key** to verify the signature and re-compute the trace hash locally to prove absolute veracity.
+- **Verification CLI**: Stakeholders can use the `verify --path <trace.jsonl>` command locally or the `gate --vc <vc.json>` command in CI/CD pipelines to verify the signature and re-compute the trace hash locally to prove absolute veracity.
 
 ### C. HMS-Ready Architecture
 The Trust Protocol is designed for **HMS-Readiness**, supporting the transition to professional Hardware Security Modules (HSM) or Cloud KMS providers.

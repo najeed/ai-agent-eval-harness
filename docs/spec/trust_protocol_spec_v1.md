@@ -122,5 +122,18 @@ The Custom Extensions Gatekeeper (the consumer) must implement the following log
 
 ---
 
-## 7. Summary of Rationale
+## 7. CLI Integration (Industrial Standard)
+
+The Evaluation Harness provides a first-class CLI suite to manage the Trust Protocol workflow:
+
+-   **`certify --path <trace.jsonl> [--private-key <key.pem>]`**: 
+    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC). If a private key is provided, an ED25519 signature is appended to the manifest.
+-   **`verify --path <trace.jsonl> [--manifest <manifest.json>]`**: 
+    Locally verifies the integrity of a trace file against its manifest (Sidecar).
+-   **`gate --vc <vc.json> [--public-key <key.pem>]`**: 
+    A production-grade CI/CD utility that enforces signature and hash verification, exiting with a non-zero code on failure.
+
+---
+
+## 8. Summary of Rationale
 We chose this hybrid approach (SHA-256 + ED25519) to balance **performance** with **unbreakable trust**. By making the key management layer **Pluggable (HMS-Ready)**, we ensure the harness can grow from a local developer tool into a mission-critical component of a zero-trust industrial evaluation pipeline.

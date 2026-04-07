@@ -49,6 +49,18 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         # Special handling for RUN_START to set paths
         if event.name == CoreEvents.RUN_START:
+            import sys
+            sys.stderr.write(f"   [FlightRecorder] RUN_START event detected. Refreshing config...\n")
+            # [Refresher] Re-read environment variables in case they were set by a handler after initialization.
+            import eval_runner.config as config
+            self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
+            self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
+            self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
+            self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
+            self.master_log_path = self.log_dir / "run.jsonl"
+
+            sys.stderr.write(f"   [FlightRecorder] Target log dir: {self.log_dir}\n")
+
             self.run_id = data.get("run_id", "unknown")
             self.per_run_log_path = self.log_dir / f"{self.run_id}.jsonl"
             self.log_dir.mkdir(parents=True, exist_ok=True)

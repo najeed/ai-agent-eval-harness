@@ -1,0 +1,50 @@
+﻿      [Plugin] Registering OpenAI adapter via on_discover_adapters hook.
+      [Plugin] Registering Gemini adapter via on_discover_adapters hook.
+      [Plugin] Registering Claude adapter via on_discover_adapters hook.
+      [Plugin] Registering Ollama adapter via on_discover_adapters hook.
+      [Plugin] Registering Grok adapter via on_discover_adapters hook.
+      [Plugin] Registering AutoGen adapters (v1) via on_discover_adapters hook.
+      [Plugin] Registering CrewAI adapters (v1) via on_discover_adapters hook.
+      [Plugin] Registering LangGraph adapters (v2) via on_discover_adapters hook.
+      [Plugin] Registering LangChain adapters (v1) via on_discover_adapters hook.
+      [Sandbox] Workspace initialized at: workspace\test_log_dir_v2
+      [Sandbox] Terminal Jail provisioned: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\runs\unknown_run\terminal_jail
+      [Engine] Executing http call to: http://localhost:5001/execute_task
+      [Sandbox] Secure Wipe: Terminal Jail deleted at C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\runs\unknown_run\terminal_jail
+   [Coverage] Heatmap report generated: reports\coverage\test_log_dir_v2_coverage.html
+   [ReportingPlugin] Applying triage logic...
+
+   [ReportingPlugin] Generating summary report...
+
+==================================================
+EVALUATION REPORT
+==================================================
+Scenario: Test Log Dir Creation V2 (test_log_dir_v2)
+Protocol: HTTP
+Agent: http://localhost:5001/execute_task
+--------------------------------------------------
+
+Task: task1 [FAILURE [None]]
+
+  Trajectory Map (Mermaid):
+  ---
+graph TD
+  Start((Start))
+  Start --> End((End))
+  ---
+
+--------------------------------------------------
+SUMMARY
+--------------------------------------------------
+Total Tasks: 1
+Successful Tasks: 0
+Failed Tasks: 1
+Overall Success Rate: 0.00%
+==================================================
+
+
+[Reporter] Trajectory exported to: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\reports\trajectories\test_log_dir_v2_20260407_200243.json
+[Reporter] HTML report generated: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\reports\html\standalone_test_log_dir_v2_20260407_200243.html
+   [ReportingPlugin] Inert repro instructions generated: reports\repro\repro_test_log_dir_v2.txt
+
+   [CLI] Evaluation complete for Test Log Dir Creation V2

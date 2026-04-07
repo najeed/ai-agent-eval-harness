@@ -1,0 +1,14 @@
+{"event": "run_start", "timestamp": "2026-04-07T20:02:40.688032+05:30", "run_id": "run-test_log_dir_v2-406218", "scenario": "test_log_dir_v2", "k_attempts": 1, "_seq": 1, "_ts_iso": "2026-04-07T20:02:40.688979+05:30"}
+{"event": "phase_start", "timestamp": "2026-04-07T20:02:40.931610+05:30", "phase": "pass_at_k_execution", "k": 1, "_seq": 2, "_ts_iso": "2026-04-07T20:02:40.931673+05:30"}
+{"event": "phase_start", "timestamp": "2026-04-07T20:02:40.954990+05:30", "phase": "workflow_sort", "_seq": 3, "_ts_iso": "2026-04-07T20:02:40.955034+05:30"}
+{"event": "phase_end", "timestamp": "2026-04-07T20:02:40.968501+05:30", "phase": "workflow_sort", "_seq": 4, "_ts_iso": "2026-04-07T20:02:40.968568+05:30"}
+{"event": "task_start", "timestamp": "2026-04-07T20:02:40.982679+05:30", "task_id": "task1", "attempt": 1, "_seq": 5, "_ts_iso": "2026-04-07T20:02:40.982726+05:30"}
+{"event": "subtask_start", "timestamp": "2026-04-07T20:02:40.997698+05:30", "subtask_id": "subtask-task1", "type": "agent_reasoning", "_seq": 6, "_ts_iso": "2026-04-07T20:02:40.997754+05:30"}
+{"event": "agent_request", "timestamp": "2026-04-07T20:02:41.015282+05:30", "role": "user", "content": "Say hello", "protocol": "http", "agent": null, "agent_name": null, "_seq": 7, "_ts_iso": "2026-04-07T20:02:41.015348+05:30"}
+{"event": "turn_start", "timestamp": "2026-04-07T20:02:41.035338+05:30", "turn": 1, "task_id": "task1", "_seq": 8, "_ts_iso": "2026-04-07T20:02:41.035386+05:30"}
+{"event": "action_start", "timestamp": "2026-04-07T20:02:41.054754+05:30", "action_type": "llm_inference", "protocol": "http", "_seq": 9, "_ts_iso": "2026-04-07T20:02:41.054802+05:30"}
+{"event": "error", "timestamp": "2026-04-07T20:02:43.374337+05:30", "message": "Agent Error: Cannot connect to host localhost:5001 ssl:default [The remote computer refused the network connection]", "_seq": 10, "_ts_iso": "2026-04-07T20:02:43.374416+05:30"}
+{"event": "subtask_end", "timestamp": "2026-04-07T20:02:43.393453+05:30", "subtask_id": "subtask-task1", "_seq": 11, "_ts_iso": "2026-04-07T20:02:43.393551+05:30"}
+{"event": "task_end", "timestamp": "2026-04-07T20:02:43.408741+05:30", "task_id": "task1", "results": {"task_id": "task1", "attempt": 1, "turns_taken": 0, "conversation_history": [{"role": "user", "content": "Say hello"}], "metrics": []}, "_seq": 12, "_ts_iso": "2026-04-07T20:02:43.408777+05:30"}
+{"event": "phase_end", "timestamp": "2026-04-07T20:02:43.423761+05:30", "phase": "pass_at_k_execution", "span_context": "test_log_dir_v2", "_seq": 13, "_ts_iso": "2026-04-07T20:02:43.423819+05:30"}
+{"event": "run_end", "timestamp": "2026-04-07T20:02:43.453871+05:30", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "_seq": 14, "_ts_iso": "2026-04-07T20:02:43.453954+05:30"}
