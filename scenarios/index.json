@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "last_scanned_count": 5055,
-    "last_scanned_mtime": 1775525270.9404743,
-    "updated_at": "2026-04-07T06:58:39.982949+05:30"
+    "last_scanned_count": 5058,
+    "last_scanned_mtime": 1775596931.673281,
+    "updated_at": "2026-04-08T02:52:18.382553+05:30"
   },
   "scenarios": [
     {
@@ -60408,7 +60408,7 @@
       "difficulty": 1,
       "tags": [],
       "path": "scenarios/index.json",
-      "mtime": 1775525270.9404743,
+      "mtime": 1775596931.673281,
       "description": "",
       "lint_score": 100,
       "status": "pass"
@@ -60422,6 +60422,42 @@
       "path": "scenarios/luna_demo.json",
       "mtime": 1775513079.9379232,
       "description": "A complex reasoning scenario designed to verify the Luna-Judge LLM-based evaluation metric using Ollama.",
+      "lint_score": 100,
+      "status": "pass"
+    },
+    {
+      "id": "test_log_dir",
+      "title": "Test Log Dir Creation",
+      "industry": "ai-agent-eval-harness",
+      "difficulty": 1,
+      "tags": [],
+      "path": "scenarios/test_scenario.json",
+      "mtime": 1775570707.1208463,
+      "description": "",
+      "lint_score": 100,
+      "status": "pass"
+    },
+    {
+      "id": "test_eval_v1",
+      "title": "Test Eval V1",
+      "industry": "ai-agent-eval-harness",
+      "difficulty": 1,
+      "tags": [],
+      "path": "scenarios/test_scenario_eval.json",
+      "mtime": 1775571258.3841887,
+      "description": "",
+      "lint_score": 100,
+      "status": "pass"
+    },
+    {
+      "id": "test_log_dir_v2",
+      "title": "Test Log Dir Creation V2",
+      "industry": "ai-agent-eval-harness",
+      "difficulty": 1,
+      "tags": [],
+      "path": "scenarios/test_scenario_v2.json",
+      "mtime": 1775572150.6249716,
+      "description": "",
       "lint_score": 100,
       "status": "pass"
     },

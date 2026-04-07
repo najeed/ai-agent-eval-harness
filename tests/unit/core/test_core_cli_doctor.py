@@ -54,7 +54,9 @@ def test_cli_run_attempts(capsys, tmp_path, monkeypatch):
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_run,
     ):
         mock_run.return_value = []
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         capsys.readouterr()
         assert mock_run.called
 
@@ -72,7 +74,9 @@ def test_cli_replay_valid(tmp_path, monkeypatch):
             return_value=[{"event": "run_start", "run_id": "test"}],
         ),
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
 
 
 def test_cli_cleanup_interactive_yes(tmp_path, monkeypatch):

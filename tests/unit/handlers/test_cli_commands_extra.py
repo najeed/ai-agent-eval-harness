@@ -55,10 +55,9 @@ async def test_handle_replay_exceptions(tmp_path, monkeypatch):
 
     # File not found
     args = parse_args(["replay", "--path", "ghost.jsonl"])
-    try:
+    with pytest.raises(SystemExit) as e:
         await handle_replay(args)
-    except Exception:
-        pass
+    assert e.value.code == 1
 
     # Read error
     real_file = tmp_path / "read_err.jsonl"
@@ -83,7 +82,9 @@ async def test_handle_run_extensions(tmp_path, monkeypatch):
 
     # File not found
     args = parse_args(["run", "--scenario", "ghost.json"])
-    await handle_run(args)
+    with pytest.raises(SystemExit) as e:
+        await handle_run(args)
+    assert e.value.code == 1
 
     # URL Benchmark
     args = parse_args(["run", "--scenario", "hf://test"])
@@ -92,7 +93,9 @@ async def test_handle_run_extensions(tmp_path, monkeypatch):
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_eval,
     ):
         mock_eval.return_value = []
-        await handle_run(args)
+        with pytest.raises(SystemExit) as e:
+            await handle_run(args)
+        assert e.value.code == 0
 
 
 # --- run_evaluate attempts and config ---
@@ -139,7 +142,9 @@ async def test_run_evaluate_complex_branches(tmp_path, monkeypatch):
                 "conversation_history": [{"role": "agent", "content": "done"}],
             }
         ]
-        await run_evaluate(args)
+        with pytest.raises(SystemExit) as e:
+            await run_evaluate(args)
+        assert e.value.code == 0
 
 
 # --- aes validation missing ---

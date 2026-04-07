@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from . import config
+from . import config, utils
 
 logger = logging.getLogger(__name__)
 
@@ -176,6 +176,9 @@ class TraceVerifier:
         Returns the Manifest DICT (Authoritative Proof).
         """
         p = Path(trace_path)
+        if not utils.is_path_safe(p, config.PROJECT_ROOT):
+            raise PermissionError(f"Security violation: Trace file outside project jail: {trace_path}")
+
         if not p.exists():
             raise FileNotFoundError(f"Trace file not found: {trace_path}")
 
@@ -184,10 +187,15 @@ class TraceVerifier:
         run_id = p.stem
 
         # 2. Build the Manifest (Standardized)
+        # We normalize the timestamp to 3 decimal places to prevent bit-level drift
+        # during JSON serialization/deserialization across different platforms.
+        now = datetime.now().astimezone()
+        timestamp = now.strftime("%Y-%m-%dT%H:%M:%S") + f".{now.microsecond // 1000:03d}" + now.strftime("%z")
+        
         manifest = {
             "harness_version": config.VERSION,
             "version": config.VERSION,  # Aliased for modern consumers
-            "timestamp": datetime.now().astimezone().isoformat(),
+            "timestamp": timestamp,
             "run_id": run_id,
             "trace_file": p.name,
             "sha256": sha256_hash,
@@ -259,6 +267,12 @@ class TraceVerifier:
         """
         tp = Path(trace_path)
         mp = Path(manifest_path)
+
+        if not utils.is_path_safe(tp, config.PROJECT_ROOT) or not utils.is_path_safe(
+            mp, config.PROJECT_ROOT
+        ):
+            logger.error(f"Security violation: Verification paths outside project jail.")
+            return False
 
         if not tp.exists() or not mp.exists():
             return False

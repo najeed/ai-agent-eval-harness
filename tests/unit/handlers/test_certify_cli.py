@@ -15,7 +15,9 @@ def mock_certify_args():
 async def test_handle_certify_missing_trace(mock_certify_args, capsys):
     """Test certify fails if trace file is missing."""
     mock_certify_args.path = "non_existent.jsonl"
-    await evaluation.handle_certify(mock_certify_args)
+    with pytest.raises(SystemExit) as e:
+        await evaluation.handle_certify(mock_certify_args)
+    assert e.value.code == 1
     captured = capsys.readouterr()
     assert "Error: Trace file not found" in captured.out
 
@@ -33,7 +35,9 @@ async def test_handle_certify_success(mock_certify_args, tmp_path, capsys):
     }
     
     with patch("eval_runner.verifier.TraceVerifier.sign_trace", return_value=mock_manifest) as mock_sign:
-        await evaluation.handle_certify(mock_certify_args)
+        with pytest.raises(SystemExit) as e:
+            await evaluation.handle_certify(mock_certify_args)
+        assert e.value.code == 0
         mock_sign.assert_called_once_with(str(trace_path), private_key_path=None)
         
     captured = capsys.readouterr()

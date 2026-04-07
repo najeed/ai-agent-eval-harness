@@ -88,12 +88,15 @@ The `RemoteBridgePlugin` and internal network drivers now implement **IP-level v
 - **Cloud Metadata Security**: Access to cloud provider metadata endpoints (e.g., `169.254.169.254`) is strictly neutralized to prevent credential theft.
 
 ### B. Data Integrity & Telemetry Masking
-- **Path Traversal Hardening**: All file-based operations (scenario saving, trace loading, and report generation) are subject to strict `Path.resolve()` jail-checks. The harness will refuse to interact with any file path outside of authorized project directories.
+- **Path Traversal Hardening**: All file-based operations (scenario saving, trace loading, and report generation) are subject to strict **Path Anchoring**. The harness resolves and normalizes all user-provided paths against the authoritative `PROJECT_ROOT`, preventing jail escapes even when the root resides within temporary system directories.
 - **Recursive Secret Scrubbing**: The `TraceRecorder` and `EventEmitter` now employ a recursive masking layer that automatically redacts common secret patterns (API keys, JWTs, PII) from flight-recorded telemetry.
+- **Console Security Intercept**: The Visual Debugger and REST API now implement a **Global Proactive Security Intercept**. Any request containing path traversal patterns (`..`, `%2e%2e`) is immediately detected and blocked with a `403 Forbidden` response, preventing security probes from reaching the application logic.
 
 ### C. Operational Best Practices
-- **Turn Throttling**: The `EVAL_TURN_THROTTLE` configuration allows for tunable delays between agent turns, preventing resource exhaustion and satisfying rate-limiting requirements in sensitive industrial environments.
 - **Header Enforcement**: The `X-AES-API-KEY` header is now a mandatory requirement for all sensitive management console routes when `DASHBOARD_API_KEY` is configured.
+- **Security Jail Control (`AEH_STRICT_JAIL`)**: 
+    - **Default Capability**: By default, the harness allows file access within the `PROJECT_ROOT` and the system's temporary directory (`/tmp` or `AppData/Local/Temp`). This supports industrial CI/CD workflows and local `pytest` execution.
+    - **Industrial Hardening (Opt-in)**: For high-security production environments, set the environment variable `AEH_STRICT_JAIL=1`. This enforces a strict, project-only jail that blocks all access to external system temporary directories, ensuring absolute isolation.
 
 ---
 
@@ -135,8 +138,8 @@ A **Behavioral Fingerprint** (or Verification Certificate - VC) is a signed JSON
 The **Certification API** serves as a public "Trust Anchor," allowing external systems and CI/CD gates to verify the authenticity of an evaluation run without requiring administrative access to the harness.
 
 - **Endpoint**: `GET /api/v1/certificates/<run_id>`
-- **Response**: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the **ED25519 signature** from the issuing harness.
-- **Verification CLI**: Stakeholders can use the `verify --path <trace.jsonl>` command locally or the `gate --vc <vc.json>` command in CI/CD pipelines to verify the signature and re-compute the trace hash locally to prove absolute veracity.
+- **Response**: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the **signature_ed25519** field from the issuing harness.
+- **Verification CLI**: Stakeholders can use the `verify --path <trace.jsonl>` command locally or the `gate --vc <vc.json>` command in CI/CD pipelines to verify the signature (authoritative field: `signature_ed25519`) and re-compute the trace hash locally to prove absolute veracity.
 
 ### C. HMS-Ready Architecture
 The Trust Protocol is designed for **HMS-Readiness**, supporting the transition to professional Hardware Security Modules (HSM) or Cloud KMS providers.

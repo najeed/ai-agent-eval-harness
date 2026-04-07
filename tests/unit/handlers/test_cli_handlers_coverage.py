@@ -122,7 +122,9 @@ async def test_handle_aes_validate_error_paths(tmp_path, capsys):
 async def test_handle_verify_missing(capsys):
     """Test 'verify' with missing file. Forensic: [CRITICAL] string."""
     args = MagicMock(path="missing.jsonl", manifest=None)
-    await evaluation.handle_verify(args)
+    with pytest.raises(SystemExit) as e:
+        await evaluation.handle_verify(args)
+    assert e.value.code == 1
     captured = capsys.readouterr()
     assert "[CRITICAL] FAILED: Trace integrity compromised!" in captured.out
 

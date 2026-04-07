@@ -9,6 +9,7 @@ import argparse
 import asyncio
 import os
 import sys
+from pathlib import Path
 
 from . import __version__
 from .utils import safe_run_async
@@ -507,6 +508,12 @@ def main():
         if not args.command:
             parser.print_help()
             return
+
+        # [Audit BUG-04] Early initialization of run-log-dir to prevent FileNotFoundError
+        run_log_dir = getattr(args, "run_log_dir", None)
+        if run_log_dir and isinstance(run_log_dir, str):
+            os.environ["RUN_LOG_DIR"] = run_log_dir
+            Path(run_log_dir).mkdir(parents=True, exist_ok=True)
 
         # Dynamic imports for handlers to minimize footprint
         if args.command in [

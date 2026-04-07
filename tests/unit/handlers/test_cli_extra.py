@@ -57,7 +57,9 @@ async def test_handle_replay_success(tmp_path, monkeypatch):
             {"event": "evaluation", "metric": "acc", "value": 1.0},
             {"event": "run_end", "status": "success"},
         ]
-        await eval_runner.handlers.evaluation.handle_replay(args)
+        with pytest.raises(SystemExit) as e:
+            await eval_runner.handlers.evaluation.handle_replay(args)
+        assert e.value.code == 0
 
 
 # --- run_scenario ---
@@ -75,7 +77,9 @@ async def test_handle_run_success(tmp_path, monkeypatch):
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_engine,
     ):
         mock_engine.return_value = []
-        await eval_runner.handlers.evaluation.handle_run(args)
+        with pytest.raises(SystemExit) as e:
+            await eval_runner.handlers.evaluation.handle_run(args)
+        assert e.value.code == 0
         mock_engine.assert_called_once()
 
 
@@ -106,7 +110,9 @@ async def test_run_evaluate_success(tmp_path, monkeypatch):
             }
         ]
 
-        await eval_runner.handlers.evaluation.handle_evaluate(args)
+        with pytest.raises(SystemExit) as e:
+            await eval_runner.handlers.evaluation.handle_evaluate(args)
+        assert e.value.code == 0
 
 
 # --- handle_auto_translate ---

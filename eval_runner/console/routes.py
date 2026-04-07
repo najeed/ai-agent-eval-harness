@@ -23,6 +23,37 @@ def get_catalog():
     return ScenarioCatalog.get_instance()
 
 
+# [Audit BUG-05] Global Proactive Security Intercept (Portable Blueprint Level)
+@core_bp.before_app_request
+def security_intercept_blueprint():
+    """Intercepts traversal attempts before normalization or routing (v1.3.3)."""
+    from urllib.parse import unquote
+    
+    # [INDUSTRIAL HARDENING] Use multi-layered inspection (raw vs normalized)
+    raw_uri = request.environ.get("REQUEST_URI", "").lower()
+    path_info = request.environ.get("PATH_INFO", "").lower()
+    path = request.path.lower()
+    full_path = request.full_path.lower()
+    url = request.url.lower()
+
+    # Targets for detection: we must catch cases where normalization has already occurred
+    # BUT we also catch the raw/unquoted variants for encoded attempts.
+    targets = [raw_uri, path_info, path, full_path, url, unquote(raw_uri), unquote(path)]
+    
+    if any(".." in t or "%2e" in t for t in targets):
+        return jsonify(
+            {"error": "Security: Unauthorized Path Traversal Attempt Detected", "status": 403}
+        ), 403
+
+
+@core_bp.app_errorhandler(404)
+def handle_global_404(e):
+    """Fallback for non-traversal 404s (Hardened Console 1.3.x)."""
+    return jsonify(
+        {"error": "Resource Not Found: The API endpoint requested is invalid.", "status": 404}
+    ), 404
+
+
 @core_bp.route("/info", methods=["GET"])
 @require_permission(Permission.SCENARIOS_READ)
 def get_system_info():
@@ -170,6 +201,61 @@ def get_verification_certificate(run_id):
     ), 404
 
 
+@core_bp.route("/v1/verify/<run_id>", methods=["GET"])
+def verify_run_public(run_id):
+    """
+    Public Verification API (Unprotected).
+    Verifies the integrity of a run trace against its issued certificate.
+    Returns the boolean verification status and metadata.
+    """
+    from eval_runner.verifier import TraceVerifier
+
+    # 1. Authoritative Lookup (Same logic as get_verification_certificate)
+    cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+    trace_path = config.RUN_LOG_DIR / f"{run_id}.jsonl"
+
+    if not cert_path.exists():
+        # Fallback to sidecar locations
+        sidecar_manifest = config.RUN_LOG_DIR / f"run_{run_id}_manifest.json"
+        if not sidecar_manifest.exists():
+            sidecar_manifest = config.RUN_LOG_DIR / f"{run_id}_manifest.json"
+        cert_path = sidecar_manifest
+
+    if not trace_path.exists():
+        # Fallback to demo traces if applicable
+        demo_path = config.RUN_LOG_DIR / "demo" / f"{run_id}.jsonl"
+        if demo_path.exists():
+            trace_path = demo_path
+
+    if not cert_path.exists() or not trace_path.exists():
+        return (
+            jsonify(
+                {
+                    "run_id": run_id,
+                    "verified": False,
+                    "error": "Trace or Verification Certificate not found.",
+                    "status": "not_found",
+                }
+            ),
+            404,
+        )
+
+    # 2. Execute Verification logic (unprotected bridge)
+    try:
+        # verify_trace handles both SHA-256 and ED25519 (if PK is in the manifest)
+        # For public verification, we assume integrity check is the baseline.
+        is_valid = TraceVerifier.verify_trace(str(trace_path), str(cert_path))
+        
+        return jsonify({
+            "run_id": run_id,
+            "verified": is_valid,
+            "timestamp": datetime.now().astimezone().isoformat(),
+            "method": "SHA-256 integrity check"
+        })
+    except Exception as e:
+        return jsonify({"error": f"Verification failed: {str(e)}", "verified": False}), 500
+
+
 @core_bp.route("/demo/reset", methods=["POST"])
 @require_permission(Permission.DEMO_EXECUTE)
 def reset_demo():
@@ -247,14 +333,22 @@ def execute_demo_command():
         return jsonify({"error": f"Command not allowed: {cmd}"}), 403
 
     # Secure Validation of paths
+    cmd_lower = cmd.lower().strip()
     parts = cmd.split()
     for part in parts:
         if "/" in part or "\\" in part or "." in part:
-            # If it looks like a path, resolve and check jail
-            if not is_path_safe(part, demo_dir) and not any(
-                f.lower() in part.lower() for f in allowed_files
-            ):
+            # If it looks like a path, resolve and check jail + whitelist
+            filename = os.path.basename(part.replace("\\", "/"))
+            is_whitelisted = any(f.lower() == filename.lower() for f in allowed_files)
+            
+            # 1. Jail Check (Always enforced)
+            if not is_path_safe(part, demo_dir):
                 return jsonify({"error": f"Security: Access outside demo jail denied: {part}"}), 403
+            
+            # 2. Read Whitelist (Enforced for cat/type)
+            if cmd_lower.startswith(("cat ", "type ", "cat", "type")):
+                if not is_whitelisted:
+                    return jsonify({"error": f"Security: Access outside demo jail denied: {part}"}), 403
 
     # Native Handlers for common shell operations (Industrial Hardening)
     import shutil

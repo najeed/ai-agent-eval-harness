@@ -49,13 +49,6 @@ def create_app():
     app.register_blueprint(demo_bp)
 
     # Hardened API Error Handlers (Prevents "Unexpected token <" regressions)
-    @app.errorhandler(404)
-    def handle_404(e):
-        print(f"   [Trace] 404 Error - Path: {flask.request.path}", flush=True)
-        return flask.jsonify(
-            {"error": "Resource Not Found: The API endpoint requested is invalid.", "status": 404}
-        ), 404
-
     @app.errorhandler(405)
     def handle_405(e):
         return flask.jsonify(

@@ -32,8 +32,8 @@ multiagent-eval evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 | `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
 | `DEFAULT_LLM_TIMEOUT` | `10` | Timeout for LLM provider calls |
 | `PLUGIN_TIMEOUT` | `5.0` | Execution timeout for eval plugins |
-| `OLLAMA_API_URL` | `.../api/chat` | Ollama model service endpoint |
 | `GOOGLE_API_KEY` | - | API key for Gemini provider |
+| `AEH_STRICT_JAIL` | `0` | Set to `1` for project-only path isolation |
 | `ENABLE_DEMO` | `true` | Enable internal UI demo features |
 
 
