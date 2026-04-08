@@ -28,7 +28,7 @@ jobs:
           pip install pip-audit bandit safety
 
       - name: Run pip-audit
-        run: pip-audit --desc on --summary
+        run: pip-audit --desc on
 
       - name: Run Bandit
         run: bandit -r .
