@@ -21,7 +21,7 @@ datasets==4.8.4
 
 # --- Security & Auth ---
 PyJWT==2.12.1
-cryptography==46.0.6
+cryptography==46.0.7
 
 # --- Observability & SDKs ---
 opentelemetry-api==1.40.0

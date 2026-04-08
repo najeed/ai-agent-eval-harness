@@ -17,13 +17,13 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ github.token }}
           persist-credentials: false
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -51,7 +51,7 @@ jobs:
           multiagent-eval evaluate --path scenarios/ --attempts 3
 
       - name: Upload Replay Traces
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: agent-run-traces
           path: reports/trajectories/*.jsonl
