@@ -2,9 +2,12 @@ name: Security Scan
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main" ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   python-security:

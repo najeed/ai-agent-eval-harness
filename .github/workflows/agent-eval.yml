@@ -2,9 +2,12 @@ name: Agent Reliability Gate
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
   push:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   evaluate-agents:

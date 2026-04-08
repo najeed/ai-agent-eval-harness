@@ -1,0 +1,76 @@
+/* Custom CSS for MultiAgentEval Persona-Based Documentation */
+
+:root {
+	/* The Commander (Evaluator) */
+	--sl-color-persona-evaluator: #4f46e5; /* Indigo */
+	/* The Navigator (Integrator) */
+	--sl-color-persona-integrator: #10b981; /* Emerald */
+	/* The Alchemist (Extender) */
+	--sl-color-persona-extender: #f59e0b; /* Amber */
+	/* The Architect (Builder) */
+	--sl-color-persona-builder: #3b82f6; /* Blue */
+	/* The Guardian (Auditor) */
+	--sl-color-persona-auditor: #ef4444; /* Crimson */
+
+    /* Premium Accents */
+    --aeh-card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Specific styling for the persona selection cards on the index page */
+.persona-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.persona-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* 
+   Persona-Specific Thematic Overrides 
+   Targeting via attribute selectors on the <html> tag (Starlight convention)
+*/
+
+/* Industry Evaluator - Indigo */
+:root:has(main [data-page-title*="Industry"]),
+[data-pagefind-filter^="evaluator"] {
+    --sl-color-accent-low: #312e81;
+    --sl-color-accent: #4f46e5;
+    --sl-color-accent-high: #a5b4fc;
+}
+
+/* Agent Integrator - Emerald */
+:root:has(main [data-page-title*="Agent Integrator"]),
+[data-pagefind-filter^="integrator"] {
+    --sl-color-accent-low: #064e3b;
+    --sl-color-accent: #10b981;
+    --sl-color-accent-high: #6ee7b7;
+}
+
+/* Platform Extender - Amber */
+:root:has(main [data-page-title*="Platform Extender"]),
+[data-pagefind-filter^="extender"] {
+    --sl-color-accent-low: #78350f;
+    --sl-color-accent: #f59e0b;
+    --sl-color-accent-high: #fcd34d;
+}
+
+/* OSS Core Builder - Blue */
+:root:has(main [data-page-title*="OSS Core Builder"]),
+[data-pagefind-filter^="builder"] {
+    --sl-color-accent-low: #1e3a8a;
+    --sl-color-accent: #3b82f6;
+    --sl-color-accent-high: #93c5fd;
+}
+
+/* Security Auditor - Crimson */
+:root:has(main [data-page-title*="Security Auditor"]),
+[data-pagefind-filter^="auditor"] {
+    --sl-color-accent-low: #7f1d1d;
+    --sl-color-accent: #ef4444;
+    --sl-color-accent-high: #fca5a5;
+}
