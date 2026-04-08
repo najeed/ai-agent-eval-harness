@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 
 
+from typing import Any
 from .events import CoreEvents, Event, EventEmitter
 from .plugins import BaseEvalPlugin
 
@@ -20,13 +21,16 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     def __init__(self):
         import eval_runner.config as config
-        self.log_dir = Path(os.getenv("RUN_LOG_DIR", config.RUN_LOG_DIR))
+        self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
         self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
         self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
         self.run_id = "unknown"
         self.master_log_path = self.log_dir / "run.jsonl"
         self.per_run_log_path = None
         self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
+        
+        # State-aware handles for Windows stability
+        self._handles = {}
 
         # [Iteration 4: Compliance DNA]
         self._sequence_number = 0
@@ -50,16 +54,13 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         # Special handling for RUN_START to set paths
         if event.name == CoreEvents.RUN_START:
             import sys
-            sys.stderr.write(f"   [FlightRecorder] RUN_START event detected. Refreshing config...\n")
-            # [Refresher] Re-read environment variables in case they were set by a handler after initialization.
+            # [Refresher] Re-read environment variables for dynamic runtime configuration
             import eval_runner.config as config
             self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
             self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
             self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
             self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
             self.master_log_path = self.log_dir / "run.jsonl"
-
-            sys.stderr.write(f"   [FlightRecorder] Target log dir: {self.log_dir}\n")
 
             self.run_id = data.get("run_id", "unknown")
             self.per_run_log_path = self.log_dir / f"{self.run_id}.jsonl"
@@ -68,10 +69,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             if self.log_rotate_count > 0:
                 self.rotate_logs()
 
-        # [Iteration 4: Signing]
+        # [Iteration 4: Signing] Trace-level integrity
         if self._audit_level >= 2 and self._private_key_path:
             try:
-                # Sign the stable JSON representation
                 payload = json.dumps(data, sort_keys=True).encode("utf-8")
                 data["_sig"] = verifier.TraceVerifier.sign_asymmetric(payload, self._private_key_path)
             except Exception as e:
@@ -80,56 +80,84 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         # Serialize and write
         content = json.dumps(data) + "\n"
 
-        if self.per_run and self.per_run_log_path:
-            with open(self.per_run_log_path, "a", encoding="utf-8") as f:
-                f.write(content)
+        def _write_buffered(path, content):
+            # [WinHardening] Persistent handles to bypass WinError 145/F-Lock contention
+            if str(path) not in self._handles:
+                self._handles[str(path)] = open(path, "a", encoding="utf-8", buffering=1)
+            self._handles[str(path)].write(content)
 
-        if self.master:
-            with open(self.master_log_path, "a", encoding="utf-8") as f:
-                f.write(content)
+        try:
+            if self.per_run and self.per_run_log_path:
+                _write_buffered(self.per_run_log_path, content)
 
-            # --- Master Log Rotation (Industrial Hygiene) ---
-            from . import config
+            if self.master:
+                _write_buffered(self.master_log_path, content)
+        except Exception as e:
+            import sys
+            sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
 
-            limit = config.RUN_LOG_MASTER_LIMIT
-            if limit > 0:
-                try:
-                    # check file size or line count occasionally?
-                    # For simplicity, we ensure the file doesn't explode in the background.
-                    # In a production setting, this would be a RotatingFileHandler.
-                    # Here we implement a manual "tail" truncation if limit is exceeded.
-                    with open(self.master_log_path, encoding="utf-8") as rf:
-                        lines = rf.readlines()
+    def finalize_run(self):
+        """
+        Explicitly closes file handles and flushes telemetry to disk.
+        Critical for resolving Windows file-lock races in v1.3.3.
+        """
+        import sys
+        import os
+        for path_str, handle in self._handles.items():
+            try:
+                handle.flush()
+                # [Staff Requirement] Force physical sync to prevent metadata corruption on crash
+                os.fsync(handle.fileno())
+                handle.close()
+            except (AttributeError, ImportError, ValueError):
+                # Guard against shutdown races where os or handles are already cleared
+                pass
+            except Exception as e:
+                sys.stderr.write(f"   [FlightRecorder] [WARNING] Finalization error on {path_str}: {e}\n")
+        self._handles.clear()
 
-                    if len(lines) > limit + 50:  # Buffer to avoid constant rewriting
-                        print(
-                            f"      [FlightRecorder] Rotating master log (Current: {len(lines)} entries, Limit: {limit})"  # noqa: E501
-                        )
-                        with open(self.master_log_path, "w", encoding="utf-8") as wf:
-                            wf.writelines(lines[-limit:])
-                except Exception as e:
-                    print(f"      [FlightRecorder] Rotation failed: {e}")
+    def __del__(self):
+        """
+        Graceful deallocator. Guards against sys.meta_path being None
+        during Python interpreter shutdown (race condition resolution).
+        """
+        import sys
+        try:
+            if sys and sys.meta_path is not None:
+                self.finalize_run()
+        except (AttributeError, ImportError):
+            pass
+
+    def after_evaluation(self, context: Any, results: list, span_context: dict[str, Any] | None = None):
+        """
+        Core Hook: Lifecycle aware finalization.
+        This is called by the engine before the evaluator returns control.
+        """
+        self.finalize_run()
 
     def rotate_logs(self):
         """Keeps only the latest N run-<id>.jsonl files."""
         run_files = sorted(
             self.log_dir.glob("*.jsonl"), key=lambda x: x.stat().st_mtime, reverse=True
         )
-
-        # Exclude the master log if it exists, and only target files (not directories)
         run_files = [f for f in run_files if f.name != "run.jsonl" and f.is_file()]
 
         if len(run_files) > self.log_rotate_count:
             for old_file in run_files[self.log_rotate_count :]:
                 try:
                     old_file.unlink()
-                    print(f"      [FlightRecorder] Rotated old log: {old_file.name}")
                 except Exception as e:
-                    print(f"      [FlightRecorder] Error rotating log {old_file}: {e}")
+                    import sys
+                    sys.stderr.write(f"   [FlightRecorder] [WARNING] Error rotating log {old_file.name}: {e}\n")
 
     def flush(self):
-        """Pass-through for API compatibility (writes are synchronous)."""
-        pass
+        """Explicit flush trigger."""
+        for handle in self._handles.values():
+            try:
+                handle.flush()
+                os.fsync(handle.fileno())
+            except:
+                pass
 
     # Note: methods like before_evaluation are still available if needed
     # but handle_event covers most needs for the Flight Recorder.

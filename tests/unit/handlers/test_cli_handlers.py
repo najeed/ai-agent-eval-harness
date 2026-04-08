@@ -1,24 +1,34 @@
 import json
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
-
 import pytest
+from pathlib import Path
+from argparse import Namespace
+from unittest.mock import AsyncMock, patch
+from eval_runner.handlers import analysis, environment, scenarios, evaluation
 
-from eval_runner.handlers import analysis, environment, evaluation, scenarios
-
+@pytest.fixture
+def physical_env(tmp_path):
+    """
+    Standardized Physical Environment for Zero-Mock Verification.
+    """
+    root = tmp_path / "root"
+    root.mkdir()
+    return root
 
 @pytest.fixture
 def mock_args():
-    args = MagicMock()
-    args.industry = "finance"
-    args.format = "json"
-    args.days = 7
-    args.input = "input.json"
-    args.output_dir = "output"
-    args.query = "test"
-    args.standard = None
-    args.scenario_path = "scen.json"
-    return args
+    return Namespace(
+        industry="finance",
+        format="json",
+        days=7,
+        input="input.json",
+        output_dir="output",
+        query="test",
+        standard=None,
+        scenario_path="scen.json",
+        search="test",
+        refresh=False,
+        target="scen.json"
+    )
 
 
 @pytest.mark.asyncio
@@ -116,9 +126,12 @@ async def test_handle_taxonomy(mock_args, capsys):
 
 
 @pytest.mark.asyncio
-async def test_handle_verify_missing(capsys):
+async def test_handle_verify_missing(capsys, physical_env, monkeypatch):
     """Test 'verify' with missing file. Forensic alignment: Uses [CRITICAL] string."""
-    args = MagicMock(path="missing.jsonl", manifest=None)
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", physical_env)
+    
+    # Passing a run-id that doesn't exist in the physical runs/ directory
+    args = Namespace(run_id="missing_run", path=None, manifest=None)
     with pytest.raises(SystemExit) as e:
         await evaluation.handle_verify(args)
     assert e.value.code == 1

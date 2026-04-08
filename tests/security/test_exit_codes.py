@@ -1,41 +1,39 @@
 import pytest
 import sys
-from unittest.mock import MagicMock, patch
-from eval_runner.handlers import evaluation
+from pathlib import Path
+from argparse import Namespace
+from unittest.mock import patch
+from eval_runner.handlers.evaluation import handle_certify, handle_run, handle_evaluate
 
 @pytest.mark.asyncio
-async def test_handle_run_exit_on_exception():
+async def test_handle_run_exit_on_exception(tmp_path):
     """Verify BUG-01: handle_run must exit with code 1 on exception."""
-    args = MagicMock()
-    args.scenario = "non_existent.json"
+    # Scenario doesn't exist - should trigger explicit sys.exit(1)
+    args = Namespace(scenario="non_existent.json", engine="open_core", run_id=None)
     
     with patch("eval_runner.handlers.evaluation.sys.exit") as mock_exit:
-        with patch("eval_runner.handlers.evaluation.traceback.print_exc") as mock_trace:
-            # This should trigger the exception block in handle_run
-            await evaluation.handle_run(args)
-            mock_exit.assert_called_once_with(1)
-            mock_trace.assert_called_once()
+        # handle_run prints an error message then exits
+        await handle_run(args)
+        mock_exit.assert_called_once_with(1)
 
 @pytest.mark.asyncio
-async def test_handle_evaluate_exit_on_exception():
+async def test_handle_evaluate_exit_on_exception(tmp_path):
     """Verify BUG-01: handle_evaluate must exit with code 1 on exception."""
-    args = MagicMock()
-    args.path = "non_existent/"
+    # Passing a directory instead of a file should trigger failure
+    bad_path = tmp_path / "not_a_file"
+    bad_path.mkdir()
+    args = Namespace(path=str(bad_path), engine="open_core", run_id=None)
     
     with patch("eval_runner.handlers.evaluation.sys.exit") as mock_exit:
-        with patch("eval_runner.handlers.evaluation.traceback.print_exc") as mock_trace:
-            await evaluation.handle_evaluate(args)
-            mock_exit.assert_called_once_with(1)
-            mock_trace.assert_called_once()
+        await handle_evaluate(args)
+        mock_exit.assert_called_once_with(1)
 
 @pytest.mark.asyncio
-async def test_handle_certify_exit_on_exception():
+async def test_handle_certify_exit_on_exception(tmp_path):
     """Verify BUG-01: handle_certify must exit with code 1 on exception."""
-    args = MagicMock()
-    args.path = "non_existent.jsonl"
+    # Passing a non-existent file path
+    args = Namespace(path="non_existent.jsonl", run_id=None, metadata=None, private_key=None)
     
     with patch("eval_runner.handlers.evaluation.sys.exit") as mock_exit:
-        with patch("eval_runner.handlers.evaluation.traceback.print_exc") as mock_trace:
-            await evaluation.handle_certify(args)
-            mock_exit.assert_called_once_with(1)
-            mock_trace.assert_called_once()
+        await handle_certify(args)
+        mock_exit.assert_called_once_with(1)

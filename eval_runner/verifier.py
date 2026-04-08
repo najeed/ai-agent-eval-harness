@@ -170,6 +170,7 @@ class TraceVerifier:
         metadata: dict[str, Any] | None = None,
         private_key_path: str | None = None,
         fingerprint_id: str | None = None,
+        run_id: str | None = None,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC).
@@ -184,7 +185,13 @@ class TraceVerifier:
 
         # 1. Compute Integrity Hash (SHA-256)
         sha256_hash = cls.compute_signature(p)
-        run_id = p.stem
+        
+        # Identity-Aware Run ID Resolution
+        if not run_id:
+            if p.name == "run.jsonl":
+                run_id = p.parent.name
+            else:
+                run_id = p.stem
 
         # 2. Build the Manifest (Standardized)
         # We normalize the timestamp to 3 decimal places to prevent bit-level drift

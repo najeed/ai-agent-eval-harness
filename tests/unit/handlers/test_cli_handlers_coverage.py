@@ -119,9 +119,12 @@ async def test_handle_aes_validate_error_paths(tmp_path, capsys):
 
 
 @pytest.mark.asyncio
-async def test_handle_verify_missing(capsys):
+async def test_handle_verify_missing(capsys, tmp_path, monkeypatch):
     """Test 'verify' with missing file. Forensic: [CRITICAL] string."""
-    args = MagicMock(path="missing.jsonl", manifest=None)
+    # Ensure we are in a safe project jail for this test
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+    
+    args = MagicMock(path="missing.jsonl", manifest=None, run_id=None)
     with pytest.raises(SystemExit) as e:
         await evaluation.handle_verify(args)
     assert e.value.code == 1

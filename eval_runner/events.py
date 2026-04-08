@@ -77,7 +77,14 @@ class EventEmitter:
 
     @classmethod
     def reset(cls):
-        """Clear all subscribers (used for testing stabilization)."""
+        """Clear all subscribers and notify them to cleanup if possible."""
+        for sub in cls._subscribers:
+            try:
+                # If subscriber is a bound method of a class with cleanup logic
+                if hasattr(sub, "__self__") and hasattr(sub.__self__, "close_all"):
+                    sub.__self__.close_all()
+            except:
+                pass
         cls._subscribers = []
 
     @classmethod

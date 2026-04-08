@@ -8,8 +8,16 @@ from dotenv import load_dotenv
 # Load environment variables from .env file if it exists
 load_dotenv()
 
-# Absolute Authoritative Project Root (supports environment override for test isolation)
-PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent))).resolve()
+# Absolute Authoritative Project Root
+# Industrial Hardening: Use abspath to bypass Windows Roaming redirection
+_lib_dir = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", os.path.dirname(_lib_dir))).absolute()
+
+# Diagnostic: Identify exactly which config.py is being used
+if os.getenv("DEBUG_PATHS", "true").lower() == "true":
+    import sys
+    sys.stderr.write(f"   [Config] Loading Core Config from: {__file__}\n")
+    sys.stderr.write(f"   [Config] Authoritative PROJECT_ROOT: {PROJECT_ROOT}\n")
 
 
 def _get_project_version() -> str:
@@ -80,7 +88,7 @@ MAX_ENGINE_ATTEMPTS = int(os.getenv("MAX_ENGINE_ATTEMPTS", "50"))
 DEFAULT_INDUSTRY = os.getenv("DEFAULT_INDUSTRY", "telecom")
 
 # --- Logging Configuration ---
-RUN_LOG_DIR = (PROJECT_ROOT / os.getenv("RUN_LOG_DIR", "runs")).resolve()
+RUN_LOG_DIR = (PROJECT_ROOT / os.getenv("RUN_LOG_DIR", "runs")).absolute()
 RUN_LOG_PER_RUN = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
 RUN_LOG_MASTER = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 RUN_LOG_ROTATE_COUNT = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
@@ -145,7 +153,7 @@ REFUSAL_KEYWORDS = os.getenv(
 ).split(",")
 
 # --- Reporter Configuration ---
-REPORTS_DIR = (PROJECT_ROOT / os.getenv("REPORTS_DIR", "reports")).resolve()
+REPORTS_DIR = (PROJECT_ROOT / os.getenv("REPORTS_DIR", "reports")).absolute()
 TRAJECTORIES_DIR = REPORTS_DIR / "trajectories"
 HTML_REPORTS_DIR = REPORTS_DIR / "html"
 

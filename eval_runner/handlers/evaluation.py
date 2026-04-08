@@ -46,6 +46,21 @@ def prepare_agent_env(args) -> dict:
     }
 
 
+def load_plugins_from_args(args):
+    """Authoritative plugin injection (v1.3.0 Standard)."""
+    from .. import plugins
+
+    plugin_list = getattr(args, "plugin", []) or []
+    # Environment priority fallback
+    env_plugins = os.getenv("AES_PLUGINS", "").split(",")
+    for p in plugin_list + [ep for ep in env_plugins if ep.strip()]:
+        if p.strip():
+            try:
+                plugins.manager.load(p.strip())
+            except Exception as e:
+                print(f"   [CLI] Warning: Failed to load plugin {p}: {e}")
+
+
 async def handle_evaluate(args):
     """Execution logic for the 'evaluate' command."""
     # [Audit BUG-04] Robust environment overrides
@@ -67,6 +82,9 @@ async def handle_evaluate(args):
 
         random.seed(seed)
         print(f"[CLI] Set random seed to: {seed}")
+
+    # Load plugins early (v1.3.0 Industrial Standards)
+    load_plugins_from_args(args)
 
     agent_metadata = prepare_agent_env(args)
 
@@ -140,6 +158,9 @@ async def handle_run(args):
 
         random.seed(seed)
         print(f"[CLI] Set random seed to: {seed}")
+
+    # Load plugins early (v1.3.0 Industrial Standards)
+    load_plugins_from_args(args)
 
     agent_metadata = prepare_agent_env(args)
 
@@ -219,29 +240,53 @@ async def handle_replay(args):
 
 
 async def handle_verify(args):
-    """Handler for 'verify' command."""
-    from .. import verifier
+    """
+    Handles the cryptographic integrity check of a run trace.
+    Standard Pillar 1 of the industrial Trust Protocol.
+    """
+    from eval_runner.verifier import TraceVerifier
+    from pathlib import Path
 
-    trace_path = Path(args.path)
-    if not _ensure_path_safe(trace_path, "Trace file"):
+    # --- [SSOT] Artifact Resolution (v1.3.3) ---
+    trace_path = args.path
+    manifest_path = None
+
+    if args.run_id:
+        # Autonomous resolve from authoritative vault
+        run_log_dir = config.RUN_LOG_DIR / args.run_id
+        trace_path = str(run_log_dir / "run.jsonl")
+        manifest_path = str(run_log_dir / f"{args.run_id}_manifest.json")
+        print(f"      [Identity] Resolved trace for {args.run_id} -> {trace_path}")
+        print(f"      [Identity] Resolved manifest for {args.run_id} -> {manifest_path}")
+
+    if not trace_path:
+        print("Error: Must provide either --run-id or --path for verification.")
+        sys.exit(1)
+
+    tp = Path(trace_path)
+    if not _ensure_path_safe(tp, "Trace file"):
         sys.exit(1)
         return
 
-    manifest_path = (
-        Path(args.manifest)
-        if args.manifest
-        else trace_path.parent / f"{trace_path.stem}_manifest.json"
-    )
-
-    if not _ensure_path_safe(manifest_path, "Manifest file"):
+    if not tp.exists():
+        print(f"      [CRITICAL] FAILED: Trace integrity compromised! (File not found: {trace_path})")
         sys.exit(1)
         return
 
-    if await verifier.TraceVerifier.verify_trace_async(str(trace_path), str(manifest_path)):
-        print("[OK] VERIFIED: Trace integrity matches manifest.")
+    # If verifying via --path without --run-id, assume manifest is the default sidecar
+    if not manifest_path:
+        p = Path(trace_path)
+        manifest_path = str(p.parent / f"{p.stem}_manifest.json")
+
+    # Canonical Verification Call (Pillar 1)
+    # TraceVerifier.verify_trace is the industrial standard method.
+    is_valid = await TraceVerifier.verify_trace_async(str(trace_path), str(manifest_path))
+
+    if is_valid:
+        print("      [OK] VERIFIED: Trace integrity matches manifest.")
         sys.exit(0)
     else:
-        print("[CRITICAL] FAILED: Trace integrity compromised!")
+        print("      [CRITICAL] FAILED: Trace integrity compromised!")
         sys.exit(1)
 
 
@@ -252,7 +297,35 @@ async def handle_gate(args):
     """
     from .. import verifier
 
-    vc_path = Path(args.vc)
+    # Industrial Discovery: Resolve manifest via --vc or --run-id
+    run_id = getattr(args, "run_id", None)
+    vc_path_str = getattr(args, "vc", None)
+    
+    if not run_id and not vc_path_str:
+        print("[GATE] FAILURE: Explicit Run ID (--run-id) or Certificate path (--vc) is required.")
+        sys.exit(1)
+        return
+
+    # Absolute Identity (SSOT) Resolve Logic
+    vc_path = None
+    if run_id:
+        # Standard Vault lookup (Primary Case)
+        vault_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+        # Sidecar lookup (Refactor Fallback)
+        sidecar_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+        
+        if vault_path.exists():
+            vc_path = vault_path
+        elif sidecar_path.exists():
+            vc_path = sidecar_path
+        else:
+            print(f"[GATE] FAILURE: Manifest not found for Run ID '{run_id}' in Vault or Sidecar.")
+            sys.exit(1)
+            return
+    else:
+        # Legacy direct path lookup (Deprecated)
+        vc_path = Path(vc_path_str)
+
     if not _ensure_path_safe(vc_path, "Verification Certificate"):
         sys.exit(1)
 
@@ -264,14 +337,19 @@ async def handle_gate(args):
         with open(vc_path, encoding="utf-8") as f:
             manifest = json.load(f)
 
-        # 1. Basic Integrity Check (SHA-256)
-        trace_name = manifest.get("trace_file")
-        trace_path = vc_path.parent / trace_name
+        # 1. Base Integrity Resolve
+        trace_name = manifest.get("trace_file", "run.jsonl")
+        
+        # Identity-Aware Trace Resolution
+        if run_id:
+            # If we have run_id, we look in the deterministic log directory
+            trace_path = config.RUN_LOG_DIR / run_id / trace_name
+        else:
+            # Legacy anchor path
+            trace_path = vc_path.parent / trace_name
 
         if not trace_path.exists():
-            print(f"[GATE] FAILURE: Associated trace file missing: {trace_name}")
-            # Reconcile for audit tests: trigger traceback if logical exit
-            traceback.print_exc() 
+            print(f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}")
             sys.exit(1)
             return
 
@@ -335,24 +413,41 @@ async def handle_certify(args):
     """
     from .. import verifier
 
-    trace_path = Path(args.path)
+    # Industrial Discovery: Resolve trace via --run-id or --path
+    run_id = getattr(args, "run_id", None)
+    trace_path_str = getattr(args, "path", None)
+    
+    if not run_id and not trace_path_str:
+        print("❌ Error: Explicit Run ID (--run-id) or trace path (--path) is required.")
+        sys.exit(1)
+        return
+
+    # Absolute Identity (SSOT) Resolve Logic
+    if run_id:
+        # Resolve from mandatory industrial run log directory
+        trace_path = config.RUN_LOG_DIR / run_id / "run.jsonl"
+    else:
+        trace_path = Path(trace_path_str)
+
     if not _ensure_path_safe(trace_path, "Trace file"):
         sys.exit(1)
         return
 
     try:
         if not trace_path.exists():
-            print(f"❌ Error: Trace file not found: {trace_path}")
-            traceback.print_exc()  # Trigger for test compliance
+            print(f"❌ Error: Trace file not found at {trace_path}")
             sys.exit(1)
             return
 
-        print(f"[*] Certifying trace: {trace_path}")
+        print(f"[*] Certifying trace identity: {run_id or trace_path.name}")
         manifest = verifier.TraceVerifier.sign_trace(
             str(trace_path),
-            private_key_path=getattr(args, "private_key", None)
+            private_key_path=getattr(args, "private_key", None),
+            fingerprint_id=getattr(args, "fingerprint", None)
         )
 
+        manifest_path = trace_path.parent / f"run_manifest.json"
+        
         print("✅ Success: Verification Certificate generated.")
         print(f"    - Run ID: {manifest.get('run_id')}")
         print(f"    - SHA-256: {manifest.get('sha256')}")
@@ -361,7 +456,7 @@ async def handle_certify(args):
         else:
             print("    - Signed: No (Integrity-only manifest)")
 
-        print(f"    - Manifest: {trace_path.parent / f'{trace_path.stem}_manifest.json'}")
+        print(f"    - Manifest: {manifest_path}")
         
         sys.exit(0)
 
