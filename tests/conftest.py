@@ -4,8 +4,6 @@ conftest.py
 Shared fixtures and configuration for the MultiAgentEval test suite.
 """
 
-import sys
-
 import pytest
 import pytest_asyncio
 
@@ -85,7 +83,7 @@ def check_loop_hygiene():
         if loop is not None:
             warnings.warn(
                 f"Loop pollution: An event loop ({loop}) is still SET in the policy after test completion.",
-                RuntimeWarning,
+                RuntimeWarning, stacklevel=2,
             )
     except Exception:
         # No loop set, which is the clean state we want.

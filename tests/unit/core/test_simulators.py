@@ -2,9 +2,11 @@
 Test suite for hardened simulation objects.
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
+
 from eval_runner import simulators
-from unittest.mock import patch, MagicMock
 
 
 @pytest.mark.asyncio
@@ -18,14 +20,14 @@ async def test_git_simulator():
     with patch("git.Repo") as mock_repo_class:
         mock_repo = mock_repo_class.return_value
         sim._repo = mock_repo
-        
+
         res = await sim.execute("git_add", {"files": ["file1.txt"]})
         assert res["status"] == "success"
-        
+
         mock_commit = MagicMock()
         mock_commit.hexsha = "abc123"
         mock_repo.index.commit.return_value = mock_commit
-        
+
         res = await sim.execute("git_commit", {"message": "feat: test"})
         assert res["status"] == "success"
 
@@ -58,14 +60,14 @@ async def test_cloud_simulator():
 async def test_terminal_simulator(tmp_path):
     sim = simulators.TerminalSimulator()
     sim.terminal_jail = tmp_path
-    
+
     # Use a command that works without shell redirection
     # On Windows, 'echo' is a builtin but also exists as an executable in some envs
     # Better: use python to write a file for cross-platform reliability
-    cmd = f"python -c \"with open('file1.txt', 'w') as f: f.write('test')\""
+    cmd = "python -c \"with open('file1.txt', 'w') as f: f.write('test')\""
     res = await sim.execute("terminal_execute", {"cmd": cmd})
     assert res["status"] == "success"
-    
+
     res = await sim.execute("terminal_execute", {"cmd": "python --version"})
     assert res["status"] == "success"
 

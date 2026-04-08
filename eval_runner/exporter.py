@@ -2,8 +2,8 @@
 import json
 from pathlib import Path
 
-from .trace_utils import load_events
 from . import config
+from .trace_utils import load_events
 
 
 class HFExporter:

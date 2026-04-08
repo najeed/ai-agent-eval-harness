@@ -7,10 +7,9 @@ Defines the environment in which the agent's tool calls are executed.
 Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 """
 
+import os  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
 from typing import Any  # noqa: E402
-import os  # noqa: E402
-
 
 from . import config  # noqa: E402
 
@@ -84,10 +83,11 @@ class AbstractSandbox(ABC):
         self._simulator_cache: dict[str, Any] | None = None
 
         # [Turn 2 Hardening] Session-Scoped Terminal Jail
-        import eval_runner.config as config
-        import json
         import hashlib
-        
+        import json
+
+        import eval_runner.config as config
+
         self.run_id = self.scenario.get("run_id", "unknown_run")
         self.terminal_jail = (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
 
@@ -103,7 +103,7 @@ class AbstractSandbox(ABC):
         # Inject into scenario for first-class status in run traces (Metadata DNA)
         if "metadata" not in self.scenario:
             self.scenario["metadata"] = {"name": "unnamed", "compliance_level": "Standard"}
-        
+
         self.scenario["metadata"]["provisioning_hash"] = self.provisioning_hash
         self.scenario["environmental_snapshot"] = self.provisioning_snapshot
 
@@ -114,7 +114,7 @@ class AbstractSandbox(ABC):
         Path(self.workspace_dir).mkdir(parents=True, exist_ok=True)
         # Ensure the terminal_jail exists physically (Iteration 2 Physical Isolation)
         Path(self.terminal_jail).mkdir(parents=True, exist_ok=True)
-        
+
         print(f"      [Sandbox] Workspace initialized at: {self.workspace_dir}")
         print(f"      [Sandbox] Terminal Jail provisioned: {self.terminal_jail}")
 
@@ -132,9 +132,10 @@ class AbstractSandbox(ABC):
                 print("      [Sandbox] Workspace cleaned up.")
 
         # [Iteration 5: Secure Wipe] Cleanup terminal_jail
-        import eval_runner.config as config
-        cleanup_jail = metadata.get("cleanup_terminal_jail", os.getenv("CLEANUP_TERMINAL_JAIL", "true").lower() == "true")
-        
+        cleanup_jail = metadata.get(
+            "cleanup_terminal_jail", os.getenv("CLEANUP_TERMINAL_JAIL", "true").lower() == "true"
+        )
+
         if cleanup_jail:
             jail_path = Path(self.terminal_jail)
             if jail_path.exists():
@@ -148,7 +149,9 @@ class AbstractSandbox(ABC):
                     await sim.cleanup()
                 except:  # noqa: E722
                     pass
-            print(f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up (Registry Teardown).")
+            print(
+                f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up (Registry Teardown)."
+            )
 
     @abstractmethod
     def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:

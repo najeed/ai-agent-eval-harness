@@ -28,7 +28,7 @@ def get_catalog():
 def security_intercept_blueprint():
     """Intercepts traversal attempts before normalization or routing."""
     from urllib.parse import unquote
-    
+
     # [INDUSTRIAL HARDENING] Use multi-layered inspection (raw vs normalized)
     raw_uri = request.environ.get("REQUEST_URI", "").lower()
     path_info = request.environ.get("PATH_INFO", "").lower()
@@ -39,7 +39,7 @@ def security_intercept_blueprint():
     # Targets for detection: we must catch cases where normalization has already occurred
     # BUT we also catch the raw/unquoted variants for encoded attempts.
     targets = [raw_uri, path_info, path, full_path, url, unquote(raw_uri), unquote(path)]
-    
+
     if any(".." in t or "%2e" in t for t in targets):
         return jsonify(
             {"error": "Security: Unauthorized Path Traversal Attempt Detected", "status": 403}
@@ -107,7 +107,7 @@ def get_system_info():
             # Ensure we are working with resolved Path objects for robust comparison
             p = Path(path_val).resolve()
             root = Path(config.PROJECT_ROOT).resolve()
-            
+
             # Windows/NT check: common to have casing drift (c: vs C:)
             if p.is_relative_to(root) or str(p).lower().startswith(str(root).lower()):
                 # If is_relative_to fails due to casing on some platforms,
@@ -116,11 +116,11 @@ def get_system_info():
                     return f"./{p.relative_to(root)}"
                 except ValueError:
                     # Robust Slice: last resort for Windows casing drift
-                    rel_part = str(p)[len(str(root)):].lstrip("\\/")
+                    rel_part = str(p)[len(str(root)) :].lstrip("\\/")
                     return f"./{rel_part}"
-            return p.name # Fallback to basename only for safety
+            return p.name  # Fallback to basename only for safety
         except Exception:
-            return "hidden" # Maximum safety fallback
+            return "hidden"  # Maximum safety fallback
 
     return jsonify(
         {
@@ -245,13 +245,15 @@ def verify_run_public(run_id):
         # verify_trace handles both SHA-256 and ED25519 (if PK is in the manifest)
         # For public verification, we assume integrity check is the baseline.
         is_valid = TraceVerifier.verify_trace(str(trace_path), str(cert_path))
-        
-        return jsonify({
-            "run_id": run_id,
-            "verified": is_valid,
-            "timestamp": datetime.now().astimezone().isoformat(),
-            "method": "SHA-256 integrity check"
-        })
+
+        return jsonify(
+            {
+                "run_id": run_id,
+                "verified": is_valid,
+                "timestamp": datetime.now().astimezone().isoformat(),
+                "method": "SHA-256 integrity check",
+            }
+        )
     except Exception as e:
         return jsonify({"error": f"Verification failed: {str(e)}", "verified": False}), 500
 
@@ -340,15 +342,17 @@ def execute_demo_command():
             # If it looks like a path, resolve and check jail + whitelist
             filename = os.path.basename(part.replace("\\", "/"))
             is_whitelisted = any(f.lower() == filename.lower() for f in allowed_files)
-            
+
             # 1. Jail Check (Always enforced)
             if not is_path_safe(part, demo_dir):
                 return jsonify({"error": f"Security: Access outside demo jail denied: {part}"}), 403
-            
+
             # 2. Read Whitelist (Enforced for cat/type)
             if cmd_lower.startswith(("cat ", "type ", "cat", "type")):
                 if not is_whitelisted:
-                    return jsonify({"error": f"Security: Access outside demo jail denied: {part}"}), 403
+                    return jsonify(
+                        {"error": f"Security: Access outside demo jail denied: {part}"}
+                    ), 403
 
     # Native Handlers for common shell operations (Industrial Hardening)
     import shutil
@@ -645,7 +649,6 @@ def list_runs():
         # Skip the master global log to avoid duplicates (filtered in Step 1)
         if p.name == "run.jsonl" and p.parent == config.RUN_LOG_DIR:
             continue
-
 
         try:
             with open(p, encoding="utf-8") as f:

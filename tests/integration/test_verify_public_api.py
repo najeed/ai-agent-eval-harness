@@ -1,8 +1,9 @@
-import json
 import pytest
+
 from eval_runner import config
 from eval_runner.console.app import create_app
 from eval_runner.verifier import TraceVerifier
+
 
 @pytest.fixture
 def client():
@@ -10,6 +11,7 @@ def client():
     app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
+
 
 def test_public_verify_endpoint(client, tmp_path):
     """

@@ -1,8 +1,10 @@
-import sys
-import os
 import asyncio
+import os
+import sys
 from pathlib import Path
+
 import aiohttp
+
 from . import config
 
 
@@ -86,7 +88,7 @@ def show_registry_report():
         # Display sanitized source locations (Security Hardening: No absolute paths)
         print("\n  Registry Sources:")
         print(f"    ✔ [Internal] {config.SHIM_RESOURCES_INTERNAL_PATH.name}")
-        
+
         if config.SHIM_RESOURCES_D_DIR.exists():
             try:
                 rel_d = config.SHIM_RESOURCES_D_DIR.relative_to(config.PROJECT_ROOT)
@@ -104,7 +106,7 @@ async def run_doctor(show_registry: bool = False):
 
     # 1. Python Version
     py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-    if sys.version_info < (3, 11):
+    if sys.version_info < (3, 11):  # noqa: UP036
         print(f"  ❌ Python version {py_ver} is too old. Requires 3.11+")
     else:
         print(f"  ✔ Python version OK ({py_ver})")

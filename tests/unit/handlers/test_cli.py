@@ -5,7 +5,7 @@ Unit tests for the Onboarding CLI (eval_runner.cli).
 Updated for subparser architecture and robustness.
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 

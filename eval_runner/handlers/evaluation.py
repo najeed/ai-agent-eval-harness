@@ -10,7 +10,7 @@ import sys
 import traceback
 from pathlib import Path
 
-from .. import engine, loader, trace_utils, utils, config
+from .. import config, engine, loader, trace_utils, utils
 
 
 def _ensure_path_safe(path: str | Path, description: str = "Path"):
@@ -67,11 +67,11 @@ async def handle_evaluate(args):
     run_log_dir = getattr(args, "run_log_dir", None)
     if run_log_dir and isinstance(run_log_dir, str):
         os.environ["RUN_LOG_DIR"] = run_log_dir
-    
+
     per_run_logs = getattr(args, "per_run_logs", None)
     if per_run_logs is not None:
         os.environ["RUN_LOG_PER_RUN"] = "true" if per_run_logs else "false"
-        
+
     master_log = getattr(args, "master_log", None)
     if master_log is not None:
         os.environ["RUN_LOG_MASTER"] = "true" if master_log else "false"
@@ -128,7 +128,7 @@ async def handle_evaluate(args):
                     scenario,
                     metadata={"args": args_dict, **agent_metadata},
                 )
-        
+
         sys.exit(0)
     except Exception:
         print("❌ Error during evaluation execution:")
@@ -143,11 +143,11 @@ async def handle_run(args):
     run_log_dir = getattr(args, "run_log_dir", None)
     if run_log_dir and isinstance(run_log_dir, str):
         os.environ["RUN_LOG_DIR"] = run_log_dir
-        
+
     per_run_logs = getattr(args, "per_run_logs", None)
     if per_run_logs is not None:
         os.environ["RUN_LOG_PER_RUN"] = "true" if per_run_logs else "false"
-        
+
     master_log = getattr(args, "master_log", None)
     if master_log is not None:
         os.environ["RUN_LOG_MASTER"] = "true" if master_log else "false"
@@ -183,7 +183,7 @@ async def handle_run(args):
             )
             scenario_name = scenario.get("title", scenario.get("scenario_id", "Unknown Scenario"))
             print(f"\n   [CLI] Evaluation complete for {scenario_name}")
-        
+
         sys.exit(0)
 
     except Exception:
@@ -235,7 +235,7 @@ async def handle_replay(args):
             print(f"Agent: {event.get('content', '')}")
         elif ev_type == "run_end":
             print(f"--- Run Finished: {event.get('status')} ---")
-    
+
     sys.exit(0)
 
 
@@ -244,8 +244,9 @@ async def handle_verify(args):
     Handles the cryptographic integrity check of a run trace.
     Standard Pillar 1 of the industrial Trust Protocol.
     """
-    from eval_runner.verifier import TraceVerifier
     from pathlib import Path
+
+    from eval_runner.verifier import TraceVerifier
 
     # --- [SSOT] Artifact Resolution ---
     trace_path = args.path
@@ -269,7 +270,9 @@ async def handle_verify(args):
         return
 
     if not tp.exists():
-        print(f"      [CRITICAL] FAILED: Trace integrity compromised! (File not found: {trace_path})")
+        print(
+            f"      [CRITICAL] FAILED: Trace integrity compromised! (File not found: {trace_path})"
+        )
         sys.exit(1)
         return
 
@@ -300,7 +303,7 @@ async def handle_gate(args):
     # Industrial Discovery: Resolve manifest via --vc or --run-id
     run_id = getattr(args, "run_id", None)
     vc_path_str = getattr(args, "vc", None)
-    
+
     if not run_id and not vc_path_str:
         print("[GATE] FAILURE: Explicit Run ID (--run-id) or Certificate path (--vc) is required.")
         sys.exit(1)
@@ -313,7 +316,7 @@ async def handle_gate(args):
         vault_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
         # Sidecar lookup (Refactor Fallback)
         sidecar_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-        
+
         if vault_path.exists():
             vc_path = vault_path
         elif sidecar_path.exists():
@@ -339,7 +342,7 @@ async def handle_gate(args):
 
         # 1. Base Integrity Resolve
         trace_name = manifest.get("trace_file", "run.jsonl")
-        
+
         # Identity-Aware Trace Resolution
         if run_id:
             # If we have run_id, we look in the deterministic log directory
@@ -416,7 +419,7 @@ async def handle_certify(args):
     # Industrial Discovery: Resolve trace via --run-id or --path
     run_id = getattr(args, "run_id", None)
     trace_path_str = getattr(args, "path", None)
-    
+
     if not run_id and not trace_path_str:
         print("❌ Error: Explicit Run ID (--run-id) or trace path (--path) is required.")
         sys.exit(1)
@@ -443,11 +446,11 @@ async def handle_certify(args):
         manifest = verifier.TraceVerifier.sign_trace(
             str(trace_path),
             private_key_path=getattr(args, "private_key", None),
-            fingerprint_id=getattr(args, "fingerprint", None)
+            fingerprint_id=getattr(args, "fingerprint", None),
         )
 
-        manifest_path = trace_path.parent / f"run_manifest.json"
-        
+        manifest_path = trace_path.parent / "run_manifest.json"
+
         print("✅ Success: Verification Certificate generated.")
         print(f"    - Run ID: {manifest.get('run_id')}")
         print(f"    - SHA-256: {manifest.get('sha256')}")
@@ -457,7 +460,7 @@ async def handle_certify(args):
             print("    - Signed: No (Integrity-only manifest)")
 
         print(f"    - Manifest: {manifest_path}")
-        
+
         sys.exit(0)
 
     except Exception:

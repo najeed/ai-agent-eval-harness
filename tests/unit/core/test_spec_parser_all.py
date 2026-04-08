@@ -1,6 +1,7 @@
-import pytest
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # SUT
 import eval_runner.spec_parser as spec_parser
@@ -106,9 +107,7 @@ async def test_parse_markdown_llm_synthesis_failure(mock_synth):
 @patch("eval_runner.config.GOOGLE_API_KEY", "mock-key")
 async def test_synthesize_tasks_from_prd_success(mock_gemini_cls):
     mock_provider = AsyncMock()
-    mock_provider.generate.return_value = (
-        '```json\n[{"task_id": "T1", "title": "T1 Title"}]\n```'
-    )
+    mock_provider.generate.return_value = '```json\n[{"task_id": "T1", "title": "T1 Title"}]\n```'
     mock_gemini_cls.return_value = mock_provider
 
     tasks = await spec_parser.synthesize_tasks_from_prd("md content")
@@ -148,4 +147,3 @@ def test_save_scenario_json():
             spec_parser.save_scenario_json({"test": 1}, mock_path)
             mock_dump.assert_called()
             mock_path.parent.mkdir.assert_called()
-

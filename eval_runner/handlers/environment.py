@@ -18,7 +18,6 @@ from .. import (
     registry_sync,
     scaffold,
 )
-from ..utils import safe_run_async
 
 
 async def handle_analyze(args):

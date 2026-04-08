@@ -52,6 +52,7 @@ def test_handle_run_env_propagation(mock_eval, mock_load, tmp_path):
 
     import asyncio
     import os
+
     import pytest
 
     with pytest.raises(SystemExit) as e:

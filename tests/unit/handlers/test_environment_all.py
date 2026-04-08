@@ -151,7 +151,9 @@ class TestEnvironmentHandlers:
 
     @pytest.mark.asyncio
     async def test_handle_registry_search(self, clean_args):
-        with patch("eval_runner.handlers.scenarios.handle_catalog_search", new_callable=AsyncMock) as mock_search:
+        with patch(
+            "eval_runner.handlers.scenarios.handle_catalog_search", new_callable=AsyncMock
+        ) as mock_search:
             await handlers.handle_registry_search(clean_args)
             mock_search.assert_awaited_with(clean_args)
 

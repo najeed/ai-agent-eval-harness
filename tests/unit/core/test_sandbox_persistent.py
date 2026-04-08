@@ -5,9 +5,11 @@ Verifies that world simulators maintain state across multiple execute() calls
 within the same ToolSandbox instance (fixing the previous stateless regression).
 """
 
-import pytest
-from eval_runner.tool_sandbox import ToolSandbox
 from unittest.mock import MagicMock
+
+import pytest
+
+from eval_runner.tool_sandbox import ToolSandbox
 
 
 @pytest.mark.asyncio
@@ -24,10 +26,9 @@ async def test_git_state_persistence_in_sandbox():
     }
 
     sandbox = ToolSandbox(scenario)
-    
+
     # [Hardening Fix] The industrial GitSimulator requires an active repo for git_add
     # We mock git.Repo logic inside the simulator to avoid real FS operations in unit tests
-    from unittest.mock import MagicMock
     mock_repo = MagicMock()
     sandbox.get_active_simulators()["git"]._repo = mock_repo
 
@@ -36,7 +37,7 @@ async def test_git_state_persistence_in_sandbox():
     assert res1["status"] == "success"
 
     # 2. Verify it's staged in the cached simulator
-    sims = sandbox.get_active_simulators()
+    sandbox.get_active_simulators()
     # Note: In mock mode, we check calls on mock_repo.index.add
     mock_repo.index.add.assert_called_with(["README.md"])
 
@@ -44,7 +45,7 @@ async def test_git_state_persistence_in_sandbox():
     mock_commit = MagicMock()
     mock_commit.hexsha = "abc123"
     mock_repo.index.commit.return_value = mock_commit
-    
+
     res2 = await sandbox.execute("git_commit", {"message": "initial commit"})
     assert res2["status"] == "success"
 

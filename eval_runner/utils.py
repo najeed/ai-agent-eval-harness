@@ -4,11 +4,11 @@ utils.py
 Architectural utilities for the MultiAgentEval harness.
 """
 
-from pathlib import Path
 import os
 import shutil
-import time
 import stat
+import time
+from pathlib import Path
 
 # Industry Consolidation Table (AES Standard v1.2)
 INDUSTRY_MAPPING = {
@@ -38,14 +38,14 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
     """
     import os
     import tempfile
-    
+
     try:
         # 1. Authoritative Anchoring
         # If target is relative, we anchor it to the project base (PROJECT_ROOT)
         target_p = Path(target)
         if not target_p.is_absolute():
             target_p = Path(base) / target_p
-            
+
         # 2. Canonical Resolution (Handles symlink traversal attempts)
         target_path = target_p.resolve()
         base_path = Path(base).resolve()
@@ -60,7 +60,7 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
         # Zone A: Project Root (Always allowed)
         if target_str == base_str or target_str.startswith(f"{base_str}/"):
             return True
-            
+
         # Zone B: System Temp (Allowed unless AEH_STRICT_JAIL is set)
         # CRITICAL: We only allow temp access for absolute paths or if NOT in a nested jail.
         if os.environ.get("AEH_STRICT_JAIL") != "1":
@@ -70,7 +70,7 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
                 if not Path(target).is_absolute() and not target_str.startswith(f"{base_str}/"):
                     return False
                 return True
-        
+
         return False
     except Exception:
         # Fail-closed for any resolution errors (Security Standard)
@@ -88,7 +88,7 @@ def get_canonical_path(path_str: str) -> str:
 
 def safe_run_async(coro):
     """
-    Industrial-grade async runner (v2.0). 
+    Industrial-grade async runner (v2.0).
     Supports execution from sync contexts even when an event loop is already running
     in the current thread (common in pytest-asyncio and industrial CI).
     """
@@ -101,10 +101,9 @@ def safe_run_async(coro):
         # No running loop, safe to use standard asyncio.run
         return asyncio.run(coro)
 
-    # If a loop is running, we execute in a separate thread to avoid 
+    # If a loop is running, we execute in a separate thread to avoid
     # 'RuntimeError: Runner.run() cannot be called from a running event loop'.
     # This is safer than nest_asyncio as it preserves industrial loop isolation.
-    import threading
     from concurrent.futures import ThreadPoolExecutor
 
     with ThreadPoolExecutor(max_workers=1) as executor:

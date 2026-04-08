@@ -24,7 +24,7 @@ dependencies = [
     "numpy==2.4.4",
     "datasets==4.8.4",
     "PyJWT==2.12.1",
-    "cryptography==46.0.6",
+    "cryptography==46.0.7",
     "opentelemetry-api==1.40.0",
     "opentelemetry-sdk==1.40.0",
     "google-genai==1.70.0",

@@ -129,6 +129,7 @@ async def handle_import_drift(args):
 async def handle_scenario_generate(args):
     """Handler for 'scenario generate' command."""
     from .. import scaffold
+
     scaffold.generate_interactive()
 
 

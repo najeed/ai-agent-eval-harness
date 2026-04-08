@@ -1,4 +1,5 @@
 import pytest
+
 from eval_runner.tool_sandbox import ToolSandbox
 
 
@@ -30,4 +31,3 @@ async def test_sandbox_missing_policy_hit():
 
     assert sandbox.grounding_hits["tools"]["no_policy_tool"] == 1
     assert "no_policy_tool" not in sandbox.grounding_hits["policies"]
-

@@ -223,32 +223,85 @@ def generate_html_report(
     <title>Eval Report: {scenario.get("title")}</title>
     <script src="{config.MERMAID_CDN}"></script>
     <script>mermaid.initialize({{startOnLoad:true, theme: '{config.MERMAID_THEME}'}});</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">  # noqa: E501
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {{
-            --bg: {config.HTML_BG_COLOR}; --card: {config.HTML_CARD_COLOR}; --text: {config.HTML_TEXT_COLOR}; --sub: {config.HTML_SUB_TEXT_COLOR};  # noqa: E501
-            --success: {config.HTML_SUCCESS_COLOR}; --failure: {config.HTML_FAILURE_COLOR}; --accent: {config.HTML_ACCENT_COLOR};  # noqa: E501
+            --bg: {config.HTML_BG_COLOR}; 
+            --card: {config.HTML_CARD_COLOR}; 
+            --text: {config.HTML_TEXT_COLOR}; 
+            --sub: {config.HTML_SUB_TEXT_COLOR};
+            --success: {config.HTML_SUCCESS_COLOR}; 
+            --failure: {config.HTML_FAILURE_COLOR}; 
+            --accent: {config.HTML_ACCENT_COLOR};
         }}
-        body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px; line-height: 1.6; }}  # noqa: E501
-        .header {{ border-bottom: 2px solid var(--card); padding-bottom: 20px; margin-bottom: 40px; }}  # noqa: E501
+        body {{ 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 40px; 
+            line-height: 1.6; 
+        }}
+        .header {{ 
+            border-bottom: 2px solid var(--card); 
+            padding-bottom: 20px; 
+            margin-bottom: 40px; 
+        }}
         h1 {{ margin: 0; color: var(--accent); font-size: 2.5rem; }}
         .summary-box {{ display: flex; gap: 20px; margin-bottom: 40px; }}
-        .stat {{ background: var(--card); padding: 20px; border-radius: 12px; flex: 1; border: 1px solid rgba(255,255,255,0.05); }}  # noqa: E501
+        .stat {{ 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 12px; 
+            flex: 1; 
+            border: 1px solid rgba(255,255,255,0.05); 
+        }}
         .stat-val {{ font-size: 2rem; font-weight: 700; display: block; }}
-        .task-card {{ background: var(--card); border-radius: 16px; padding: 30px; margin-bottom: 30px; border-left: 6px solid var(--sub); }}  # noqa: E501
+        .task-card {{ 
+            background: var(--card); 
+            border-radius: 16px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            border-left: 6px solid var(--sub); 
+        }}
         .task-card.success {{ border-left-color: var(--success); }}
         .task-card.failure {{ border-left-color: var(--failure); }}
-        .task-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }}  # noqa: E501
+        .task-header {{ 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }}
         .badge {{ padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }}
         .badge.success {{ background: rgba(16, 185, 129, 0.2); color: var(--success); }}
         .badge.failure {{ background: rgba(239, 68, 68, 0.2); color: var(--failure); }}
-        .metrics-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }}  # noqa: E501
-        .metric {{ background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; }}  # noqa: E501
+        .metrics-grid {{ 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 25px; 
+        }}
+        .metric {{ 
+            background: rgba(0,0,0,0.2); 
+            padding: 12px; 
+            border-radius: 8px; 
+            display: flex; 
+            flex-direction: column; 
+        }}
         .metric.pass {{ border: 1px solid var(--success); }}
         .metric.fail {{ border: 1px solid var(--failure); }}
-        .m-name {{ font-size: 0.7rem; color: var(--sub); text-transform: uppercase; font-weight: bold; }}  # noqa: E501
+        .m-name {{ 
+            font-size: 0.7rem; 
+            color: var(--sub); 
+            text-transform: uppercase; 
+            font-weight: bold; 
+        }}
         .m-score {{ font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }}
-        .mermaid-container {{ background: rgba(15, 23, 42, 0.5); padding: 20px; border-radius: 8px; overflow-x: auto; }}  # noqa: E501
+        .mermaid-container {{ 
+            background: rgba(15, 23, 42, 0.5); 
+            padding: 20px; 
+            border-radius: 8px; 
+            overflow-x: auto; 
+        }}
         .verified-badge {{ 
             background: linear-gradient(135deg, #FFD700, #DAA520); 
             color: #000; 
@@ -267,7 +320,10 @@ def generate_html_report(
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
                 <h1>Evaluation Report</h1>
-                <p style="color: var(--sub)">Scenario: {scenario.get("title")} ({scenario_id}) • {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>  # noqa: E501
+                <p style="color: var(--sub)">
+                    Scenario: {scenario.get("title")} ({scenario_id}) • 
+                    {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+                </p>
             </div>
             {"<div class='verified-badge'>VERIFIED RUN</div>" if is_verified else ""}
         </div>
@@ -292,7 +348,9 @@ def generate_html_report(
         </div>
         <div class="stat">
             <span class="m-name">Agent {"Name" if agent_name else "Target"}</span>
-            <span class="stat-val" style="font-size: 1rem; overflow-wrap: break-word;">{agent_name or agent}</span>  # noqa: E501
+            <span class="stat-val" style="font-size: 1rem; overflow-wrap: break-word;">
+                {agent_name or agent}
+            </span>
         </div>
     </div>
 

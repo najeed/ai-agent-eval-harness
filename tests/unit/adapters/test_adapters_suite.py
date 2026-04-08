@@ -5,8 +5,6 @@ Unified verification suite for AI agent adapters (Claude, Gemini, OpenAI, Grok, 
 Combines high-fidelity aiohttp server stubs with surgical mock-based tests for 100% coverage.
 """
 
-import asyncio
-import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest

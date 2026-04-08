@@ -97,9 +97,7 @@ class ScenarioLinter:
             results["status"] = "fail"
         else:
             if "attribution" not in metadata:
-                results["warnings"].append(
-                    "Missing recommended field: 'metadata.attribution'"
-                )
+                results["warnings"].append("Missing recommended field: 'metadata.attribution'")
                 results["score"] -= 10
             if "version" not in metadata:
                 results["warnings"].append("Missing recommended field: 'metadata.version'")

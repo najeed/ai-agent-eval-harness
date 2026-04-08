@@ -17,6 +17,7 @@ from aiohttp import web
 
 from eval_runner import auto_translate
 
+
 @pytest.fixture(scope="session")
 def event_loop():
     """Ensure a clean event loop teardown, especially on Windows."""

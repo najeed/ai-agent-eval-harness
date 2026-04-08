@@ -4,7 +4,6 @@ import pytest
 
 from eval_runner import config
 from eval_runner.console.app import create_app
-from eval_runner import config
 from eval_runner.verifier import TraceVerifier
 
 

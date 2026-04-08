@@ -1,9 +1,12 @@
 import json
-import pytest
-from pathlib import Path
 from argparse import Namespace
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
-from eval_runner.handlers import analysis, environment, scenarios, evaluation
+
+import pytest
+
+from eval_runner.handlers import analysis, environment, evaluation, scenarios
+
 
 @pytest.fixture
 def physical_env(tmp_path):
@@ -13,6 +16,7 @@ def physical_env(tmp_path):
     root = tmp_path / "root"
     root.mkdir()
     return root
+
 
 @pytest.fixture
 def mock_args():
@@ -27,7 +31,7 @@ def mock_args():
         scenario_path="scen.json",
         search="test",
         refresh=False,
-        target="scen.json"
+        target="scen.json",
     )
 
 
@@ -129,7 +133,7 @@ async def test_handle_taxonomy(mock_args, capsys):
 async def test_handle_verify_missing(capsys, physical_env, monkeypatch):
     """Test 'verify' with missing file. Forensic alignment: Uses [CRITICAL] string."""
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", physical_env)
-    
+
     # Passing a run-id that doesn't exist in the physical runs/ directory
     args = Namespace(run_id="missing_run", path=None, manifest=None)
     with pytest.raises(SystemExit) as e:

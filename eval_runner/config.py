@@ -1,8 +1,8 @@
-import os
 import json
-import yaml
+import os
 from pathlib import Path
 
+import yaml
 from dotenv import load_dotenv
 
 # Load environment variables from .env file if it exists
@@ -16,6 +16,7 @@ PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", os.path.dirname(_lib_dir))).absolu
 # Diagnostic: Identify exactly which config.py is being used
 if os.getenv("DEBUG_PATHS", "true").lower() == "true":
     import sys
+
     sys.stderr.write(f"   [Config] Loading Core Config from: {__file__}\n")
     sys.stderr.write(f"   [Config] Authoritative PROJECT_ROOT: {PROJECT_ROOT}\n")
 
@@ -23,7 +24,6 @@ if os.getenv("DEBUG_PATHS", "true").lower() == "true":
 def _get_project_version() -> str:
     """Authoritative version resolver (Single Source of Truth from pyproject.toml)."""
     try:
-        from pathlib import Path
         import tomllib
 
         target = PROJECT_ROOT / "pyproject.toml"
@@ -108,7 +108,8 @@ JUDGE_MODEL = os.getenv("JUDGE_MODEL")  # Specific model for the judge
 LUNA_JUDGE_PROMPT = os.getenv(
     "LUNA_JUDGE_PROMPT",
     """
-You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.  # noqa: E501
+You are an objective judge. Rate the similarity between the 'Expected Outcome' 
+and the 'Agent Summary' on a scale of 0.0 to 1.0.
 1.0 means they are semantically equivalent.
 0.0 means they are completely different.
 
@@ -256,11 +257,16 @@ class RegistryManager:
         # This is now the ONLY location for project and environment overrides.
         if SHIM_RESOURCES_D_DIR.exists() and SHIM_RESOURCES_D_DIR.is_dir():
             # Alphabetical sort ensures deterministic override priority (e.g., 99_local > 01_)
-            paths = sorted(list(SHIM_RESOURCES_D_DIR.glob("*.json")) + list(SHIM_RESOURCES_D_DIR.glob("*.yaml")))
+            paths = sorted(
+                list(SHIM_RESOURCES_D_DIR.glob("*.json"))
+                + list(SHIM_RESOURCES_D_DIR.glob("*.yaml"))
+            )
             for path in paths:
                 try:
                     with open(path) as f:
-                        ext = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                        ext = (
+                            yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                        )
                         if ext:
                             registry = RegistryManager._deep_merge(registry, ext)
                 except Exception as e:
@@ -289,6 +295,7 @@ class RegistryManager:
     def _deep_merge(base: dict, overlay: dict) -> dict:
         """Performs a nested merge of configuration dictionaries."""
         import copy
+
         result = copy.deepcopy(base)
         for k, v in overlay.items():
             if k in result and isinstance(result[k], dict) and isinstance(v, dict):

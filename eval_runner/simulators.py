@@ -1,5 +1,4 @@
 import asyncio
-import json
 import os
 import shlex
 import subprocess
@@ -35,7 +34,7 @@ class BaseSimulator:
 
     async def on_poll(self, condition: str, params: dict[str, Any]) -> bool:
         """
-        Industrial Liveness Hook. 
+        Industrial Liveness Hook.
         Supports polling for asynchronous tool completions (e.g. cloud pending -> running).
         """
         return True
@@ -43,6 +42,7 @@ class BaseSimulator:
     async def on_verify(self, params: dict[str, Any]) -> dict[str, Any]:
         """Standardized verification hook for shim-specific post-conditions."""
         return {"status": "success"}
+
     def __del__(self):
         """Standard destructor: Call cleanup in the current event loop if possible."""
         try:
@@ -56,7 +56,6 @@ class BaseSimulator:
 class GitSimulator(BaseSimulator):
     """Simulates a dynamic Git repository state."""
 
-
     def __init__(self):
         super().__init__({"history": [], "staged_files": []})
         self._repo = None
@@ -65,10 +64,11 @@ class GitSimulator(BaseSimulator):
         """Lazy initialization of GitPython Repo inside the terminal_jail."""
         if self._repo:
             return self._repo
-            
-        from git import Repo
+
         from pathlib import Path
-        
+
+        from git import Repo
+
         repo_path = Path(self.terminal_jail or ".tmp") / "repo"
         if (repo_path / ".git").exists():
             self._repo = Repo(repo_path)
@@ -79,27 +79,33 @@ class GitSimulator(BaseSimulator):
         [Iteration 3: Industrial Git Engine]
         Clones a real repository into the terminal_jail.
         """
-        from git import Repo
         from pathlib import Path
-        
+
+        from git import Repo
+
         url = params.get("url")
         dest = Path(self.terminal_jail or ".tmp") / "repo"
-        
+
         # [Iteration 5: Resilience] Enforce Industrial Timeout
         # GitPython uses subprocess under the hood, but we wrap for safety
         try:
             if dest.exists():
                 import shutil
+
                 shutil.rmtree(dest)
-                
+
             # [RFC-002 Hybrid Registry]
             from . import config
+
             registry_resources = config.get_shim_config("git")
             default_branch = registry_resources.get("default_branch", "main")
             depth = 1 if registry_resources.get("shallow_clone", False) else None
-            
+
             self._repo = Repo.clone_from(url, dest, branch=default_branch, depth=depth)
-            return {"status": "success", "message": f"Cloned {url} into {dest} (branch={default_branch})"}
+            return {
+                "status": "success",
+                "message": f"Cloned {url} into {dest} (branch={default_branch})",
+            }
         except Exception as e:
             return {"status": "error", "message": f"Git Clone Error: {str(e)}"}
 
@@ -108,7 +114,7 @@ class GitSimulator(BaseSimulator):
         repo = self._get_repo()
         if not repo:
             return {"status": "error", "message": "No active repository found."}
-            
+
         files = params.get("files", [])
         try:
             repo.index.add(files)
@@ -121,14 +127,14 @@ class GitSimulator(BaseSimulator):
         repo = self._get_repo()
         if not repo:
             return {"status": "error", "message": "No active repository found."}
-            
+
         msg = params.get("message", "Industrial Guard Trace Commit")
         try:
             commit = repo.index.commit(msg)
             return {
-                "status": "success", 
+                "status": "success",
                 "message": f"Committed: {commit.hexsha}",
-                "dna": {"commit_sha": commit.hexsha, "author": str(commit.author)}
+                "dna": {"commit_sha": commit.hexsha, "author": str(commit.author)},
             }
         except Exception as e:
             return {"status": "error", "message": f"Git Commit Error: {str(e)}"}
@@ -157,23 +163,25 @@ class ApiSimulator(BaseSimulator):
         Executes real asynchronous HTTP requests using HTTPX.
         Captures full Request/Response DNA for forensic auditing.
         """
-        import httpx
-        import eval_runner.config as config
         import time
+
+        import httpx
+
+        import eval_runner.config as config
 
         method = params.get("method", "GET").upper()
         url = params.get("url") or params.get("path", "")
         headers = params.get("headers", {})
         data = params.get("data")
-        
+
         # [Iteration 1: Normalization] Prefixless URLs (Industrial Requirement #3)
         if url and not url.startswith(("http://", "https://", "ws://", "wss://")):
             url = f"http://{url}"
-        
+
         # [Iteration 6: RFC-002 Hybrid Registry]
         # Pull declarative resources from the central registry
         registry_resources = config.get_shim_config("api")
-        
+
         # Merge registry headers into request
         default_headers = registry_resources.get("default_headers", {})
         headers = {**default_headers, **headers}
@@ -186,15 +194,15 @@ class ApiSimulator(BaseSimulator):
             timeout = float(timeout_str) if timeout_str.replace(".", "", 1).isdigit() else 30.0
         except (ValueError, TypeError):
             timeout = 30.0
-        
+
         # [Iteration 3: Live vs Mock Toggle]
         is_live = os.getenv("IS_LIVE", "false").lower() == "true"
 
         if not is_live:
-             # Standard Industry Mock behavior (Turn 1/2)
-             path = params.get("path", "/")
-             result = self.state["endpoints"].get(path, {"error": "Not Found (MOCK_MODE)"})
-             return {"status": "success" if "error" not in result else "error", "data": result}
+            # Standard Industry Mock behavior (Turn 1/2)
+            path = params.get("path", "/")
+            result = self.state["endpoints"].get(path, {"error": "Not Found (MOCK_MODE)"})
+            return {"status": "success" if "error" not in result else "error", "data": result}
 
         request_kwargs = {
             "method": method,
@@ -209,21 +217,23 @@ class ApiSimulator(BaseSimulator):
             async with httpx.AsyncClient(timeout=timeout) as client:
                 response = await client.request(**request_kwargs)
                 latency = time.perf_counter() - start_time
-                
+
                 # [Iteration 3/4 DNA] capture telemetry
                 dna = {
                     "request": {"method": method, "url": url, "headers": headers},
                     "response": {
                         "status_code": response.status_code,
                         "headers": dict(response.headers),
-                        "latency_sec": latency
-                    }
+                        "latency_sec": latency,
+                    },
                 }
-                
+
                 return {
                     "status": "success" if response.is_success else "error",
-                    "data": response.json() if "application/json" in response.headers.get("Content-Type", "") else response.text,
-                    "dna": dna
+                    "data": response.json()
+                    if "application/json" in response.headers.get("Content-Type", "")
+                    else response.text,
+                    "dna": dna,
                 }
         except Exception as e:
             return {"status": "error", "message": f"API Execution Error: {str(e)}"}
@@ -253,23 +263,33 @@ class DatabaseSimulator(BaseSimulator):
         """Lazy initialization of SQLAlchemy engine inside the terminal_jail."""
         if self._engine:
             return self._engine
-            
-        from sqlalchemy import create_engine
+
         from pathlib import Path
-        
+
+        from sqlalchemy import create_engine
+
         # [Iteration 2 Anchor] Secure session-scoped DB file
         db_path = Path(self.terminal_jail or ".tmp").resolve() / "state.db"
         # [Iteration 3 Normalization] Windows absolute path handling (sqlite:///C:/...)
-        db_uri = f"sqlite:///{str(db_path).replace('\\', '/')}"
+        db_path_str = str(db_path).replace("\\", "/")
+        db_uri = f"sqlite:///{db_path_str}"
         self._engine = create_engine(db_uri)
-        
+
         # [Iteration 3 Init] Provision initial industrial state
         from sqlalchemy import text
+
         with self._engine.connect() as conn:
-            conn.execute(text("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT, role TEXT)"))
-            conn.execute(text("INSERT INTO users (email, role) VALUES ('admin@example.com', 'admin')"))
+            conn.execute(
+                text(
+                    "CREATE TABLE IF NOT EXISTS users "
+                    "(id INTEGER PRIMARY KEY, email TEXT, role TEXT)"
+                )
+            )
+            conn.execute(
+                text("INSERT INTO users (email, role) VALUES ('admin@example.com', 'admin')")
+            )
             conn.commit()
-            
+
         return self._engine
 
     async def handle_database_query(self, params: dict) -> dict:
@@ -278,17 +298,17 @@ class DatabaseSimulator(BaseSimulator):
         Executes a real SQL query using SQLAlchemy 2.0.
         """
         from sqlalchemy import text
-        
+
         q = params.get("query", "")
         engine = self._get_engine()
-        
+
         try:
             with engine.connect() as conn:
                 result = conn.execute(text(q))
                 if result.returns_rows:
                     rows = [dict(row._mapping) for row in result]
                     return {"status": "success", "rows": rows}
-                
+
                 conn.commit()
                 return {"status": "success", "message": "Query executed successfully."}
         except Exception as e:
@@ -396,19 +416,19 @@ class CloudSimulator(BaseSimulator):
         """
         instance_type = params.get("type", "t2.micro")
         new_id = f"i-{len(self.state['instances']) + 1000}"
-        
+
         instance = {
             "id": new_id,
             "type": instance_type,
             "status": "pending",
-            "launch_time": datetime.now().isoformat()
+            "launch_time": datetime.now().isoformat(),
         }
         self.state["instances"].append(instance)
-        
+
         return {
             "status": "success",
             "instance_id": new_id,
-            "dna": {"provider": "mock-industrial-v1", "region": "us-east-1"}
+            "dna": {"provider": "mock-industrial-v1", "region": "us-east-1"},
         }
 
     async def on_poll(self, condition: str, params: dict) -> bool:
@@ -440,11 +460,11 @@ class TerminalSimulator(BaseSimulator):
             return {"status": "error", "message": "Command not provided."}
 
         self.state["history"].append(cmd)
-        
+
         # [Iteration 2: Physical Containment] Anchor to terminal_jail
         if not self.terminal_jail:
-             return {"status": "error", "message": "Terminal Jail not provisioned."}
-        
+            return {"status": "error", "message": "Terminal Jail not provisioned."}
+
         jail_path = Path(self.terminal_jail).resolve()
 
         # [Iteration 5 Prevention] Handle 'cd' as a special case for state management
@@ -452,7 +472,7 @@ class TerminalSimulator(BaseSimulator):
             target_path = Path(cmd.split("cd ", 1)[1].strip())
             if not target_path.is_absolute():
                 target_path = (Path(self.state.get("cwd", jail_path)) / target_path).resolve()
-            
+
             if is_path_safe(target_path, jail_path):
                 self.state["cwd"] = str(target_path)
                 return {"status": "success", "message": f"Changed directory to {target_path}"}
@@ -473,18 +493,21 @@ class TerminalSimulator(BaseSimulator):
                 capture_output=True,
                 text=True,
                 timeout=30,
-                start_new_session=True # Process Group Isolation
+                start_new_session=True,  # Process Group Isolation
             )
-            
+
             return {
                 "status": "success" if process.returncode == 0 else "error",
                 "stdout": process.stdout,
                 "stderr": process.stderr,
                 "returncode": process.returncode,
-                "cwd": cwd
+                "cwd": cwd,
             }
         except subprocess.TimeoutExpired:
-            return {"status": "error", "message": "Command timed out (Industrial Safety Limit: 30s)"}
+            return {
+                "status": "error",
+                "message": "Command timed out (Industrial Safety Limit: 30s)",
+            }
         except Exception as e:
             return {"status": "error", "message": f"Execution Error: {str(e)}"}
 
@@ -532,15 +555,15 @@ class BrowserSimulator(BaseSimulator):
         """Lazy initialization of Playwright headless browser."""
         if self._page:
             return self._page
-            
+
         from playwright.async_api import async_playwright
-        
+
         self._playwright = await async_playwright().start()
         # [Iteration 5: Resilience] Isolated Browser Instance
         self._browser = await self._playwright.chromium.launch(headless=True)
         self._context = await self._browser.new_context()
         self._page = await self._context.new_page()
-        
+
         return self._page
 
     async def handle_browser_go(self, params: dict) -> dict:
@@ -551,27 +574,22 @@ class BrowserSimulator(BaseSimulator):
         """
         url = params.get("url", "https://google.com")
         page = await self._get_page()
-        
+
         # [Iteration 5: Resilience] Enforce Industrial Timeout
         timeout = float(os.getenv("SHIM_TIMEOUT", "30.0")) * 1000  # ms
-        
+
         try:
             await page.goto(url, timeout=timeout)
             title = await page.title()
             current_url = page.url
-            
+
             # [Iteration 3/4 DNA] capture telemetry
             dna = {
                 "page": {"title": title, "url": current_url},
                 "browser": "chromium-headless",
             }
-            
-            return {
-                "status": "success",
-                "title": title,
-                "url": current_url,
-                "dna": dna
-            }
+
+            return {"status": "success", "title": title, "url": current_url, "dna": dna}
         except Exception as e:
             return {"status": "error", "message": f"Browser Execution Error: {str(e)}"}
 
@@ -653,15 +671,15 @@ class CICDSimulator(BaseSimulator):
         """
         env = params.get("environment", "staging")
         build_id = f"B-{len(self.state['builds']) + 100}"
-        
+
         build = {
             "id": build_id,
             "status": "queued",
             "env": env,
-            "logs": [f"Starting deployment to {env}..."]
+            "logs": [f"Starting deployment to {env}..."],
         }
         self.state["builds"].append(build)
-        
+
         return {"status": "success", "build_id": build_id}
 
     async def on_poll(self, condition: str, params: dict) -> bool:
@@ -708,20 +726,20 @@ class SecuritySimulator(BaseSimulator):
         Implements a permission-scoped registry.
         """
         import uuid
-        
+
         scope = params.get("scope", "read-only")
         token = str(uuid.uuid4())
-        
+
         self.state["active_tokens"] = self.state.get("active_tokens", {})
         self.state["active_tokens"][token] = {
             "scope": scope,
-            "expires": (datetime.now().timestamp() + 3600)
+            "expires": (datetime.now().timestamp() + 3600),
         }
-        
+
         return {
             "status": "success",
             "token": token,
-            "dna": {"auth_method": "OIDC/PBAC", "perms": [scope]}
+            "dna": {"auth_method": "OIDC/PBAC", "perms": [scope]},
         }
 
 

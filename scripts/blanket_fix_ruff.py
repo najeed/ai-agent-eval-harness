@@ -1,6 +1,6 @@
 import json
 import subprocess
-import os
+
 
 def blanket_fix_ruff():
     """
@@ -8,11 +8,10 @@ def blanket_fix_ruff():
     Uses string building to avoid self-mutilation.
     """
     marker = "# " + "noqa"
-    
+
     # 1. Get ALL ruff findings in JSON format
     result = subprocess.run(
-        ["ruff", "check", ".", "--output-format", "json"],
-        capture_output=True, text=True
+        ["ruff", "check", ".", "--output-format", "json"], capture_output=True, text=True
     )
     if not result.stdout:
         print("No findings to suppress.")
@@ -34,7 +33,7 @@ def blanket_fix_ruff():
         # Sort by line (reverse)
         file_findings.sort(key=lambda x: -x["location"]["row"])
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             lines = f.readlines()
 
         for ff in file_findings:
@@ -65,6 +64,7 @@ def blanket_fix_ruff():
         with open(path, "w", encoding="utf-8") as f:
             f.writelines(lines)
         # print(f"Suppressed {len(file_findings)} errors in {path}")
+
 
 if __name__ == "__main__":
     blanket_fix_ruff()

@@ -2,11 +2,10 @@
 Test module for the interactive playground.
 """
 
-import sys
-
 import pytest
 
 from eval_runner.playground import run_playground
+
 
 @pytest.mark.asyncio
 async def test_run_playground_flow(monkeypatch, adapter_stub, capsys):

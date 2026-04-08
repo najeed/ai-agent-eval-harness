@@ -1,5 +1,7 @@
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
+
 from eval_runner import cli, tool_sandbox
 
 # ==============================================================================
@@ -118,7 +120,6 @@ async def test_sandbox_policy_violation_bridge():
     result = await sandbox.execute("spend", {"amount": 150})
     assert result["status"] == "policy_violation"
     assert "exceeds limit" in result["violation"]
-
 
 
 def test_sandbox_match_namespace_branch():

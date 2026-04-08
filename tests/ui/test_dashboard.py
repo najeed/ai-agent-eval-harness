@@ -1,5 +1,6 @@
-from playwright.async_api import async_playwright, expect
 import pytest
+from playwright.async_api import async_playwright, expect
+
 
 @pytest.mark.asyncio
 async def test_dashboard_discovery_on_load(dashboard_server):
@@ -10,7 +11,7 @@ async def test_dashboard_discovery_on_load(dashboard_server):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
-        
+
         await page.goto(dashboard_server)
 
         # 1. Wait for Streamlit to hydrate (Industrial v2.1 Hardening)
@@ -24,7 +25,9 @@ async def test_dashboard_discovery_on_load(dashboard_server):
 
         # 4. Assert on the Success Rate Metric Card
         success_card = page.locator("div[data-testid='stMetric']").filter(has_text="Success Rate")
-        await expect(success_card.locator("div[data-testid='stMetricValue']")).to_contain_text("100.0%")
+        await expect(success_card.locator("div[data-testid='stMetricValue']")).to_contain_text(
+            "100.0%"
+        )
 
         # 5. Assert on Task ID and Mermaid map
         await expect(page.get_by_text("Decision Trajectory Map")).to_be_visible()

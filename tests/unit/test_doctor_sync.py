@@ -1,5 +1,5 @@
 import asyncio
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -15,11 +15,11 @@ async def test_doctor_sync_loop_drift():
     with patch("aiohttp.ClientSession") as mock_session_cls:
         mock_instance = MagicMock()
         mock_session_cls.return_value = mock_instance
-        
+
         # 'async with ClientSession() as session:'
         mock_instance.__aenter__.return_value = mock_instance
         mock_instance.__aexit__ = AsyncMock()
-        
+
         # 'async with session.post(...) as response:'
         mock_post_context = MagicMock()
         mock_instance.post.return_value = mock_post_context

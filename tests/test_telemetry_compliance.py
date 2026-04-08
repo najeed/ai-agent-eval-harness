@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -84,8 +84,6 @@ def test_context_objects_telemetry_fields():
 @pytest.mark.asyncio
 async def test_autogen_adapter_instrumentation():
     """Verify AutoGen adapter emits TURN and CHAIN events with context."""
-    from unittest.mock import AsyncMock
-    import importlib
 
     original_import = __builtins__["__import__"]
 

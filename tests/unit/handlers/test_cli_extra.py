@@ -4,7 +4,8 @@ import eval_runner
 test_cli_extra.py
 
 Unit tests for CLI handlers and specialized commands.
-Refactored to eliminate "Mock Namespaces" and use real argparse objects for high-fidelity verification.  # noqa: E501
+Refactored to eliminate "Mock Namespaces" and use real argparse objects 
+for high-fidelity verification.
 """
 
 import json  # noqa: E402

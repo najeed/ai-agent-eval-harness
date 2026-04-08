@@ -6,7 +6,6 @@ Covers success, error handling, timeouts, and malformed responses.
 
 """
 
-import sys
 from unittest.mock import patch
 
 import pytest
@@ -21,6 +20,7 @@ from eval_runner.llm_providers import (
     OllamaProvider,
     OpenAIProvider,
 )
+
 
 @pytest_asyncio.fixture
 async def provider_stub(aiohttp_server):

@@ -36,9 +36,6 @@ def test_flight_recorder_rotation(tmp_path):
         assert (log_dir / "new_run.jsonl").exists()
 
 
-import pytest
-from pathlib import Path
-
 def test_flight_recorder_rotation_fail(tmp_path, capsys):
     """
     Test rotation failure reporting with physical disk state.
@@ -46,20 +43,20 @@ def test_flight_recorder_rotation_fail(tmp_path, capsys):
     """
     log_dir = tmp_path / "runs"
     log_dir.mkdir()
-    
+
     # Create two files. If rotate_count=0, it should try to delete one.
     (log_dir / "old_1.jsonl").touch()
     (log_dir / "old_2.jsonl").touch()
 
     with patch.dict(os.environ, {"RUN_LOG_DIR": str(log_dir), "RUN_LOG_ROTATE_COUNT": "0"}):
         recorder = FlightRecorderPlugin()
-        
-        # We manually patch unlink just to simulate a low-level OS failure 
+
+        # We manually patch unlink just to simulate a low-level OS failure
         # (e.g. Permission Denied) without needing a complex sub-process lock.
         # This keeps the test focused and physical while avoiding MagicMocks for verification.
         with patch("pathlib.Path.unlink", side_effect=OSError("Perm denied")):
             recorder.rotate_logs()
-            
+
             # Check stderr for the industrial warning string
             _, err = capsys.readouterr()
             assert "Error rotating log" in err

@@ -5,8 +5,9 @@ Test suite for the ToolSandbox mock tool execution environment.
 Aligned with OpenCore modular architecture and explicit tool definitions.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from eval_runner.tool_sandbox import ToolSandbox
 

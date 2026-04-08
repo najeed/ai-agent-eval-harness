@@ -79,7 +79,8 @@ def test_cli_replay_valid(tmp_path, monkeypatch):
         assert e.value.code == 0
 
 
-def test_cli_cleanup_interactive_yes(tmp_path, monkeypatch):
+@pytest.mark.asyncio
+async def test_cli_cleanup_interactive_yes(tmp_path, monkeypatch):
     # Test 'cleanup-runs' with interactive 'y' response
     monkeypatch.chdir(tmp_path)
     runs_dir = tmp_path / "runs"
@@ -93,8 +94,7 @@ def test_cli_cleanup_interactive_yes(tmp_path, monkeypatch):
     args.force = False
 
     with patch("builtins.input", return_value="y"):
-        eval_runner.handlers.environment.handle_cleanup_runs(args)
-        pass
+        await eval_runner.handlers.environment.handle_cleanup_runs(args)
 
     # Test 'contribute' flow - Verify it does not leak folders
     (tmp_path / "industries" / "test_ind" / "scenarios").mkdir(parents=True, exist_ok=True)

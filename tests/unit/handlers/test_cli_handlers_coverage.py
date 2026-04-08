@@ -123,7 +123,7 @@ async def test_handle_verify_missing(capsys, tmp_path, monkeypatch):
     """Test 'verify' with missing file. Forensic: [CRITICAL] string."""
     # Ensure we are in a safe project jail for this test
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
-    
+
     args = MagicMock(path="missing.jsonl", manifest=None, run_id=None)
     with pytest.raises(SystemExit) as e:
         await evaluation.handle_verify(args)

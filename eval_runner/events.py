@@ -83,7 +83,7 @@ class EventEmitter:
                 # If subscriber is a bound method of a class with cleanup logic
                 if hasattr(sub, "__self__") and hasattr(sub.__self__, "close_all"):
                     sub.__self__.close_all()
-            except:
+            except Exception:
                 pass
         cls._subscribers = []
 

@@ -6,7 +6,6 @@ Refactored to use modular handlers for better maintainability.
 """
 
 import argparse
-import asyncio
 import os
 import sys
 from pathlib import Path
@@ -237,23 +236,42 @@ Utilities & Environment:
     verify_parser = subparsers.add_parser(
         "verify", help="Verify the cryptographic integrity of a run trace"
     )
-    verify_parser.add_argument("--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)")
+    verify_parser.add_argument(
+        "--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)"
+    )
     verify_parser.add_argument("--path", help="[Legacy] Direct path to the trace file to verify")
     certify_parser = subparsers.add_parser(
         "certify", help="Generate a Verification Certificate (VC) for a trace run"
     )
-    certify_parser.add_argument("--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)")
-    certify_parser.add_argument("--path", help="[Legacy] Direct path to the results/trace file (e.g. runs/default/run.jsonl)")
+    certify_parser.add_argument(
+        "--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)"
+    )
+    certify_parser.add_argument(
+        "--path",
+        help="[Legacy] Direct path to the results/trace file (e.g. runs/default/run.jsonl)",
+    )
     certify_parser.add_argument("--private-key", help="Path to the master ED25519 private key")
-    certify_parser.add_argument("--fingerprint", help="Optional hardware/environment fingerprint ID to embed in the certificate")
+    certify_parser.add_argument(
+        "--fingerprint",
+        help="Optional hardware/environment fingerprint ID to embed in the certificate",
+    )
 
     gate_parser = subparsers.add_parser(
         "gate", help="Industrial CI/CD Gatekeeper: Verify certificates and integrity"
     )
-    gate_parser.add_argument("--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)")
-    gate_parser.add_argument("--vc", help="[Legacy] Direct path to the Verification Certificate (*_vc.json or *_manifest.json)")
-    gate_parser.add_argument("--public-key", help="Path to the public key for signature verification")
-    gate_parser.add_argument("--hash", help="Optional commit hash to verify against manifest metadata")
+    gate_parser.add_argument(
+        "--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)"
+    )
+    gate_parser.add_argument(
+        "--vc",
+        help="[Legacy] Direct path to the Verification Certificate (*_vc.json or *_manifest.json)",
+    )
+    gate_parser.add_argument(
+        "--public-key", help="Path to the public key for signature verification"
+    )
+    gate_parser.add_argument(
+        "--hash", help="Optional commit hash to verify against manifest metadata"
+    )
 
     # --- SPECIFICATION & SCENARIOS ---
     aes_parser = subparsers.add_parser("aes", help="Agent Eval Specification (AES) utility suite")
