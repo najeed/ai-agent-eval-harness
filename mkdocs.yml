@@ -58,12 +58,15 @@ nav:
           - Running Tests: guides/testing/running-tests.md
           - Test Patterns: guides/testing/test-patterns.md
   - Architecture: architecture.md
+  - API & CLI Reference:
+      - Introduction: api/developer_api.md#-developer-api-cli-reference
+      - Developer CLI & API: api/developer_api.md
+      - Platform Extender API: api/extender_api.md
+      - Agent-Harness Interaction: agent_api.md
+      - Core Evaluator: api/core_evaluator.md
+      - Plugins & Hooks: plugins.md
   - Features:
       - Inventory: feature_inventory.md
-      - API Reference: agent_api.md
-      - CLI Reference: cli_reference.md
-      - Core Evaluator: api/core_evaluator.md
-      - Plugins: plugins.md
   - Dataproc Engine:
       - Overview: dataproc-design/index.md
       - User Manual: dataproc-design/user_manual.md

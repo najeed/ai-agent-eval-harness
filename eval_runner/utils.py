@@ -5,6 +5,10 @@ Architectural utilities for the MultiAgentEval harness.
 """
 
 from pathlib import Path
+import os
+import shutil
+import time
+import stat
 
 # Industry Consolidation Table (AES Standard v1.2)
 INDUSTRY_MAPPING = {
@@ -106,3 +110,38 @@ def safe_run_async(coro):
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(asyncio.run, coro)
         return future.result()
+
+
+def rmtree_resilient(path: str | Path, retries: int = 5, delay: float = 0.2):
+    """
+    Industrial-grade directory removal.
+    Resolves common Windows WinError 145/PermissionError races during teardown.
+    """
+    p = Path(path)
+    if not p.exists():
+        return
+
+    def handle_errors(func, path, exc_info):
+        """On-error handler to fix read-only bits (common in industrial repos)."""
+        try:
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+        except Exception:
+            pass
+
+    for attempt in range(retries):
+        try:
+            shutil.rmtree(p, onerror=handle_errors)
+            return
+        except (PermissionError, OSError):
+            if attempt < retries - 1:
+                time.sleep(delay * (attempt + 1))
+            else:
+                # Final attempt fallback: try to rename then delete (Windows naming escape)
+                try:
+                    temp_name = p.parent / f"{p.name}.deleted.{int(time.time())}"
+                    p.rename(temp_name)
+                    shutil.rmtree(temp_name, ignore_errors=True)
+                except Exception:
+                    # If all else fails, propagate the error in strict environments
+                    pass

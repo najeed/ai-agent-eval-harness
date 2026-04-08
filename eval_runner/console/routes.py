@@ -26,7 +26,7 @@ def get_catalog():
 # [Audit BUG-05] Global Proactive Security Intercept (Portable Blueprint Level)
 @core_bp.before_app_request
 def security_intercept_blueprint():
-    """Intercepts traversal attempts before normalization or routing (v1.3.3)."""
+    """Intercepts traversal attempts before normalization or routing."""
     from urllib.parse import unquote
     
     # [INDUSTRIAL HARDENING] Use multi-layered inspection (raw vs normalized)

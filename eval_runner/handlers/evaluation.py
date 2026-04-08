@@ -247,7 +247,7 @@ async def handle_verify(args):
     from eval_runner.verifier import TraceVerifier
     from pathlib import Path
 
-    # --- [SSOT] Artifact Resolution (v1.3.3) ---
+    # --- [SSOT] Artifact Resolution ---
     trace_path = args.path
     manifest_path = None
 

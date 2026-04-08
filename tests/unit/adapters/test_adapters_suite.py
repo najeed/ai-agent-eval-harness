@@ -3,8 +3,6 @@ test_adapters_suite.py
 
 Unified verification suite for AI agent adapters (Claude, Gemini, OpenAI, Grok, AutoGen, CrewAI, LangGraph, etc.).  # noqa: E501
 Combines high-fidelity aiohttp server stubs with surgical mock-based tests for 100% coverage.
-
-NOTE: Tests using aiohttp_server fixture are skipped on Python 3.14+ due to asyncio incompatibility.
 """
 
 import asyncio
@@ -23,10 +21,6 @@ from eval_runner.adapters.grok import GrokAdapterPlugin
 from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
 from eval_runner.adapters.ollama import OllamaAdapterPlugin
 from eval_runner.adapters.openai import OpenAIAdapterPlugin
-
-skip_py314 = pytest.mark.skipif(
-    sys.version_info >= (3, 14), reason="Python 3.14 asyncio incompatibility with pytest-aiohttp"
-)
 
 
 @pytest_asyncio.fixture

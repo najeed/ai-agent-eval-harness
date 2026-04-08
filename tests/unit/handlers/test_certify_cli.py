@@ -37,6 +37,33 @@ def certify_env(tmp_path, monkeypatch):
         "trace_path": trace_path
     }
 
+
+@pytest.mark.asyncio
+async def test_handle_certify_with_fingerprint(certify_env, capsys):
+    """Verify Pillar 2: Behavioral Fingerprint persistence."""
+    fingerprint = "industrial_v1_baseline"
+    args = Namespace(
+        run_id=certify_env["run_id"],
+        path=None,
+        metadata=None,
+        private_key=None,
+        fingerprint=fingerprint
+    )
+
+    with pytest.raises(SystemExit) as e:
+        await evaluation.handle_certify(args)
+    assert e.value.code == 0
+
+    # Verify Physical Manifest Content
+    import json
+    sidecar_path = certify_env["trace_path"].parent / "run_manifest.json"
+    with open(sidecar_path, encoding="utf-8") as f:
+        manifest = json.load(f)
+
+    assert manifest.get("fingerprint_id") == fingerprint
+    assert manifest.get("behavioral_fingerprint_id") == fingerprint
+
+
 @pytest.mark.asyncio
 async def test_handle_certify_missing_trace(certify_env, capsys):
     """Test certify fails if trace file is missing."""

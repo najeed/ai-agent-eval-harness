@@ -1,6 +1,5 @@
 """
 Evaluation Runner Core Package.
-Updated for Industrial v1.3.3 baseline.
 """
 
 # Establish version first for package identity (SSOT)
@@ -10,7 +9,7 @@ import os
 import sys
 import warnings
 
-# --- INDUSTRIAL NEUTRALITY: VERSION-GATE SUPPRESSION (v1.3.3) ---
+# --- INDUSTRIAL NEUTRALITY: VERSION-GATE SUPPRESSION ---
 # Neutralize speculative compatibility warnings from external dependencies (LangChain/Pydantic)
 # that mangle the console output on Python 3.14+ without impacting system stability.
 # This ensures a clean, audit-grade experience for Enterprise Trust Workflows.

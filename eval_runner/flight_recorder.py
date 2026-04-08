@@ -99,7 +99,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
     def finalize_run(self):
         """
         Explicitly closes file handles and flushes telemetry to disk.
-        Critical for resolving Windows file-lock races in v1.3.3.
+        Critical for resolving Windows file-lock races.
         """
         import sys
         import os

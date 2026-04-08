@@ -1,6 +1,6 @@
-# Agent API Specification
+# Agent-Harness Interaction Contract (Agent API)
 
-This document describes the expected API contract between the MultiAgentEval and the AI agent under test.
+This document describes the expected API contract between the MultiAgentEval harness and the AI agent under test. This is **not** the documentation for the harness's own REST API or CLI (see [Developer API](api/developer_api.md)).
 
 ## Endpoint
 
