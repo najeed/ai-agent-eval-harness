@@ -59,7 +59,7 @@ nav:
           - Test Patterns: guides/testing/test-patterns.md
   - Architecture: architecture.md
   - API & CLI Reference:
-      - Introduction: api/developer_api.md#-developer-api-cli-reference
+      - Introduction: api/developer_api.md#cli-core-interface
       - Developer CLI & API: api/developer_api.md
       - Platform Extender API: api/extender_api.md
       - Agent-Harness Interaction: agent_api.md

@@ -155,7 +155,7 @@ class UnstructuredProvider(BaseProvider):
 
         # Safety check for hashlib (requires bytes-like object)
         hash_input = content if isinstance(content, (str, bytes)) else str(content)
-        id_content = f"{self.input_uri}-{hashlib.md5(hash_input.encode()).hexdigest()[:8]}"
+        id_content = f"{self.input_uri}-{hashlib.sha256(hash_input.encode()).hexdigest()[:8]}"
 
         return [
             RawArtifact(
@@ -199,7 +199,7 @@ class UnstructuredProvider(BaseProvider):
                 if verified:
                     results.append(
                         StandardSchema(
-                            id=hashlib.md5(f"CC-{raw_data['web_source']}".encode()).hexdigest()[
+                            id=hashlib.sha256(f"CC-{raw_data['web_source']}".encode()).hexdigest()[
                                 :16
                             ],
                             industry="unstructured",
@@ -301,3 +301,4 @@ class UnstructuredProvider(BaseProvider):
             if not record.data:
                 return False
         return True
+

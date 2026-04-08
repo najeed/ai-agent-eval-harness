@@ -17,4 +17,4 @@ High-fidelity labor market data extraction for AI agents. This sector is critica
 - `period`: Timeframe (ISO-8601 YYYY-MM).
 
 ---
-[**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)
+[**Back to Index**](../../index.md) | [**User Manual**](../../user_manual.md) | [**Data Veracity**](../../data_veracity_report.md)

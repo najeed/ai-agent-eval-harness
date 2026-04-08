@@ -241,7 +241,7 @@ class EcommerceProvider(BaseProvider):
                     unique_id_source = str(
                         data.get("order_id") or data.get("invoice_no") or data.get("review_text")
                     )
-                    record_id = hashlib.md5(unique_id_source.encode()).hexdigest()[:16]
+                    record_id = hashlib.sha256(unique_id_source.encode()).hexdigest()[:16]
                     raw_str = json.dumps(verified_data, sort_keys=True)
                     data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
 
@@ -270,3 +270,4 @@ class EcommerceProvider(BaseProvider):
             if val is not None and val < 0:
                 return False
         return True
+

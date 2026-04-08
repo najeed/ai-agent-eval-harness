@@ -50,7 +50,7 @@ class StandardSchema:
         import hashlib
         import json
 
-        final_id = record_id or hashlib.md5(json.dumps(data).encode()).hexdigest()[:16]
+        final_id = record_id or hashlib.sha256(json.dumps(data).encode()).hexdigest()[:16]
         final_checksum = checksum or hashlib.sha256(json.dumps(data).encode()).hexdigest()
 
         return cls(
@@ -176,7 +176,7 @@ class BaseProvider(ABC):
                         break
 
                     # Exponential backoff: 1s, 2s, 4s... with jitter
-                    wait_time = (2**attempt) + random.uniform(0, 1)
+                    wait_time = (2**attempt) + random.uniform(0, 1)  # nosec B311
                     await asyncio.sleep(wait_time)
 
         return None

@@ -12,4 +12,4 @@ High-fidelity housing data extraction for AI agents.
 - `access_rate`: Percentage (e.g., electricity access).
 
 ---
-[**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)
+[**Back to Index**](../../index.md) | [**User Manual**](../../user_manual.md) | [**Data Veracity**](../../data_veracity_report.md)

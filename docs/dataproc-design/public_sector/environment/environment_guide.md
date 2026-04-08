@@ -19,4 +19,4 @@ High-fidelity environment and climate data extraction for AI agents. This sector
 - `reliability_score`: Signal-to-noise ratio from sensor clusters.
 
 ---
-[**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)
+[**Back to Index**](../../index.md) | [**User Manual**](../../user_manual.md) | [**Data Veracity**](../../data_veracity_report.md)

@@ -256,7 +256,7 @@ class HealthcareProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.md5(
+                                id=hashlib.sha256(
                                     f"WHO-{raw_data['country']}-{raw_data['year']}".encode()
                                 ).hexdigest()[:16],
                                 industry="healthcare",
@@ -295,7 +295,7 @@ class HealthcareProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.md5(
+                        record_id = hashlib.sha256(
                             f"{dataset_version}-{row.get('subject_id')}-{row.get('hadm_id')}".encode()
                         ).hexdigest()[:16]
                         results.append(
@@ -340,7 +340,7 @@ class HealthcareProvider(BaseProvider):
                 )
 
                 # Deterministic ID for cross-dataset record linking
-                record_id = hashlib.md5(f"{p_id}-{facility_name}".encode()).hexdigest()[:16]
+                record_id = hashlib.sha256(f"{p_id}-{facility_name}".encode()).hexdigest()[:16]
 
                 raw_data = {
                     "facility_name": facility_name,
@@ -395,3 +395,4 @@ class HealthcareProvider(BaseProvider):
                     )
                     return False
         return True
+

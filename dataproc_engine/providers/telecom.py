@@ -180,7 +180,7 @@ class TelecomProvider(BaseProvider):
                         return None
 
                     return RawArtifact(
-                        id=f"fcc-stream-{hashlib.md5(url.encode()).hexdigest()[:8]}",
+                        id=f"fcc-stream-{hashlib.sha256(url.encode()).hexdigest()[:8]}",
                         source_url=url,
                         content=features,
                         metadata={"type": "geojson", "source": "FCC"},
@@ -248,7 +248,7 @@ class TelecomProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.md5(
+                                id=hashlib.sha256(
                                     f"ITU-{raw_data['country']}-{raw_data['year']}".encode()
                                 ).hexdigest()[:16],
                                 industry="telecom",
@@ -282,7 +282,7 @@ class TelecomProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.md5(f"OOKLA-{row.get('quadkey')}".encode()).hexdigest()[
+                        record_id = hashlib.sha256(f"OOKLA-{row.get('quadkey')}".encode()).hexdigest()[
                             :16
                         ]
                         results.append(
@@ -313,7 +313,7 @@ class TelecomProvider(BaseProvider):
                 name = self.scrub_pii(row.get("provider_name") or row.get("name") or "Unknown")
 
                 # Deterministic tracking ID
-                record_id = hashlib.md5(f"{p_id}-{artifact.source_url}".encode()).hexdigest()[:16]
+                record_id = hashlib.sha256(f"{p_id}-{artifact.source_url}".encode()).hexdigest()[:16]
 
                 # Defensive Key Mapping (Case-Resilient)
                 def get_field(keys):
@@ -368,3 +368,4 @@ class TelecomProvider(BaseProvider):
                     logger.warning("anomaly_detected", record_id=record.id, reason="Negative speed")
                     return False
         return True
+

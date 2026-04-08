@@ -181,7 +181,7 @@ class ScenarioLinter:
                 sig_payload = workflow.get("nodes", [])
 
                 tasks_str = json.dumps(sig_payload, sort_keys=True)
-                signature = hashlib.md5(tasks_str.encode()).hexdigest()
+                signature = hashlib.sha256(tasks_str.encode()).hexdigest()
 
                 if signature in hashes:
                     duplicates.append({"original": hashes[signature], "duplicate": str(p)})

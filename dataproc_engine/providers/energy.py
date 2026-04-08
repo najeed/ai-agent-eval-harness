@@ -243,7 +243,7 @@ class EnergyProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.md5(
+                                id=hashlib.sha256(
                                     f"OPSD-{row['region']}-{row['utc_timestamp']}".encode()
                                 ).hexdigest()[:16],
                                 industry="energy",
@@ -275,7 +275,7 @@ class EnergyProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = hashlib.md5(
+                        record_id = hashlib.sha256(
                             f"ENERGY-{row.get('country_code') or row.get('country')}-{row.get('energy_product') or row.get('product')}".encode()  # noqa: E501
                         ).hexdigest()[:16]
                         results.append(
@@ -335,7 +335,7 @@ class EnergyProvider(BaseProvider):
                 if verified_data:
                     # Deterministic ID based on unique data fields
                     unique_str = f"{raw.id}-{data.get('period', data.get('date'))}"
-                    record_id = hashlib.md5(unique_str.encode()).hexdigest()[:16]
+                    record_id = hashlib.sha256(unique_str.encode()).hexdigest()[:16]
                     raw_str = json.dumps(verified_data, sort_keys=True)
                     data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
 
@@ -368,3 +368,4 @@ class EnergyProvider(BaseProvider):
                     )
                     return False
         return True
+

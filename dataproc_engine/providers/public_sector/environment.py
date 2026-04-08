@@ -99,7 +99,7 @@ class EnvironmentProvider(BaseProvider):
 
                 verified = self.llm_manager._verify_schema(data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.md5(
+                    record_id = hashlib.sha256(
                         f"ENV-{data['location']}-{data['timestamp']}-{data['metric']}".encode()
                     ).hexdigest()[:16]
                     results.append(
@@ -129,3 +129,4 @@ class EnvironmentProvider(BaseProvider):
                 if not (-100 < val < 60):
                     return False
         return True
+

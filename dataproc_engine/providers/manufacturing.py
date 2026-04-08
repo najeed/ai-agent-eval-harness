@@ -95,7 +95,7 @@ class ManufacturingProvider(BaseProvider):
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
                         record_id = (
-                            hashlib.md5(
+                            hashlib.sha256(
                                 f"IND-{raw_data['country']}-{raw_data['sector']}-{raw_data['year']}".encode()
                             ).hexdigest()[:16],
                         )
@@ -160,7 +160,7 @@ class ManufacturingProvider(BaseProvider):
 
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.md5(
+                    record_id = hashlib.sha256(
                         f"ASM-{raw_data['industry_label']}".encode()
                     ).hexdigest()[:16]
                     results.append(
@@ -181,3 +181,4 @@ class ManufacturingProvider(BaseProvider):
             r.data.get("employees", 0) >= 0 and r.data.get("mva_value", 0) >= 0
             for r in [r for r in normalized_data if "employees" in r.data or "mva_value" in r.data]
         )
+

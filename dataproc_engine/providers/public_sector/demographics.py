@@ -108,7 +108,7 @@ class DemographicsProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = hashlib.md5(
+                        record_id = hashlib.sha256(
                             f"WB-DEM-{raw_data['country']}-{raw_data['year']}".encode()
                         ).hexdigest()[:16]
                         results.append(
@@ -152,7 +152,7 @@ class DemographicsProvider(BaseProvider):
 
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.md5(
+                    record_id = hashlib.sha256(
                         f"CENSUS-{raw_data['state']}-{raw_data['year']}".encode()
                     ).hexdigest()[:16]
                     results.append(
@@ -170,3 +170,4 @@ class DemographicsProvider(BaseProvider):
 
     def validate(self, normalized_data: list[StandardSchema]) -> bool:
         return all(r.data.get("population", 0) >= 0 for r in normalized_data)
+

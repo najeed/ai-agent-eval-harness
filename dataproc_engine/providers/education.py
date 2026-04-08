@@ -124,7 +124,7 @@ class EducationProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.md5(
+                        record_id = hashlib.sha256(
                             f"UNESCO-{raw_data['region']}-{raw_data['year']}".encode()
                         ).hexdigest()[:16]
                         results.append(
@@ -157,7 +157,7 @@ class EducationProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.md5(f"MOOC-{row['course_id']}".encode()).hexdigest()[
+                        record_id = hashlib.sha256(f"MOOC-{row['course_id']}".encode()).hexdigest()[
                             :16
                         ]
                         results.append(
@@ -190,7 +190,7 @@ class EducationProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.md5(
+                        record_id = hashlib.sha256(
                             f"KAGGLE-{raw_data['dataset_title']}".encode()
                         ).hexdigest()[:16]
                         results.append(
@@ -223,7 +223,7 @@ class EducationProvider(BaseProvider):
                     raw_data, TARGET_SCHEMA, strict=is_strict
                 )
                 if verified:
-                    record_id = hashlib.md5(
+                    record_id = hashlib.sha256(
                         f"NCES-{raw_data['education_level']}-2022".encode()
                     ).hexdigest()[:16]
                     results.append(
@@ -251,3 +251,4 @@ class EducationProvider(BaseProvider):
                 if record.data.get("enrollment_count", 0) < 0:
                     return False
         return True
+

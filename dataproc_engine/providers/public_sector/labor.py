@@ -79,7 +79,7 @@ class LaborProvider(BaseProvider):
 
                 verified = self.llm_manager._verify_schema(data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.md5(
+                    record_id = hashlib.sha256(
                         f"LABOR-{data['location']}-{data['period']}".encode()
                     ).hexdigest()[:16]
                     results.append(
@@ -100,3 +100,4 @@ class LaborProvider(BaseProvider):
 
     def validate(self, normalized_data: list[StandardSchema]) -> bool:
         return all(0 <= r.data.get("unemployment_rate", 0) <= 100 for r in normalized_data)
+

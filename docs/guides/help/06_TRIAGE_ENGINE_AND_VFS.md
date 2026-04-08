@@ -55,4 +55,4 @@ Failures are no longer treated as "generic errors." They are stratified into hie
 ### 🎯 Patient Zero Identification
 The `TriageEngine` correlates these Enum-based failure codes with the **Behavioral DNA** telemetry (`CHAIN_START`, `NODE_START`). This allows the system to identify the **Patient Zero**—the exact step, turn, and tool-call responsible for the cascade. 
 
-📖 See the full specification: [`docs/spec/failure_taxonomy.md`](../spec/failure_taxonomy.md)
+📖 See the full specification: [`docs/spec/failure_taxonomy.md`](../../spec/failure_taxonomy.md)

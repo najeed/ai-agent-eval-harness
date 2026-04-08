@@ -1,5 +1,6 @@
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -50,7 +51,7 @@ def main():
         # We'll use the CLI module directly for the walkthrough
         subprocess.run(
             [
-                "python",
+                sys.executable,
                 "-m",
                 "eval_runner.cli",
                 "import-drift",

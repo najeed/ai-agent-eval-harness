@@ -229,7 +229,7 @@ class AgricultureProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.md5(
+                                id=hashlib.sha256(
                                     f"FAO-{raw_data['location']}-{raw_data['item']}-{raw_data['year']}".encode()
                                 ).hexdigest()[:16],
                                 industry="agriculture",
@@ -259,7 +259,7 @@ class AgricultureProvider(BaseProvider):
                     unique_str = (
                         f"{item.get('commodity_desc')}-{item.get('year')}-{item.get('state_alpha')}"
                     )
-                    record_id = hashlib.md5(unique_str.encode()).hexdigest()[:16]
+                    record_id = hashlib.sha256(unique_str.encode()).hexdigest()[:16]
                     raw_str = json.dumps(verified_data, sort_keys=True)
                     data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
 
@@ -281,3 +281,4 @@ class AgricultureProvider(BaseProvider):
             if val is not None and val < 0:
                 return False
         return True
+

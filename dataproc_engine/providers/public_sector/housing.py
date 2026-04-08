@@ -69,7 +69,7 @@ class HousingProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = hashlib.md5(
+                        record_id = hashlib.sha256(
                             f"INFRA-{raw_data['location']}-{raw_data['year']}".encode()
                         ).hexdigest()[:16]
                         results.append(
@@ -102,7 +102,7 @@ class HousingProvider(BaseProvider):
                 }
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.md5(
+                    record_id = hashlib.sha256(
                         f"HUD-{raw_data['location']}-{raw_data['year']}".encode()
                     ).hexdigest()[:16]
                     results.append(
@@ -123,3 +123,4 @@ class HousingProvider(BaseProvider):
             r.data.get("rent_2br", 0) >= 0 and r.data.get("access_rate", 0) >= 0
             for r in [r for r in normalized_data if "rent_2br" in r.data or "access_rate" in r.data]
         )
+

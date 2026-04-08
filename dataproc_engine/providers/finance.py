@@ -350,7 +350,7 @@ class FinanceProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.md5(str(raw_data["account_id"]).encode()).hexdigest()[
+                                id=hashlib.sha256(str(raw_data["account_id"]).encode()).hexdigest()[
                                     :16
                                 ],
                                 industry="finance",
@@ -389,7 +389,7 @@ class FinanceProvider(BaseProvider):
                 raw_data, target_schema, strict=current_strict
             )
             if verified:
-                record_id = hashlib.md5(f"{cik}-{raw.timestamp}".encode()).hexdigest()[:16]
+                record_id = hashlib.sha256(f"{cik}-{raw.timestamp}".encode()).hexdigest()[:16]
                 results.append(
                     StandardSchema(
                         id=record_id,
@@ -423,3 +423,4 @@ class FinanceProvider(BaseProvider):
                 if record.data.get("total_assets", 0) <= 0:
                     return False
         return True
+

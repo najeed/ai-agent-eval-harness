@@ -17,4 +17,4 @@ High-fidelity population and social indicator data extraction. This sector provi
 - `year`: Observation year (ISO-8601 YYYY).
 
 ---
-[**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)
+[**Back to Index**](../../index.md) | [**User Manual**](../../user_manual.md) | [**Data Veracity**](../../data_veracity_report.md)

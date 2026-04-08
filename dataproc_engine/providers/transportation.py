@@ -164,7 +164,7 @@ class TransportationProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.md5(f"OSM-{data['id']}".encode()).hexdigest()[:16],
+                                id=hashlib.sha256(f"OSM-{data['id']}".encode()).hexdigest()[:16],
                                 industry="transportation",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "OpenStreetMap"},
@@ -188,7 +188,7 @@ class TransportationProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.md5(
+                                id=hashlib.sha256(
                                     f"EURO-{item['geo']}-{item['time']}".encode()
                                 ).hexdigest()[:16],
                                 industry="transportation",
@@ -215,7 +215,7 @@ class TransportationProvider(BaseProvider):
                 verified_data = self.llm_manager._verify_schema(data, TARGET_SCHEMA, strict=True)
                 if verified_data:
                     unique_str = f"{data['entity']}-{data['period']}"
-                    record_id = hashlib.md5(unique_str.encode()).hexdigest()[:16]
+                    record_id = hashlib.sha256(unique_str.encode()).hexdigest()[:16]
                     raw_str = json.dumps(verified_data, sort_keys=True)
                     data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
 
@@ -247,3 +247,4 @@ class TransportationProvider(BaseProvider):
                 if not (0 <= val <= 100):
                     return False
         return True
+
