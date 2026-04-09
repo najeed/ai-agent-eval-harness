@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#guide-agent-eval-specification-aes-v13" class="md-skip">
+        <a href="#guide-agent-eval-specification-aes-v14" class="md-skip">
           Skip to content
         </a>
       
@@ -2798,16 +2798,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-core-components-v13" class="md-nav__link">
+  <a href="#2-core-components-v14" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Core Components (v1.3)
+        2. Core Components (v1.4)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Core Components (v1.3)">
+    <nav class="md-nav" aria-label="2. Core Components (v1.4)">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata (metadata)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#dag-based-execution-workflow" class="md-nav__link">
@@ -2914,15 +2925,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" class="md-nav__link">
+  <a href="#scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-aes_version-14-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        { &quot;scenario_id&quot;: &quot;loan_approval_01&quot;, &quot;metadata&quot;: { &quot;name&quot;: &quot;High-Density Loan Credit Audit&quot;, &quot;industry&quot;: &quot;finance&quot;, &quot;compliance_level&quot;: &quot;Standard&quot;, &quot;agent_topology&quot;: { &quot;loan_agent&quot;: { &quot;reads&quot;: [&quot;user.credit_score&quot;, &quot;bank.policies&quot;], &quot;writes&quot;: [&quot;loan.status&quot;] } } }, &quot;description&quot;: &quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;, &quot;workflow&quot;: { &quot;nodes&quot;: [ { &quot;id&quot;: &quot;task-1&quot;, &quot;task_description&quot;: &quot;Approve the loan for Alice at the standard rate.&quot;, &quot;required_tools&quot;: [&quot;check_credit_score&quot;, &quot;approve_loan&quot;], &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;tool_call_correctness&quot;, &quot;threshold&quot;: 1.0}, {&quot;metric&quot;: &quot;policy_compliance&quot;, &quot;threshold&quot;: 1.0} ] }, { &quot;id&quot;: &quot;task-2&quot;, &quot;task_description&quot;: &quot;Explain the decision and provide the next steps for disbursement.&quot;, &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;path_parsimony&quot;, &quot;threshold&quot;: 0.5} ] } ], &quot;edges&quot;: [ { &quot;from&quot;: &quot;task-1&quot;, &quot;to&quot;: &quot;task-2&quot; } ] } }
+        { &quot;scenario_id&quot;: &quot;loan_approval_01&quot;, &quot;metadata&quot;: { &quot;name&quot;: &quot;High-Density Loan Credit Audit&quot;, &quot;industry&quot;: &quot;finance&quot;, &quot;aes_version&quot;: 1.4, &quot;capabilities&quot;: [&quot;credit_score_analysis&quot;, &quot;policy_lookup&quot;], &quot;standards_registry&quot;: [&quot;ISO_20022_LOAN_V1&quot;], &quot;compliance_level&quot;: &quot;Standard&quot;, &quot;agent_topology&quot;: { &quot;loan_agent&quot;: { &quot;reads&quot;: [&quot;user.credit_score&quot;, &quot;bank.policies&quot;], &quot;writes&quot;: [&quot;loan.status&quot;] } } }, &quot;description&quot;: &quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;, &quot;workflow&quot;: { &quot;nodes&quot;: [ { &quot;id&quot;: &quot;task-1&quot;, &quot;task_description&quot;: &quot;Approve the loan for Alice at the standard rate.&quot;, &quot;required_tools&quot;: [&quot;check_credit_score&quot;, &quot;approve_loan&quot;], &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;tool_call_correctness&quot;, &quot;threshold&quot;: 1.0}, {&quot;metric&quot;: &quot;policy_compliance&quot;, &quot;threshold&quot;: 1.0} ] }, { &quot;id&quot;: &quot;task-2&quot;, &quot;task_description&quot;: &quot;Explain the decision and provide the next steps for disbursement.&quot;, &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;path_parsimony&quot;, &quot;threshold&quot;: 0.5} ] } ], &quot;edges&quot;: [ { &quot;from&quot;: &quot;task-1&quot;, &quot;to&quot;: &quot;task-2&quot; } ] } }
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="{ &#34;scenario_id&#34;: &#34;loan_approval_01&#34;, &#34;metadata&#34;: { &#34;name&#34;: &#34;High-Density Loan Credit Audit&#34;, &#34;industry&#34;: &#34;finance&#34;, &#34;compliance_level&#34;: &#34;Standard&#34;, &#34;agent_topology&#34;: { &#34;loan_agent&#34;: { &#34;reads&#34;: [&#34;user.credit_score&#34;, &#34;bank.policies&#34;], &#34;writes&#34;: [&#34;loan.status&#34;] } } }, &#34;description&#34;: &#34;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&#34;, &#34;workflow&#34;: { &#34;nodes&#34;: [ { &#34;id&#34;: &#34;task-1&#34;, &#34;task_description&#34;: &#34;Approve the loan for Alice at the standard rate.&#34;, &#34;required_tools&#34;: [&#34;check_credit_score&#34;, &#34;approve_loan&#34;], &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;tool_call_correctness&#34;, &#34;threshold&#34;: 1.0}, {&#34;metric&#34;: &#34;policy_compliance&#34;, &#34;threshold&#34;: 1.0} ] }, { &#34;id&#34;: &#34;task-2&#34;, &#34;task_description&#34;: &#34;Explain the decision and provide the next steps for disbursement.&#34;, &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;path_parsimony&#34;, &#34;threshold&#34;: 0.5} ] } ], &#34;edges&#34;: [ { &#34;from&#34;: &#34;task-1&#34;, &#34;to&#34;: &#34;task-2&#34; } ] } }">
+    <nav class="md-nav" aria-label="{ &#34;scenario_id&#34;: &#34;loan_approval_01&#34;, &#34;metadata&#34;: { &#34;name&#34;: &#34;High-Density Loan Credit Audit&#34;, &#34;industry&#34;: &#34;finance&#34;, &#34;aes_version&#34;: 1.4, &#34;capabilities&#34;: [&#34;credit_score_analysis&#34;, &#34;policy_lookup&#34;], &#34;standards_registry&#34;: [&#34;ISO_20022_LOAN_V1&#34;], &#34;compliance_level&#34;: &#34;Standard&#34;, &#34;agent_topology&#34;: { &#34;loan_agent&#34;: { &#34;reads&#34;: [&#34;user.credit_score&#34;, &#34;bank.policies&#34;], &#34;writes&#34;: [&#34;loan.status&#34;] } } }, &#34;description&#34;: &#34;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&#34;, &#34;workflow&#34;: { &#34;nodes&#34;: [ { &#34;id&#34;: &#34;task-1&#34;, &#34;task_description&#34;: &#34;Approve the loan for Alice at the standard rate.&#34;, &#34;required_tools&#34;: [&#34;check_credit_score&#34;, &#34;approve_loan&#34;], &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;tool_call_correctness&#34;, &#34;threshold&#34;: 1.0}, {&#34;metric&#34;: &#34;policy_compliance&#34;, &#34;threshold&#34;: 1.0} ] }, { &#34;id&#34;: &#34;task-2&#34;, &#34;task_description&#34;: &#34;Explain the decision and provide the next steps for disbursement.&#34;, &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;path_parsimony&#34;, &#34;threshold&#34;: 0.5} ] } ], &#34;edges&#34;: [ { &#34;from&#34;: &#34;task-1&#34;, &#34;to&#34;: &#34;task-2&#34; } ] } }">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3890,16 +3901,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-core-components-v13" class="md-nav__link">
+  <a href="#2-core-components-v14" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Core Components (v1.3)
+        2. Core Components (v1.4)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Core Components (v1.3)">
+    <nav class="md-nav" aria-label="2. Core Components (v1.4)">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata (metadata)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#dag-based-execution-workflow" class="md-nav__link">
@@ -4006,15 +4028,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" class="md-nav__link">
+  <a href="#scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-aes_version-14-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        { &quot;scenario_id&quot;: &quot;loan_approval_01&quot;, &quot;metadata&quot;: { &quot;name&quot;: &quot;High-Density Loan Credit Audit&quot;, &quot;industry&quot;: &quot;finance&quot;, &quot;compliance_level&quot;: &quot;Standard&quot;, &quot;agent_topology&quot;: { &quot;loan_agent&quot;: { &quot;reads&quot;: [&quot;user.credit_score&quot;, &quot;bank.policies&quot;], &quot;writes&quot;: [&quot;loan.status&quot;] } } }, &quot;description&quot;: &quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;, &quot;workflow&quot;: { &quot;nodes&quot;: [ { &quot;id&quot;: &quot;task-1&quot;, &quot;task_description&quot;: &quot;Approve the loan for Alice at the standard rate.&quot;, &quot;required_tools&quot;: [&quot;check_credit_score&quot;, &quot;approve_loan&quot;], &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;tool_call_correctness&quot;, &quot;threshold&quot;: 1.0}, {&quot;metric&quot;: &quot;policy_compliance&quot;, &quot;threshold&quot;: 1.0} ] }, { &quot;id&quot;: &quot;task-2&quot;, &quot;task_description&quot;: &quot;Explain the decision and provide the next steps for disbursement.&quot;, &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;path_parsimony&quot;, &quot;threshold&quot;: 0.5} ] } ], &quot;edges&quot;: [ { &quot;from&quot;: &quot;task-1&quot;, &quot;to&quot;: &quot;task-2&quot; } ] } }
+        { &quot;scenario_id&quot;: &quot;loan_approval_01&quot;, &quot;metadata&quot;: { &quot;name&quot;: &quot;High-Density Loan Credit Audit&quot;, &quot;industry&quot;: &quot;finance&quot;, &quot;aes_version&quot;: 1.4, &quot;capabilities&quot;: [&quot;credit_score_analysis&quot;, &quot;policy_lookup&quot;], &quot;standards_registry&quot;: [&quot;ISO_20022_LOAN_V1&quot;], &quot;compliance_level&quot;: &quot;Standard&quot;, &quot;agent_topology&quot;: { &quot;loan_agent&quot;: { &quot;reads&quot;: [&quot;user.credit_score&quot;, &quot;bank.policies&quot;], &quot;writes&quot;: [&quot;loan.status&quot;] } } }, &quot;description&quot;: &quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;, &quot;workflow&quot;: { &quot;nodes&quot;: [ { &quot;id&quot;: &quot;task-1&quot;, &quot;task_description&quot;: &quot;Approve the loan for Alice at the standard rate.&quot;, &quot;required_tools&quot;: [&quot;check_credit_score&quot;, &quot;approve_loan&quot;], &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;tool_call_correctness&quot;, &quot;threshold&quot;: 1.0}, {&quot;metric&quot;: &quot;policy_compliance&quot;, &quot;threshold&quot;: 1.0} ] }, { &quot;id&quot;: &quot;task-2&quot;, &quot;task_description&quot;: &quot;Explain the decision and provide the next steps for disbursement.&quot;, &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;path_parsimony&quot;, &quot;threshold&quot;: 0.5} ] } ], &quot;edges&quot;: [ { &quot;from&quot;: &quot;task-1&quot;, &quot;to&quot;: &quot;task-2&quot; } ] } }
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="{ &#34;scenario_id&#34;: &#34;loan_approval_01&#34;, &#34;metadata&#34;: { &#34;name&#34;: &#34;High-Density Loan Credit Audit&#34;, &#34;industry&#34;: &#34;finance&#34;, &#34;compliance_level&#34;: &#34;Standard&#34;, &#34;agent_topology&#34;: { &#34;loan_agent&#34;: { &#34;reads&#34;: [&#34;user.credit_score&#34;, &#34;bank.policies&#34;], &#34;writes&#34;: [&#34;loan.status&#34;] } } }, &#34;description&#34;: &#34;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&#34;, &#34;workflow&#34;: { &#34;nodes&#34;: [ { &#34;id&#34;: &#34;task-1&#34;, &#34;task_description&#34;: &#34;Approve the loan for Alice at the standard rate.&#34;, &#34;required_tools&#34;: [&#34;check_credit_score&#34;, &#34;approve_loan&#34;], &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;tool_call_correctness&#34;, &#34;threshold&#34;: 1.0}, {&#34;metric&#34;: &#34;policy_compliance&#34;, &#34;threshold&#34;: 1.0} ] }, { &#34;id&#34;: &#34;task-2&#34;, &#34;task_description&#34;: &#34;Explain the decision and provide the next steps for disbursement.&#34;, &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;path_parsimony&#34;, &#34;threshold&#34;: 0.5} ] } ], &#34;edges&#34;: [ { &#34;from&#34;: &#34;task-1&#34;, &#34;to&#34;: &#34;task-2&#34; } ] } }">
+    <nav class="md-nav" aria-label="{ &#34;scenario_id&#34;: &#34;loan_approval_01&#34;, &#34;metadata&#34;: { &#34;name&#34;: &#34;High-Density Loan Credit Audit&#34;, &#34;industry&#34;: &#34;finance&#34;, &#34;aes_version&#34;: 1.4, &#34;capabilities&#34;: [&#34;credit_score_analysis&#34;, &#34;policy_lookup&#34;], &#34;standards_registry&#34;: [&#34;ISO_20022_LOAN_V1&#34;], &#34;compliance_level&#34;: &#34;Standard&#34;, &#34;agent_topology&#34;: { &#34;loan_agent&#34;: { &#34;reads&#34;: [&#34;user.credit_score&#34;, &#34;bank.policies&#34;], &#34;writes&#34;: [&#34;loan.status&#34;] } } }, &#34;description&#34;: &#34;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&#34;, &#34;workflow&#34;: { &#34;nodes&#34;: [ { &#34;id&#34;: &#34;task-1&#34;, &#34;task_description&#34;: &#34;Approve the loan for Alice at the standard rate.&#34;, &#34;required_tools&#34;: [&#34;check_credit_score&#34;, &#34;approve_loan&#34;], &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;tool_call_correctness&#34;, &#34;threshold&#34;: 1.0}, {&#34;metric&#34;: &#34;policy_compliance&#34;, &#34;threshold&#34;: 1.0} ] }, { &#34;id&#34;: &#34;task-2&#34;, &#34;task_description&#34;: &#34;Explain the decision and provide the next steps for disbursement.&#34;, &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;path_parsimony&#34;, &#34;threshold&#34;: 0.5} ] } ], &#34;edges&#34;: [ { &#34;from&#34;: &#34;task-1&#34;, &#34;to&#34;: &#34;task-2&#34; } ] } }">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4089,7 +4111,7 @@
 
 
 
-<h1 id="guide-agent-eval-specification-aes-v13">Guide: Agent Eval Specification (AES) v1.3<a class="headerlink" href="#guide-agent-eval-specification-aes-v13" title="Permanent link">&para;</a></h1>
+<h1 id="guide-agent-eval-specification-aes-v14">Guide: Agent Eval Specification (AES) v1.4<a class="headerlink" href="#guide-agent-eval-specification-aes-v14" title="Permanent link">&para;</a></h1>
 <p>AES is the foundational standard for shareable, deterministic agent benchmarks.</p>
 <h2 id="1-design-philosophy">1. Design Philosophy<a class="headerlink" href="#1-design-philosophy" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4098,7 +4120,12 @@
 <li><strong>CI Ready</strong>: Validatable via JSON Schema.</li>
 <li><strong>Deterministic DAGs</strong>: Support for non-linear workflow execution with dependency gating.</li>
 </ul>
-<h2 id="2-core-components-v13">2. Core Components (v1.3)<a class="headerlink" href="#2-core-components-v13" title="Permanent link">&para;</a></h2>
+<h2 id="2-core-components-v14">2. Core Components (v1.4)<a class="headerlink" href="#2-core-components-v14" title="Permanent link">&para;</a></h2>
+<h3 id="metadata-metadata">Metadata (metadata)<a class="headerlink" href="#metadata-metadata" title="Permanent link">&para;</a></h3>
+<p>AES v1.4 introduces a stricter metadata schema to ensure cross-platform reproducibility:
+- <strong><code>capabilities</code></strong>: (Required) A list of specific agentic skills required (e.g., <code>web_navigation</code>, <code>sql_generation</code>).
+- <strong><code>standards_registry</code></strong>: (Optional) Industry-standard identifiers (e.g., <code>ISO_20022</code>) for regulatory mapping.
+- <strong><code>aes_version</code></strong>: Must be set to <code>1.4</code>.</p>
 <h3 id="dag-based-execution-workflow">DAG-Based Execution (workflow)<a class="headerlink" href="#dag-based-execution-workflow" title="Permanent link">&para;</a></h3>
 <p>Scenarios define a directed acyclic graph (DAG) of <code>nodes</code> and <code>edges</code>, enabling complex multi-stage evaluations with dependency tracking.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">workflow</span><span class="p">:</span>
@@ -4143,48 +4170,51 @@
 <hr />
 <h2 id="7-complete-example-loan-approval">7. Complete Example (Loan Approval)<a class="headerlink" href="#7-complete-example-loan-approval" title="Permanent link">&para;</a></h2>
 <p>Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan approval process with tool requirements and policy constraints.</p>
-<h2 id="scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2"><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+<h2 id="scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-aes_version-14-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2"><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;scenario_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;loan_approval_01&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;High-Density Loan Credit Audit&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finance&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;compliance_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="nt">&quot;loan_agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user.credit_score&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bank.policies&quot;</span><span class="p">],</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;loan.status&quot;</span><span class="p">]</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span><span class="p">},</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">  </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">      </span><span class="p">{</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-1&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">        </span><span class="nt">&quot;task_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Approve the loan for Alice at the standard rate.&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">        </span><span class="nt">&quot;required_tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;check_credit_score&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;approve_loan&quot;</span><span class="p">],</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">        </span><span class="nt">&quot;success_criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tool_call_correctness&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">},</span>
-<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;policy_compliance&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">}</span>
-<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">        </span><span class="p">]</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">      </span><span class="p">{</span>
-<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-2&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">        </span><span class="nt">&quot;task_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Explain the decision and provide the next steps for disbursement.&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">        </span><span class="nt">&quot;success_criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path_parsimony&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">}</span>
-<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">        </span><span class="p">]</span>
-<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">    </span><span class="p">],</span>
-<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-2&quot;</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">    </span><span class="p">]</span>
-<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="p">}</span>
-</code></pre></div><a class="headerlink" href="#scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" title="Permanent link">&para;</a></h2>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;aes_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.4</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;credit_score_analysis&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;policy_lookup&quot;</span><span class="p">],</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">&quot;standards_registry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ISO_20022_LOAN_V1&quot;</span><span class="p">],</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nt">&quot;compliance_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="nt">&quot;loan_agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user.credit_score&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bank.policies&quot;</span><span class="p">],</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;loan.status&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">      </span><span class="p">{</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-1&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">        </span><span class="nt">&quot;task_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Approve the loan for Alice at the standard rate.&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">        </span><span class="nt">&quot;required_tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;check_credit_score&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;approve_loan&quot;</span><span class="p">],</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">        </span><span class="nt">&quot;success_criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tool_call_correctness&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">},</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;policy_compliance&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">}</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">        </span><span class="p">]</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">      </span><span class="p">},</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">      </span><span class="p">{</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-2&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">        </span><span class="nt">&quot;task_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Explain the decision and provide the next steps for disbursement.&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">        </span><span class="nt">&quot;success_criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path_parsimony&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">}</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">        </span><span class="p">]</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">    </span><span class="p">],</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-2&quot;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">    </span><span class="p">]</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="p">}</span>
+</code></pre></div><a class="headerlink" href="#scenario_id-loan_approval_01-metadata-name-high-density-loan-credit-audit-industry-finance-aes_version-14-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-compliance_level-standard-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" title="Permanent link">&para;</a></h2>
 <p>## 8. Behavioral Fingerprinting (V1)</p>
 <h3 id="environmental-dna-forensic-verification">🛡️ Environmental DNA &amp; Forensic Verification<a class="headerlink" href="#environmental-dna-forensic-verification" title="Permanent link">&para;</a></h3>
-<p>To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.3 introduces the <strong>Environmental DNS Snapshot</strong>. This provides a verifiable "baseline" for the physical world state (IDs, API keys, and simulator configurations) during the evaluation.</p>
+<p>To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.4 enforces the <strong>Forensic Evidence Ledger</strong>. This provides a verifiable "baseline" for the physical world state (IDs, API keys, and simulator configurations) during the evaluation.</p>
 <table>
 <thead>
 <tr>
@@ -4221,12 +4251,14 @@
 </table>
 <p>These fingerprints are used by the <code>gate</code> command to verify that a <code>run.jsonl</code> trace was generated against a sanctioned version of the scenario and tools.</p>
 <hr />
-<p>## 9. Forensic Environmental DNA (v1.3.0) </p>
-<p>v1.3 elevates the environment from a background configuration to a <strong>First-Class Member</strong> of the evaluation trace.</p>
+<p>## 9. Forensic Environmental DNA (v1.4.0) </p>
+<p>v1.4 elevates the environment from a background configuration to a <strong>First-Class Member</strong> of the evaluation trace.</p>
 <p>### The Cumulative Industrial Registry
  Infrastructure state is managed via a <strong>Decoupled Cumulative Registry</strong>. Unlike legacy models, the registry is no longer a single file but a layered configuration stack:
  1. <strong>Immutable Core Root</strong>: Sanctioned defaults are internalized at <a href="/eval_runner/resources/shim_resources.json">eval_runner/resources/shim_resources.json</a>.
- 2. <strong>Distributed Extensions</strong>: Extensions safely add or refine logic via the <a href="/shim_resources.d/">shim_resources.d/</a> directory.</p>
+ 2. <strong>Distributed Extensions</strong>: Extensions safely add or refine logic via the <a href="/.aes/config/shims.d/">.aes/config/shims.d/</a> directory.</p>
+<p>### 9.1 Capability-Based Routing
+ To ensure infrastructure abstraction, AES v1.4+ scenarios should list required capabilities instead of hardcoded endpoints. The Core resolves these to physical infrastructure via the <a href="/.aes/config/routing/manifest.json">Routing Manifest</a>.</p>
 <p>This allows a single AES benchmark to be portable across diverse physical environments (local dev, staging, production) by simply layering the appropriate registry overlay.</p>
 <p>### Provisioning Snapshots
  Every <code>run.jsonl</code> trace now includes:
@@ -4254,7 +4286,8 @@
 <h3 id="aes_version-the-standard"><code>aes_version</code> (The Standard)<a class="headerlink" href="#aes_version-the-standard" title="Permanent link">&para;</a></h3>
 <p>Refers to the <strong>Agent Eval Standard</strong> itself (e.g., <code>1.3</code>). It defines the schema and vocabulary of the <a href="/eval_runner/loader.py">scenario.json</a>.
 - <strong>v1.2</strong>: Legacy-Stable. Supports basic tasks and simulators.
-- <strong>v1.3</strong>: Current-Stable. Supports <strong>Forensic DNA</strong>, <strong>Registry Overlays</strong>, and <strong>PBAC</strong>.</p>
+- <strong>v1.3</strong>: Maintenance. Supports <strong>Forensic DNA</strong> and <strong>PBAC</strong>.
+- <strong>v1.4</strong>: Current-Stable. Supports <strong>VC v3</strong>, <strong>Capabilities</strong>, and <strong>Identity Registry</strong>.</p>
 <h3 id="harness_version-the-engine"><code>harness_version</code> (The Engine)<a class="headerlink" href="#harness_version-the-engine" title="Permanent link">&para;</a></h3>
 <p>Refers to the <strong>MultiAgent-Eval Engine</strong> build (e.g., <code>1.3.0</code>). This is automatically injected into the <a href="/eval_runner/verifier.py">run.jsonl</a> and manifest by the "Referee."</p>
 <blockquote>

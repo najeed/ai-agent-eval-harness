@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#1-architectural-overview" class="md-skip">
+        <a href="#trust-protocol-standard-v141-forensic-baseline" class="md-skip">
           Skip to content
         </a>
       
@@ -2761,6 +2761,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -2803,6 +2805,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2811,30 +2815,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-architectural-overview" class="md-nav__link">
+  <a href="#the-multi-layer-forensic-defense" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Architectural Overview
+        The Multi-Layer Forensic Defense
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="1. Architectural Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#the-dual-layer-defense" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The Dual-Layer Defense
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2889,27 +2876,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-hms-readiness-pluggable-key-management" class="md-nav__link">
+  <a href="#4-identity-registry-kms-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. HMS-Readiness &amp; Pluggable Key Management
+        4. Identity Registry &amp; KMS Integration
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. HMS-Readiness &amp; Pluggable Key Management">
+    <nav class="md-nav" aria-label="4. Identity Registry &amp; KMS Integration">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#a-the-keyloader-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A. The KeyLoader Interface
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#b-dynamic-injection" class="md-nav__link">
@@ -3888,6 +3864,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3896,30 +3874,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-architectural-overview" class="md-nav__link">
+  <a href="#the-multi-layer-forensic-defense" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Architectural Overview
+        The Multi-Layer Forensic Defense
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="1. Architectural Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#the-dual-layer-defense" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The Dual-Layer Defense
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3974,27 +3935,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-hms-readiness-pluggable-key-management" class="md-nav__link">
+  <a href="#4-identity-registry-kms-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. HMS-Readiness &amp; Pluggable Key Management
+        4. Identity Registry &amp; KMS Integration
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. HMS-Readiness &amp; Pluggable Key Management">
+    <nav class="md-nav" aria-label="4. Identity Registry &amp; KMS Integration">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#a-the-keyloader-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A. The KeyLoader Interface
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#b-dynamic-injection" class="md-nav__link">
@@ -4129,32 +4079,33 @@
 
 
 
-  <h1>Trust Protocol Spec</h1>
-
-<h2 id="1-architectural-overview">1. Architectural Overview<a class="headerlink" href="#1-architectural-overview" title="Permanent link">&para;</a></h2>
-<p>The Trust Protocol is designed to provide <strong>immutable proof of run integrity</strong> for the AES Evaluation Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate).</p>
+<h1 id="trust-protocol-standard-v141-forensic-baseline">Trust Protocol Standard v1.4.1 (Forensic Baseline)<a class="headerlink" href="#trust-protocol-standard-v141-forensic-baseline" title="Permanent link">&para;</a></h1>
+<p>The Trust Protocol is designed to provide <strong>immutable proof of run integrity</strong> for the MultiAgentEval Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate v3).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>graph TD
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    A[Trace File .jsonl] --&gt;|SHA-256| B[Content Hash]
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    B --&gt; C[Manifest Metadata]
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    D[Private Key .pem] --&gt;|ED25519 Sign| E[Verification Certificate]
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    C --&gt; E
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    subgraph &quot;Storage &amp; Retrieval&quot;
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        E --&gt;|Sidecar| F[runs/ID_manifest.json]
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        E --&gt;|Auth Store| G[reports/certificates/ID_vc.json]
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        G --&gt; H[Public API /v1/certificates]
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    end
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    subgraph &quot;External Verification&quot;
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        H --&gt; I[Custom Extensions Deployment Gate]
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        I --&gt;|Verify Signature| J[Public Key .pem]
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        I --&gt;|Verify Integrity| A
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    end
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    B --&gt; C[Manifest v3 Metadata]
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    S[Artifact Sidecars .html/.png] --&gt;|SHA-256| L[Forensic Evidence Ledger]
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    L --&gt; C
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    D[Private Key .pem] --&gt;|Identity Registry Sign| E[Verification Certificate v3]
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    C --&gt; E
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    subgraph &quot;Storage &amp; Retrieval&quot;
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        E --&gt;|Sidecar| F[runs/ID_manifest.json]
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        E --&gt;|Auth Store| G[reports/certificates/ID_vc.json]
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        G --&gt; H[Public API /v1/certificates]
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    end
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    subgraph &quot;External Verification&quot;
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        H --&gt; I[Custom Extensions Deployment Gate]
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        I --&gt;|Verify Signature| J[Public Key .pem]
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        I --&gt;|Verify Integrity| A
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    end
 </code></pre></div>
-<h3 id="the-dual-layer-defense">The Dual-Layer Defense<a class="headerlink" href="#the-dual-layer-defense" title="Permanent link">&para;</a></h3>
+<h3 id="the-multi-layer-forensic-defense">The Multi-Layer Forensic Defense<a class="headerlink" href="#the-multi-layer-forensic-defense" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Trace Layer (Integrity)</strong>: A SHA-256 hash of the <code>.jsonl</code> trace file to ensure no bits have been altered.</li>
-<li><strong>Manifest Layer (Authority)</strong>: A signed JSON object (The VC) that contains the trace hash and is cryptographically bound to the harness's identity via ED25519.</li>
+<li><strong>Trace Layer (Integrity)</strong>: A SHA-256 hash of the <code>.jsonl</code> trace file ensures core execution has not been altered.</li>
+<li><strong>Evidence Layer (Provenance)</strong>: The <strong>Forensic Evidence Ledger</strong> contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.</li>
+<li><strong>Manifest Layer (Authority)</strong>: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an authoritative identity via the <strong>Identity Registry</strong>.</li>
 </ol>
 <hr />
 <h2 id="2-cryptographic-mechanics">2. Cryptographic Mechanics<a class="headerlink" href="#2-cryptographic-mechanics" title="Permanent link">&para;</a></h2>
@@ -4180,8 +4131,8 @@
 <hr />
 <h2 id="3-the-verification-workflow">3. The Verification Workflow<a class="headerlink" href="#3-the-verification-workflow" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Generation</strong>: Upon run completion, the harness generates the SHA-256 hash and wraps it in a standardized <code>1.2.3</code> schema.</li>
-<li><strong>Issuance</strong>: The <code>TraceVerifier</code> uses a local <code>private_key.pem</code> (protected via <code>.gitignore</code>) to sign the manifest.</li>
+<li><strong>Generation</strong>: Upon run completion, the harness generates hashes for the trace and all sidecar artifacts.</li>
+<li><strong>Issuance</strong>: The <code>IdentityService</code> resolves the authoritative <code>system_id</code> private key and signs the VC v3 manifest.</li>
 <li><strong>Redundant Storage</strong>:<ul>
 <li><strong>Sidecar</strong>: Stored as <code>run_ID_manifest.json</code> for local reproducibility.</li>
 <li><strong>Authoritative Store</strong>: Stored in <code>reports/certificates/</code> for the Trust API.</li>
@@ -4190,10 +4141,9 @@
 <li><strong>Retrieval</strong>: External systems call the public <code>GET /api/v1/certificates/&lt;run_id&gt;</code> endpoint to fetch the proof.</li>
 <li><strong>Validation</strong>: The consumer uses the harness's <strong>Public Key</strong> to verify the signature and then re-computes the SHA-256 of the trace file to ensure a match.</li>
 </ol>
-<h2 id="4-hms-readiness-pluggable-key-management">4. HMS-Readiness &amp; Pluggable Key Management<a class="headerlink" href="#4-hms-readiness-pluggable-key-management" title="Permanent link">&para;</a></h2>
-<p>The Trust Protocol is designed for <strong>HMS-Readiness</strong>, allowing the Evaluation Harness to transition from local file-based keys to enterprise-grade Hardware Security Modules (HSM) or Cloud KMS (Key Management Service) without altering core logic.</p>
-<h3 id="a-the-keyloader-interface">A. The <code>KeyLoader</code> Interface<a class="headerlink" href="#a-the-keyloader-interface" title="Permanent link">&para;</a></h3>
-<p>We use a strategy pattern for key retrieval via the <code>KeyLoader</code> abstract base class in <code>verifier.py</code>.</p>
+<hr />
+<h2 id="4-identity-registry-kms-integration">4. Identity Registry &amp; KMS Integration<a class="headerlink" href="#4-identity-registry-kms-integration" title="Permanent link">&para;</a></h2>
+<p>Core v1.4 replaces legacy file-based key loaders with the <strong>Identity Registry</strong> (<code>IdentityService</code>). This service abstracts private key resolution, supporting both local PEM storage and future cloud-native Vault/HSM integrations.</p>
 <ul>
 <li><strong><code>LocalFileKeyLoader</code> (Default)</strong>: Handles standard PEM files in the <code>.aes/keys</code> directory. This is used for development and standard CI/CD pipelines.</li>
 <li><strong>Enterprise Extensions</strong>: Teams can implement custom loaders (e.g., <code>AWSKMSKeyLoader</code>, <code>GCPKMSKeyLoader</code>) that fetch keys directly from protected vaults via API, ensuring that private keys never touch the harness's local filesystem.</li>
