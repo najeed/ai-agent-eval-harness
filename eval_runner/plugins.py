@@ -230,6 +230,25 @@ class PluginManager:
                         f"   [PluginManager] Error in {hook_name} for {plugin.__class__.__name__}: {e}"  # noqa: E501
                     )
 
+    def finalize(self):
+        """
+        Explicitly triggers cleanup on all loaded plugins.
+        Targeted at plugins that maintain file handles or state (e.g. FlightRecorder).
+        """
+        for plugin in self.plugins:
+            # 1. Check for dedicated finalize_run (FlightRecorder pattern)
+            if hasattr(plugin, "finalize_run"):
+                try:
+                    plugin.finalize_run()
+                except Exception as e:
+                    print(f"   [PluginManager] Finalization Error ({plugin.__class__.__name__}): {e}")
+            # 2. Check for general cleanup hook
+            elif hasattr(plugin, "cleanup"):
+                try:
+                    plugin.cleanup()
+                except Exception as e:
+                    print(f"   [PluginManager] Cleanup Error ({plugin.__class__.__name__}): {e}")
+
     def trigger_interceptor(self, hook_name: str, *args, **kwargs) -> bool:
         """
         Triggers an interceptor hook and returns False if any plugin rejects the action.

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="20" viewBox="0 0 160 20" fill="none">
+  <defs>
+    <linearGradient id="left_grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#555"/>
+      <stop offset="100%" stop-color="#444"/>
+    </linearGradient>
+    <linearGradient id="right_grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#93BEFF"/>
+      <stop offset="100%" stop-color="#739EFF"/>
+    </linearGradient>
+    <clipPath id="clip">
+      <rect width="160" height="20" rx="4"/>
+    </clipPath>
+  </defs>
+  
+  <g clip-path="url(#clip)">
+    <!-- Left Section (CI Gray) -->
+    <rect width="80" height="20" fill="url(#left_grad)"/>
+    
+    <!-- Centered Icon and Text Group -->
+    <g transform="translate(40, 10)">
+      <!-- Icon shifted slightly left for more space -->
+      <g transform="translate(-30, -5) scale(0.65)">
+        <path d="M7 1c-3.31 0-6 2.69-6 6 0 1.95.93 3.68 2.37 4.77C3.15 12.18 3 12.65 3 13.15V14.5c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-1.35c0-.5-.15-.97-.37-1.38C12.07 10.68 13 8.95 13 7c0-3.31-2.69-6-6-6zm0 10.5c-2.48 0-4.5-2.02-4.5-4.5S4.52 2.5 7 2.5 11.5 4.52 11.5 7 9.48 11.5 7 11.5zm.5-7.5h-1v3H9l-2.5 3-2.5-3h2.5v-3z" fill="#83AEFF"/>
+      </g>
+      <!-- Text shifted slightly right for more space -->
+      <text x="8" y="4" fill="#FFFFFF" font-family="Verdana, sans-serif" font-size="8.3" font-weight="600" text-anchor="middle">Works with</text>
+    </g>
+    
+    <!-- Right Section (MultiAgentEval Blue) -->
+    <rect x="80" width="80" height="20" fill="url(#right_grad)"/>
+    <text x="120" y="14" fill="#1B3B5F" font-family="Verdana, sans-serif" font-size="8.5" font-weight="900" text-anchor="middle">MultiAgentEval</text>
+  </g>
+  
+  <rect width="160" height="1" y="0" fill="white" fill-opacity="0.1" clip-path="url(#clip)"/>
+</svg>

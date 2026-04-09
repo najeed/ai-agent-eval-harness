@@ -716,6 +716,12 @@ def main():
 
         traceback.print_exc()
         sys.exit(1)
+    finally:
+        # Industrial Hardening: Force explicit cleanup of all plugins (e.g. FlightRecorder handles)
+        # This replaces the fragile __del__ pattern.
+        from . import plugins
+
+        plugins.manager.finalize()
 
 
 if __name__ == "__main__":

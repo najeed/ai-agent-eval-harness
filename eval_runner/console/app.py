@@ -108,6 +108,13 @@ def create_app():
         # Add dynamic markers if needed (e.g. active states)
         return flask.jsonify(app.config["NAV_REGISTRY"])
 
+    # Industrial Diagnostic: Audit the physical route map (v1.4.1 Hardening)
+    print("\n--- Industrial Route Map Audit ---", flush=True)
+    for rule in app.url_map.iter_rules():
+        print(f"   [Route] {rule.rule} ({rule.endpoint})", flush=True)
+    print("--- Audit Complete ---\n", flush=True)
+
+
     # Frontend Catch-all Routes (Define LAST to prevent API masking)
     @app.route("/", defaults={"path": ""})
     @app.route("/scenarios")

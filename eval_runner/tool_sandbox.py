@@ -14,6 +14,39 @@ from typing import Any  # noqa: E402
 from . import config  # noqa: E402
 
 
+class ResourceRegistry:
+    """Centralized tracking for physical files and directories created during a session."""
+
+    def __init__(self):
+        from pathlib import Path
+
+        self._tracked_paths: set[Path] = set()
+
+    def register(self, path: str | Path):
+        """Registers a path for mandatory physical cleanup."""
+        from pathlib import Path
+
+        p = Path(path).absolute()
+        self._tracked_paths.add(p)
+
+    def cleanup(self):
+        """Perform an atomic unlink/rmtree of all registered paths."""
+        import shutil
+
+        for path in self._tracked_paths:
+            try:
+                if path.is_file():
+                    path.unlink(missing_ok=True)
+                elif path.is_dir():
+                    shutil.rmtree(path, ignore_errors=True)
+            except Exception as e:
+                # Log but do not crash during teardown (Industrial Robustness)
+                # In a real system, we'd emit an event here
+                import sys
+
+                sys.stderr.write(f"      [ResourceRegistry] [WARN] Cleanup failed for {path}: {e}\n")
+
+
 class SharedStateRegistry:
     """Standard protocol for multi-agent state visibility (namespaces)."""
 
@@ -64,12 +97,14 @@ class SharedStateRegistry:
 class AbstractSandbox(ABC):
     """Abstract base class for tool execution sandboxes."""
 
-    def __init__(self, scenario: dict, event_bus: Any | None = None):
+    def __init__(self, scenario: dict, event_bus: Any | None = None, forensics: Any | None = None):
         self.scenario = scenario
         self.state = scenario.get("initial_state", {}).copy()
         self.shared_state = SharedStateRegistry(scenario.get("agent_topology", {}))
         self.current_agent = "default_agent"  # Can be updated per turn
         self.event_bus = event_bus
+        self.forensics = forensics
+        self.resources = ResourceRegistry()
 
         # Workspace management
         from pathlib import Path
@@ -119,10 +154,28 @@ class AbstractSandbox(ABC):
         print(f"      [Sandbox] Workspace initialized at: {self.workspace_dir}")
         print(f"      [Sandbox] Terminal Jail provisioned: {self.terminal_jail}")
 
+    def register_artifact(self, path: str | Path, alias: str | None = None):
+        """
+        [Industrial Proxy] Single entry point for physical state tracking.
+        Registers path for cleanup (Registry) and auditing (Forensics).
+        """
+        from pathlib import Path
+
+        p = Path(path)
+        # 1. Mandatory Physical Cleanup (Resource Registry)
+        self.resources.register(p)
+
+        # 2. Cryptographic Audit (Forensics) - Optional
+        if self.forensics:
+            self.forensics.register_artifact(p, alias or p.name)
+
     async def teardown(self):
         """Perform one-time teardown: Clean up workspace (optional)."""
         import shutil
         from pathlib import Path
+
+        # 0. Core Hardening: Unified Resource Cleanup
+        self.resources.cleanup()
 
         # Only clean up if explicitly requested in scenario metadata or if it's a test run
         metadata = self.scenario.get("metadata", {})
@@ -296,10 +349,12 @@ class ToolSandbox(AbstractSandbox):
         # Instantiate the fresh registry for this sandbox session
         registry = simulators.get_simulator_registry()
 
-        # [Turn 2 Hardening] Inject terminal_jail info into all shims
+        # [Industrial Hardening] Inject terminal_jail and sandbox reference into all shims
         for sim in registry.values():
             if hasattr(sim, "terminal_jail"):
                 sim.terminal_jail = self.terminal_jail
+            # Enable shims to register artifacts for cleanup/audit
+            sim.sandbox = self
 
         # Layer 1: Global System Filter (from config.py / environment)
         # This acts as the Master Administrative Gate (User's Section 9 Governance).

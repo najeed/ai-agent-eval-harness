@@ -43,14 +43,6 @@ class BaseSimulator:
         """Standardized verification hook for shim-specific post-conditions."""
         return {"status": "success"}
 
-    def __del__(self):
-        """Standard destructor: Call cleanup in the current event loop if possible."""
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.create_task(self.cleanup())
-        except Exception:
-            pass
 
 
 class GitSimulator(BaseSimulator):

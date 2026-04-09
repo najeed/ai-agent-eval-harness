@@ -1,249 +1,74 @@
 ---
 title: Agent Interaction Contract
-description: Technical specification for the REST and CLI contract between the harness and AI agents.
-sidebar:
-  order: 1
+description: Reference for the API contract between the harness and the AI agent under test.
 ---
-# Agent-Harness Interaction Contract (Agent API)
 
-This document describes the expected API contract between the MultiAgentEval harness and the AI agent under test. This is **not** the documentation for the harness's own REST API or CLI (see [Developer API](api/developer_api.md)).
+This document describes the expected API contract between the MultiAgentEval harness and the AI agent.
 
-## Endpoint
-
-```
+## 📡 Primary Endpoint
+By default, the harness expects the agent to expose a REST endpoint:
+```text
 POST /execute_task
 ```
 
-## Request Body
-
+### Request Payload
 | Field | Type | Required | Description |
-|---|---|---|--|
-| `task_description` | string | ✅ | The task for the agent to perform |
-| `turn` | integer | ✅ | Current turn number in the conversation |
-| `conversation_history` | array | ❌ | Array of previous turns (`{role, content}`) |
-| `span_context` | object | ❌ | Opaque dictionary for distributed tracing (OTel 1.40.0) |
+| :--- | :--- | :--- | :--- |
+| `task_description`| string | ✅ | The current instruction for the agent. |
+| `turn` | integer| ✅ | Current turn number (1 to `MAX_TURNS`). |
+| `conversation_history`| array | ❌ | History of previous turns. |
+| `identity_binding`| object | ❌ | Cryptographic proof of agent identity (Industrial v1.4). |
+| `span_context` | object | ❌ | Distributed tracing metadata (OTel 1.40.0). |
 
+---
 
-## Agent Identity (Name Discovery)
+## 🛠️ Response Protocol
+The agent must return an **Action Object** indicating its next step.
 
-The harness supports **Zero-Touch Identity Discovery**. Agents can optionally identify themselves by including a `name` or `agent_name` field in their response. This is highly recommended for leaderboards and visual reporting.
+### Hub Actions
+- **`call_tool`**: Execute a single sandboxed tool.
+- **`call_multiple_tools`**: Execute a bundle of tool calls (parallel execution).
+- **`final_answer`**: Terminates the session with a summary of accomplishment.
+- **`hitl_pause`**: Pause evaluation for human-in-the-loop intervention.
+- **`branch`**: Signals the engine to fork the trajectory for alternative exploration.
 
-The harness discovers the name using the following priority:
-1.  **Top-level fields**: `name` or `agent_name`.
-2.  **Nested Metadata**: `metadata.name` or `metadata.agent_name`.
-3.  **Model Identity**: `metadata.model` (commonly used by LLM-direct adapters).
-
-If no name is discovered, the harness falls back to the manual `--agent-name` CLI flag or the endpoint URL.
-
-## Response Body
-
-The agent must return a JSON object with an `action` field indicating what it did:
-
-### `"action": "call_tool"` — Single tool call
-```json
-{
-  "action": "call_tool",
-  "tool_name": "get_customer_details",
-  "tool_params": {"customer_id": "cust_123"},
-  "tool_output": { ... },
-  "summary": "Identified customer Jane Doe on 100 Mbps plan."
-}
-```
-
-### `"action": "call_multiple_tools"` — Multiple tool calls
+### Example: Multi-Tool Call
 ```json
 {
   "action": "call_multiple_tools",
-  "tool_names": ["run_line_test", "run_remote_speed_test"],
-  "tool_outputs": [{ ... }, { ... }],
-  "summary": "Remote diagnostics complete."
+  "tool_names": ["run_line_test", "check_firmware"],
+  "tool_outputs": [{}, {}],
+  "summary": "Performing remote diagnostics."
 }
 ```
 
-### `"action": "final_answer"` — Task complete
-```json
-{
-  "action": "final_answer",
-  "summary": "The issue is resolved. Customer Wi-Fi was on a congested channel."
-}
-```
+---
 
-### `"action": "provide_instructions"` — Instructions to user
-```json
-{
-  "action": "provide_instructions",
-  "instructions": "Please connect via Ethernet and run a speed test.",
-  "summary": "Guided customer to perform a local speed test."
-}
-```
+## 🧬 Industrial Telemetry (Behavioral DNA)
+High-stakes agents can optionally emit hierarchical markers to support forensic auditing:
+- **`PHASE`**: Macro segments (e.g., "Reasoning").
+- **`SUBTASK`**: Discrete logic units.
+- **`ACTION`**: Individual tool decisions.
 
-### `"action": "hitl_pause"` — Request Human Intervention
-Tells the harness to pause execution and wait for human input. The harness will emit a `HITL_PAUSE` event.
-```json
-{
-  "action": "hitl_pause",
-  "reason": "Requesting manual credit override beyond $500 limit."
-}
-```
+These are captured by the harness's **Behavioral DNA Bus** and reconstructed in real-time on the Visual Console.
 
-### `"action": "branch"` — Fork Trajectory
-Signals the `SessionManager` to create a checkpoint and explore a new path.
-```json
-{
-  "action": "branch",
-  "metadata": {"reason": "Testing alternative resolution path A"}
-}
-```
+---
 
-## Multi-turn Flow
+## 💻 Alternative Protocols
 
-The harness supports multi-turn conversations. When the agent returns a `call_tool` or `call_multiple_tools` action, the harness executes the tool(s) via the **Tool Sandbox** and sends the result back as the next `task_description`:
+### Local Subprocess (`local://`)
+Harness communicates via **Standard I/O**.
+- **Request**: Single-line JSON to agent `stdin`.
+- **Response**: Single-line JSON from agent `stdout`.
+- **Logs**: Captured from `stderr`.
 
-```
-Turn 1: Harness → Agent: "Identify the customer..."
-         Agent → Harness: {"action": "call_tool", "tool_name": "get_customer_details", ...}
-Turn 2: Harness → Agent: "Tool 'get_customer_details' returned: {...}. Continue."
-         Agent → Harness: {"action": "final_answer", "summary": "Customer identified."}
-```
+### Persistent Socket (`socket://`)
+Harness connects via TCP or Unix sockets. Payloads are newline-delimited JSON strings. This is recommended for high-performance, low-latency integrations.
 
-The loop ends when the agent sends `final_answer`, `provide_instructions`, `error`, or the max turn limit (default: 5) is reached.
+---
 
-### Policy Violations (Governance feedback)
-
-If the agent attempts to call a tool in a way that violates a governance policy (e.g., exceeding a refund limit), the harness will return a `"status": "policy_violation"` in the environment message, allowing the agent to self-correct:
-
-```
-Turn 1: Harness → Agent: "Process a $100 refund..."
-         Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 100}}
-Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed limit of 50. Please adjust."
-         Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 50}}
-```
-
-## 🧬 Behavioral DNA Telemetry Hooks
-
-To support high-granularity auditing, agents can optionally emit hierarchical markers during their execution. These are captured by the harness's **Behavioral DNA** bus:
-
-1. **`PHASE`**: Macro-segments (e.g., "Research", "Planning", "Execution").
-2. **`SUBTASK`**: Discrete logic units within a phase.
-3. **`ACTION`**: Individual tool decisions or internal reasoning steps.
-4. **`STEP`**: Atomic processing increments.
-
-The harness automatically maps transitions between these states to provide a precise timeline of the agent's internal lifecycle.
-
-## 💻 Local Subprocess Protocol
-
-When using `--protocol local`, the harness communicates via **Standard I/O**.
-
-1.  **Request**: Harness writes a single-line JSON payload to the agent's `stdin`.
-2.  **Response**: Agent must write a single-line JSON response to `stdout`.
-3.  **Logs**: Anything the agent writes to `stderr` is captured and emitted as an engine log.
-
-This protocol is ideal for evaluating agents written in languages other than Python or for running agents in isolated containers.
-
-### Example Agent (Python)
-```python
-import sys, json
-for line in sys.stdin:
-    payload = json.loads(line)
-    # Process...
-    print(json.dumps({"action": "final_answer", "summary": "Done"}))
-    sys.stdout.flush()
-```
-
-## 🔌 Socket Protocol
-
-When using `--protocol socket`, the harness opens a persistent connection:
--   **TCP**: `host:port`
--   **Unix**: `/path/to/socket`
-
-Payloads are exchanged as JSON strings followed by a newline `\n`. The harness ensures persistent connection stability during multi-attempt evaluations. This protocol is recommended for high-performance integrations or cross-service communication.
-
-## 🏛 Benchmark URIs (Community Integration)
-The harness natively supports evaluating against major research benchmarks using custom URI schemes:
-
-- **`gaia://[split]`**: Loads scenarios from the GAIA dataset (e.g., `gaia://2023_all`).
-- **`assistantbench://[split]`**: Loads scenarios from AssistantBench (e.g., `assistantbench://test`).
-
-These URIs are handled by the `loader.py` which transparently wraps the external data into the standardized AES format with multi-turn metric support.
-
-## 🔗 Ecosystem Hub Payloads
-When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harness transparently maps the AES scenario into specific provider payloads. The return object follows the same `action` structure as the standard POST request.
-
-### Example: Gemini Adapter Payload
-```json
-{
-  "task": "Process user request...",
-  "messages": [{"role": "user", "content": "..."}],
-  "model": "gemini-2.5-flash",
-  "temperature": 0.7
-}
-```
-
-### Example: Grok Adapter Payload
-```json
-{
-  "task": "Process user request...",
-  "model": "grok-4.20-multi-agent",
-  "temperature": 0.0
-}
-```
-
-### Example: AutoGen Adapter Payload
-```json
-{
-  "task_description": "...",
-  "url": "http://localhost:5002/execute_task",
-  "conversation_history": [...]
-}
-```
-
-### 🌐 URL Configurability (.env)
-All ecosystem URLs are sourced from environment variables to enable zero-touch scaling in Docker/CI environments. Prioritized fallbacks are defined in `eval_runner/config.py`:
-
-| Provider | .env Key | Default Fallback |
-|---|---|---|
-| Ollama | `OLLAMA_API_URL` | `http://localhost:11434/api/chat` |
-| AutoGen | `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` |
-| Claude | `CLAUDE_API_URL` | `https://api.anthropic.com/v1/messages` |
-| Gemini | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/models` |
-
-## Scenario-Level Judge Configuration
-The `luna_judge_score` metric can be customized per-scenario or per-criterion using the `judge_config` object. This allows for granular control over the evaluation model and scoring rubrics.
-
-### `judge_config` Schema
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `judge_provider` | string | `.env` default | Model provider (e.g., `openai`, `gemini`, `ollama`) |
-| `judge_model` | string | `.env` default | Specific model ID (e.g., `gpt-5.4-pro`, `claude-4-6-sonnet`) |
-| `judge_temperature` | float | `0.0` | Randomness of the judge (higher = less predictable) |
-| `judge_rubric` | string | `generic` | The named rubric to use (see below) |
-
-## Built-in Rubrics
-The following industry-standard rubrics are available out-of-the-box:
-- `clinical_safety`: Healthcare-specific safety and HIPAA compliance check.
-- `fiduciary_accuracy`: Financial advice and numerical correctness audit.
-- `policy_adherence`: Legal disclosure and boundary enforcement check.
-- `factual_grounding`: Evidence-based grounding and hallucination detection.
-- `generic`: Standard semantic similarity score.
-
-### Usage Example (Scenario JSON)
-```json
-{
-  "scenario_id": "clinical_trial_summary",
-  "criteria": [
-    {
-      "metric": "luna_judge_score",
-      "threshold": 0.9,
-      "judge_config": {
-        "judge_provider": "openai",
-        "judge_model": "gpt-5.4-mini",
-        "judge_rubric": "clinical_safety"
-      }
-    }
-  ]
-}
-```
-
-## Visual Debugger Integration
-The **Visual Debugger** (`multiagent-eval console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React dashboard.
-
+## 🔐 Identity Discovery
+The harness automatically discovers the agent's identity using the following priority:
+1.  **Top-level**: `name` or `agent_name`.
+2.  **Metadata**: `metadata.model` or `metadata.agent_name`.
+3.  **Fallback**: The `--agent-name` CLI flag or endpoint URL.

@@ -30,8 +30,11 @@ Triggers an evaluation of a specific scenario in a background thread.
 **Body:**
 ```json
 {
-  "path": "industries/fintech/scenarios/loan_decision.yaml",
-  "max_turns": 10
+  "path": "industries/fintech/scenarios/loan_decision.json",
+  "max_turns": 10,
+  "metadata_overrides": {
+    "compliance_level": "Strict"
+  }
 }
 ```
 
@@ -44,10 +47,15 @@ Triggers an evaluation of a specific scenario in a background thread.
 }
 ```
 
-### 2. Verify Run (Public)
+### 2. Verify Run (Public Trust)
 `GET /api/v1/verify/<run_id>`
 
 Public endpoint that verifies a completed run against its industrial manifest.
+
+### 3. Retrieve Certificate (Industrial VC)
+`GET /api/v1/certificates/<run_id>`
+
+Retrieves the authoritative Verification Certificate (VC) for a specific run, including SHA-256 hashes and identity signatures.
 
 ---
 

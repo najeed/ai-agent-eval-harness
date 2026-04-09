@@ -7,6 +7,7 @@ This decouples logging from the core engine loop.
 
 import json
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -54,7 +55,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         # Special handling for RUN_START to set paths
         if event.name == CoreEvents.RUN_START:
-            import sys
 
             # [Refresher] Re-read environment variables for dynamic runtime configuration
             import eval_runner.config as config
@@ -98,7 +98,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             if self.master:
                 _write_buffered(self.master_log_path, content)
         except Exception as e:
-            import sys
 
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
 
@@ -107,9 +106,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         Explicitly closes file handles and flushes telemetry to disk.
         Critical for resolving Windows file-lock races.
         """
-        import os
-        import sys
-
         for path_str, handle in self._handles.items():
             try:
                 handle.flush()
@@ -124,19 +120,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     f"   [FlightRecorder] [WARNING] Finalization error on {path_str}: {e}\n"
                 )
         self._handles.clear()
-
-    def __del__(self):
-        """
-        Graceful deallocator. Guards against sys.meta_path being None
-        during Python interpreter shutdown (race condition resolution).
-        """
-        import sys
-
-        try:
-            if sys and sys.meta_path is not None:
-                self.finalize_run()
-        except (AttributeError, ImportError):
-            pass
 
     def after_evaluation(
         self, context: Any, results: list, span_context: dict[str, Any] | None = None
@@ -159,8 +142,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 try:
                     old_file.unlink()
                 except Exception as e:
-                    import sys
-
                     sys.stderr.write(
                         f"   [FlightRecorder] [WARNING] Error rotating log {old_file.name}: {e}\n"
                     )

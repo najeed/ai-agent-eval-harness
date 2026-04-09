@@ -97,7 +97,9 @@ class SessionManager:
 
         all_task_results = []
         executed_nodes = set()
-        sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus)
+        sandbox = ToolSandbox(
+            self.scenario, event_bus=self.event_bus, forensics=self.forensics
+        )
         sandbox.setup()
 
         try:

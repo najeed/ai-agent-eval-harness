@@ -3,101 +3,67 @@ title: Quick Start
 description: Get up and running with MultiAgentEval in under 60 seconds.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
-
-This guide is designed for **Agent Integrators** who want to run their first evaluation with minimal setup.
-
----
+This guide is for developers and evaluators who want to see MultiAgentEval in action with minimal setup.
 
 ## 🚀 The 60-Second Demo
 
-The fastest way to see the harness in action is the `quickstart` command. It automatically handles agent setup, scenario execution, and report generation using an in-process mock agent.
+The fastest way to explore the harness is the `quickstart` command. It handles agent setup, scenario execution, and report generation automatically.
 
-<Steps>
-1. **Install the harness**
-   ```bash
-   pip install -e .
-   ```
+```bash
+# 1. Install the harness
+pip install -e .
 
-2. **Run the Quickstart**
-   ```bash
-   multiagent-eval quickstart
-   ```
-</Steps>
+# 2. Run the Quickstart
+multiagent-eval quickstart
+```
 
-**What happens:**
-- Spawns a **deterministic in-process** sample agent (no API keys required).
-- Executes a telecom troubleshooting evaluation.
-- Generates a **Premium HTML report** in `reports/` with Mermaid trajectories.
-- 100% offline-ready.
+### What Happens:
+1.  **Sample Agent**: Spawns a deterministic, in-process sample agent (no API keys required).
+2.  **Execution**: Runs a telecom troubleshooting evaluation from the industrial library.
+3.  **Reporting**: Generates a **Premium HTML report** (with Mermaid maps) in the `reports/` directory.
+4.  **Cleanup**: Automatically shuts down the agent.
 
 ---
 
 ## 🏗️ Building Your Own Suite
 
-When you're ready to start building benchmarks for your specific industrial use-case:
+When you're ready to build benchmarks for your specific industrial use case:
 
 ### 1. Scaffold the Project
-Generate a starter workspace linked to automatically generated realistic datasets.
+Generate a starter workspace with realistic industry datasets.
 ```bash
 multiagent-eval init --dir my_benchmarks --industry finance
 ```
 
 ### 2. Auto-Translate Existing Specs
-If you already have PDF or Markdown guidelines, convert them into JSON scenarios automatically (requires local `Ollama`):
+Convert PDF or Markdown PRDs into executable AES JSON scenarios (requires [Ollama](https://ollama.com/)).
 ```bash
 multiagent-eval auto-translate --input specs/loan_approval.pdf --industry finance
 ```
 
 ---
 
-## 🛠 Manual Setup (The "Standard" Way)
+## 🛠️ Manual Integration
 
-Use this method to integrate your own production agents into the harness.
+To connect your own agent to the harness:
 
-### 1. Start your Agent
-Ensure your agent is running and accessible via an HTTP endpoint.
-```bash
-# Example (starting the sample agent)
-python sample_agent/agent_app.py
-```
-
-### 2. Configure Environment
-Set the `AGENT_API_URL` to point to your agent endpoint.
-```bash
-# Windows
-set AGENT_API_URL=http://localhost:5001/execute_task
-```
-
-### 3. Run an Evaluation
-Access the global library of industry-grade scenarios.
-```bash
-multiagent-eval evaluate --path industries/telecom
-```
-
----
-
-## 📊 Viewing Results
-
-After the run, you'll find results in the following locations:
-
-- **Flight Recorder**: `runs/run.jsonl` (raw execution trace).
-- **Executive Summaries**: `reports/latest_results.json`.
-- **Visual Reports**: `reports/report_<id>.html` (includes trace reconstruction).
-- **Interactive Dashboard**: Run `multiagent-eval console` for live DNA debugging and visual background evaluation.
-
----
-
-## ⚙️ Core Configuration
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL |
-| `EVAL_MAX_TURNS` | `10` | Max conversation turns per task (v1.3 default) |
-| `RUN_LOG_DIR` | `runs` | Directory for execution traces |
+1.  **Start Your Agent**: Ensure it follows the [Agent API Contract](/ai-agent-eval-harness/integrator/agent-contract/).
+2.  **Configure `.env`**: Point `AGENT_API_URL` to your endpoint.
+    ```bash
+    AGENT_API_URL=http://localhost:5001/execute_task
+    ```
+3.  **Run Evaluation**: Use scenarios from the [Industrial Library](/ai-agent-eval-harness/evaluator/industries/).
+    ```bash
+    multiagent-eval evaluate --path industries/telecom
+    ```
+4.  **Analyze Results**: Replay a trace to debug agent reasoning.
+    ```bash
+    multiagent-eval replay --path runs/run.jsonl
+    ```
 
 ---
 
 ## 🧭 Next Steps
-- **Agent Contract**: Learn how to implement the standard API in [Agent Contract](../integrator/agent-contract/).
-- **Auditing**: Learn about trace verification in the [Trust Protocol](../../auditor/trust-protocol/).
+- **Evaluators**: Read the [User Manual](/ai-agent-eval-harness/evaluator/user-manual/) for advanced analysis.
+- **Architects**: Dive into the [Core Architecture](/ai-agent-eval-harness/builder/architecture/).
+- **Extenders**: Learn how to write [Custom Shims](/ai-agent-eval-harness/extender/shimming/).

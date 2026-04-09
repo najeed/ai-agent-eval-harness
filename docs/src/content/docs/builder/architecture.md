@@ -1,74 +1,61 @@
 ---
 title: System Architecture
-description: Deep dive into the MultiAgentEval Zero-Touch Core and modular plugin architecture.
+description: Technical deep-dive into the MultiAgentEval engine, event bus, and security guardrails.
 ---
 
-MultiAgentEval is built on a **Zero-Touch Core** philosophy: the central engine remains immutable and framework-agnostic, while all domain-specific logic, protocols, and environments are injected via modular plugins.
+MultiAgentEval is built on a **"Zero-Touch Core"** philosophy. The central engine remains framework-agnostic, while all industry-specific logic, communication protocols, and simulators are injected via a pluggable architecture.
 
----
+## 🏗️ High-Level Architecture
 
-## 🏗️ High-Level Map
+The system is divided into four distinct layers:
 
-The harness is divided into four authoritative layers:
-
-1. **The CLI Layer** (`eval_runner/cli.py`): Command dispatching, argument parsing, and environment initialization.
-2. **The Loader Layer** (`eval_runner/loader.py`): Universal scenario loading, industry dataset extraction, and hybrid registry resolution.
-3. **The Execution Layer** (`eval_runner/session.py` / `engine.py`): The heart of the platform. Manages turn loops, immutable contexts, and state transitions.
-4. **The Observation Layer** (`eval_runner/events.py`): A decoupled `EventEmitter` bus that triggers metrics, reporting, and triage plugins.
-
----
-
-## 🔐 The "Zero-Touch" Hardening (v1.3.0)
-
-For the **OSS Core Builder**, the most significant architectural advancements in v1.3.0 focus on stability and isolation:
-
-### 1. Isolated Contextual Registries
-We have moved away from a shared global registry for agent adapters, tools, and simulators. The platform now uses a **Local Overlay Pattern**:
-- **Mechanism**: `contextvars`-based isolation ensures that a mock or override in one evaluation task cannot leak into concurrent runs.
-- **SSOT**: The global registry remains the authoritative discovery cache, but the `SessionManager` executes within a virtualized "Overlay Context."
-
-### 2. Forensic DNA & Snapshots
-Every evaluation now captures an immutable **Environmental DNA** snapshot:
-- **Provisioning Hash**: A SHA-256 hash of the *resolved* registry state (endpoints, shims, versions) is recorded in the trace.
-- **Mathematical Proof**: This hash is cryptographically linked to the **Trust Protocol** signing step, proving the environment was not tampered with during execution.
+1.  **Entry Layer (CLI/API)**: Orchestrates the evaluation lifecycle and provides namespaced access to plugins.
+2.  **Logic Layer (Engine & Session)**: Manages the turn-based conversation loop, state immutability via frozen contexts, and branching trajectories.
+3.  **Simulation Layer (World Shims)**: Stateful, VFS-aware simulators that provide deterministic environment feedback.
+4.  **Security Layer (Identity & Trust)**: Cryptographic signature generation (VC v3) and NIST-aligned risk scoring.
 
 ---
 
-## 📡 The Event Bus (`EventEmitter`)
+## 📡 The `EventEmitter` Bus
 
-The core is non-intrusive. Every major action emits an event, allowing builders to extend functionality without modifying the engine.
+The heart of the system is the **Global Event Bus**. Every state transition in the engine is emitted as a structured event, allowing plugins to observe behavior without modifying core code.
 
-| Event Type | Purpose |
+### Core Events
+- `RUN_START` / `RUN_END`: Entire evaluation lifecycle.
+- `TASK_START` / `TASK_END`: Individual goal execution.
+- `PHASE` / `SUBTASK` / `ACTION`: **Behavioral DNA** markers for forensic analysis.
+- `TOOL_CALL` / `TOOL_RESULT`: Interaction with World Shims.
+- `HITL_PAUSE`: Request for human intervention.
+
+---
+
+## 🛡️ Enterprise Security Guardrails
+
+MultiAgentEval is designed for adversarial environments, enforcing strict guardrails at the core level:
+
+| Threat | Mitigation |
 | :--- | :--- |
-| `PHASE` | Hierarchical macro-segments of a mission. |
-| `NODE_START` | Entry into a specific DAG workflow node. |
-| `ACTION` | High-level agent decisions or tool executions. |
-| `DNA_SIGNAL` | Telemetry from underlying frameworks (e.g., LangGraph). |
+| **Sandbox Escape** | Mandatory chroot on VFS keys and shell meta-character stripping. |
+| **DoS / Infinite Loops** | `MAX_ENGINE_ATTEMPTS` (50) and `MAX_FORK_DEPTH` (3) caps. |
+| **PII / Token Leakage** | `EventEmitter` automatically redacts JWTs, AWS keys, and Bearer tokens. |
+| **Plugin Interference** | Contexts are `frozen` dataclasses using `MappingProxyType` for immutability. |
+| **Hang Protection** | All plugin hooks are wrapped in a **5.0s timeout**. |
 
 ---
 
-## 📦 Core Module Inventory
+## 🧬 NIST AI-100-1 Alignment
 
-| Module | Purpose | Source |
-| :--- | :--- | :--- |
-| **Session** | Manages immutable turn-contexts and conversation state. | `eval_runner/session.py` |
-| **Tool Sandbox** | Stateful mock executor with policy guardrails. | `eval_runner/tool_sandbox.py` |
-| **Metrics** | Modular evaluators for Accuracy, Planning, and Defense. | `eval_runner/metrics/` |
-| **Simulators** | World Shim suite (20+ simulators) for high-fidelity testing. | `eval_runner/simulators.py` |
-| **Triage** | Forensic trajectory forensics and root cause isolation. | `eval_runner/triage.py` |
+The architecture is explicitly aligned with **NIST AI RMF principles**, providing a standardized baseline for mission-critical verification.
 
----
+### Weighted Severity Model (WSM)
+Aggregate scoring across 7 dimensions (Safety, Security, Reliability, etc.) ensures that risks are prioritized based on industrial impact.
 
-## 🛡️ Security Guardrails
-
-The engine enforces industrial-grade mitigations at the binary level:
-- **CPU Exhaustion**: Hard cap of `50` engine attempts per scenario.
-- **PII Redaction**: Centralized payload sanitization for JWTs, AWS keys, and GitHub tokens.
-- **Sandbox Escape**: Chroot-based virtualization of all emitted state keys and terminal paths.
-- **Prototype Pollution**: `EvaluationContext` and `TurnContext` are **frozen dataclasses**.
+### The "Safety Floor"
+A architectural guarantee: If foundational **Safety** or **Security** scores fall below **0.5**, the aggregate trustworthiness index is automatically capped at **0.49 (Fail)**.
 
 ---
 
-## 🧭 Integration Guide
-- **Developing Plugins**: See the [Plugin Extension Guide](../../extender/plugins/).
-- **Adding Simulators**: Learn how to build new [World Shims](../../extender/simulators/).
+## 🔗 Identity & Trust (v1.4)
+
+- **Identity Registry**: Central authority for managing Ed25519 signing keys.
+- **Verification Certificate (VC) v3**: A signed manifest binding execution traces (`run.jsonl`) to environmental snapshots, ensuring absolute trace non-repudiation.

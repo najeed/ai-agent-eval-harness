@@ -16,6 +16,7 @@ POST /execute_task
 | `turn` | integer | ✅ | Current turn number in the conversation |
 | `conversation_history` | array | ❌ | Array of previous turns (`{role, content}`) |
 | `span_context` | object | ❌ | Opaque dictionary for distributed tracing (OTel 1.40.0) |
+| `identity_binding` | object | ❌ | Cryptographic identity proof (v1.4+) |
 
 
 ## Agent Identity (Name Discovery)
@@ -111,6 +112,18 @@ Turn 1: Harness → Agent: "Process a $100 refund..."
          Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 100}}
 Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed limit of 50. Please adjust."
          Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 50}}
+```
+
+## 🔐 Identity Binding (Industrial v1.4)
+
+To prevent impersonation in high-stakes evaluations, the harness validates the `identity_binding` object. This contains a signed nonce ensuring that the agent responding is the one authorized by the **Identity Registry**.
+
+```json
+{
+  "identity_id": "loan_bot_01",
+  "signature": "...",
+  "nonce": "..."
+}
 ```
 
 ## 🧬 Behavioral DNA Telemetry Hooks

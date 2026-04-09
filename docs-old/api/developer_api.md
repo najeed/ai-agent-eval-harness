@@ -45,9 +45,15 @@ The Trust Protocol ensures that evaluations are authentic and tamper-proof.
 #### `certify` — Generate Manifest
 Signed integrity anchoring for a run.
 ```bash
-multiagent-eval certify --run-id <id> [--private-key <path>] [--fingerprint <id>]
+multiagent-eval certify --run-id <id> [--identity <id>] [--status <s>] [--score <n>]
 ```
-- Generates a `run_manifest.json` with SHA-256 binary integrity and optional ED25519 signature.
+- `--run-id`: [SSOT] Standard Run ID for autonomous artifact discovery (Recommended).
+- `--identity`: Identity ID to use for signing (default: `system_id`).
+- `--status`: Compliance status to embed (`pass`, `fail`, `warning`).
+- `--score`: Compliance score (0.0-1.0) to embed.
+- `--policy-ref`: Reference to the policy being certified against.
+- `--fingerprint`: Optional hardware/environment fingerprint ID.
+- Generates a `Verification Certificate (VC)` with SHA-256 and Identity-based signing.
 
 #### `verify` — Integrity Check
 Cryptographic validation of a trace.
@@ -58,8 +64,11 @@ multiagent-eval verify --run-id <id> [--path <path>]
 #### `gate` — CI/CD Enforcement
 The gatekeeper for production deployments. Exits with code `1` on verification failure.
 ```bash
-multiagent-eval gate --run-id <id> --public-key <path> [--hash <commit_sha>]
+multiagent-eval gate --run-id <id> [--public-key <path>] [--verify-ledger]
 ```
+- `--run-id`: [SSOT] Standard Run ID for autonomous artifact discovery.
+- `--verify-ledger`: Perform full forensic hash check of all sidecar artifacts.
+- `--hash`: Optional commit hash to verify against manifest metadata.
 | Command | Description |
 |---|---|
 | `list-metrics` | Show all registered evaluation metrics and descriptions. |
@@ -72,7 +81,7 @@ multiagent-eval gate --run-id <id> --public-key <path> [--hash <commit_sha>]
 
 | Command | Description |
 |---|---|
-| `aes validate` | Validate a scenario against the AES V1.3 schema. |
+| `aes validate` | Validate a scenario against the AES V1.4 schema. |
 | `spec-to-eval` | Convert Markdown PRD/Specs into executable JSON. |
 | `lint` | Static analysis for scenario quality and compliance. |
 | `mutate` | Generate adversarial variants (choices: `typo`, `injection`, `ambiguity`). |
