@@ -4157,17 +4157,26 @@
 <p>The Trust Protocol ensures that evaluations are authentic and tamper-proof.</p>
 <h4 id="certify-generate-manifest"><code>certify</code> — Generate Manifest<a class="headerlink" href="#certify-generate-manifest" title="Permanent link">&para;</a></h4>
 <p>Signed integrity anchoring for a run.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--private-key<span class="w"> </span>&lt;path&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--fingerprint<span class="w"> </span>&lt;id&gt;<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--identity<span class="w"> </span>&lt;id&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--status<span class="w"> </span>&lt;s&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--score<span class="w"> </span>&lt;n&gt;<span class="o">]</span>
 </code></pre></div>
-- Generates a <code>run_manifest.json</code> with SHA-256 binary integrity and optional ED25519 signature.</p>
+- <code>--run-id</code>: [SSOT] Standard Run ID for autonomous artifact discovery (Recommended).
+- <code>--identity</code>: Identity ID to use for signing (default: <code>system_id</code>).
+- <code>--status</code>: Compliance status to embed (<code>pass</code>, <code>fail</code>, <code>warning</code>).
+- <code>--score</code>: Compliance score (0.0-1.0) to embed.
+- <code>--policy-ref</code>: Reference to the policy being certified against.
+- <code>--fingerprint</code>: Optional hardware/environment fingerprint ID.
+- Generates a <code>Verification Certificate (VC)</code> with SHA-256 and Identity-based signing.</p>
 <h4 id="verify-integrity-check"><code>verify</code> — Integrity Check<a class="headerlink" href="#verify-integrity-check" title="Permanent link">&para;</a></h4>
 <p>Cryptographic validation of a trace.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>verify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--path<span class="w"> </span>&lt;path&gt;<span class="o">]</span>
 </code></pre></div></p>
 <h4 id="gate-cicd-enforcement"><code>gate</code> — CI/CD Enforcement<a class="headerlink" href="#gate-cicd-enforcement" title="Permanent link">&para;</a></h4>
 <p>The gatekeeper for production deployments. Exits with code <code>1</code> on verification failure.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>multiagent-eval<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--public-key<span class="w"> </span>&lt;path&gt;<span class="w"> </span><span class="o">[</span>--hash<span class="w"> </span>&lt;commit_sha&gt;<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>multiagent-eval<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--public-key<span class="w"> </span>&lt;path&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verify-ledger<span class="o">]</span>
 </code></pre></div>
+- <code>--run-id</code>: [SSOT] Standard Run ID for autonomous artifact discovery.
+- <code>--verify-ledger</code>: Perform full forensic hash check of all sidecar artifacts.
+- <code>--hash</code>: Optional commit hash to verify against manifest metadata.
 | Command | Description |
 |---|---|
 | <code>list-metrics</code> | Show all registered evaluation metrics and descriptions. |
@@ -4185,7 +4194,7 @@
 <tbody>
 <tr>
 <td><code>aes validate</code></td>
-<td>Validate a scenario against the AES V1.3 schema.</td>
+<td>Validate a scenario against the AES V1.4 schema.</td>
 </tr>
 <tr>
 <td><code>spec-to-eval</code></td>
