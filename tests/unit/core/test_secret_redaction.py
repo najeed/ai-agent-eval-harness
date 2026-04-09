@@ -46,8 +46,8 @@ def test_recursive_redaction_logic():
 
 def test_provisioning_hash_integrity(tmp_path, monkeypatch):
     """Verify that the forensic hash is based on RAW data, not redacted data."""
-    # 1. Setup a .d folder with a secret extension
-    d_dir = tmp_path / "shim_resources.d"
+    # 1. Setup a .d folder with a secret extension (v1.4.0 structure)
+    d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
     secret_value = "SUPER_SECRET_KEY"
     content = {"shims": {"api": {"resources": {"api_key": secret_value}}}}

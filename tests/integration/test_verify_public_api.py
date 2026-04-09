@@ -26,8 +26,16 @@ def test_public_verify_endpoint(client, tmp_path):
     # Setup reports dir
     original_reports = config.REPORTS_DIR
     original_runs = config.RUN_LOG_DIR
+    original_trust = config.TRUST_ROOT
+    
     config.REPORTS_DIR = tmp_path / "reports"
     config.RUN_LOG_DIR = tmp_path
+    
+    # Industrial Standard: Provision identity for v3 signing
+    identity_id = "system_id"
+    keys_dir = tmp_path / "keys" / identity_id
+    TraceVerifier.generate_key_pair(output_dir=str(keys_dir))
+    config.TRUST_ROOT = tmp_path / "keys"
 
     try:
         # Sign the trace (generates manifest)
@@ -54,3 +62,4 @@ def test_public_verify_endpoint(client, tmp_path):
     finally:
         config.REPORTS_DIR = original_reports
         config.RUN_LOG_DIR = original_runs
+        config.TRUST_ROOT = original_trust

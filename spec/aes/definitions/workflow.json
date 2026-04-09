@@ -13,6 +13,23 @@
         "properties": {
           "id": { "type": "string" },
           "task_description": { "type": "string" },
+          "required_tools": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of shim tools required to complete this task (v1.4 upgrade)"
+          },
+          "success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["metric", "threshold"],
+              "properties": {
+                "metric": { "type": "string" },
+                "threshold": { "type": "number" }
+              }
+            },
+            "description": "Quantitative metrics for task success (v1.4 upgrade)"
+          },
           "state_hygiene": {
             "type": "object",
             "description": "Assertions to check BEFORE this node can execute."
@@ -24,7 +41,7 @@
                 "properties": {
                   "type": { "const": "standard_ref" },
                   "schema_id": { "type": "string" },
-                  "value": { "type": "object" }
+                  "value": {}
                 }
               },
               {
@@ -34,7 +51,7 @@
                   "data_type": {
                     "enum": ["string", "number", "boolean", "object", "array"]
                   },
-                  "value": { "type": "object" }
+                  "value": {}
                 }
               }
             ]

@@ -9,7 +9,7 @@ from flask import Blueprint, jsonify, request
 
 from eval_runner import config
 from eval_runner.catalog import ScenarioCatalog
-from eval_runner.events import CoreEvents, EventEmitter
+from eval_runner.events import CoreEvents, emit, subscribe
 from eval_runner.plugins import manager
 from eval_runner.simulators import get_simulator_registry
 
@@ -676,6 +676,41 @@ def list_runs():
     runs.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
 
     return jsonify({"runs": runs[:200]})
+                                                                    
+                                                                    
+@core_bp.route("/v1/runs/<path:run_id>", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
+def get_run_status(run_id):
+    """
+    Industrial Polling Primitive.
+    Returns the existence and basic metadata of a specific run.
+    """
+    runs_dir = config.RUN_LOG_DIR
+    
+    # 1. Authoritative Disk Scan (Nested and Flat support)
+    paths_to_check = [
+        runs_dir / f"{run_id}.jsonl",
+        runs_dir / run_id / "run.jsonl",
+        runs_dir / "demo" / f"{run_id}.jsonl"
+    ]
+    
+    trace_file = next((p for p in paths_to_check if p.exists()), None)
+    
+    if not trace_file:
+        return jsonify({
+            "run_id": run_id,
+            "status": "NOT_FOUND",
+            "message": "Trace not yet persisted or invalid ID."
+        }), 404
+        
+    return jsonify({
+        "run_id": run_id,
+        "status": "COMPLETED",
+        "path": str(trace_file.relative_to(runs_dir)),
+        "size": os.path.getsize(trace_file),
+        "mtime": os.path.getmtime(trace_file)
+    })
+
 
 
 @core_bp.route("/evaluate", methods=["POST"])
@@ -708,7 +743,7 @@ def evaluate_scenario():
     from eval_runner.engine import run_evaluation
     from eval_runner.loader import load_scenario
 
-    def run_in_background(scenario_data):
+    def run_in_background(scenario_data, run_id):
         # We need a new event loop for the background thread
         os.environ["RUN_LOG_PER_RUN"] = "true"
         os.environ["RUN_LOG_DIR"] = str(config.RUN_LOG_DIR)
@@ -717,18 +752,22 @@ def evaluate_scenario():
 
         # Determine max_turns (defaulting to config if not specified in POST)
         max_turns = data.get("max_turns", config.EVAL_MAX_TURNS)
-        loop.run_until_complete(run_evaluation(scenario_data, max_turns=max_turns))
+        loop.run_until_complete(run_evaluation(scenario_data, run_id=run_id, max_turns=max_turns))
         loop.close()
+
+    from eval_runner.utils import generate_id
 
     try:
         scenario_data = load_scenario(path)
+        run_id = generate_id("run")
         # Launch evaluation in a background thread to avoid blocking Flask
-        thread = threading.Thread(target=run_in_background, args=(scenario_data,))
+        thread = threading.Thread(target=run_in_background, args=(scenario_data, run_id))
         thread.start()
 
         return jsonify(
             {
                 "status": "started",
+                "run_id": run_id,
                 "message": f"Evaluation started for {path.name}",
                 "scenario_id": scenario_data.get("scenario_id")
                 or scenario_data.get("metadata", {}).get("id"),
@@ -771,9 +810,9 @@ def save_scenario():
 
     file_path = output_dir / f"{safe_id}.json"
 
-    # Structure the AES JSON (v1.2 compliant)
+    # Structure the AES JSON (v1.4 compliant)
     scenario_obj = {
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "metadata": {
             "id": safe_id,
             "name": data.get("title") or metadata_block.get("name") or "Untitled Scenario",
@@ -878,13 +917,77 @@ _debugger_subscribed = False
 def subscribe_debugger():
     global _debugger_subscribed
     if not _debugger_subscribed:
-        EventEmitter.subscribe(DebuggerStateStore.handle_event)
+        subscribe(DebuggerStateStore.handle_event)
         _debugger_subscribed = True
 
 
 @core_bp.route("/ping")
 def ping():
     return jsonify({"status": "pong", "version": f"v{config.VERSION}-verified"})
+
+
+@core_bp.route("/api/v1/identity/<identity_id>/public_key", methods=["GET"])
+@require_permission(Permission.IDENTITY_READ)
+def get_public_key(identity_id):
+    """
+    REST Identity Resolution Service.
+    Enables external trust-gatekeepers to resolve public keys for forensic verification.
+    """
+    from eval_runner.identity import IdentityService
+
+    try:
+        service = IdentityService()
+        public_key = service.get_public_key(identity_id)
+        if not public_key:
+            return jsonify({"error": f"Identity '{identity_id}' not found"}), 404
+
+        return jsonify({"identity_id": identity_id, "public_key": public_key})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@core_bp.route("/api/v1/certify", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def certify_run():
+    """
+    REST Certification Service (VC v3).
+    Triggers the TraceVerifier to generate a cryptographically signed manifest for a completed run.
+    """
+    from eval_runner.verifier import TraceVerifier
+
+    data = request.json or {}
+    run_id = data.get("run_id")
+    if not run_id:
+        return jsonify({"error": "run_id is required"}), 400
+
+    # Industrial Resolve: Manifest must be within the run_log_dir
+    run_dir = config.RUN_LOG_DIR / run_id
+    trace_path = run_dir / "run.jsonl"
+
+    if not trace_path.exists():
+        return jsonify({"error": f"Trace file for run_id '{run_id}' not found at {trace_path}"}), 404
+
+    try:
+        # [VC v3] Sign with provided compliance metadata
+        manifest = TraceVerifier.sign_trace(
+            str(trace_path),
+            identity_id=data.get("identity", "system_id"),
+            compliance_status=data.get("status", "pass"),
+            compliance_score=float(data.get("score", 1.0)),
+            policy_ref=data.get("policy_ref"),
+            ttl_days=int(data.get("ttl", config.GOVERNANCE_TTL_DAYS)),
+        )
+
+        return jsonify(
+            {
+                "status": "certified",
+                "run_id": run_id,
+                "manifest_path": str(run_dir / "run_manifest.json"),
+                "sha256": manifest.get("sha256"),
+            }
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @core_bp.route("/debugger/state", methods=["GET", "POST"])

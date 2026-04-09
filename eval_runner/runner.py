@@ -12,9 +12,9 @@ from abc import ABC, abstractmethod  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
-from . import plugins  # noqa: E402
+from . import events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
-from .events import CoreEvents, EventEmitter  # noqa: E402
+# from .events import CoreEvents, EventEmitter # Removed to avoid confusion
 
 
 class BaseRunner(ABC):
@@ -22,7 +22,12 @@ class BaseRunner(ABC):
 
     @abstractmethod
     async def run(
-        self, scenario: dict, attempts: int = 1, metadata: dict | None = None
+        self,
+        scenario: dict,
+        attempts: int = 1,
+        run_id: str | None = None,
+        metadata: dict | None = None,
+        max_turns: int | None = None,
     ) -> list[Any]:
         pass
 
@@ -37,7 +42,12 @@ class DefaultRunner(BaseRunner):
         Path(".aes").mkdir(exist_ok=True)
 
     async def run(
-        self, scenario: dict, attempts: int = 1, metadata: dict | None = None
+        self,
+        scenario: dict,
+        attempts: int = 1,
+        run_id: str | None = None,
+        metadata: dict | None = None,
+        max_turns: int | None = None,
     ) -> list[Any]:
         import copy
 
@@ -50,10 +60,10 @@ class DefaultRunner(BaseRunner):
             span_context=scenario.get("span_context"),
         )
 
-        run_id = f"run-{ctx.scenario_id}-{int(asyncio.get_event_loop().time())}"
-        EventEmitter.emit(
-            CoreEvents.RUN_START,
-            {"run_id": run_id, "scenario": ctx.scenario_id, "k_attempts": attempts},
+        effective_run_id = run_id or f"run-{ctx.scenario_id}-{int(asyncio.get_event_loop().time())}"
+        events.emit(
+            events.CoreEvents.RUN_START,
+            {"run_id": effective_run_id, "scenario": ctx.scenario_id, "k_attempts": attempts},
             span_context=ctx.span_context,
         )
 
@@ -61,17 +71,22 @@ class DefaultRunner(BaseRunner):
 
         all_attempt_results = []
 
-        EventEmitter.emit(
-            CoreEvents.PHASE_START,
+        events.emit(
+            events.CoreEvents.PHASE_START,
             {"phase": "pass_at_k_execution", "k": attempts},
             span_context=ctx.span_context,
         )
         for k in range(1, attempts + 1):
-            session = SessionManager(scenario, metadata=ctx.metadata)
+            # Inject max_turns into scenario copy for SessionManager consumption
+            scenario_copy = copy.deepcopy(scenario)
+            if max_turns:
+                scenario_copy["max_turns"] = max_turns
+
+            session = SessionManager(effective_run_id, scenario_copy, metadata=ctx.metadata)
             attempt_results = await session.execute_tasks(k)
             all_attempt_results.append(attempt_results)
-        EventEmitter.emit(
-            CoreEvents.PHASE_END, {"phase": "pass_at_k_execution"}, span_context=ctx.scenario_id
+        events.emit(
+            events.CoreEvents.PHASE_END, {"phase": "pass_at_k_execution"}, span_context=ctx.scenario_id
         )
 
         # Cross-attempt aggregation (e.g. consistency)
@@ -83,8 +98,8 @@ class DefaultRunner(BaseRunner):
         # Calculate pass@k
         pass_at_k = self.calculate_pass_at_k(all_attempt_results, attempts)
 
-        EventEmitter.emit(
-            CoreEvents.RUN_END,
+        events.emit(
+            events.CoreEvents.RUN_END,
             {
                 "pass_at_k": pass_at_k,
                 "successful_attempts": sum(

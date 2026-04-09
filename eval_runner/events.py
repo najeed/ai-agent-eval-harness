@@ -65,39 +65,82 @@ class Event:
 
 
 class EventEmitter:
-    """Centralized event bus."""
+    """
+    Centralized event bus.
+    Now supports instantiation for session-scoped isolation.
+    """
 
-    _subscribers: list[Callable[[Event], None]] = []
+    def __init__(self, run_id: str | None = None):
+        self.run_id = run_id
+        self._subscribers: list[Callable[[Event], None]] = []
 
-    @classmethod
-    def subscribe(cls, subscriber: Callable[[Event], None]):
+    def subscribe(self, subscriber: Callable[[Event], None]):
         """Register a new subscriber (e.g., a logging plugin)."""
-        if subscriber not in cls._subscribers:
-            cls._subscribers.append(subscriber)
+        if subscriber not in self._subscribers:
+            self._subscribers.append(subscriber)
 
-    @classmethod
-    def reset(cls):
+    def unsubscribe(self, subscriber: Callable[[Event], None]):
+        """Unregister an existing subscriber."""
+        if subscriber in self._subscribers:
+            self._subscribers.remove(subscriber)
+
+    def reset(self):
         """Clear all subscribers and notify them to cleanup if possible."""
-        for sub in cls._subscribers:
+        for sub in self._subscribers:
             try:
                 # If subscriber is a bound method of a class with cleanup logic
                 if hasattr(sub, "__self__") and hasattr(sub.__self__, "close_all"):
                     sub.__self__.close_all()
             except Exception:
                 pass
-        cls._subscribers = []
+        self._subscribers = []
 
-    @classmethod
-    def emit(cls, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
+    def emit(self, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
         """Emit an event to all subscribers with optional tracing context."""
         sanitized_data = sanitize_payload(data)
+        
+        # Inversion of Control: Auto-inject run_id if available in the bus
+        if self.run_id and "run_id" not in sanitized_data:
+            sanitized_data["run_id"] = self.run_id
+
         event = Event(name, sanitized_data, span_context=span_context)
-        for sub in cls._subscribers:
+        for sub in self._subscribers:
             try:
                 sub(event)
             except Exception as e:
                 # Core stays stable even if subscribers fail
                 print(f"   [Events] Error in subscriber for {name}: {e}")
+
+    # --- Lifecycle Management ---
+    _global_instance = None
+
+    @classmethod
+    def get_global(cls):
+        """Authoritative singleton resolver for the global event bus."""
+        if cls._global_instance is None:
+            cls._global_instance = cls()
+        return cls._global_instance
+
+
+# Standard Global interface (Module Level Aliases)
+def subscribe(subscriber: Callable[[Event], None]):
+    """Register a subscriber to the global event bus."""
+    EventEmitter.get_global().subscribe(subscriber)
+
+
+def unsubscribe(subscriber: Callable[[Event], None]):
+    """Unregister a subscriber from the global event bus."""
+    EventEmitter.get_global().unsubscribe(subscriber)
+
+
+def emit(name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
+    """Broadcast an event via the global bus (Strict Redaction Enforced)."""
+    EventEmitter.get_global().emit(name, data, span_context=span_context)
+
+
+def reset():
+    """Reset the global event bus state."""
+    EventEmitter.get_global().reset()
 
 
 # Pre-defined event names for consistency
@@ -136,3 +179,6 @@ class CoreEvents:
     ACTION_END = "action_end"
     STEP_START = "step_start"
     STEP_END = "step_end"
+
+    # Infrastructure & Target Abstraction (v1.3.0)
+    ROUTING_RESOLVED = "routing_resolved"

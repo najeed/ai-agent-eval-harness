@@ -1,32 +1,34 @@
 {
-  "aes_version": 1.3,
-  "metadata": {
-    "name": "Generated Digital Twin Scenario 1",
-    "compliance_level": "Standard"
-  },
-  "description": "Automatically generated test case for digital twin in manufacturing industry.",
-  "industry": "manufacturing",
-  "workflow": {
-    "nodes": [
-      {
-        "id": "task_1",
-        "task_description": "User wants to perform digital twin. Handle the request correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": null
+    "aes_version": 1.4,
+    "metadata": {
+        "name": "Generated Digital Twin Scenario 1",
+        "compliance_level": "Standard",
+        "capabilities": [],
+        "standards_registry": []
+    },
+    "description": "Automatically generated test case for digital twin in manufacturing industry.",
+    "industry": "manufacturing",
+    "workflow": {
+        "nodes": [
+            {
+                "id": "task_1",
+                "task_description": "User wants to perform digital twin. Handle the request correctly.",
+                "expected_outcome": {
+                    "type": "typed_value",
+                    "data_type": "object",
+                    "value": null
+                }
+            }
+        ],
+        "edges": []
+    },
+    "evaluation": {
+        "consensus": {
+            "strategy": "Majority_Vote",
+            "min_judges": 1,
+            "judge_panel": [
+                "Luna-1"
+            ]
         }
-      }
-    ],
-    "edges": []
-  },
-  "evaluation": {
-    "consensus": {
-      "strategy": "Majority_Vote",
-      "min_judges": 1,
-      "judge_panel": [
-        "Luna-1"
-      ]
     }
-  }
 }

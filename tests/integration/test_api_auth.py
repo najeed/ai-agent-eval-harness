@@ -40,7 +40,7 @@ def test_evaluate_endpoint_security_service_key(client, tmp_path):
     # 1. Setup a real physical schema-compliant AES 1.3 scenario file
     scenario_path = tmp_path / "it_test_scenario.json"
     scenario_path.write_text(json.dumps({
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "metadata": {
             "name": "Integration Auth Test",
             "compliance_level": "Standard"
@@ -85,7 +85,7 @@ def test_evaluate_endpoint_security_dash_key_fallback(client, tmp_path):
     """
     scenario_path = tmp_path / "fallback_test.json"
     scenario_path.write_text(json.dumps({
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "metadata": {
             "name": "Fallback Auth Test",
             "compliance_level": "Standard"

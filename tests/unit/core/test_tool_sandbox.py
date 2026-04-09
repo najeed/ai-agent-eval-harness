@@ -16,6 +16,7 @@ from eval_runner.tool_sandbox import ToolSandbox
 async def test_sandbox_known_tool():
     """Test that a known tool returns the expected result from the scenario."""
     scenario = {
+        "aes_version": 1.4,
         "tools": {
             "get_customer_details": {
                 "output": {
@@ -43,6 +44,7 @@ async def test_sandbox_known_tool():
 async def test_sandbox_unknown_tool():
     """Test that an unknown tool returns a default or success message (per current impl)."""
     scenario = {
+        "aes_version": 1.4,
         "workflow": {
             "nodes": [
                 {"id": "t1", "task_description": "task", "required_tools": ["get_customer_details"]}
@@ -61,6 +63,7 @@ async def test_sandbox_unknown_tool():
 async def test_sandbox_state_initialization():
     """Test that state is initialized correctly from the scenario."""
     scenario = {
+        "aes_version": 1.4,
         "initial_state": {"customer_name": "Jane Doe", "balance": 100},
         "workflow": {
             "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["any_tool"]}],
@@ -75,6 +78,7 @@ async def test_sandbox_state_initialization():
 async def test_sandbox_state_mutation():
     """Test that explicit 'state_changes' mutate the state."""
     scenario = {
+        "aes_version": 1.4,
         "initial_state": {"current_plan": "Basic"},
         "tools": {
             "update_plan": {
@@ -98,6 +102,7 @@ async def test_sandbox_lifecycle(tmp_path):
     """Verify setup/teardown with a controlled tmp directory."""
     test_ws = tmp_path / "sandbox_test_ws"
     scenario = {
+        "aes_version": 1.4,
         "scenario_id": "lifecycle-test",
         "metadata": {"cleanup_workspace": True},
     }

@@ -1,23 +1,25 @@
 {
-  "aes_version": 1.3,
-  "scenario_id": "test_log_dir_v2",
-  "title": "Test Log Dir Creation V2",
-  "metadata": {
-    "name": "Test Log Dir Creation V2",
-    "compliance_level": "Standard"
-  },
-  "workflow": {
-    "nodes": [
-      {
-        "id": "task1",
-        "task_description": "Say hello",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "string",
-          "value": "Agent says hello"
-        }
-      }
-    ],
-    "edges": []
-  }
+    "aes_version": 1.4,
+    "scenario_id": "test_log_dir_v2",
+    "title": "Test Log Dir Creation V2",
+    "metadata": {
+        "name": "Test Log Dir Creation V2",
+        "compliance_level": "Standard",
+        "capabilities": [],
+        "standards_registry": []
+    },
+    "workflow": {
+        "nodes": [
+            {
+                "id": "task1",
+                "task_description": "Say hello",
+                "expected_outcome": {
+                    "type": "typed_value",
+                    "data_type": "string",
+                    "value": "Agent says hello"
+                }
+            }
+        ],
+        "edges": []
+    }
 }

@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Verification Certificate (VC) v3.0.0",
+  "description": "Industrial Forensic Integrity Standard for Evaluation Traces",
+  "type": "object",
+  "required": [
+    "vc_version",
+    "run_id",
+    "sha256",
+    "trace_file",
+    "compliance",
+    "evidence_ledger",
+    "provenance_chain"
+  ],
+  "properties": {
+    "vc_version": {
+      "type": "string",
+      "const": "3.0.0"
+    },
+    "harness_version": {
+      "type": "string",
+      "description": "The version of the multiagent-verify engine used"
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Unique identifier for the evaluation run"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-0]{64}$",
+      "description": "SHA-256 hash of the trace .jsonl file"
+    },
+    "trace_file": {
+      "type": "string",
+      "description": "Basename of the trace file"
+    },
+    "compliance": {
+      "type": "object",
+      "required": [
+        "status",
+        "score",
+        "policy_ref"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail",
+            "warning",
+            "error"
+          ]
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "policy_ref": {
+          "type": "string",
+          "description": "Reference to the NIST/ISO policy audited"
+        }
+      }
+    },
+    "evidence_ledger": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-fA-F0-0]{64}$"
+      },
+      "description": "Map of sidecar filenames to their SHA-256 integrity hashes"
+    },
+    "provenance_chain": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "identity",
+          "timestamp",
+          "signature",
+          "role"
+        ],
+        "properties": {
+          "identity": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "Agent",
+              "Evaluator",
+              "Auditor"
+            ]
+          }
+        }
+      }
+    },
+    "governance_ttl": {
+      "type": "integer",
+      "description": "Number of days before the certificate expires"
+    }
+  }
+}

@@ -1,1 +1,11 @@
-{"scenario_id": "test_log_dir", "title": "Test Log Dir Creation", "tasks": []}
+{
+    "scenario_id": "test_log_dir",
+    "title": "Test Log Dir Creation",
+    "tasks": [],
+    "aes_version": 1.4,
+    "metadata": {
+        "compliance_level": "Standard",
+        "capabilities": [],
+        "standards_registry": []
+    }
+}

@@ -25,10 +25,14 @@ def test_public_certificate_endpoint(client, tmp_path):
     trace_path = tmp_path / f"{trace_run_id}.jsonl"
     trace_path.write_bytes(b"integration test trace data")
 
-    # Setup key pair
-    keys_dir = tmp_path / "keys"
+    # Setup key pair for 'it_identity'
+    identity_id = "it_identity"
+    keys_dir = tmp_path / "keys" / identity_id
     TraceVerifier.generate_key_pair(output_dir=str(keys_dir))
-    private_key_path = keys_dir / "private_key.pem"
+    
+    # Configure Trust Root for IdentityService
+    original_trust = config.TRUST_ROOT
+    config.TRUST_ROOT = tmp_path / "keys"
 
     # Setup reports dir
     original_reports = config.REPORTS_DIR
@@ -37,11 +41,10 @@ def test_public_certificate_endpoint(client, tmp_path):
     config.RUN_LOG_DIR = tmp_path
 
     try:
-        # Sign the trace
+        # Sign the trace using the new IdentityService pattern
         TraceVerifier.sign_trace(
             trace_path=str(trace_path),
-            private_key_path=str(private_key_path),
-            fingerprint_id="dna_integration_hardened",
+            identity_id=identity_id,
         )
 
         # 2. Test API Retrieval (No Auth Headers)
@@ -52,9 +55,9 @@ def test_public_certificate_endpoint(client, tmp_path):
 
         assert data["run_id"] == trace_run_id
         assert data["harness_version"] == config.VERSION
-        assert data["behavioral_fingerprint_id"] == "dna_integration_hardened"
-        assert "signature_ed25519" in data
-        assert data["signing_algorithm"] == "ED25519"
+        assert data["behavioral_fingerprint_id"] == "default_v1"
+        assert "provenance_chain" in data
+        assert data["provenance_chain"][0]["algorithm"] == "ED25519"
 
         response_invalid = client.get("/api/v1/certificates/non_existent_run")
         assert response_invalid.status_code == 404
@@ -63,6 +66,7 @@ def test_public_certificate_endpoint(client, tmp_path):
     finally:
         config.REPORTS_DIR = original_reports
         config.RUN_LOG_DIR = original_runs
+        config.TRUST_ROOT = original_trust
 
 
 def test_certificate_fallback_logic(client, tmp_path):

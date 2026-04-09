@@ -1,5 +1,5 @@
 {
-  "aes_version": 1.3,
+  "aes_version": 1.4,
   "metadata": {
     "name": "Redact a Document for FOIA Release",
     "compliance_level": "Standard"

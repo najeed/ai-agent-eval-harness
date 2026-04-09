@@ -35,7 +35,7 @@ async def test_advanced_adapter_discovery():
 async def test_hitl_pause_resume(monkeypatch):
     """Verify HITL pause and resume logic in SessionManager."""
     scenario = {
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "scenario_id": "hitl_test",
         "title": "HITL Test",
         "industry": "test",
@@ -60,12 +60,20 @@ async def test_hitl_pause_resume(monkeypatch):
         "max_turns": 2,
     }
 
+    # Registry Isolation: Ensure no stale state from other tests
+    AgentAdapterRegistry.reset()
+    # Throttle Control: Disable delays for test performance and reliability
+    from eval_runner import config as eval_config
+    monkeypatch.setattr(eval_config, "EVAL_TURN_THROTTLE", 0)
+
     # Mock call_agent to return hitl_pause then final_answer
     call_counts = 0
+    received_turns = []
 
     async def mock_call_agent(payload, protocol="http", endpoint=None, **kwargs):
         nonlocal call_counts
         call_counts += 1
+        received_turns.append(payload.get("turn"))
         if call_counts == 1:
             return {"action": "hitl_pause"}
         return {"action": "final_answer", "content": "Done"}
@@ -77,13 +85,16 @@ async def test_hitl_pause_resume(monkeypatch):
     def event_listener(event):
         events.append(event.name)
 
-    EventEmitter.subscribe(event_listener)
-
-    session = SessionManager(scenario)
+    # Note: SessionManager uses an isolated bus; tests must subscribe to the instance
+    session = SessionManager("hitl_test_run", scenario)
+    session.event_bus.subscribe(event_listener)
+    
     results = await session.execute_tasks(1)
 
     assert CoreEvents.HITL_PAUSE in events
     assert CoreEvents.HITL_RESUME in events
+    assert call_counts == 2, f"Expected 2 calls to agent, got {call_counts}"
+    assert received_turns == [1, 2], f"Expected turns [1, 2], got {received_turns}"
     assert results[0]["turns_taken"] == 2
 
 
@@ -91,7 +102,7 @@ async def test_hitl_pause_resume(monkeypatch):
 async def test_trajectory_branching(monkeypatch):
     """Verify non-linear branching logic."""
     scenario = {
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "scenario_id": "branch_test",
         "title": "Branch Test",
         "industry": "test",
@@ -124,7 +135,7 @@ async def test_trajectory_branching(monkeypatch):
 
     monkeypatch.setattr(AgentAdapterRegistry, "call_agent", mock_call_agent)
 
-    session = SessionManager(scenario)
+    session = SessionManager("branch_test_run", scenario)
     # This just verifies it doesn't crash and handles the action
     results = await session.execute_tasks(1)
     assert results is not None

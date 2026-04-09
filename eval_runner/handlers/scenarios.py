@@ -17,7 +17,7 @@ async def handle_aes_validate(args):
     """Handler for 'aes validate' command."""
     from jsonschema import RefResolver, validate
 
-    schema_path = Path(__file__).parent.parent.parent / "schemas" / "scenario.schema.json"
+    schema_path = Path(__file__).parent.parent.parent / "spec" / "aes" / "aes.schema.json"
     with open(schema_path) as f:
         schema = json.load(f)
 

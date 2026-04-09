@@ -23,8 +23,8 @@ def test_internal_baseline_loading():
 
 def test_deep_merge_preserves_siblings(tmp_path, monkeypatch):
     """Verify that adding a key to a shim doesn't delete existing core keys."""
-    # 1. Setup a .d folder in tmp_path
-    d_dir = tmp_path / "shim_resources.d"
+    # 1. Setup a .d folder in tmp_path (v1.4.0 structure)
+    d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
 
     # 2. Add an extension that modifies 'git'
@@ -48,7 +48,7 @@ def test_deep_merge_preserves_siblings(tmp_path, monkeypatch):
 
 def test_alphabetical_override_order(tmp_path, monkeypatch):
     """Verify that filenames starting with higher numbers/letters override lower ones."""
-    d_dir = tmp_path / "shim_resources.d"
+    d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
 
     # File A (Lower Priority)
@@ -69,7 +69,7 @@ def test_alphabetical_override_order(tmp_path, monkeypatch):
 def test_project_root_files_are_ignored(tmp_path, monkeypatch):
     """Verify that legacy shim_resources.json in the root is NO LONGER LOADED."""
     # 1. Setup a .d folder (empty)
-    d_dir = tmp_path / "shim_resources.d"
+    d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
 
     # 2. Setup a legacy file in the root
@@ -89,7 +89,7 @@ def test_project_root_files_are_ignored(tmp_path, monkeypatch):
 
 def test_local_overlay_precedence(tmp_path, monkeypatch):
     """Verify that a 99_local.json in the .d folder wins over base extensions."""
-    d_dir = tmp_path / "shim_resources.d"
+    d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
 
     # 01_base.json
@@ -122,7 +122,7 @@ def test_env_var_final_veto(tmp_path, monkeypatch):
 
 def test_yaml_support_in_d_folder(tmp_path, monkeypatch):
     """Verify that YAML files in the .d folder are also merged."""
-    d_dir = tmp_path / "shim_resources.d"
+    d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
 
     yaml_file = d_dir / "01_config.yaml"
@@ -137,7 +137,7 @@ def test_yaml_support_in_d_folder(tmp_path, monkeypatch):
 
 def test_malformed_file_handling(tmp_path, monkeypatch, capsys):
     """Verify that a single broken file in .d doesn't stop the whole registry."""
-    d_dir = tmp_path / "shim_resources.d"
+    d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
 
     # Broken JSON

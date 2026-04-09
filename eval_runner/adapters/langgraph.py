@@ -1,7 +1,8 @@
 # eval_runner/adapters/langgraph.py
 from typing import Any
 
-from ..events import CoreEvents, EventEmitter
+from .. import events
+from ..events import CoreEvents
 from ..plugins import BaseEvalPlugin
 from .common import AESCallbackHandler
 
@@ -57,7 +58,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
             }
 
         except ImportError:
-            EventEmitter.emit(CoreEvents.ERROR, {"message": "LangGraph SDK not installed"})
+            events.emit(CoreEvents.ERROR, {"message": "LangGraph SDK not installed"})
             return {
                 "status": "error",
                 "message": "LangGraph SDK (langgraph) not installed. Native execution failed.",

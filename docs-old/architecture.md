@@ -148,6 +148,23 @@ v1.2.4 elevates the harness into a **Verification OS** for mission-critical indu
 
 - **Asymmetric Trust Protocol (ED25519)**: Transitioning from simple SHA-256 integrity to full asymmetric cryptographic sealing. Traces are signed with private keys and verified via public keys, enabling non-repudiable audit trails across different environments.
 
+#### Verification & Trust Protocol
+The harness provides mathematical proof of execution integrity through a multi-layered trust protocol that satisfies mission-critical audit requirements.
+
+#### Identity Registry (IdentityService)
+New in Core v1.4, the **Identity Registry** is the central authority for managing cryptographic identities. It abstracts key resolution, ensuring that all evaluations are signed by a verified, non-repudiable identity (default: `system_id`). It replaces unmanaged legacy key paths with a structured, KMS-ready identity model.
+
+#### Verification Certificate (VC) v3.0.0
+The VC v3 standard is the forensic manifestation of the trust protocol, incorporating:
+- **Trace Integrity**: A SHA-256 hash of the flight recorder execution log (`run.jsonl`).
+- **Forensic Evidence Ledger**: SHA-256 hashes of all sidecar artifacts (HTML reports, trajectory plots) to prevent unauthorized after-the-fact manipulation of results.
+- **Identity Binding**: A cryptographic signature (Ed25519) that binds the trace and evidence to the harness's identity, preventing spoofing or repudiation.
+
+#### Behavioral DNA & Forensic snapshots
+To ensure result integrity, the `ToolSandbox` captures the resolved registry state at the start of every evaluation.
+- **Snapshotting**: The exact configuration of every simulated world shim is embedded directly into the trace.
+- **Provisioning Hash**: A SHA-256 hash of this snapshot is generated and signed as part of the VC v3 manifest, providing mathematical proof that the environment was not modified during execution.
+
 ## Semantic Bridge & Drift Management
 
 Phase 2 focuses on operationalizing evaluation data:
@@ -247,45 +264,28 @@ The `TriageEngine` uses a multi-layered forensic approach to identify the root c
 
 Every identification includes a `reason` and `confidence` score, providing transparency into the automatic diagnostics process.
 
-## Hybrid Core Registry & Forensic DNA (v1.3.0)
+## Operational Intelligence
 
-v1.3 introduces a "Hybrid" approach to environment orchestration, decoupling the physical infrastructure state from the functional evaluation logic.
+### Semantic Bridge & Drift Management
+The `import-drift` command creates a "Semantic Bridge" between production behavior and evaluation rigor, allowing developers to capture real-world edge cases.
 
-### Decoupled Configuration Protocol
-The framework now consumes a centralized **Hybrid Registry** (`shim_resources.json`) that serves as the authoritative source for all environmental resources (API endpoints, DB credentials, Git branches).
+### Grounding Coverage
+Tracks the utilization of domain-specific tools, visualizable via HTML heatmaps to ensure "Ground Truth" compliance.
 
-1.  **Declarative Manifest (`shim_resources.json`)**: Version-controlled, environment-agnostic resource definitions.
-2.  **Local Overlays (`shim_resources.local.json`)**: Machine-specific overrides for sensitive credentials or developer overrides.
-3.  **Environment Variables**: Cloud-native overrides (`AES_REGISTRY__<SHIM>__<KEY>`) for CI/CD injection.
+### High-Fidelity Triage
+The `TriageEngine` identifies root causes by tracing back from system exceptions to the preceding agent decision with confidence scoring.
 
-### Forensic Environmental DNA
-To ensure result integrity, the `ToolSandbox` captures the resolved registry state at the start of every evaluation.
+## Advanced Orchestration
 
-*   **Snapshotting**: The exact configuration of every simulated world shim is embedded directly into the `run.jsonl` trace under `metadata.environmental_snapshot`.
-*   **Provisioning Hash**: A SHA-256 hash of this snapshot is generated and cryptographically linked to the **Trust Protocol (ED25519)** signing step. This provides mathematical proof that the environment was not modified during execution.
+### Native HITL & Branching
+Support for Human-In-The-Loop (`human` adapter) and non-linear trajectory exploration via `SessionManager.fork()`.
 
-## Regulatory Alignment Layer: NIST AI-100-1 Principles
+### Universal Agent Adapters
+Seamless integration with LangChain, LangGraph, AutoGen, and CrewAI via pluggable discovery.
 
-v1.3.0 elevates the harness into a **Verification OS** for mission-critical industries, aligned with the **NIST AI-100-1** trustworthiness framework:
+## Regulatory Alignment: NIST AI-100-1 (Core v1.4)
 
-*   **Auditability**: Asymmetric cryptographic signatures (ED25519) on all traces.
-*   **Transparency**: Full behavioral DNA telemetry (`PHASE`, `SUBTASK`, `ACTION`, `STEP`).
-*   **Governance**: Granular **Permission-Based Access Control (PBAC)** for least-privilege deployment.
-
-## Operational Governance & Resiliency
-
-v1.3.0 stabilizes the engine for high-concurrency, regulated industrial environments through advanced operational controls.
-
-### Operational Throttling (`EVAL_TURN_THROTTLE`)
-To prevent resource exhaustion and satisfy rate-limiting requirement in sensitive sectors (e.g., Banking APIs), the harness implements a tunable **Turn Throttle**.
-*   **Mechanism**: Artificial delay (seconds) injected between agent turns.
-*   **Use Case**: Simulating human-speed interactions or protecting upstream LLM quotas.
-
-### Async Simulation Hardening
-The simulation layer (`eval_runner/simulators.py`) uses a **Non-Blocking Async Architecture**. High-latency operations (Git clones, remote API calls) execute concurrently, ensuring that the evaluation engine remains responsive even during heavy infrastructure simulation.
-
-### Stratified Failure Taxonomy (NIST-Aligned)
-Replaced brittle error string matching with a formal **Enum-Based Failure Registry**. Failures are classified into hierarchical categories (Infrastructure, Logic, Policy, Security), enabling precise, audit-grade root-cause diagnostics across thousands of runs.
-
-### HMS-Ready Key Management
-The `KeyLoader` has been refactored to support **Enterprise KMS/HSM** integrations. Private keys for the **Trust Protocol (ED25519)** can be dynamically loaded from secure hardware modules, moving away from plaintext local `.pem` files for production-grade security.
+The harness is a **Verification OS** aligned with NIST trust principles:
+- **Safety Floor**: Aggregate scores capped if core Safety/Security dimensions fail.
+- **Auditability**: Non-repudiable VC v3 signatures via the **Identity Registry**.
+- **Resiliency**: Hardened async simulation backbone and TURN throttling for high-latency environments.

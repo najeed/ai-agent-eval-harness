@@ -121,6 +121,13 @@
     "provisioning_hash": {
       "type": "string",
       "description": "SHA-256 hash of the resolved shim_resources.json used for this run."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Required infrastructure capabilities for routing (v1.4 upgrade)"
     }
   }
 }

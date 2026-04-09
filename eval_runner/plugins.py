@@ -16,7 +16,7 @@ from typing import Any
 from . import config, discovery
 
 PLUGIN_TIMEOUT = config.PLUGIN_TIMEOUT
-PERSISTENT_PLUGINS_PATH = config.PROJECT_ROOT / ".aes" / "plugins.json"
+PERSISTENT_PLUGINS_PATH = config.PLUGINS_CONFIG_PATH
 
 
 def _invoke_with_timeout(func, *args, **kwargs):
@@ -57,24 +57,16 @@ class BaseEvalPlugin(ABC):  # noqa: B024
 
 
 class PluginManager:
-    """Orchestrates plugin lifecycle."""
-
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
+    """
+    Orchestrates plugin lifecycle.
+    Updated to support instantiation for session-scoped isolation.
+    """
 
     def __init__(self):
-        if getattr(self, "_initialized", False):
-            return
         self.plugins: list[BaseEvalPlugin] = []
         self._plugins = self.plugins  # Alias for diagnostic visibility
         self._loaded = False
         self._last_load_time = 0
-        self._initialized = True
 
     def reset(self):
         """Resets the plugin manager state for tests."""
@@ -125,7 +117,7 @@ class PluginManager:
 
         # 3. Dynamic search in project-root 'plugins' directory
         root_plugins = discovery.discover_plugins_in_directory(
-            config.PROJECT_ROOT / "plugins", BaseEvalPlugin
+            config.PROJECT_ROOT / "plugins", BaseEvalPlugin, package_prefix="plugins"
         )
         for p in root_plugins:
             if not any(isinstance(existing, p.__class__) for existing in self.plugins):

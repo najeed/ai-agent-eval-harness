@@ -13,6 +13,7 @@ from eval_runner.session import SessionManager
 @pytest.fixture
 def scenario():
     return {
+        "aes_version": 1.4,
         "metadata": {"id": "test-id", "name": "Test Scenario"},
         "workflow": {
             "nodes": [
@@ -31,7 +32,7 @@ def metadata():
 
 @pytest.fixture
 def session(scenario, metadata):
-    return SessionManager(scenario, metadata)
+    return SessionManager("test_run", scenario, metadata=metadata)
 
 
 class TestSession:
@@ -43,10 +44,10 @@ class TestSession:
     @pytest.mark.asyncio
     async def test_execute_tasks_empty_workflow(self):
         with patch("eval_runner.events.EventEmitter.emit"):
-            session = SessionManager({"workflow": {"nodes": []}})
+            session = SessionManager("test_run", {"aes_version": 1.4, "workflow": {"nodes": []}})
             with pytest.raises(ValueError) as cm:
                 await session.execute_tasks(1)
-            assert "missing required 'workflow' block" in str(cm.value)
+            assert "Unified Standard v1.4.0" in str(cm.value)
 
     @pytest.mark.asyncio
     async def test_execute_tasks_cycle_error(self):
@@ -57,7 +58,7 @@ class TestSession:
                     "edges": [{"from": "A", "to": "B"}, {"from": "B", "to": "A"}],
                 }
             }
-            session = SessionManager(scenario_cycle)
+            session = SessionManager("test_run", scenario_cycle)
             with pytest.raises(ValueError) as cm:
                 await session.execute_tasks(1)
             assert "cyclic dependencies" in str(cm.value)
@@ -103,10 +104,12 @@ class TestSession:
 
     @pytest.mark.asyncio
     async def test_handle_tool_call_blocked(self, session):
-        with patch("eval_runner.plugins.manager.trigger_interceptor", return_value=False):
+        with patch.object(session.plugin_manager, "trigger_interceptor", return_value=False):
             with patch("eval_runner.events.EventEmitter.emit") as mock_emit:
                 mock_ctx = MagicMock(spec=TurnContext)
                 mock_sandbox = MagicMock()
+                mock_sandbox.execute = AsyncMock(return_value={"status": "success"})
+                mock_sandbox.state = {}
                 history = []
                 actions = {"used_tools": []}
 
@@ -151,12 +154,12 @@ class TestSession:
 
     @pytest.mark.asyncio
     async def test_handle_multiple_tools(self, session):
-        with patch("eval_runner.plugins.manager.trigger_interceptor") as mock_interceptor:
+        with patch.object(session.plugin_manager, "trigger_interceptor") as mock_interceptor:
             with patch("eval_runner.events.EventEmitter.emit"):
                 mock_interceptor.side_effect = [True, False]
                 mock_sandbox = MagicMock()
                 mock_sandbox.state = {}
-                mock_sandbox.execute = AsyncMock(return_value="res")
+                mock_sandbox.execute = AsyncMock(return_value={"status": "success", "data": "res"})
                 history = []
                 actions = {"used_tools": []}
 
@@ -167,7 +170,7 @@ class TestSession:
                 assert len(history) == 1
                 content = history[0]["content"]
                 assert len(content) == 2
-                assert content[0] == "res"
+                assert content[0]["status"] == "success"
                 assert "blocked" in content[1]["status"]
 
     @pytest.mark.asyncio

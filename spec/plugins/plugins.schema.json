@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Plugin Configuration Schema",
+  "description": "Schema for the plugins.json configuration file",
+  "type": "object",
+  "required": [
+    "plugins"
+  ],
+  "properties": {
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "module",
+          "class"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "module": {
+            "type": "string",
+            "description": "Python module path (e.g. eval_runner.plugins.my_plugin)"
+          },
+          "class": {
+            "type": "string",
+            "description": "Class name within the module"
+          },
+          "config": {
+            "type": "object",
+            "description": "Optional plugin-specific configuration"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    }
+  }
+}

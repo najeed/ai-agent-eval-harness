@@ -86,10 +86,10 @@ async def handle_plugin_register(args):
         print(f"❌ Error: Plugin path '{plugin_path}' does not exist.")
         return
 
-    # In Zero-Touch core, we manage a local manifest in .aes/plugins.json
-    manifest_dir = Path(".aes")
-    manifest_dir.mkdir(exist_ok=True)
-    manifest_path = manifest_dir / "plugins.json"
+    # In Zero-Touch core, we manage a local manifest in .aes/config/plugins.json
+    from .. import config
+    manifest_path = config.PLUGINS_CONFIG_PATH
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
         if manifest_path.exists():
@@ -111,9 +111,10 @@ async def handle_plugin_register(args):
 
 async def handle_plugin_unregister(args):
     """Handler for 'plugin unregister' command."""
-    manifest_path = Path(".aes/plugins.json")
+    from .. import config
+    manifest_path = config.PLUGINS_CONFIG_PATH
     if not manifest_path.exists():
-        print("ℹ️  No plugin manifest found (.aes/plugins.json).")
+        print(f"ℹ️  No plugin manifest found ({manifest_path}).")
         return
 
     try:

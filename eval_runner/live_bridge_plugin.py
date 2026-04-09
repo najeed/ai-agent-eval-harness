@@ -110,13 +110,13 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             # If the console dies, stop trying for this run
             self.active = False
 
-    def before_evaluation(self, context):
+    def before_evaluation(self, context, **kwargs):
         self._post_event(
             CoreEvents.RUN_START,
             {"scenario": context.scenario_id, "metadata": context.metadata},
         )
 
-    def on_agent_turn_start(self, context):
+    def on_agent_turn_start(self, context, **kwargs):
         self._post_event(
             CoreEvents.TURN_START,
             {
@@ -125,7 +125,7 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             },
         )
 
-    def on_turn_end(self, context):
+    def on_turn_end(self, context, **kwargs):
         self._post_event(
             CoreEvents.TURN_END,
             {
@@ -134,12 +134,12 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             },
         )
 
-    def on_tool_request(self, context, tool_name, args):
-        self._post_event(CoreEvents.TOOL_CALL, {"tool": tool_name, "arguments": args})
+    def on_tool_request(self, context, tool, arguments=None, **kwargs):
+        self._post_event(CoreEvents.TOOL_CALL, {"tool": tool, "arguments": arguments})
         return True
 
-    def on_tool_result(self, context, tool_name, result):
-        self._post_event(CoreEvents.TOOL_RESULT, {"tool": tool_name, "result": result})
+    def on_tool_result(self, context, tool, result, **kwargs):
+        self._post_event(CoreEvents.TOOL_RESULT, {"tool": tool, "result": result})
 
-    def after_evaluation(self, context, results):
+    def after_evaluation(self, context, results, **kwargs):
         self._post_event(CoreEvents.RUN_END, {"status": "COMPLETED", "results_count": len(results)})

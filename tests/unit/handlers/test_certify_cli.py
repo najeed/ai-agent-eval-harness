@@ -59,7 +59,6 @@ async def test_handle_certify_with_fingerprint(certify_env, capsys):
     with open(sidecar_path, encoding="utf-8") as f:
         manifest = json.load(f)
 
-    assert manifest.get("fingerprint_id") == fingerprint
     assert manifest.get("behavioral_fingerprint_id") == fingerprint
 
 

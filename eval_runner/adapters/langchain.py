@@ -3,7 +3,7 @@ from typing import Any
 
 import aiohttp
 
-from ..events import CoreEvents, EventEmitter
+from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
 from .common import AESCallbackHandler
 
@@ -76,7 +76,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
                 },
             }
         except ImportError:
-            EventEmitter.emit(CoreEvents.ERROR, {"message": "LangChain SDK not installed"})
+            emit(CoreEvents.ERROR, {"message": "LangChain SDK not installed"})
             return {
                 "status": "error",
                 "message": "LangChain SDK (langchain) not installed. Native execution failed.",
@@ -91,7 +91,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
             url = url.rstrip("/") + "/invoke"
 
         # Signal start of remote execution
-        EventEmitter.emit(
+        emit(
             CoreEvents.CHAIN_START, {"adapter": "langchain", "mode": "remote", "url": url}
         )
 
@@ -99,7 +99,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json={"input": input_data}, timeout=60) as response:
                     if response.status != 200:
-                        EventEmitter.emit(
+                        emit(
                             CoreEvents.ERROR, {"message": f"LangServe {response.status}"}
                         )
                         return {
@@ -108,7 +108,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
                         }
 
                     data = await response.json()
-                    EventEmitter.emit(
+                    emit(
                         CoreEvents.CHAIN_END, {"adapter": "langchain", "mode": "remote"}
                     )
                     return {
@@ -117,5 +117,5 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
                         "metadata": {"framework": "langchain", "endpoint": url, "mode": "remote"},
                     }
         except Exception as e:
-            EventEmitter.emit(CoreEvents.ERROR, {"message": str(e)})
+            emit(CoreEvents.ERROR, {"message": str(e)})
             return {"status": "error", "message": str(e)}

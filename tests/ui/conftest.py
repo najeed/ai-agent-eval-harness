@@ -1,3 +1,4 @@
+import sys
 import os
 import subprocess
 import time
@@ -21,6 +22,8 @@ def dashboard_server():
     # Start streamlit on a non-standard port for testing
     port = "8505"
     cmd = [
+        sys.executable,
+        "-m",
         "streamlit",
         "run",
         "dashboard/app.py",

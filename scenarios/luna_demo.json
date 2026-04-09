@@ -1,32 +1,34 @@
 {
-  "aes_version": 1.3,
-  "metadata": {
-    "name": "Luna-Judge Reasoning Demonstration",
-    "compliance_level": "Standard"
-  },
-  "description": "A complex reasoning scenario designed to verify the Luna-Judge LLM-based evaluation metric using Ollama.",
-  "industry": "general",
-  "workflow": {
-    "nodes": [
-      {
-        "id": "t1_logic_puzzle",
-        "task_description": "Solve this logic puzzle: If all bloops are razzies and some razzies are fribbles, does it follow that some bloops are definitely fribbles? Explain your reasoning step-by-step.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "string",
-          "value": "The agent correctly identifies that it does NOT follow, as the 'some razzies' that are fribbles might not be the same razzies that are bloops."
+    "aes_version": 1.4,
+    "metadata": {
+        "name": "Luna-Judge Reasoning Demonstration",
+        "compliance_level": "Standard",
+        "capabilities": [],
+        "standards_registry": []
+    },
+    "description": "A complex reasoning scenario designed to verify the Luna-Judge LLM-based evaluation metric using Ollama.",
+    "industry": "general",
+    "workflow": {
+        "nodes": [
+            {
+                "id": "t1_logic_puzzle",
+                "task_description": "Solve this logic puzzle: If all bloops are razzies and some razzies are fribbles, does it follow that some bloops are definitely fribbles? Explain your reasoning step-by-step.",
+                "expected_outcome": {
+                    "type": "typed_value",
+                    "data_type": "string",
+                    "value": "The agent correctly identifies that it does NOT follow, as the 'some razzies' that are fribbles might not be the same razzies that are bloops."
+                }
+            }
+        ],
+        "edges": []
+    },
+    "evaluation": {
+        "consensus": {
+            "strategy": "Majority_Vote",
+            "min_judges": 1,
+            "judge_panel": [
+                "Luna-1"
+            ]
         }
-      }
-    ],
-    "edges": []
-  },
-  "evaluation": {
-    "consensus": {
-      "strategy": "Majority_Vote",
-      "min_judges": 1,
-      "judge_panel": [
-        "Luna-1"
-      ]
     }
-  }
 }

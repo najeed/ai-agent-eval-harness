@@ -392,10 +392,14 @@ def _download_simulated(pack: str, flavor: str, version: str) -> bytes:
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
         # Create a sample scenario for the pack
-        scenario_id = f"{pack}_{flavor}_{version}_s1"
         scenario_data = {
-            "aes_version": 1.3,
-            "metadata": {"id": scenario_id, "name": f"Curated {pack} {flavor} ({version})"},
+            "aes_version": 1.4,
+            "metadata": {
+                "id": scenario_id,
+                "name": f"Curated {pack} {flavor} ({version})",
+                "compliance_level": "Standard",
+                "capabilities": [],
+            },
             "industry": pack,
             "workflow": {
                 "nodes": [

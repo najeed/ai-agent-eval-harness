@@ -94,15 +94,15 @@ logs/
 .harden_state
 
 # Sphinx build artifacts
-docs/_build/
-docs/build/
+docs-old/_build/
+docs-old/build/
 
-# --- Execution Artifacts ---
 runs/
-results/
+/results/
 reports/
 tmp/
 .tmp/
+/scratch/
 
 # --- Dependencies ---
 node_modules/

@@ -13,6 +13,7 @@ from eval_runner.session import SessionManager
 async def test_hitl_interactive_input():
     """Verifies that SessionManager correctly handles HITL interactive input."""
     scenario = {
+        "aes_version": 1.4,
         "scenario_id": "test_hitl",
         "workflow": {"nodes": [{"id": "task1", "task_description": "Do something"}], "edges": []},
     }
@@ -32,7 +33,7 @@ async def test_hitl_interactive_input():
             patch("sys.stdin.isatty", return_value=True),
             patch.dict(os.environ, {"CI": ""}),
         ):  # Ensure not in CI mode
-            session = SessionManager(scenario)
+            session = SessionManager("test-run", scenario)
             session.max_turns = 1
 
             results = await session.execute_tasks(1)
@@ -50,6 +51,7 @@ async def test_hitl_interactive_input():
 async def test_hitl_ci_auto_resume():
     """Verifies that SessionManager auto-resumes in CI mode."""
     scenario = {
+        "aes_version": 1.4,
         "scenario_id": "test_hitl_ci",
         "workflow": {"nodes": [{"id": "task1", "task_description": "test"}], "edges": []},
     }
@@ -61,7 +63,7 @@ async def test_hitl_ci_auto_resume():
         patch.dict(os.environ, {"CI": "true"}),
     ):
         mock_call.return_value = {"action": "hitl_pause"}
-        session = SessionManager(scenario)
+        session = SessionManager("test-run-ci", scenario)
         session.max_turns = 1
         # Mocking sys.stdin.isatty to False since it's CI
         with patch("sys.stdin.isatty", return_value=False):

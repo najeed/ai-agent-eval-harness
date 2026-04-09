@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -16,14 +17,16 @@ def test_verifier_end_to_end_signing(tmp_path):
     trace_path = tmp_path / "test_run_123.jsonl"
     trace_path.write_bytes(trace_content)
 
-    # 2. Key Generation
-    keys_dir = tmp_path / "keys"
+    # 2. Key Generation for 'test_id'
+    identity_id = "test_id"
+    keys_dir = tmp_path / "keys" / identity_id
     TraceVerifier.generate_key_pair(output_dir=str(keys_dir))
 
-    private_key_path = keys_dir / "private_key.pem"
-    public_key_path = keys_dir / "public_key.pem"
+    # Configure TRUST_ROOT for IdentityService
+    original_trust = config.TRUST_ROOT
+    config.TRUST_ROOT = tmp_path / "keys"
 
-    assert private_key_path.exists()
+    public_key_path = keys_dir / "public_key.pem"
     assert public_key_path.exists()
 
     # 3. Signing
@@ -38,15 +41,15 @@ def test_verifier_end_to_end_signing(tmp_path):
         manifest = TraceVerifier.sign_trace(
             trace_path=str(trace_path),
             metadata=metadata,
-            private_key_path=str(private_key_path),
-            fingerprint_id=fingerprint,
+            identity_id=identity_id,
+            behavioral_fingerprint_id=fingerprint,
         )
 
-        # 4. Schema Hardening Checks
+        # 4. Schema Hardening Checks (v3)
         assert manifest["harness_version"] == config.VERSION
         assert manifest["behavioral_fingerprint_id"] == fingerprint
-        assert "signature_ed25519" in manifest
-        assert manifest["signing_algorithm"] == "ED25519"
+        assert "provenance_chain" in manifest
+        assert manifest["provenance_chain"][0]["algorithm"] == "ED25519"
 
         # 5. Storage Checks
         sidecar = tmp_path / "test_run_123_manifest.json"
@@ -74,6 +77,7 @@ def test_verifier_end_to_end_signing(tmp_path):
 
     finally:
         config.REPORTS_DIR = original_reports
+        config.TRUST_ROOT = original_trust
 
 
 def test_verifier_without_fingerprint(tmp_path):
@@ -81,8 +85,12 @@ def test_verifier_without_fingerprint(tmp_path):
     trace_path = tmp_path / "simple.jsonl"
     trace_path.write_bytes(b"data")
 
-    manifest = TraceVerifier.sign_trace(str(trace_path))
-    assert "behavioral_fingerprint_id" not in manifest
+    manifest = TraceVerifier.sign_trace(str(trace_path), behavioral_fingerprint_id="custom_dna")
+    assert manifest["behavioral_fingerprint_id"] == "custom_dna"
+    
+    # In v3, we always have a default fingerprint_id if not provided
+    manifest_default = TraceVerifier.sign_trace(str(trace_path))
+    assert manifest_default["behavioral_fingerprint_id"] == "default_v1"
 
 
 def test_verifier_missing_files(tmp_path):
@@ -114,19 +122,31 @@ def test_verifier_unverifiable_signature(tmp_path):
     trace_path = tmp_path / "unverifiable.jsonl"
     trace_path.write_bytes(b"data")
 
-    keys_dir = tmp_path / "keys_unverifiable"
+    # 2. Setup identity
+    identity_id = "unverifiable_id"
+    keys_dir = tmp_path / "keys_unv" / identity_id
     TraceVerifier.generate_key_pair(output_dir=str(keys_dir))
+    
+    original_trust = config.TRUST_ROOT
+    config.TRUST_ROOT = tmp_path / "keys_unv"
 
-    manifest = TraceVerifier.sign_trace(
-        str(trace_path), private_key_path=str(keys_dir / "private_key.pem")
-    )
+    try:
+        manifest = TraceVerifier.sign_trace(
+            str(trace_path), identity_id=identity_id
+        )
 
-    manifest_path = tmp_path / "unverifiable_manifest.json"
-    with open(manifest_path, "w") as f:
-        json.dump(manifest, f)
+        manifest_path = tmp_path / "unverifiable_manifest.json"
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f)
 
-    # Verify without public key. Should return True based on integrity check.
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
+        # Verify without public_key_path explicitly. 
+        # In the new world, verify_trace(tp, mp) without key path will try resolution.
+        # If it fails resolution, it might return False or True based on integrity.
+        # Our current implementation returns True if it fails cryptographic proof but integrity passes (Legacy)
+        # OR it fails if v3 signature is invalid.
+        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
+    finally:
+        config.TRUST_ROOT = original_trust
 
 
 def test_verifier_exception_handling(tmp_path):
@@ -150,11 +170,16 @@ def test_verifier_unsigned_manifest(tmp_path):
     trace_path = tmp_path / "unsigned.jsonl"
     trace_path.write_bytes(b"data")
 
-    manifest = TraceVerifier.sign_trace(str(trace_path))
+    # Ensure it's unsigned by bypassing provenance
+    with patch("eval_runner.identity.IdentityService.get_private_key", side_effect=Exception("Disabled")):
+        manifest = TraceVerifier.sign_trace(str(trace_path))
+        # Downgrade to legacy for integrity-only test
+        manifest["vc_version"] = "1.0.0"
+        
     manifest_path = tmp_path / "unsigned_manifest.json"
 
     # Ensure it's unsigned
-    assert "signature_ed25519" not in manifest
+    assert not manifest.get("provenance_chain")
     with open(manifest_path, "w") as f:
         json.dump(manifest, f)
 

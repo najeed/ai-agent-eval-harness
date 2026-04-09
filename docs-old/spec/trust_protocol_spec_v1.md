@@ -1,11 +1,13 @@
-## 1. Architectural Overview
-The Trust Protocol is designed to provide **immutable proof of run integrity** for the AES Evaluation Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate).
+# Trust Protocol Standard v1.4.1 (Forensic Baseline)
+The Trust Protocol is designed to provide **immutable proof of run integrity** for the MultiAgentEval Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate v3).
 
 ```mermaid
 graph TD
     A[Trace File .jsonl] -->|SHA-256| B[Content Hash]
-    B --> C[Manifest Metadata]
-    D[Private Key .pem] -->|ED25519 Sign| E[Verification Certificate]
+    B --> C[Manifest v3 Metadata]
+    S[Artifact Sidecars .html/.png] -->|SHA-256| L[Forensic Evidence Ledger]
+    L --> C
+    D[Private Key .pem] -->|Identity Registry Sign| E[Verification Certificate v3]
     C --> E
     
     subgraph "Storage & Retrieval"
@@ -21,9 +23,10 @@ graph TD
     end
 ```
 
-### The Dual-Layer Defense
-1.  **Trace Layer (Integrity)**: A SHA-256 hash of the `.jsonl` trace file to ensure no bits have been altered.
-2.  **Manifest Layer (Authority)**: A signed JSON object (The VC) that contains the trace hash and is cryptographically bound to the harness's identity via ED25519.
+### The Multi-Layer Forensic Defense
+1.  **Trace Layer (Integrity)**: A SHA-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
+2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
+3.  **Manifest Layer (Authority)**: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an authoritative identity via the **Identity Registry**.
 
 ---
 
@@ -46,19 +49,18 @@ graph TD
 
 ## 3. The Verification Workflow
 
-1.  **Generation**: Upon run completion, the harness generates the SHA-256 hash and wraps it in a standardized `1.2.3` schema.
-2.  **Issuance**: The `TraceVerifier` uses a local `private_key.pem` (protected via `.gitignore`) to sign the manifest.
+1.  **Generation**: Upon run completion, the harness generates hashes for the trace and all sidecar artifacts.
+2.  **Issuance**: The `IdentityService` resolves the authoritative `system_id` private key and signs the VC v3 manifest.
 3.  **Redundant Storage**:
     *   **Sidecar**: Stored as `run_ID_manifest.json` for local reproducibility.
     *   **Authoritative Store**: Stored in `reports/certificates/` for the Trust API.
 4.  **Retrieval**: External systems call the public `GET /api/v1/certificates/<run_id>` endpoint to fetch the proof.
 5.  **Validation**: The consumer uses the harness's **Public Key** to verify the signature and then re-computes the SHA-256 of the trace file to ensure a match.
 
-## 4. HMS-Readiness & Pluggable Key Management
-The Trust Protocol is designed for **HMS-Readiness**, allowing the Evaluation Harness to transition from local file-based keys to enterprise-grade Hardware Security Modules (HSM) or Cloud KMS (Key Management Service) without altering core logic.
+---
 
-### A. The `KeyLoader` Interface
-We use a strategy pattern for key retrieval via the `KeyLoader` abstract base class in `verifier.py`.
+## 4. Identity Registry & KMS Integration
+Core v1.4 replaces legacy file-based key loaders with the **Identity Registry** (`IdentityService`). This service abstracts private key resolution, supporting both local PEM storage and future cloud-native Vault/HSM integrations.
 
 - **`LocalFileKeyLoader` (Default)**: Handles standard PEM files in the `.aes/keys` directory. This is used for development and standard CI/CD pipelines.
 - **Enterprise Extensions**: Teams can implement custom loaders (e.g., `AWSKMSKeyLoader`, `GCPKMSKeyLoader`) that fetch keys directly from protected vaults via API, ensuring that private keys never touch the harness's local filesystem.

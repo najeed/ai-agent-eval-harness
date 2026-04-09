@@ -77,8 +77,8 @@ class ScenarioLinter:
         aes_version = data.get("aes_version")
         results["aes_version"] = aes_version
 
-        if aes_version not in [1.2, 1.3]:
-            results["errors"].append(f"Invalid aes_version: {aes_version} (Requires 1.3 or 1.2)")
+        if aes_version not in [1.2, 1.3, 1.4]:
+            results["errors"].append(f"Invalid aes_version: {aes_version} (Requires 1.4, 1.3 or 1.2)")
             results["status"] = "fail"
             results["score"] -= 50
 
@@ -212,3 +212,12 @@ def run_lint(path: str):
                 status_icon = "✅" if res["status"] == "pass" else "⚠"
                 print(f"{status_icon} {p.name}: Score {res['score']} [{res['tier']}]")
         print(f"\nLinting complete. {total} scanned, {fails} failed.")
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) < 2:
+        print("Usage: python -m eval_runner.linter <file_or_dir>")
+        sys.exit(1)
+    run_lint(sys.argv[1])

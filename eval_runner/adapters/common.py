@@ -3,7 +3,7 @@ import hashlib
 import json
 from typing import Any
 
-from ..events import CoreEvents, EventEmitter
+from ..events import CoreEvents, emit
 
 try:
     from langchain_core.callbacks import BaseCallbackHandler
@@ -33,7 +33,7 @@ class AESCallbackHandler(BaseCallbackHandler):
             state_hash = "error_hashing"
             inputs_summary = {"error": "serialization_failed"}
 
-        EventEmitter.emit(
+        emit(
             CoreEvents.CHAIN_START,
             {
                 "adapter": self.adapter_name,
@@ -44,12 +44,12 @@ class AESCallbackHandler(BaseCallbackHandler):
         )
 
     def on_chain_end(self, outputs: dict[str, Any], **kwargs: Any):
-        EventEmitter.emit(
+        emit(
             CoreEvents.CHAIN_END, {"adapter": self.adapter_name, "id": self.identifier}
         )
 
     def on_node_start(self, serialized: dict[str, Any], inputs: dict[str, Any], **kwargs: Any):
-        EventEmitter.emit(
+        emit(
             CoreEvents.NODE_START,
             {
                 "adapter": self.adapter_name,
@@ -60,4 +60,4 @@ class AESCallbackHandler(BaseCallbackHandler):
         )
 
     def on_node_end(self, outputs: dict[str, Any], **kwargs: Any):
-        EventEmitter.emit(CoreEvents.NODE_END, {"adapter": self.adapter_name})
+        emit(CoreEvents.NODE_END, {"adapter": self.adapter_name})

@@ -5,7 +5,7 @@ import pytest
 
 from eval_runner.adapters.autogen import AutoGenAdapterPlugin
 from eval_runner.context import EvaluationContext, TurnContext
-from eval_runner.events import CoreEvents, EventEmitter
+from eval_runner.events import CoreEvents, emit, reset, subscribe
 from eval_runner.verifier import BaseVerifier, VerificationResult
 
 
@@ -45,11 +45,11 @@ def test_event_emitter_span_propagation():
     def subscriber(event):
         captured_events.append(event)
 
-    EventEmitter.reset()
-    EventEmitter.subscribe(subscriber)
+    reset()
+    subscribe(subscriber)
 
     span_ctx = {"trace_id": "nist-trace-001"}
-    EventEmitter.emit(CoreEvents.STRATEGY_START, {"goal": "verify_security"}, span_context=span_ctx)
+    emit(CoreEvents.STRATEGY_START, {"goal": "verify_security"}, span_context=span_ctx)
 
     assert len(captured_events) == 1
     assert captured_events[0].span_context == span_ctx

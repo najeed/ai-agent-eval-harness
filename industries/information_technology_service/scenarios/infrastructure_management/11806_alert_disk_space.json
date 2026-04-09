@@ -1,5 +1,5 @@
 {
-  "aes_version": 1.3,
+  "aes_version": 1.4,
   "metadata": {
     "name": "Monitoring - Low Disk Space Alert",
     "compliance_level": "Standard"

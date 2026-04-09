@@ -7,17 +7,13 @@ import pytest
 
 @pytest.fixture
 def scenario_schema():
-    """Robustly locate the scenario schema across diverse execution environments."""
+    """Robustly locate the authoritative AES schema across diverse execution environments."""
     from eval_runner import config
 
-    # Cascade discovery:
-    # 1. Authoritative config path
-    # 2. Repo-relative path (from tests/functional/)
-    # 3. Parent-walk discovery (standard industrial root-finding)
+    # Cascade discovery centered on the hardened AES v1.4.0 root
     candidates = [
-        config.PROJECT_ROOT / "schemas" / "scenario.schema.json",
-        Path(__file__).parents[2] / "schemas" / "scenario.schema.json",
-        Path(__file__).parents[3] / "schemas" / "scenario.schema.json",
+        config.PROJECT_ROOT / "spec" / "aes" / "aes.schema.json",
+        Path(__file__).parents[2] / "spec" / "aes" / "aes.schema.json",
     ]
 
     schema_path = None
@@ -27,53 +23,50 @@ def scenario_schema():
             break
 
     if not schema_path:
-        # Fallback for strict jails: try to find anything named scenario.schema.json in the whole tree, E501, E501  # noqa: E501
-        # (This is expensive but better than a hard failure in restricted CI)
-        for root, _dirs, files in os.walk(config.PROJECT_ROOT):
-            if "scenario.schema.json" in files:
-                schema_path = Path(root) / "scenario.schema.json"
-                break
-
-    if not schema_path:
-        pytest.skip(
-            "Scenario schema (scenario.schema.json) not found in the current execution environment."
+        pytest.fail(
+            "Authoritative AES schema (aes.schema.json) not found. "
+            "Forensic environment sync is required."
         )
 
     with open(schema_path, encoding="utf-8") as f:
-        return json.load(f)
-
-
-import os  # noqa: E402
+        return json.load(f), schema_path
 
 
 def test_enforce_min_judges_and_compliance(scenario_schema):
-    """Verify that scenarios missing required 1.2 properties fail validation."""
+    """Verify that scenarios missing required v1.4 properties fail validation."""
+    from jsonschema import RefResolver, validate
 
-    # 1. Valid Scenario (passes)
+    schema, schema_path = scenario_schema
+    resolver = RefResolver(f"file:///{schema_path.parent.as_posix()}/", schema)
+
+    # 1. Valid Scenario (passes v1.4.0)
     valid_scenario = {
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "metadata": {
+            "name": "Industrial Compliance Test",
             "scenario_id": "test_pass",
-            "name": "Test Scenario",
             "industry": "finance",
             "compliance_level": "Regulatory_Audit",
         },
         "workflow": {"nodes": [{"id": "node_1", "task_description": "test task"}], "edges": []},
         "evaluation": {"consensus": {"strategy": "Majority_Vote", "min_judges": 1}},
     }
-    jsonschema.validate(instance=valid_scenario, schema=scenario_schema)
+    validate(instance=valid_scenario, schema=schema, resolver=resolver)
 
     # 2. Invalid Scenario (missing compliance_level)
-    invalid_meta = valid_scenario.copy()
-    invalid_meta["metadata"] = {"scenario_id": "test_fail", "industry": "finance"}
+    invalid_meta = json.loads(json.dumps(valid_scenario))
+    invalid_meta["metadata"] = {
+        "name": "Fail Scenario",
+        "scenario_id": "test_fail",
+        "industry": "finance"
+    }
     with pytest.raises(jsonschema.ValidationError) as excinfo:
-        jsonschema.validate(instance=invalid_meta, schema=scenario_schema)
+        validate(instance=invalid_meta, schema=schema, resolver=resolver)
     assert "compliance_level" in str(excinfo.value)
 
     # 3. Invalid Scenario (missing min_judges)
-    # Re-copy to avoid side effects
     invalid_judges = json.loads(json.dumps(valid_scenario))
     del invalid_judges["evaluation"]["consensus"]["min_judges"]
     with pytest.raises(jsonschema.ValidationError) as excinfo:
-        jsonschema.validate(instance=invalid_judges, schema=scenario_schema)
+        validate(instance=invalid_judges, schema=schema, resolver=resolver)
     assert "min_judges" in str(excinfo.value)

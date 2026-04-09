@@ -1,7 +1,8 @@
 # eval_runner/adapters/crewai.py
 from typing import Any
 
-from ..events import CoreEvents, EventEmitter
+from .. import events
+from ..events import CoreEvents
 from ..plugins import BaseEvalPlugin
 
 
@@ -34,14 +35,14 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
 
             # Telemetry Callback handlers
             def on_step(step):
-                EventEmitter.emit(
+                events.emit(
                     CoreEvents.NODE_START,
                     {"adapter": "crewai", "step_id": str(getattr(step, "id", "unknown"))},
                 )
-                EventEmitter.emit(CoreEvents.NODE_END, {"adapter": "crewai"})
+                events.emit(CoreEvents.NODE_END, {"adapter": "crewai"})
 
             # Signal start of the multi-agent 'chain'
-            EventEmitter.emit(
+            events.emit(
                 CoreEvents.CHAIN_START, {"adapter": "crewai", "task_id": task_id, "protocol": "v1"}
             )
 
@@ -49,7 +50,7 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
             # We simulate the step-level signals for the auditor.
             on_step({"id": task_id})
 
-            EventEmitter.emit(CoreEvents.CHAIN_END, {"adapter": "crewai", "task_id": task_id})
+            events.emit(CoreEvents.CHAIN_END, {"adapter": "crewai", "task_id": task_id})
 
             return {
                 "status": "success",
@@ -62,7 +63,7 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
             }
 
         except ImportError:
-            EventEmitter.emit(CoreEvents.ERROR, {"message": "CrewAI SDK not installed"})
+            events.emit(CoreEvents.ERROR, {"message": "CrewAI SDK not installed"})
             return {
                 "status": "error",
                 "message": "CrewAI SDK (crewai) not installed. Native execution failed.",

@@ -69,7 +69,7 @@ async def test_handle_mutate_exceptions(tmp_path, monkeypatch):
     input_file.write_text(
         json.dumps(
             {
-                "aes_version": 1.3,
+                "aes_version": 1.4,
                 "metadata": {"name": "Mutate Me", "compliance_level": "Standard"},
                 "workflow": {"nodes": [{"id": "t1", "task_description": "task"}], "edges": []},
             }

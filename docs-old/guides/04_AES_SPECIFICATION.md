@@ -1,4 +1,4 @@
-# Guide: Agent Eval Specification (AES) v1.3
+# Guide: Agent Eval Specification (AES) v1.4
 
 AES is the foundational standard for shareable, deterministic agent benchmarks.
 
@@ -8,7 +8,13 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 - **CI Ready**: Validatable via JSON Schema.
 - **Deterministic DAGs**: Support for non-linear workflow execution with dependency gating.
 
-## 2. Core Components (v1.3)
+## 2. Core Components (v1.4)
+
+### Metadata (metadata)
+AES v1.4 introduces a stricter metadata schema to ensure cross-platform reproducibility:
+- **`capabilities`**: (Required) A list of specific agentic skills required (e.g., `web_navigation`, `sql_generation`).
+- **`standards_registry`**: (Optional) Industry-standard identifiers (e.g., `ISO_20022`) for regulatory mapping.
+- **`aes_version`**: Must be set to `1.4`.
 
 ### DAG-Based Execution (workflow)
 Scenarios define a directed acyclic graph (DAG) of `nodes` and `edges`, enabling complex multi-stage evaluations with dependency tracking.
@@ -75,6 +81,9 @@ Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan a
   "metadata": {
     "name": "High-Density Loan Credit Audit",
     "industry": "finance",
+    "aes_version": 1.4,
+    "capabilities": ["credit_score_analysis", "policy_lookup"],
+    "standards_registry": ["ISO_20022_LOAN_V1"],
     "compliance_level": "Standard",
     "agent_topology": {
       "loan_agent": {
@@ -114,7 +123,7 @@ Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan a
  ## 8. Behavioral Fingerprinting (V1)
  
 ### 🛡️ Environmental DNA & Forensic Verification
-To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.3 introduces the **Environmental DNS Snapshot**. This provides a verifiable "baseline" for the physical world state (IDs, API keys, and simulator configurations) during the evaluation.
+To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.4 enforces the **Forensic Evidence Ledger**. This provides a verifiable "baseline" for the physical world state (IDs, API keys, and simulator configurations) during the evaluation.
  
  | Field | Description |
  | :--- | :--- |
@@ -129,14 +138,17 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
 
 ---
  
- ## 9. Forensic Environmental DNA (v1.3.0) 
+ ## 9. Forensic Environmental DNA (v1.4.0) 
  
- v1.3 elevates the environment from a background configuration to a **First-Class Member** of the evaluation trace.
+ v1.4 elevates the environment from a background configuration to a **First-Class Member** of the evaluation trace.
  
  ### The Cumulative Industrial Registry
  Infrastructure state is managed via a **Decoupled Cumulative Registry**. Unlike legacy models, the registry is no longer a single file but a layered configuration stack:
  1. **Immutable Core Root**: Sanctioned defaults are internalized at [eval_runner/resources/shim_resources.json](/eval_runner/resources/shim_resources.json).
- 2. **Distributed Extensions**: Extensions safely add or refine logic via the [shim_resources.d/](/shim_resources.d/) directory.
+ 2. **Distributed Extensions**: Extensions safely add or refine logic via the [.aes/config/shims.d/](/.aes/config/shims.d/) directory.
+ 
+ ### 9.1 Capability-Based Routing
+ To ensure infrastructure abstraction, AES v1.4+ scenarios should list required capabilities instead of hardcoded endpoints. The Core resolves these to physical infrastructure via the [Routing Manifest](/.aes/config/routing/manifest.json).
  
  This allows a single AES benchmark to be portable across diverse physical environments (local dev, staging, production) by simply layering the appropriate registry overlay.
  
@@ -174,7 +186,8 @@ To support high-stakes industrial audits, AgentEval strictly decouples the **Sta
 ### `aes_version` (The Standard)
 Refers to the **Agent Eval Standard** itself (e.g., `1.3`). It defines the schema and vocabulary of the [scenario.json](/eval_runner/loader.py).
 - **v1.2**: Legacy-Stable. Supports basic tasks and simulators.
-- **v1.3**: Current-Stable. Supports **Forensic DNA**, **Registry Overlays**, and **PBAC**.
+- **v1.3**: Maintenance. Supports **Forensic DNA** and **PBAC**.
+- **v1.4**: Current-Stable. Supports **VC v3**, **Capabilities**, and **Identity Registry**.
 
 ### `harness_version` (The Engine)
 Refers to the **MultiAgent-Eval Engine** build (e.g., `1.3.0`). This is automatically injected into the [run.jsonl](/eval_runner/verifier.py) and manifest by the "Referee."

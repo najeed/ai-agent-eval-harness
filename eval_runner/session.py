@@ -11,12 +11,17 @@ import asyncio  # noqa: E402
 import copy  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
+import logging
+from pathlib import Path # noqa: E402
 from dataclasses import replace  # noqa: E402
 from typing import Any  # noqa: E402
 
+logger = logging.getLogger(__name__)
+
 from . import config, metrics, plugins  # noqa: E402
 from .context import TurnContext  # noqa: E402
-from .events import CoreEvents, EventEmitter  # noqa: E402
+from .events import CoreEvents, EventEmitter, Event  # noqa: E402
+from .forensics import ForensicCollector # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
@@ -24,16 +29,65 @@ MAX_FORK_BREADTH = config.MAX_FORK_BREADTH
 
 
 class SessionManager:
-    """Manages a single evaluation attempt's lifecycle."""
+    """
+    Manages a single evaluation attempt's lifecycle.
+    Updated for Session-Scoped Lifecycle (Inversion of Control).
+    """
 
-    def __init__(self, scenario: dict, metadata: dict | None = None):
+    def __init__(self, run_id: str, scenario: dict, metadata: dict | None = None):
         from .engine import MAX_TURNS
+        from .events import EventEmitter
+        from .plugins import PluginManager
 
+        self.run_id = run_id
         self.scenario = scenario
         self.metadata = metadata or {}
         self.session_metadata = dict(metadata) if metadata else {}
         self.max_turns = int(scenario.get("max_turns", MAX_TURNS))
         self.fork_depth = scenario.get("_fork_depth", 0)
+
+        # Session-Scoped Infrastructure
+        self.event_bus = EventEmitter(run_id=run_id)
+        self.plugin_manager = PluginManager()
+        self.forensics = ForensicCollector(run_id, config.RUN_LOG_DIR / run_id)
+        
+        # Initialize plugins for this session
+        self.plugin_manager.load_plugins()
+        
+        # Auto-subscribe plugins to the session bus (Bridge to legacy Hooks)
+        def _bridge_event_internal(event: Event):
+            # Map events to legacy hook names
+            hook_name = f"on_{event.name.lower()}"
+            # Standard Unpacking: Pass event data and turns_taken as context proxy
+            self.plugin_manager.trigger(hook_name, context=self, **event.data)
+
+        self._bridge_ref = _bridge_event_internal
+        self.event_bus.subscribe(self._bridge_ref)
+
+        # 🚀 Capability-Based Routing (Infrastructure Isolation)
+        from .routing import RoutingRegistry
+        capabilities = scenario.get("capabilities", scenario.get("metadata", {}).get("capabilities", []))
+        if capabilities:
+            resolved = RoutingRegistry.resolve(capabilities)
+            if resolved:
+                # Priority: CLI Override (self.metadata) > Capability Routing > Scenario Metadata
+                # We merge capability results IF the specific key is missing from metadata
+                if "protocol" not in self.session_metadata:
+                    self.session_metadata["protocol"] = resolved.get("protocol")
+                if "agent" not in self.session_metadata:
+                    self.session_metadata["agent"] = resolved.get("endpoint")
+                
+                # Emit resolved routing for audit forensics
+                self.event_bus.emit(
+                    CoreEvents.ROUTING_RESOLVED if hasattr(CoreEvents, "ROUTING_RESOLVED") else "ROUTING_RESOLVED",
+                    {
+                        "capabilities": capabilities,
+                        "resolved_protocol": resolved.get("protocol"),
+                        "resolved_endpoint": resolved.get("endpoint"),
+                        "source": "capability_registry"
+                    }
+                )
+                logger.info(f"      [Routing] Infrastructure resolved via capabilities: {capabilities}")
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
@@ -43,7 +97,7 @@ class SessionManager:
 
         all_task_results = []
         executed_nodes = set()
-        sandbox = ToolSandbox(self.scenario)
+        sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus)
         sandbox.setup()
 
         try:
@@ -52,7 +106,7 @@ class SessionManager:
             edges = workflow.get("edges", [])
 
             # 1. Build Dependency Graph
-            EventEmitter.emit(
+            self.event_bus.emit(
                 CoreEvents.PHASE_START,
                 {"phase": "workflow_sort"},
                 span_context=self.session_metadata.get("span_context"),
@@ -72,16 +126,16 @@ class SessionManager:
                 # We should fail the session as DAGs by definition are acyclic.
                 raise ValueError(f"Workflow contains cyclic dependencies: {e}")  # noqa: B904
             finally:
-                EventEmitter.emit(
+                self.event_bus.emit(
                     CoreEvents.PHASE_END,
                     {"phase": "workflow_sort"},
                     span_context=self.session_metadata.get("span_context"),
                 )
 
-            # 3. Handle Empty Workflow
+            # 3. Handle Empty Workflow (Standard v1.4.0 enforcement)
             if not nodes_data:
                 raise ValueError(
-                    "Scenario missing required 'workflow' block (Unified Standard v1.2)"
+                    "Scenario missing required 'workflow' block (Unified Standard v1.4.0)"
                 )
             for node_id in execution_order:
                 node = nodes_data.get(node_id)
@@ -90,12 +144,12 @@ class SessionManager:
 
                 task_description = node.get("task_description")
 
-                EventEmitter.emit(
+                self.event_bus.emit(
                     CoreEvents.TASK_START,
                     {"task_id": node_id, "attempt": attempt_number},
                     span_context=self.session_metadata.get("span_context"),
                 )
-                EventEmitter.emit(
+                self.event_bus.emit(
                     CoreEvents.SUBTASK_START,
                     {"subtask_id": f"subtask-{node_id}", "type": "agent_reasoning"},
                     span_context=self.session_metadata.get("span_context"),
@@ -110,7 +164,7 @@ class SessionManager:
                 endpoint = self.session_metadata.get("agent")
                 agent_name = self.session_metadata.get("agent_name")
 
-                EventEmitter.emit(
+                self.event_bus.emit(
                     CoreEvents.AGENT_REQUEST,
                     {
                         "role": "user",
@@ -132,16 +186,16 @@ class SessionManager:
                         task_id=node_id,
                         turn_number=turn,
                         current_message=current_message,
-                        history=copy.deepcopy(conversation_history),
+                        history=list(conversation_history), # O(N) Shallow copy instead of O(N^2) deepcopy
                         span_context=self.session_metadata.get("span_context"),
                     )
 
-                    EventEmitter.emit(
+                    self.event_bus.emit(
                         CoreEvents.TURN_START,
                         {"turn": turn, "task_id": node_id},
                         span_context=turn_ctx.span_context,
                     )
-                    plugins.manager.trigger("on_agent_turn_start", turn_ctx)
+                    self.plugin_manager.trigger("on_agent_turn_start", turn_ctx)
 
                     try:
                         payload = {
@@ -158,7 +212,7 @@ class SessionManager:
                             elif protocol == "local":
                                 endpoint = os.getenv("AGENT_LOCAL_CMD")
 
-                        EventEmitter.emit(
+                        self.event_bus.emit(
                             CoreEvents.ACTION_START,
                             {"action_type": "llm_inference", "protocol": protocol},
                             span_context=turn_ctx.span_context,
@@ -169,7 +223,7 @@ class SessionManager:
                             endpoint=endpoint,
                             span_context=turn_ctx.span_context,
                         )
-                        EventEmitter.emit(
+                        self.event_bus.emit(
                             CoreEvents.ACTION_END,
                             {"action_type": "llm_inference", "status": "success"},
                             span_context=turn_ctx.span_context,
@@ -187,13 +241,13 @@ class SessionManager:
                             self.session_metadata["agent_name"] = agent_name
 
                         turn_ctx = replace(turn_ctx, agent_response=agent_response)
-                        EventEmitter.emit(
+                        self.event_bus.emit(
                             CoreEvents.AGENT_RESPONSE,
                             {"step": turn, "response": agent_response, "agent_name": agent_name},
                             span_context=turn_ctx.span_context,
                         )
                     except Exception as e:
-                        EventEmitter.emit(CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"})
+                        self.event_bus.emit(CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"})
                         break
 
                     conversation_history.append(
@@ -229,11 +283,13 @@ class SessionManager:
                         conversation_history.append({"role": "human", "content": human_response})
                         current_message = human_response
                     elif action in ("final_answer", "provide_instructions", "error"):
+                        print(f"      [Session] Task complete: action={action} at turn {turn}")
                         break
                     else:
+                        print(f"      [Session] Unknown action '{action}' - breaking turn loop.")
                         break
 
-                    plugins.manager.trigger("on_turn_end", turn_ctx)
+                    self.plugin_manager.trigger("on_turn_end", turn_ctx)
 
                 # Metric calculation...
                 task_results = await self._calculate_metrics(
@@ -244,23 +300,48 @@ class SessionManager:
                     sandbox,
                     agent_actions,
                 )
+                
+                # Final Forensic collection for the VC v3 Ledger
+                task_results["forensic_ledger"] = self.forensics.collect()
                 all_task_results.append(task_results)
                 executed_nodes.add(node_id)
-                EventEmitter.emit(
+                self.event_bus.emit(
                     CoreEvents.SUBTASK_END,
                     {"subtask_id": f"subtask-{node_id}"},
                     span_context=self.session_metadata.get("span_context"),
                 )
-                EventEmitter.emit(
+                self.event_bus.emit(
                     CoreEvents.TASK_END,
                     {"task_id": node_id, "results": task_results},
                     span_context=self.session_metadata.get("span_context"),
                 )
 
         finally:
-            await sandbox.teardown()
+            await self.teardown(sandbox)
 
         return all_task_results
+
+    async def teardown(self, sandbox: Any):
+        """
+        Industrial Lifecycle Teardown.
+        Ensures resources are released, listeners detached, and forensics collected.
+        """
+        # 1. Physical Cleanup
+        await sandbox.teardown()
+        
+        # 2. Forensic Collection
+        # Gather jail logs (Iteration 2 Physical Isolation)
+        if hasattr(sandbox, "terminal_jail"):
+            jail_log = Path(sandbox.terminal_jail) / "terminal.log"
+            if jail_log.exists():
+                self.forensics.register_artifact(jail_log, "terminal.log")
+        
+        self.forensics.collect()
+
+        # 3. Lifecycle Defense: Detach Bridge & Reset Bus (Ghost Listener Prevention)
+        self.event_bus.unsubscribe(self._bridge_ref)
+        self.event_bus.reset()
+        logger.info(f"      [Session] Hardened Teardown complete for run_id: {self.run_id}")
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
@@ -268,37 +349,43 @@ class SessionManager:
 
         # Interception Hook
         # Note: In a real implementation, we'd check if any plugin returns False
-        allowed = plugins.manager.trigger_interceptor(
+        allowed = self.plugin_manager.trigger_interceptor(
             "on_tool_request", turn_ctx, tool_name, tool_params
         )
         if not allowed:
-            EventEmitter.emit(
+            self.event_bus.emit(
                 CoreEvents.ERROR,
                 {"message": f"Tool call {tool_name} blocked by plugin."},
             )
             return
 
-        EventEmitter.emit(
+        self.event_bus.emit(
             CoreEvents.TOOL_CALL,
             {"step": turn, "tool": tool_name, "arguments": tool_params},
         )
         actions["used_tools"].append(tool_name)
 
-        EventEmitter.emit(
+        self.event_bus.emit(
             CoreEvents.ACTION_START,
             {"action_type": "tool_execution", "tool": tool_name},
             span_context=turn_ctx.span_context,
         )
+        # Memory Optimization: Offload full state to sidecar fingerprints
         state_before = sandbox.state.copy()
         result = await sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
-        EventEmitter.emit(
+        
+        # O(N) Forensics: Offload state to disk snapshots
+        self.forensics.snapshot_state(state_before, turn)
+        self.forensics.snapshot_state(state_after, turn + 1000)
+        
+        self.event_bus.emit(
             CoreEvents.ACTION_END,
             {"action_type": "tool_execution", "tool": tool_name},
             span_context=turn_ctx.span_context,
         )
 
-        EventEmitter.emit(
+        self.event_bus.emit(
             CoreEvents.TOOL_RESULT,
             {"step": turn, "tool": tool_name, "result": result},
             span_context=turn_ctx.span_context,
@@ -308,11 +395,10 @@ class SessionManager:
             {
                 "role": "environment",
                 "content": self._sanitize_for_history(result),
-                "state_before": copy.deepcopy(state_before),
-                "state_after": copy.deepcopy(state_after),
+                # state_before/after removed for memory efficiency; stored in state_turn_XXX.json sidecars
             }
         )
-        plugins.manager.trigger("on_tool_result", turn_ctx, tool_name, result)
+        self.plugin_manager.trigger("on_tool_result", turn_ctx, tool_name, result)
 
     async def _handle_multiple_tools(
         self, turn, agent_response, sandbox, history, actions, turn_ctx
@@ -321,29 +407,31 @@ class SessionManager:
         actions["used_tools"].extend(tool_names)
 
         for tn in tool_names:
-            EventEmitter.emit(CoreEvents.TOOL_CALL, {"step": turn, "tool": tn, "arguments": {}})
+            self.event_bus.emit(CoreEvents.TOOL_CALL, {"step": turn, "tool": tn, "arguments": {}})
 
         all_tool_results = []
         state_before = sandbox.state.copy()
         for tn in tool_names:
             # Note: Single interception for multiple tools could be complex; here we check each
-            allowed = plugins.manager.trigger_interceptor("on_tool_request", turn_ctx, tn, {})
+            allowed = self.plugin_manager.trigger_interceptor("on_tool_request", turn_ctx, tn, {})
             if allowed:
                 res = await sandbox.execute(tn, {})
                 all_tool_results.append(res)
-                EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tn, "result": res})
+                self.event_bus.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tn, "result": res})
             else:
                 all_tool_results.append(
                     {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
                 )
         state_after = sandbox.state.copy()
+        
+        # O(N) Forensics: Offload state to disk snapshots
+        self.forensics.snapshot_state(state_before, turn)
+        self.forensics.snapshot_state(state_after, turn + 1000) # Offset for after-state transparency
 
         history.append(
             {
                 "role": "environment",
                 "content": all_tool_results,
-                "state_before": state_before,
-                "state_after": state_after,
             }
         )
 
@@ -351,17 +439,14 @@ class SessionManager:
         """Handles Human-In-The-Loop interaction."""
         import os
 
-        from .events import CoreEvents, EventEmitter
-
-        # Guardrail 4.6.4: CI Auto-Approval
         if os.getenv("CI", "").lower() == "true":
             response = f"Auto-approved (CI-Override): {prompt}"
-            EventEmitter.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
+            self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
             print(f"      [HITL] CI Mode: Auto-approving task {task_id}")
             return response
 
         # Standard interactive input
-        EventEmitter.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
+        self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
 
         # Check if we are in a TTY or have a way to get input
         import sys
@@ -372,14 +457,14 @@ class SessionManager:
             response = input("      Enter response (or 'exit' to abort): ").strip()
             if response.lower() == "exit":
                 raise InterruptedError("User aborted evaluation.")
-            EventEmitter.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
+            self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
             return response
         else:
             summary = prompt[:50] + "..." if len(prompt) > 50 else prompt
             response = (
                 f"[Simulation] Interaction for '{summary}' acknowledged in non-interactive mode."
             )
-            EventEmitter.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
+            self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
             print(f"      [HITL] Non-interactive environment: {response}")
             return response
 
@@ -407,7 +492,7 @@ class SessionManager:
         # v1.2 Hardened Metrics: Pre-condition check (State Hygiene)
         sh = node.get("state_hygiene", {})
         if sh:
-            EventEmitter.emit(
+            self.event_bus.emit(
                 CoreEvents.STEP_START,
                 {"step_name": "state_hygiene_check"},
                 span_context=self.session_metadata.get("span_context"),
@@ -450,7 +535,7 @@ class SessionManager:
             # Record hygiene as a meta-metric or log it
             if hygiene_results:
                 results["state_hygiene"] = hygiene_results
-            EventEmitter.emit(
+            self.event_bus.emit(
                 CoreEvents.STEP_END,
                 {"step_name": "state_hygiene_check"},
                 span_context=self.session_metadata.get("span_context"),
@@ -550,7 +635,7 @@ class SessionManager:
             raise RuntimeError(f"Fork Bomb Prevention: Maximum depth ({MAX_FORK_DEPTH}) reached.")
         scenario_copy = copy.deepcopy(self.scenario)
         scenario_copy["_fork_depth"] = getattr(self, "fork_depth", 0) + 1
-        new_session = SessionManager(scenario_copy)
+        new_session = SessionManager(self.run_id, scenario_copy)
         # Note: In a full implementation, we'd need to deep copy the sandbox
         # and ensure the conversation history is properly partitioned.
         print(f"   [Session] Forking trajectory with {len(history)} messages in history.")

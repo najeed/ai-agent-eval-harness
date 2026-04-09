@@ -40,23 +40,27 @@ To remain compliant with these licenses, the following steps are handled automat
 > [!WARNING]
 > While the `datasets` library is Apache 2.0, individual datasets (e.g., loaded via `load_dataset`) may have their own licenses (CC-BY, GPL, etc.). **Always verify the specific dataset terms before commercial use.**
 
-## 5. Forensic Governance & NIST Alignment
-The MultiAgent- **Trace Verifiability**: Evaluation traces (`run.jsonl`) are signed via **ED25519** asymmetric cryptography, providing non-repudiable proof of origin and integrity.
-- **Environmental Provenance**: v1.3 introduces **Environmental DNA** snapshots. Every trace is mathematically bound to a **Provisioning Hash** of the registry state, ensuring the physical environment (API versions, DB schemas) matches the benchmark design.
-- **Hard Gating**: Deployment pipelines are enforced via the `multiagent-eval gate` command, which blocks promotion if cryptographic signatures or forensic hashes fail to match the sanctioned baseline.
+## 4. Forensic Governance & NIST Alignment (Protocol v1.4.1)
+- **Verification Certificate (VC) v3.0.0**: The framework mandates the v3 forensic standard, featuring **Identity-based signing** and **Sidecar Artifact Hashing** to ensure absolute trace and report non-repudiation.
+- **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
+- **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard ED25519 keys, replacing unmanaged legacy key paths.
+- **Environmental Provenance**: AES v1.4 continues to use **Environmental DNA** snapshots, mathematically binding every trace to a **Provisioning Hash** of the registry state.
+- **Hard Gating**: Deployment pipelines are enforced via the `multiagent-eval gate` command, which blocks promotion if cryptographic VC v3 signatures or forensic hashes fail to match the sanctioned baseline.
 
-### Environmental DNA Snapshotting
-- [x] **Registry Snapshots**: Every evaluation captures a point-in-time snapshot of the resolved environment registry (`shim_resources.json`).
-- [x] **Cryptographic Provenance**: A SHA-256 `provisioning_hash` is embedded in the `run.jsonl` trace to link evaluation results with physical infrastructure state.
-- [x] **Decoupled Architecture**: Separation of infrastructure config (Registry) from scenario logic (AES) ensures immutable, portable benchmarks.
+### Environmental DNA & Evidence Snapshots
+- [x] **Registry Snapshots**: Every evaluation captures a point-in-time snapshot of the resolved environment registry.
+- [x] **Forensic Evidence Ledger**: SHA-256 hashes of all sidecar report artifacts are stored in the signed manifest.
+- [x] **Cryptographic Provenance**: Traces and manifests are signed by the authoritative **Identity Registry** (`system_id` or similar).
+- [x] **Decoupled Architecture**: Separation of infrastructure config from scenario logic (AES v1.4) ensures immutable, portable benchmarks.
 
 ### Audit Readiness
-The framework satisfies industrial audit requirements by providing:
+The framework satisfies industrial audit requirements (NIST AI-100-1) by providing:
 1. **WORM Logs**: Write-Once-Read-Many flight recorder logs (`run.jsonl`).
 2. **Behavioral DNA**: High-granularity event tracing (PHASE, ACTION, STEP).
-3. **Provisioning Provenance**: Mathematical proof of the environment state during the run.
+3. **Provisioning Provenance**: Mathematical proof of the environment state.
+4. **VC v3 Verification**: Non-repudiable Verification Certificates with chained identity support.
 
-## 6. Practical Implementation
+## 5. Practical Implementation
 Developers should maintain this structure by:
 1. Updating the versions in `pyproject.toml` and this document simultaneously.
 2. Adding any new third-party dependency licenses to the `LICENSES/` directory.

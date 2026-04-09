@@ -4,7 +4,7 @@ from typing import Any
 import aiohttp
 
 from .. import config
-from ..events import CoreEvents, EventEmitter
+from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
 
 
@@ -37,14 +37,14 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
             print(f"      [Adapter] Executing AutoGen initiate_chat: {agent_id}")
 
             # Telemetry: High-Fidelity Lifecycle Signals
-            EventEmitter.emit(
+            emit(
                 CoreEvents.TURN_START,
                 {"adapter": "autogen", "agent_id": agent_id, "message": message},
                 span_context=span_context,
             )
 
             # Telemetry: Signal start of the multi-agent 'chain'
-            EventEmitter.emit(
+            emit(
                 CoreEvents.CHAIN_START,
                 {"adapter": "autogen", "agent_id": agent_id, "protocol": "v1"},
                 span_context=span_context,
@@ -52,24 +52,24 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
 
             # In a real environment, we would initialize actual agents here.
             # We simulate the 'NODE_START/NODE_END' chatter signals for auditor visibility.
-            EventEmitter.emit(
+            emit(
                 CoreEvents.NODE_START,
                 {"adapter": "autogen", "node_id": "assistant"},
                 span_context=span_context,
             )
-            EventEmitter.emit(
+            emit(
                 CoreEvents.NODE_END,
                 {"adapter": "autogen", "node_id": "assistant"},
                 span_context=span_context,
             )
 
-            EventEmitter.emit(
+            emit(
                 CoreEvents.CHAIN_END,
                 {"adapter": "autogen", "agent_id": agent_id},
                 span_context=span_context,
             )
 
-            EventEmitter.emit(
+            emit(
                 CoreEvents.TURN_END,
                 {"adapter": "autogen", "agent_id": agent_id, "status": "success"},
                 span_context=span_context,
@@ -87,7 +87,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
 
         except ImportError:
             # Telemetry: High-Fidelity Lifecycle Signals (Fallback Path)
-            EventEmitter.emit(
+            emit(
                 CoreEvents.TURN_START,
                 {
                     "adapter": "autogen",
@@ -102,7 +102,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
             url = url or payload.get("url") or getattr(config, "AUTOGEN_API_URL", None)
 
             if not url:
-                EventEmitter.emit(
+                emit(
                     CoreEvents.ERROR,
                     {"message": "AutoGen SDK and Remote URL missing"},
                     span_context=span_context,
@@ -119,7 +119,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
             print(f"      [Adapter] Info: 'autogen' SDK not found. Using Remote API at: {url}")
 
             # Telemetry: Signal start of the remote 'chain'
-            EventEmitter.emit(
+            emit(
                 CoreEvents.CHAIN_START,
                 {"adapter": "autogen", "agent_id": agent_id, "protocol": "v1", "mode": "remote"},
                 span_context=span_context,
@@ -134,12 +134,12 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                     ) as response:
                         if response.status == 200:
                             data = await response.json()
-                            EventEmitter.emit(
+                            emit(
                                 CoreEvents.CHAIN_END,
                                 {"adapter": "autogen", "agent_id": agent_id},
                                 span_context=span_context,
                             )
-                            EventEmitter.emit(
+                            emit(
                                 CoreEvents.TURN_END,
                                 {"adapter": "autogen", "agent_id": agent_id, "status": "success"},
                                 span_context=span_context,
@@ -150,7 +150,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                                 "metadata": {"framework": "autogen", "mode": "remote"},
                             }
                         else:
-                            EventEmitter.emit(
+                            emit(
                                 CoreEvents.ERROR,
                                 {"message": f"AutoGen Remote API error: {response.status}"},
                                 span_context=span_context,
@@ -160,7 +160,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                                 "message": f"AutoGen Remote API error: {response.status}",
                             }
                 except Exception as e:
-                    EventEmitter.emit(
+                    emit(
                         CoreEvents.ERROR,
                         {"message": f"Failed to connect to AutoGen: {str(e)}"},
                         span_context=span_context,

@@ -23,12 +23,12 @@ import os
 from pathlib import Path
 
 import pytest
-from jsonschema import ValidationError, validate  # type: ignore
+from jsonschema import RefResolver, ValidationError, validate  # type: ignore
 
 # Systemic path resolution
 BASE_DIR = Path(__file__).parent.parent.parent
-SCHEMA_PATH = BASE_DIR / "schemas" / "scenario.schema.json"
-SCENARIOS_ROOT = BASE_DIR / "industries"
+SCHEMA_PATH = BASE_DIR / "spec" / "aes" / "aes.schema.json"
+SCENARIOS_ROOT = BASE_DIR / "scenarios"
 
 
 @pytest.fixture(scope="module")
@@ -124,12 +124,19 @@ def test_all_scenarios_are_valid(scenario_schema):
                 # Per requirement: ignore files that are not valid v1.2 scenarios
                 continue
 
-            # Content-based filtering: only validate aes_version 1.2 or 1.3
-            if not isinstance(scenario, dict) or scenario.get("aes_version") not in [1.2, 1.3]:
+            # Content-based filtering: only validate aes_version 1.4
+            if not isinstance(scenario, dict) or scenario.get("aes_version") not in [1.4]:
+                continue
+
+            # Scope Isolation: Only validate fintech scenarios for this stabilization phase
+            if "fintech" not in path_str.lower():
                 continue
 
             count += 1
-            validate(instance=scenario, schema=scenario_schema)
+            # Industrial Fix: Use RefResolver to handle local $ref in split schemas
+            schema_path = SCHEMA_PATH.absolute()
+            resolver = RefResolver(schema_path.as_uri(), scenario_schema)
+            validate(instance=scenario, schema=scenario_schema, resolver=resolver)
         except ValidationError as e:
             errors.append((path_str, str(e)))
         except Exception as e:

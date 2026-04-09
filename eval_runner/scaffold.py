@@ -1,4 +1,6 @@
 import json
+import os
+import uuid
 from pathlib import Path
 
 import jsonschema
@@ -47,10 +49,12 @@ def generate_interactive():
         tpl = templates[(i - 1) % len(templates)]
         scenario_id = f"gen_{industry}_{capability.replace(' ', '_')}_{i}"
         scenario = {
-            "aes_version": 1.3,
+            "aes_version": 1.4,
             "metadata": {
                 "name": f"Generated {capability.replace('_', ' ').title()} Scenario {i}",
                 "compliance_level": "Standard",
+                "standards_registry": [],
+                "capabilities": [],
             },
             "description": tpl["desc_tpl"].format(capability=capability, industry=industry),
             "industry": industry,
@@ -83,13 +87,16 @@ def generate_interactive():
             },
         }
 
-        # Internal Schema Validation (Fail-Fast)
+        # Internal Schema Validation (Fail-Fast v1.4.0)
         try:
-            schema_path = Path(__file__).parent.parent / "schemas" / "scenario.schema.json"
+            from jsonschema import RefResolver, validate
+            schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
             if schema_path.exists():
                 with open(schema_path, encoding="utf-8") as sf:
                     schema = json.load(sf)
-                jsonschema.validate(instance=scenario, schema=schema)
+                
+                resolver = RefResolver(f"file:///{schema_path.parent.as_posix()}/", schema)
+                validate(instance=scenario, schema=schema, resolver=resolver)
         except jsonschema.exceptions.ValidationError as ve:
             print(f"❌ Internal Validation Error for {scenario_id}: {ve.message}")
             continue
@@ -160,10 +167,14 @@ def scaffold_benchmark(dir_path: str, industry: str, protocol: str):
     with open(base_dir / "eval_config.json", "w", encoding="utf-8") as f:
         json.dump(config_data, f, indent=4)
 
-    # Generate starter scenario using v1.2 schema
+    # Generate starter scenario using v1.4 schema
     starter = {
-        "aes_version": 1.3,
-        "metadata": {"name": "Starter Scenario", "compliance_level": "Standard"},
+        "aes_version": 1.4,
+        "metadata": {
+            "id": f"scenario-{uuid.uuid4().hex[:8]}",
+            "compliance_level": "Standard",
+            "capabilities": [],
+        },
         "description": "A basic starter scenario focusing on interaction.",
         "industry": industry or "general",
         "workflow": {

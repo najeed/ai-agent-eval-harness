@@ -91,20 +91,21 @@ class EnergyProvider(BaseProvider):
                 # Improved real-world simulation logic for balances
                 import random
 
+                gen = random.SystemRandom()
                 sources = ["Solar", "Wind", "Nuclear", "Hydro", "Coal", "Natural Gas"]
                 flows = ["Production", "Consumption", "Export", "Import"]
                 countries = ["USA", "DEU", "CHN", "FRA", "JPN", "GBR"]
 
                 real_like_data = []
                 for country in countries:
-                    for product in random.sample(sources, 3):
-                        flow = random.choice(flows)
+                    for product in gen.sample(sources, 3):
+                        flow = gen.choice(flows)
                         real_like_data.append(
                             {
                                 "country": country,
                                 "flow": flow,
                                 "product": product,
-                                "value": round(random.uniform(10.0, 5000.0), 2),
+                                "value": round(gen.uniform(10.0, 5000.0), 2),
                                 "unit": "Mtoe",
                             }
                         )
@@ -117,12 +118,10 @@ class EnergyProvider(BaseProvider):
                         timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
                     )
                 ]
-                import random
-
                 countries = ["USA", "CHN", "DEU", "NOR", "FRA", "IND", "BRA", "JPN"]
                 simulated_balances = [
                     {
-                        "country": random.choice(countries),
+                        "country": gen.choice(countries),
                         "flow": "Consumption",
                         "product": "Electricity",
                         "value": 1500.0,

@@ -97,13 +97,20 @@ def test_debugger_state_store_events():
 
     # Specific branches
     from eval_runner.events import CoreEvents
-    DebuggerStateStore.handle_event(MockEvent("world_state_change", {"state": "s1", "shared_state": "s2"}))
+
+    DebuggerStateStore.handle_event(
+        MockEvent("world_state_change", {"state": "s1", "shared_state": "s2"})
+    )
     assert DebuggerStateStore._last_state["state"] == "s1"
 
-    DebuggerStateStore.handle_event(MockEvent(CoreEvents.TURN_START, {"turn_idx": 1, "agent_name": "ag"}))
+    DebuggerStateStore.handle_event(
+        MockEvent(CoreEvents.TURN_START, {"turn_idx": 1, "agent_name": "ag"})
+    )
     assert "ag" in DebuggerStateStore._last_state["current_agent"]
 
-    DebuggerStateStore.handle_event(MockEvent(CoreEvents.TOOL_CALL, {"tool": "t1", "arguments": {}}))
+    DebuggerStateStore.handle_event(
+        MockEvent(CoreEvents.TOOL_CALL, {"tool": "t1", "arguments": {}})
+    )
     assert DebuggerStateStore._last_state["last_tool"] == "t1"
 
     DebuggerStateStore.handle_event(MockEvent(CoreEvents.RUN_START, {"scenario": "sc1"}))

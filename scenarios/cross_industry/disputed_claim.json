@@ -1,76 +1,78 @@
 {
-  "aes_version": 1.3,
-  "metadata": {
-    "name": "The Disputed Claim (Healthcare & Insurance)",
-    "compliance_level": "Standard"
-  },
-  "description": "A high-stakes resolution between General Hospital and SecureHealth Insurance regarding patient John Smith.",
-  "industry": "Multi-Industry",
-  "workflow": {
-    "nodes": [
-      {
-        "id": "task-1",
-        "task_description": "Fetch authorization AUTH-99 from the Healthcare Provider's API.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Record found with code AUTH-99, status 'Pending'."
+    "aes_version": 1.4,
+    "metadata": {
+        "name": "The Disputed Claim (Healthcare & Insurance)",
+        "compliance_level": "Standard",
+        "capabilities": [],
+        "standards_registry": []
+    },
+    "description": "A high-stakes resolution between General Hospital and SecureHealth Insurance regarding patient John Smith.",
+    "industry": "Multi-Industry",
+    "workflow": {
+        "nodes": [
+            {
+                "id": "task-1",
+                "task_description": "Fetch authorization AUTH-99 from the Healthcare Provider's API.",
+                "expected_outcome": {
+                    "type": "typed_value",
+                    "data_type": "object",
+                    "value": "Record found with code AUTH-99, status 'Pending'."
+                }
+            },
+            {
+                "id": "task-2",
+                "task_description": "Query the Insurance Payer's database for AUTH-99.",
+                "expected_outcome": {
+                    "type": "typed_value",
+                    "data_type": "object",
+                    "value": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'."
+                }
+            },
+            {
+                "id": "task-3",
+                "task_description": "Reconcile the records and propose a 'Correction Request' to the Insurance system.",
+                "expected_outcome": {
+                    "type": "typed_value",
+                    "data_type": "object",
+                    "value": "Correction submitted, status updated to 'Under Review'."
+                }
+            },
+            {
+                "id": "task-4",
+                "task_description": "Notify John Smith (john.smith@example.com) about the current status and the expected resolution timeline.",
+                "expected_outcome": {
+                    "type": "typed_value",
+                    "data_type": "object",
+                    "value": "Email sent to patient explaining the administrative correction."
+                }
+            }
+        ],
+        "edges": [
+            {
+                "from": "task-1",
+                "to": "task-2"
+            },
+            {
+                "from": "task-2",
+                "to": "task-3"
+            },
+            {
+                "from": "task-3",
+                "to": "task-4"
+            }
+        ]
+    },
+    "evaluation": {
+        "consensus": {
+            "strategy": "Majority_Vote",
+            "min_judges": 1,
+            "judge_panel": [
+                "Luna-1"
+            ]
         }
-      },
-      {
-        "id": "task-2",
-        "task_description": "Query the Insurance Payer's database for AUTH-99.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'."
-        }
-      },
-      {
-        "id": "task-3",
-        "task_description": "Reconcile the records and propose a 'Correction Request' to the Insurance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Correction submitted, status updated to 'Under Review'."
-        }
-      },
-      {
-        "id": "task-4",
-        "task_description": "Notify John Smith (john.smith@example.com) about the current status and the expected resolution timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Email sent to patient explaining the administrative correction."
-        }
-      }
-    ],
-    "edges": [
-      {
-        "from": "task-1",
-        "to": "task-2"
-      },
-      {
-        "from": "task-2",
-        "to": "task-3"
-      },
-      {
-        "from": "task-3",
-        "to": "task-4"
-      }
-    ]
-  },
-  "evaluation": {
-    "consensus": {
-      "strategy": "Majority_Vote",
-      "min_judges": 1,
-      "judge_panel": [
-        "Luna-1"
-      ]
+    },
+    "initial_state": {
+        "auth_code": "AUTH-99",
+        "patient_email": "john.smith@example.com"
     }
-  },
-  "initial_state": {
-    "auth_code": "AUTH-99",
-    "patient_email": "john.smith@example.com"
-  }
 }

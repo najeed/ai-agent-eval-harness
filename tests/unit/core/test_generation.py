@@ -8,7 +8,7 @@ from eval_runner import scaffold
 
 # Resolve paths
 BASE_DIR = Path(__file__).parent.parent.parent.parent
-SCHEMA_PATH = BASE_DIR / "schemas" / "scenario.schema.json"
+SCHEMA_PATH = BASE_DIR / "spec" / "aes" / "aes.schema.json"
 
 
 @pytest.fixture
@@ -22,6 +22,9 @@ def test_generated_scenario_compliance(tmp_path, scenario_schema, monkeypatch):
     Test that the interactive generator produces schema-compliant JSON.
     We mock the inputs to 'generate_interactive' and check the output.
     """
+    from jsonschema import RefResolver
+    resolver = RefResolver(f"file:///{SCHEMA_PATH.parent.as_posix()}/", scenario_schema)
+
     # Mock inputs: Industry=fintech, Capability=credit_score, Count=1
     inputs = iter(["fintech", "credit_score", "1"])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
@@ -42,7 +45,7 @@ def test_generated_scenario_compliance(tmp_path, scenario_schema, monkeypatch):
         generated_json = json.load(f)
 
     # This will raise ValidationError if invalid
-    validate(instance=generated_json, schema=scenario_schema)
+    validate(instance=generated_json, schema=scenario_schema, resolver=resolver)
 
     # Check specific fields
     assert generated_json["industry"] == "fintech"

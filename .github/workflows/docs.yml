@@ -40,17 +40,27 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Build Primary Starlight Docs
-        if: github.ref == 'refs/heads/main'
+      - name: Install Starlight Dependencies
         run: |
           cd docs
           npm install
-          npm run build
+
+      - name: Build Primary Starlight Docs (Main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd docs
+          npm run build -- --base /ai-agent-eval-harness/
+
+      - name: Build Primary Starlight Docs (Dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          cd docs
+          npm run build -- --base /ai-agent-eval-harness/dev/
 
       # --- 3. Deployment Logic ---
 
       # A. Primary Starlight to root (.) [Main Only]
-      - name: Deploy Primary Docs (Starlight)
+      - name: Deploy Primary Docs (Starlight -> Root)
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -58,9 +68,20 @@ jobs:
           publish_branch: gh-pages
           publish_dir: docs/dist
           destination_dir: .
-          keep_files: false
+          keep_files: true
 
-      # B. Legacy (Main) to /old [Main Only]
+      # B. Primary Starlight to /dev [Dev Only]
+      - name: Deploy Primary Docs (Starlight -> /dev)
+        if: github.ref == 'refs/heads/dev'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: docs/dist
+          destination_dir: dev
+          keep_files: true
+
+      # C. Legacy (Main) to /old [Main Only]
       - name: Deploy Legacy Docs (Main -> /old)
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
@@ -71,7 +92,7 @@ jobs:
           destination_dir: old
           keep_files: true
 
-      # C. Legacy (Dev) to /old-dev [Dev Only]
+      # D. Legacy (Dev) to /old-dev [Dev Only]
       - name: Deploy Legacy Docs (Dev -> /old-dev)
         if: github.ref == 'refs/heads/dev'
         uses: peaceiris/actions-gh-pages@v4

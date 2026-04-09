@@ -32,7 +32,7 @@ def test_linter_root_not_dict(tmp_path):
 def test_linter_missing_mandatory_and_complexity(tmp_path):
     p = tmp_path / "missing.json"
     p.write_text(
-        '{"aes_version": 1.3, "industry": "finance", "description": "test"}', encoding="utf-8"
+        '{"aes_version": 1.4, "industry": "finance", "description": "test"}', encoding="utf-8"
     )
     linter = ScenarioLinter()
     res = linter.lint(str(p))
@@ -45,7 +45,7 @@ def test_linter_missing_mandatory_and_complexity(tmp_path):
 def test_linter_tasks_validation(tmp_path):
     p = tmp_path / "wf.json"
     data = {
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "industry": "i",
         "description": "d",
         "complexity_level": "low",
@@ -70,7 +70,7 @@ def test_linter_tasks_validation(tmp_path):
 def test_linter_zero_tasks(tmp_path):
     p = tmp_path / "zero.json"
     data = {
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "scenario_id": "test_zero",
         "industry": "i",
         "description": "d",

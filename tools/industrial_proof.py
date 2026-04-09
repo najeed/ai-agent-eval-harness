@@ -3,7 +3,7 @@ import json
 import os
 from pathlib import Path
 
-from eval_runner.events import CoreEvents, EventEmitter
+from eval_runner.events import CoreEvents, emit
 from eval_runner.tool_sandbox import ToolSandbox
 from eval_runner.verifier import TraceVerifier
 
@@ -58,7 +58,7 @@ async def run_industrial_proof():
     print("⏳ Executing Hardened Shims...")
 
     # Emit RUN_START to initialize log paths in the recorder
-    EventEmitter.emit(CoreEvents.RUN_START, {"run_id": run_id})
+    emit(CoreEvents.RUN_START, {"run_id": run_id})
 
     for task in scenario["tasks"]:
         print(f"   -> Executing {task['tool']}...")

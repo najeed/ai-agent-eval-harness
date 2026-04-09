@@ -17,8 +17,8 @@ from jsonschema import ValidationError  # type: ignore, E402, E402  # noqa: E402
 
 from .trace_utils import load_events  # noqa: E402
 
-# Load the schema once at module level
-_SCHEMA_PATH = Path(__file__).parent.parent / "schemas" / "scenario.schema.json"
+# Load the schema once at module level (Industrial Standard v1.4.0)
+_SCHEMA_PATH = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
 _SCENARIO_SCHEMA = None
 
 
@@ -127,18 +127,25 @@ def load_scenario(
     if not isinstance(scenario_data["workflow"], dict):
         raise ValueError("Invalid 'workflow' block structure (must be a dictionary).")
 
-    # Handle validation
+    # --- V1.4 COMPLIANCE ENFORCEMENT ---
+    # We no longer support legacy v1.2 or v1.3 signatures.
+    aes_version = scenario_data.get("aes_version")
+    if aes_version != 1.4:
+        invalid_ver = aes_version or "missing"
+        raise ValueError(
+            f"Unsupported AES version: {invalid_ver}. "
+            f"This harness requires v1.4.0 for Forensic Integrity compliance."
+        )
+
+    # Handle validation with Ref Resolution
     try:
-        # Ensure metadata exists for v1.2 compliance
-        if "metadata" not in scenario_data:
-            scenario_data["metadata"] = {
-                "name": scenario_data.get("scenario_id", "scenario"),
-                "compliance_level": "Standard",
-            }
+        from jsonschema import RefResolver, ValidationError, validate
 
-        from jsonschema import ValidationError, validate
+        schema = _get_schema()
+        # Resolve definitions relative to the root aes.schema.json
+        resolver = RefResolver(f"file:///{_SCHEMA_PATH.parent.as_posix()}/", schema)
 
-        validate(instance=scenario_data, schema=_get_schema())
+        validate(instance=scenario_data, schema=schema, resolver=resolver)
     except ValidationError as e:
         print(f"   [Loader] Validation Error in {file_path}: {e.message}")
         raise

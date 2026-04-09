@@ -1,12 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Agent Eval Specification (AES) v1.3",
+  "title": "Agent Eval Specification (AES) v1.4.0",
   "type": "object",
   "required": ["aes_version", "metadata", "workflow"],
   "properties": {
     "aes_version": {
       "type": "number",
-      "const": 1.3
+      "const": 1.4
     },
     "metadata": {
       "$ref": "definitions/metadata.json"

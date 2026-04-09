@@ -11,6 +11,7 @@ import traceback
 from pathlib import Path
 
 from .. import config, engine, loader, trace_utils, utils
+from ..events import emit
 
 
 def _ensure_path_safe(path: str | Path, description: str = "Path"):
@@ -256,7 +257,8 @@ async def handle_verify(args):
         # Autonomous resolve from authoritative vault
         run_log_dir = config.RUN_LOG_DIR / args.run_id
         trace_path = str(run_log_dir / "run.jsonl")
-        manifest_path = str(run_log_dir / f"{args.run_id}_manifest.json")
+        # Standardize on run_manifest.json as the sidecar identity
+        manifest_path = str(run_log_dir / "run_manifest.json")
         print(f"      [Identity] Resolved trace for {args.run_id} -> {trace_path}")
         print(f"      [Identity] Resolved manifest for {args.run_id} -> {manifest_path}")
 
@@ -356,36 +358,18 @@ async def handle_gate(args):
             sys.exit(1)
             return
 
-        if not await verifier.TraceVerifier.verify_trace_async(str(trace_path), str(vc_path)):
-            print("[GATE] FAILURE: SHA-256 integrity check failed!")
+        # Canonical Verification Call (Pillars 1 & 2)
+        # We now pass verify_ledger=True to ensure sidecar artifact integrity
+        is_valid = await verifier.TraceVerifier.verify_trace_async(
+            str(trace_path), 
+            str(vc_path), 
+            verify_ledger=getattr(args, "verify_ledger", False)
+        )
+
+        if not is_valid:
+            print("[GATE] FAILURE: Industrial Trust Verification failed (Integrity, Ledger, or Signature).")
             sys.exit(1)
             return
-
-        # 2. Asymmetric Signature Check (Wait for optional public key)
-        if args.public_key:
-            pk_path = Path(args.public_key)
-            if not pk_path.exists():
-                print(f"[GATE] FAILURE: Public key not found: {pk_path}")
-                sys.exit(1)
-
-            sig = manifest.get("signature_ed25519") or manifest.get("signature")
-            if not sig:
-                print("[GATE] FAILURE: Manifest missing asymmetric signature (signature_ed25519)!")
-                sys.exit(1)
-                return
-
-            # Verify the manifest data itself (excluding the signature field)
-            manifest_copy = manifest.copy()
-            if "signature_ed25519" in manifest_copy:
-                del manifest_copy["signature_ed25519"]
-            if "signature" in manifest_copy:
-                del manifest_copy["signature"]
-
-            data_to_verify = json.dumps(manifest_copy, sort_keys=True).encode()
-
-            if not verifier.TraceVerifier.verify_asymmetric(data_to_verify, sig, str(pk_path)):
-                print("[GATE] FAILURE: ED25519 signature verification failed!")
-                sys.exit(1)
 
         # 3. Commit Hash Check (Audit Alignment)
         if args.hash:
@@ -442,11 +426,22 @@ async def handle_certify(args):
             sys.exit(1)
             return
 
-        print(f"[*] Certifying trace identity: {run_id or trace_path.name}")
+        # [VC v3] Argument mapping with industrial defaults
+        identity_id = args.identity if hasattr(args, "identity") and args.identity else "system_id"
+        status = args.status if hasattr(args, "status") and args.status else "pass"
+        score = float(args.score) if hasattr(args, "score") and args.score is not None else 1.0
+        policy_ref = args.policy_ref if hasattr(args, "policy_ref") else None
+        ttl_days = int(args.ttl) if hasattr(args, "ttl") and args.ttl is not None else config.GOVERNANCE_TTL_DAYS
+        behavioral_fingerprint_id = args.fingerprint if hasattr(args, "fingerprint") else None
+
         manifest = verifier.TraceVerifier.sign_trace(
             str(trace_path),
-            private_key_path=getattr(args, "private_key", None),
-            fingerprint_id=getattr(args, "fingerprint", None),
+            identity_id=identity_id,
+            compliance_status=status,
+            compliance_score=score,
+            policy_ref=policy_ref,
+            ttl_days=ttl_days,
+            behavioral_fingerprint_id=behavioral_fingerprint_id,
         )
 
         manifest_path = trace_path.parent / "run_manifest.json"
@@ -454,10 +449,15 @@ async def handle_certify(args):
         print("✅ Success: Verification Certificate generated.")
         print(f"    - Run ID: {manifest.get('run_id')}")
         print(f"    - SHA-256: {manifest.get('sha256')}")
-        if manifest.get("signature_ed25519"):
-            print("    - Signed: Yes (ED25519 Authority)")
+        print(f"    - VC Version: {manifest.get('vc_version')}")
+        
+        chain = manifest.get("provenance_chain", [])
+        if chain:
+            print(f"    - Signed By: {', '.join([c['identity'] for c in chain])}")
         else:
             print("    - Signed: No (Integrity-only manifest)")
+
+        print(f"    - Governance TTL: {manifest.get('governance_ttl')} days")
 
         print(f"    - Manifest: {manifest_path}")
 

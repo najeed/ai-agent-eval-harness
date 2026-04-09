@@ -87,6 +87,24 @@ EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "10"))
 MAX_ENGINE_ATTEMPTS = int(os.getenv("MAX_ENGINE_ATTEMPTS", "50"))
 DEFAULT_INDUSTRY = os.getenv("DEFAULT_INDUSTRY", "telecom")
 
+# --- Identity & Trust ---
+VC_VERSION = os.getenv("VC_VERSION", "3.0.0")
+TRUST_ROOT = Path(os.getenv("TRUST_ROOT", ".aes/keys")).absolute()
+GOVERNANCE_TTL_DAYS = int(os.getenv("GOVERNANCE_TTL_DAYS", "90"))
+TRUSTED_POLICY_REF = os.getenv("TRUSTED_POLICY_REF", "NIST-AI-100-1")
+ALLOW_SYSTEM_IDENTITY_PROVISIONING = os.getenv("ALLOW_SYSTEM_IDENTITY_PROVISIONING", "false").lower() == "true"
+
+# --- Configuration Consolidation (Infrastructure Hygiene) ---
+AES_CONFIG_DIR = (PROJECT_ROOT / ".aes" / "config").absolute()
+ROUTING_CONFIG_PATH = AES_CONFIG_DIR / "routing" / "manifest.json"
+ROUTING_D_DIR = AES_CONFIG_DIR / "routing.d"
+
+# Shim Extensions (.aes/config/shims.d/)
+SHIM_RESOURCES_D_DIR = AES_CONFIG_DIR / "shims.d"
+
+# Plugins (.aes/config/plugins.json)
+PLUGINS_CONFIG_PATH = AES_CONFIG_DIR / "plugins.json"
+
 # --- Logging Configuration ---
 RUN_LOG_DIR = (PROJECT_ROOT / os.getenv("RUN_LOG_DIR", "runs")).absolute()
 RUN_LOG_PER_RUN = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
@@ -259,24 +277,27 @@ class RegistryManager:
             except Exception as e:
                 print(f"      [Config] Warning: Failed to load internal baseline: {e}")
 
-        # 2. Distributed Registry Extensions (shim_resources.d/)
+        # 2. Distributed Registry Extensions (.aes/config/shims.d/)
         # This is now the ONLY location for project and environment overrides.
-        if SHIM_RESOURCES_D_DIR.exists() and SHIM_RESOURCES_D_DIR.is_dir():
-            # Alphabetical sort ensures deterministic override priority (e.g., 99_local > 01_)
-            paths = sorted(
-                list(SHIM_RESOURCES_D_DIR.glob("*.json"))
-                + list(SHIM_RESOURCES_D_DIR.glob("*.yaml"))
-            )
-            for path in paths:
-                try:
-                    with open(path) as f:
-                        ext = (
-                            yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
-                        )
-                        if ext:
-                            registry = RegistryManager._deep_merge(registry, ext)
-                except Exception as e:
-                    print(f"      [Config] Warning: Failed to load extension from {path.name}: {e}")
+        search_dirs = [SHIM_RESOURCES_D_DIR]
+        
+        for d_dir in search_dirs:
+            if d_dir.exists() and d_dir.is_dir():
+                # Alphabetical sort ensures deterministic override priority
+                paths = sorted(
+                    list(d_dir.glob("*.json"))
+                    + list(d_dir.glob("*.yaml"))
+                )
+                for path in paths:
+                    try:
+                        with open(path, "r", encoding="utf-8") as f:
+                            ext = (
+                                yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                            )
+                            if ext:
+                                registry = RegistryManager._deep_merge(registry, ext)
+                    except Exception as e:
+                        print(f"      [Config] Warning: Failed to load extension from {path.name}: {e}")
 
         # 3. Environment Overrides (Ultimate Authority)
         env_json = os.getenv("AES_SHIM_RESOURCES_JSON")

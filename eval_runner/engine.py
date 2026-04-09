@@ -115,7 +115,11 @@ class AgentAdapterRegistry:
 
 
 async def run_evaluation(
-    scenario: dict, attempts: int = 1, metadata: dict | None = None, max_turns: int | None = None
+    scenario: dict,
+    run_id: str | None = None,
+    attempts: int = 1,
+    metadata: dict | None = None,
+    max_turns: int | None = None,
 ) -> list:
     """Entry point for evaluation. Delegates to the Runner strategy."""
     from .runner import DefaultRunner
@@ -136,7 +140,7 @@ async def run_evaluation(
         plugins.manager.plugins.append(ReportingPlugin())
 
     runner = DefaultRunner()
-    results = await runner.run(scenario, attempts, metadata=metadata)
+    results = await runner.run(scenario, attempts, run_id=run_id, metadata=metadata, max_turns=max_turns)
 
     # Backward compatibility: return first attempt if k=1
     if attempts == 1:

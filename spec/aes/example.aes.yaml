@@ -1,28 +1,24 @@
-aes_version: 0.2
-
+aes_version: 1.4
 metadata:
-  name: "Standard Customer Support Benchmark"
-  description: "A suite of tasks to evaluate basic customer support capabilities."
-  author: "OpenCore Contributors"
-  tags: ["support", "multi-turn", "retail"]
+  name: "Base Interaction Benchmark"
+  compliance_level: "Standard"
+  capabilities:
+    - "default_http_agent"
 
-# v0.2: Only mount the shims this benchmark requires
-enabled_shims:
-  - crm
-  - email
-  - kb
+description: "A simple baseline scenario for testing agent connectivity and response quality."
+industry: "general"
 
-# v0.2: Complexity classification
-complexity_level: low
+workflow:
+  nodes:
+    - id: "start"
+      task_description: "Say hello to the evaluator and confirm connection."
+      success_criteria:
+        - output_matches: "(?i)hello|connected"
 
-scenarios:
-  - scenario_id: "refund_request_001"
-    title: "Simple Refund Policy Check"
-    tasks:
-      - task_id: "check_policy"
-        description: "The user wants to know the refund policy for electronics."
-        success_criteria:
-          - metric: "generic_accuracy"
-            threshold: 0.8
-          - metric: "policy_compliance"
-            threshold: 1.0
+  edges: []
+
+evaluation:
+  consensus:
+    strategy: "Majority_Vote"
+    min_judges: 1
+    judge_panel: ["Luna-1"]

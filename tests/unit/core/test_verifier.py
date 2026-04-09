@@ -9,7 +9,25 @@ import json
 
 import pytest
 
+from eval_runner import config
+from eval_runner import config
 from eval_runner.verifier import TraceVerifier
+
+
+@pytest.fixture(autouse=True)
+def setup_trust(tmp_path):
+    """Provisions a mock consensus identity for v3 cryptographic signing."""
+    original_trust = config.TRUST_ROOT
+    keys_dir = tmp_path / "keys"
+
+    # Provision system_id keypair
+    identity_dir = keys_dir / "system_id"
+    identity_dir.mkdir(parents=True, exist_ok=True)
+    TraceVerifier.generate_key_pair(output_dir=str(identity_dir))
+
+    config.TRUST_ROOT = keys_dir
+    yield
+    config.TRUST_ROOT = original_trust
 
 
 def test_compute_signature(tmp_path):

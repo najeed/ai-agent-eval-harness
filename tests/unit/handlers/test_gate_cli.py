@@ -25,6 +25,11 @@ def gate_env(tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", root)
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", runs_dir)
     monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
+    
+    trust_root = root / "trust"
+    trust_root.mkdir()
+    monkeypatch.setattr("eval_runner.config.TRUST_ROOT", trust_root)
+    monkeypatch.setattr("eval_runner.config.ALLOW_SYSTEM_IDENTITY_PROVISIONING", True)
 
     # Authoritative Eval Artifact
     run_id = "test_gate_run"
@@ -82,19 +87,26 @@ async def test_handle_gate_hash_mismatch(gate_env, capsys):
 
 
 @pytest.mark.asyncio
-async def test_handle_gate_asymmetric_success(gate_env, capsys):
-    """Test gate succeeds with ED25519 signature."""
-    # 1. Setup physical keys
-    keys_dir = gate_env["root"] / "keys"
-    TraceVerifier.generate_key_pair(str(keys_dir))
-    priv_key = keys_dir / "private_key.pem"
-    pub_key = keys_dir / "public_key.pem"
+async def test_handle_gate_asymmetric_success(gate_env, capsys, monkeypatch):
+    """Test gate succeeds with ED25519 signature via IdentityService."""
+    from eval_runner.identity import IdentityService
+    from eval_runner import config
+    
+    # 1. Setup physical trust root
+    trust_root = gate_env["root"] / "trust"
+    trust_root.mkdir(exist_ok=True)
+    monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
+    
+    identity_id = "test_tester"
+    
+    # 2. Provision identity and resign trace
+    # IdentityService auto-provisions if private_key.pem is missing
+    IdentityService.get_private_key(identity_id)
+    TraceVerifier.sign_trace(gate_env["trace_path"], identity_id=identity_id)
 
-    # 2. Resign trace with real keys
-    TraceVerifier.sign_trace(gate_env["trace_path"], private_key_path=str(priv_key))
-
-    # 3. Handle gate with public key
-    args = Namespace(run_id=gate_env["run_id"], vc=None, hash=None, public_key=str(pub_key))
+    # 3. Handle gate with public key from IdentityService
+    pub_key_path = trust_root / identity_id / "public_key.pem"
+    args = Namespace(run_id=gate_env["run_id"], vc=None, hash=None, public_key=str(pub_key_path))
 
     with pytest.raises(SystemExit) as e:
         await evaluation.handle_gate(args)

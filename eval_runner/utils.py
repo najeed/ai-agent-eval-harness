@@ -145,3 +145,16 @@ def rmtree_resilient(path: str | Path, retries: int = 5, delay: float = 0.2):
                 except Exception:
                     # If all else fails, propagate the error in strict environments
                     pass
+
+
+def generate_id(prefix: str = "id") -> str:
+    """
+    Generates a unique, sortable, and human-readable industrial ID.
+    Format: {prefix}-{hex_timestamp}-{random_suffix}
+    """
+    import random
+    import string
+
+    timestamp = hex(int(time.time()))[2:]
+    suffix = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
+    return f"{prefix}-{timestamp}-{suffix}"

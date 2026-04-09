@@ -8,7 +8,7 @@
 [![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-ED25519-gold.svg)](docs-old/spec/trust_protocol_spec_v1.md)
+[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-VC%20v3.0.0-gold.svg)](docs-old/spec/trust_protocol_spec_v1.md)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs-old/guides/help/00_COMPREHENSIVE_GUIDE.md)
 [![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/security/test_security_audit.py)
@@ -25,10 +25,10 @@ MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.3.0 (April 2026 Industrial Baseline) |
-| **Trust Model** | [Behavioral DNA & WSM](docs-old/architecture.md) |
-| **Architecture** | [Zero-Touch Core](docs-old/architecture.md) |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.3 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Version** | v1.4.1 (April 2026 Forensic Baseline) |
+| **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
+| **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### 🛡️ Add the Badge to Your Agent
 
@@ -100,7 +100,7 @@ The harness is organized into the following key components:
 -   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).
--   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.3.
+-   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.4.
 -   `/schemas`: JSON Schema definitions for cross-platform scenario validation.
 -   `/docs`: Deep-dive guides, architecture, and API specifications.
 -   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
@@ -108,8 +108,14 @@ The harness is organized into the following key components:
 
 - **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring and forensic **Environmental DNA** snapshots.
 - **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
-- **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making, including native `CHAIN_START` and `NODE_START` signals for LangGraph.
-- **Asymmetric Trust Protocol (ED25519)**: Traces are signed with private keys and verified via public keys, enabling non-repudiable audit trails. Supports **HMS-Ready Architecture** for secure enterprise key storage.
+- **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
+- **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
+
+### 🌟 What's New in v1.4
+- **AES v1.4 Specification**: Unified metadata schema with mandatory `capabilities` and `standards_registry` fields.
+- **VC v3 Forensic Standard**: Introduction of sidecar artifact hashing to prevent "Side-Channel Tampering" of reports.
+- **Identity Registry**: Centralized management of cryptographic identities (`IdentityService`), enabling multi-party signing and audit non-repudiation.
+- **ScenarioLinter v2**: Hardened logic for industrial tiering and quality scoring.
 
 ## Getting Started
 

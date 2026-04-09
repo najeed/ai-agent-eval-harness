@@ -9,49 +9,33 @@ from eval_runner.events import CoreEvents, EventEmitter
 
 
 def test_event_subscription():
-    """Verify that subscribers receive emitted events."""
+    """Verify that subscribers receive emitted events through a scoped bus."""
+    bus = EventEmitter(run_id="test-123")
     events_received = []
-
     def subscriber(event):
         events_received.append(event)
-
-    EventEmitter.subscribe(subscriber)
-
-    # Emit a test event
-    EventEmitter.emit(CoreEvents.RUN_START, {"run_id": "test-123"})
-
+    bus.subscribe(subscriber)
+    bus.emit(CoreEvents.RUN_START, {"run_id": "test-123"})
     assert len(events_received) == 1
     assert events_received[0].name == CoreEvents.RUN_START
     assert events_received[0].data["run_id"] == "test-123"
 
-    # Emit another event
-    EventEmitter.emit(CoreEvents.TURN_START, {"turn": 1})
-    assert len(events_received) == 2
-    assert events_received[1].name == CoreEvents.TURN_START
-
+def test_global_event_bus():
+    """Verify that the module-level aliases work correctly for the global bus."""
+    from eval_runner import events
+    events_received = []
+    events.subscribe(lambda e: events_received.append(e))
+    events.emit(CoreEvents.PHASE_START, {"phase": "testing"})
+    assert any(e.name == CoreEvents.PHASE_START for e in events_received)
 
 def test_event_multiple_subscribers():
-    """Verify that multiple subscribers all receive the events."""
+    """Verify that multiple subscribers all receive the events on an instance."""
+    bus = EventEmitter(run_id="test-multi")
     results_a = []
     results_b = []
-
-    EventEmitter.subscribe(lambda e: results_a.append(e))
-    EventEmitter.subscribe(lambda e: results_b.append(e))
-
-    EventEmitter.emit(CoreEvents.TASK_START, {"task_description": "t1"})
-
-    assert len(results_a) > 0
-    assert len(results_b) > 0
-    # Search for the event in case there's noise from other tests
-    assert any(e.name == CoreEvents.TASK_START for e in results_a)
-    assert any(e.name == CoreEvents.TASK_START for e in results_b)
-
-
-def test_emit_string_event():
-    """Verify that string-based event names also work for flexibility."""
-    received = []
-    EventEmitter.subscribe(lambda e: received.append(e))
-
-    EventEmitter.emit("custom_event", {"foo": "bar"})
-
-    assert any(e.name == "custom_event" and e.data["foo"] == "bar" for e in received)
+    bus.subscribe(lambda e: results_a.append(e))
+    bus.subscribe(lambda e: results_b.append(e))
+    bus.emit(CoreEvents.TASK_START, {"task_description": "t1"})
+    assert len(results_a) == 1
+    assert len(results_b) == 1
+    assert results_a[0].name == CoreEvents.TASK_START

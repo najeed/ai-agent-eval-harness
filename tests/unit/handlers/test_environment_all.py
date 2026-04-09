@@ -86,33 +86,38 @@ class TestEnvironmentHandlers:
 
     @pytest.mark.asyncio
     async def test_handle_plugin_register_success(self, clean_args, tmp_dir):
+        from eval_runner import config
         plugin_file = Path(tmp_dir) / "my_plugin.py"
         plugin_file.write_text("class MyPlugin: pass")
         clean_args.path = str(plugin_file)
 
-        await handlers.handle_plugin_register(clean_args)
+        # Mock the consolidated config path
+        manifest_path = Path(tmp_dir) / ".aes" / "config" / "plugins.json"
+        with patch("eval_runner.config.PLUGINS_CONFIG_PATH", manifest_path):
+            await handlers.handle_plugin_register(clean_args)
 
-        manifest_path = Path(".aes/plugins.json")
-        assert manifest_path.exists()
-        with open(manifest_path) as f:
-            data = json.load(f)
-            assert str(plugin_file.resolve()) in data["plugins"]
+            assert manifest_path.exists()
+            with open(manifest_path) as f:
+                data = json.load(f)
+                assert str(plugin_file.resolve()) in data["plugins"]
 
     @pytest.mark.asyncio
     async def test_handle_plugin_unregister(self, clean_args, tmp_dir):
-        manifest_dir = Path(".aes")
-        manifest_dir.mkdir()
-        manifest_path = manifest_dir / "plugins.json"
+        from eval_runner import config
+        manifest_path = Path(tmp_dir) / ".aes" / "config" / "plugins.json"
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        
         target = str(Path(tmp_dir).resolve() / "p.py")
         with open(manifest_path, "w") as f:
             json.dump({"plugins": [target]}, f)
 
         clean_args.path = target
-        await handlers.handle_plugin_unregister(clean_args)
+        with patch("eval_runner.config.PLUGINS_CONFIG_PATH", manifest_path):
+            await handlers.handle_plugin_unregister(clean_args)
 
-        with open(manifest_path) as f:
-            data = json.load(f)
-            assert target not in data["plugins"]
+            with open(manifest_path) as f:
+                data = json.load(f)
+                assert target not in data["plugins"]
 
     @pytest.mark.asyncio
     async def test_handle_doctor(self, clean_args):
@@ -216,37 +221,41 @@ class TestEnvironmentHandlers:
             last_call = mock_print.call_args_list[-1][0][0]
             assert "does not exist" in last_call
 
-        manifest_dir = Path(".aes")
-        manifest_dir.mkdir(exist_ok=True)
-        manifest_path = manifest_dir / "plugins.json"
+        from eval_runner import config
+        manifest_path = Path(tmp_dir) / ".aes" / "config" / "plugins.json"
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        
         p_path = Path(tmp_dir).resolve() / "p.py"
         p_path.touch()
         with open(manifest_path, "w") as f:
             json.dump({"plugins": [str(p_path)]}, f)
 
         clean_args.path = str(p_path)
-        with patch("builtins.print") as mock_print:
-            await handlers.handle_plugin_register(clean_args)
-            mock_print.assert_called()
+        with patch("eval_runner.config.PLUGINS_CONFIG_PATH", manifest_path):
+            with patch("builtins.print") as mock_print:
+                await handlers.handle_plugin_register(clean_args)
+                mock_print.assert_called()
 
     @pytest.mark.asyncio
     async def test_handle_plugin_unregister_missing(self, clean_args, tmp_dir):
+        from eval_runner import config
+        manifest_path = Path(tmp_dir) / ".aes" / "config" / "plugins.json"
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+
         clean_args.path = "any.py"
-        with patch("builtins.print") as mock_print:
-            await handlers.handle_plugin_unregister(clean_args)
-            mock_print.assert_called()
+        with patch("eval_runner.config.PLUGINS_CONFIG_PATH", manifest_path):
+            with patch("builtins.print") as mock_print:
+                await handlers.handle_plugin_unregister(clean_args)
+                mock_print.assert_called()
 
-        manifest_dir = Path(".aes")
-        manifest_dir.mkdir(exist_ok=True)
-        manifest_path = manifest_dir / "plugins.json"
-        with open(manifest_path, "w") as f:
-            json.dump({"plugins": []}, f)
+            with open(manifest_path, "w") as f:
+                json.dump({"plugins": []}, f)
 
-        clean_args.path = "missing.py"
-        with patch("builtins.print") as mock_print:
-            await handlers.handle_plugin_unregister(clean_args)
-            last_call = mock_print.call_args_list[-1][0][0]
-            assert "not found in manifest" in last_call
+            clean_args.path = "missing.py"
+            with patch("builtins.print") as mock_print:
+                await handlers.handle_plugin_unregister(clean_args)
+                last_call = mock_print.call_args_list[-1][0][0]
+                assert "not found in manifest" in last_call
 
 
 if __name__ == "__main__":

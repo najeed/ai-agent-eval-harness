@@ -34,13 +34,13 @@ def shutdown_tracer():
 def reset_plugins():
     """Resets all registries before each test."""
     from eval_runner.engine import AgentAdapterRegistry
-    from eval_runner.events import EventEmitter
+    from eval_runner.events import reset
     from eval_runner.metrics import MetricRegistry
     from eval_runner.plugins import manager
 
     manager.reset()
     AgentAdapterRegistry.reset()
-    EventEmitter.reset()
+    reset()
     MetricRegistry.reset()
     yield
 

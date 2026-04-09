@@ -57,7 +57,7 @@ def test_fork_bomb_depth():
         "workflow": {"nodes": [], "edges": []},
         "_fork_depth": MAX_FORK_DEPTH,
     }
-    session = SessionManager(scenario)
+    session = SessionManager("security_fork_test", scenario)
     with pytest.raises(RuntimeError, match="Fork Bomb Prevention"):
         session.fork([], {})
 
@@ -81,7 +81,7 @@ async def test_fork_bomb_breadth(monkeypatch):
         }
 
     monkeypatch.setattr(AgentAdapterRegistry, "call_agent", mock_agent)
-    session = SessionManager(scenario)
+    session = SessionManager("security_breadth_test", scenario)
     # Should not crash — it simply breaks the loop
     results = await session.execute_tasks(1)
     assert results is not None

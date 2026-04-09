@@ -1,5 +1,5 @@
 {
-  "aes_version": 1.3,
+  "aes_version": 1.4,
   "metadata": {
     "name": "Place a Customer's Order on Credit Hold",
     "compliance_level": "Standard"

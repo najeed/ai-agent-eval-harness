@@ -22,10 +22,11 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
     """
 
     scenario: dict[str, Any] = {
-        "aes_version": 1.3,
+        "aes_version": 1.4,
         "metadata": {
             "id": f"scenario-{uuid.uuid4().hex[:8]}",
             "compliance_level": "Standard",
+            "capabilities": [],
         },
         "description": "",
         "industry": "general",

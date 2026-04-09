@@ -1,5 +1,5 @@
 {
-  "aes_version": 1.3,
+  "aes_version": 1.4,
   "metadata": {
     "name": "Put a Received Shipment into an Inspection Hold",
     "compliance_level": "Standard"

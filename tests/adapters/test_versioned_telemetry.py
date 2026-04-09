@@ -6,7 +6,7 @@ from eval_runner.adapters.autogen import AutoGenAdapterPlugin
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
 from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
-from eval_runner.events import CoreEvents, EventEmitter
+from eval_runner.events import CoreEvents, EventEmitter, reset, subscribe
 
 
 @pytest.fixture
@@ -16,9 +16,9 @@ def event_bus():
     def subscriber(event):
         events.append(event)
 
-    EventEmitter.subscribe(subscriber)
+    subscribe(subscriber)
     yield events
-    EventEmitter.reset()
+    reset()
 
 
 @pytest.mark.asyncio

@@ -64,11 +64,12 @@ class SharedStateRegistry:
 class AbstractSandbox(ABC):
     """Abstract base class for tool execution sandboxes."""
 
-    def __init__(self, scenario: dict):
+    def __init__(self, scenario: dict, event_bus: Any | None = None):
         self.scenario = scenario
         self.state = scenario.get("initial_state", {}).copy()
         self.shared_state = SharedStateRegistry(scenario.get("agent_topology", {}))
         self.current_agent = "default_agent"  # Can be updated per turn
+        self.event_bus = event_bus
 
         # Workspace management
         from pathlib import Path
@@ -233,18 +234,24 @@ class ToolSandbox(AbstractSandbox):
                     }
 
                 # Notify observers of read (Enterprise requirement 5)
-                from .events import EventEmitter
+                from . import events
 
-                EventEmitter.emit(
-                    "state_read",
-                    {"agent": active_agent, "path": read_path, "value": val},
-                )
+                if self.event_bus:
+                    self.event_bus.emit(
+                        "state_read",
+                        {"agent": active_agent, "path": read_path, "value": val},
+                    )
+                else:
+                    events.emit(
+                        "state_read",
+                        {"agent": active_agent, "path": read_path, "value": val},
+                    )
 
         # 5. Return Output
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
 
         # Notify observers of internal state changes
-        from .events import EventEmitter
+        from . import events
 
         # Sandbox Escape Prevention: Chroot/Virtualize paths before emitting
         # Security: Sanitize both keys AND values; strip shell meta-characters (Audit Point #5)
@@ -254,10 +261,16 @@ class ToolSandbox(AbstractSandbox):
             safe_val = self._sanitize_value(v)
             safe_state[safe_key] = safe_val
 
-        EventEmitter.emit(
-            "world_state_change",
-            {"state": safe_state, "shared_state": self.shared_state.registry},
-        )
+        if self.event_bus:
+            self.event_bus.emit(
+                "world_state_change",
+                {"state": safe_state, "shared_state": self.shared_state.registry},
+            )
+        else:
+            events.emit(
+                "world_state_change",
+                {"state": safe_state, "shared_state": self.shared_state.registry},
+            )
 
         return output
 

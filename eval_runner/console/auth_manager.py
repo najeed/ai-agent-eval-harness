@@ -12,12 +12,14 @@ class Permission:
     RUNS_READ = "runs:read"
     DOCS_READ = "docs:read"
     DEBUG_READ = "debugger:read"
+    IDENTITY_READ = "identity:read"
 
     # 2. Operator Nodes (Execution)
     EVAL_TRIGGER = "eval:trigger"
     DEMO_EXECUTE = "demo:execute"
     INDEX_REFRESH = "index:refresh"
     DEBUG_EVENT = "debugger:event"
+    CERTIFY_WRITE = "certify:write"
 
     # 3. Admin Nodes (Destructive / Config)
     SCENARIOS_WRITE = "scenarios:write"
@@ -28,7 +30,7 @@ class Permission:
     # PBAC Collections (Standard Profiles)
     @classmethod
     def ALL_READ(cls) -> list[str]:
-        return [cls.SCENARIOS_READ, cls.RUNS_READ, cls.DOCS_READ, cls.DEBUG_READ]
+        return [cls.SCENARIOS_READ, cls.RUNS_READ, cls.DOCS_READ, cls.DEBUG_READ, cls.IDENTITY_READ]
 
     @classmethod
     def OPERATOR(cls) -> list[str]:
@@ -37,6 +39,7 @@ class Permission:
             cls.DEMO_EXECUTE,
             cls.INDEX_REFRESH,
             cls.DEBUG_EVENT,
+            cls.CERTIFY_WRITE,
         ]
 
     @classmethod

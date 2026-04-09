@@ -16,14 +16,15 @@ from eval_runner.runner import DefaultRunner
 
 @pytest.mark.asyncio
 async def test_event_emission():
-    # Setup subscriber
+    # Setup bus
+    bus = EventEmitter(run_id="test-emit")
     events_received = []
 
     def subscriber(event):
         events_received.append(event.name)
 
-    EventEmitter.subscribe(subscriber)
-    EventEmitter.emit(CoreEvents.RUN_START, {"run_id": "test"})
+    bus.subscribe(subscriber)
+    bus.emit(CoreEvents.RUN_START, {"run_id": "test"})
 
     assert CoreEvents.RUN_START in events_received
 

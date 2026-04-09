@@ -33,14 +33,6 @@ class TestPlugins(unittest.TestCase):
         p.on_discover_adapters(None)
         p.on_register_simulators({})
 
-    def test_plugin_manager_singleton(self):
-        m1 = plugins.PluginManager()
-        m2 = plugins.PluginManager()
-        self.assertIs(m1, m2)
-        # Singleton check (hits already initialized return)
-        m3 = plugins.PluginManager()
-        self.assertIs(m1, m3)
-
     def test_invoke_with_timeout_success(self):
         def fast():
             return "ok"

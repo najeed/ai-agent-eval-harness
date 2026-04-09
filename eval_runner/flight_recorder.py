@@ -37,8 +37,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self._private_key_path = os.getenv("EVAL_SIGNING_KEY")
         self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
 
+        from . import events
         # Subscribe to the event bus
-        EventEmitter.subscribe(self.handle_event)
+        events.subscribe(self.handle_event)
 
     def handle_event(self, event: Event):
         """Callback for EventEmitter."""

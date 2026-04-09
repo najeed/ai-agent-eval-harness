@@ -1,5 +1,5 @@
 {
-  "aes_version": 1.3,
+  "aes_version": 1.4,
   "metadata": {
     "name": "Check Bulk Tank Inventory Level",
     "compliance_level": "Standard"
