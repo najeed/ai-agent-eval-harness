@@ -223,7 +223,10 @@ def generate_html_report(
     <title>Eval Report: {scenario.get("title")}</title>
     <script src="{config.MERMAID_CDN}"></script>
     <script>mermaid.initialize({{startOnLoad:true, theme: '{config.MERMAID_THEME}'}});</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap">
     <style>
         :root {{
             --bg: {config.HTML_BG_COLOR}; 

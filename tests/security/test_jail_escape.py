@@ -17,6 +17,7 @@ def app(monkeypatch, tmp_path):
 
     monkeypatch.setattr(config, "PROJECT_ROOT", project_root)
     monkeypatch.setattr(config, "DASHBOARD_API_KEY", "secure-test-key")
+    monkeypatch.setattr(config, "SERVICE_API_KEY", "secure-test-key")
 
     return app
 

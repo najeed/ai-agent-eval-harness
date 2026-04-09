@@ -56,9 +56,9 @@ class LLMManager:
             mock_data = {}
             for key, expected_type in target_schema.items():
                 if expected_type == "number":
-                    mock_data[key] = round(random.uniform(1000.0, 1000000.0), 2)
+                    mock_data[key] = round(random.uniform(1000.0, 1000000.0), 2)  # nosec B311
                 elif expected_type == "string":
-                    mock_data[key] = f"Mocked-{key}-{random.randint(100, 999)}"
+                    mock_data[key] = f"Mocked-{key}-{random.randint(100, 999)}"  # nosec B311
                 else:
                     mock_data[key] = None
             return self._verify_schema(mock_data, target_schema)

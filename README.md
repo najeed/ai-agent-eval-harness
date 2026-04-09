@@ -5,20 +5,20 @@
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-86%25-brightgreen.svg)](TESTING.md)
 [![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-92%25-brightgreen.svg)](eval_runner/utils.py)
-[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-ED25519-gold.svg)](docs/spec/trust_protocol_spec_v1.md)
+[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-ED25519-gold.svg)](docs-old/spec/trust_protocol_spec_v1.md)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
-[![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
+[![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs-old/guides/help/00_COMPREHENSIVE_GUIDE.md)
 [![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/security/test_security_audit.py)
 
 ## 🛡️ Industrial AI Agent Verification & Trustworthiness
 
 MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **April 2026**, the framework is aligned with the **NIST AI-100-1** trustworthiness framework, providing high-fidelity telemetry (**Behavioral DNA**) and deterministic verification of agent reliability across core industrial sectors.
 
-[![NIST AI-100-1](https://img.shields.io/badge/Alignment-NIST%20AI--100--1--Aligned-brightgreen.svg)](docs/guides/07_SECURITY_AND_AUTHENTICATION.md#nist-ai-100-1-alignment-suite-r4)
-[![Behavioral DNA](https://img.shields.io/badge/Telemetry-Behavioral%20DNA--v2-blue.svg)](docs/architecture.md#eventemitter-bus-passive-observation)
+[![NIST AI-100-1](https://img.shields.io/badge/Alignment-NIST%20AI--100--1--Aligned-brightgreen.svg)](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#nist-ai-100-1-alignment-suite-r4)
+[![Behavioral DNA](https://img.shields.io/badge/Telemetry-Behavioral%20DNA--v2-blue.svg)](docs-old/architecture.md#eventemitter-bus-passive-observation)
 
 | Attribute | Specification |
 | :--- | :--- |
@@ -26,9 +26,9 @@ MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
 | **Version** | v1.3.0 (April 2026 Industrial Baseline) |
-| **Trust Model** | [Behavioral DNA & WSM](docs/architecture.md) |
-| **Architecture** | [Zero-Touch Core](docs/architecture.md) |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.3 Spec](docs/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Trust Model** | [Behavioral DNA & WSM](docs-old/architecture.md) |
+| **Architecture** | [Zero-Touch Core](docs-old/architecture.md) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.3 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### 🛡️ Add the Badge to Your Agent
 
@@ -45,7 +45,7 @@ You can use the Shields.io service to generate a consistent badge for your proje
 Alternatively, link directly to our high-fidelity SVG asset:
 
 ```markdown
-[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
 ```
 
 ## Table of Contents
@@ -142,7 +142,7 @@ The harness is organized into the following key components:
 > **What it does:** Spawns a deterministic in-process mock agent, executes a telecom troubleshooting evaluation, and generates a rich HTML report in `reports/`. 100% offline-ready.
 
 > [!TIP]
-> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `multiagent-eval console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs/guides/help/02_USER_MANUAL.md#visual-suite) for details.
+> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `multiagent-eval console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs-old/guides/help/02_USER_MANUAL.md#visual-suite) for details.
 
 ## 📂 The Global Scenario Corpus
 
@@ -160,7 +160,7 @@ Comprehensive coverage for **50+ verticals** including:
 - **Interactive Complexity**: Multi-turn flows involving conflicting human-in-the-loop (HITL) requirements.
 - **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
 
-*All scenarios are 100% compliant with the [AES Specification](docs/guides/04_AES_SPECIFICATION.md).*
+*All scenarios are 100% compliant with the [AES Specification](docs-old/guides/04_AES_SPECIFICATION.md).*
 
 ### Manual Evaluation (Running the Sample Agent)
 
@@ -302,7 +302,6 @@ All configurable parameters are centralized in `eval_runner/config.py`. You can 
 | `OLLAMA_HOST` | `http://localhost:11434` | Local Ollama host URL |
 | `OLLAMA_MODEL` | `llama3` | Default Ollama model |
 | `OPENAI_API_KEY` | *(None)* | API key for OpenAI provider |
-| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | Base URL for OpenAI-compatible APIs |
 | `ANTHROPIC_API_KEY`| *(None)* | API key for Anthropic/Claude provider |
 | `GOOGLE_API_KEY` | *(None)* | API key for Google/Gemini provider |
 | `XAI_API_KEY` | *(None)* | API key for xAI/Grok provider |
@@ -323,7 +322,7 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
 - **Audit Points**: 100% compliance with the 8-point Enterprise Security Audit (DoS caps, Fork Bomb prevention, RCE guards).
 - **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
-See the [Security and Authentication Guide](docs/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
+See the [Security and Authentication Guide](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
 
 ### Run Trace Warning
 All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `multiagent-eval cleanup-runs --days 7`.

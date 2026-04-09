@@ -8,6 +8,9 @@ from eval_runner.tool_sandbox import ToolSandbox
 
 @pytest.mark.asyncio
 async def test_tool_sandbox_metadata_captures_snapshot():
+    # Force a fresh registry load to avoid pollution from other tests
+    config.RegistryManager.reload()
+
     scenario = {
         "scenario_id": "snapshot_test",
         "metadata": {"name": "Snapshot Test", "compliance_level": "Standard"},
@@ -23,6 +26,8 @@ async def test_tool_sandbox_metadata_captures_snapshot():
 
     # Verify values match registry
     registry = config.RegistryManager.get_resolved_registry()
+    # Use deep comparison or just verify it's a dict with expected keys
+    assert isinstance(sandbox.scenario["environmental_snapshot"], dict)
     assert sandbox.scenario["environmental_snapshot"] == registry
 
 

@@ -146,31 +146,31 @@ class ParitySynthesizer:
                 if key not in model.get("distributions", {}):
                     # Categorical or Identifier
                     if key == "country":
-                        raw_results[i][key] = random.choice(model["countries"])
+                        raw_results[i][key] = random.choice(model["countries"])  # nosec B311
                     elif key == "ticker":
-                        raw_results[i][key] = random.choice(model["tickers"])
+                        raw_results[i][key] = random.choice(model["tickers"])  # nosec B311
                     elif key == "status":
-                        raw_results[i][key] = random.choice(["Stable", "Critical", "Discharged"])
+                        raw_results[i][key] = random.choice(["Stable", "Critical", "Discharged"])  # nosec B311
                     elif key in ("isic_code", "sector_code"):
-                        raw_results[i][key] = random.randint(10, 99)
+                        raw_results[i][key] = random.randint(10, 99)  # nosec B311
                     elif key == "region":
-                        raw_results[i][key] = random.choice(model["regions"])
+                        raw_results[i][key] = random.choice(model["regions"])  # nosec B311
                     elif key == "product_category":
-                        raw_results[i][key] = random.choice(model["product_categories"])
+                        raw_results[i][key] = random.choice(model["product_categories"])  # nosec B311
                     else:
-                        raw_results[i][key] = f"SYN-{model_id}-{random.randint(1000, 9999)}"
+                        raw_results[i][key] = f"SYN-{model_id}-{random.randint(1000, 9999)}"  # nosec B311
 
         # 2. Generate and Correct Numeric Distributions (Mathematical Parity)
         for key, dist in model.get("distributions", {}).items():
             if model["schema"][key] == "integer":
                 # Integer fields use standard random range
                 for i in range(count):
-                    raw_results[i][key] = random.randint(dist["min"], dist["max"])
+                    raw_results[i][key] = random.randint(dist["min"], dist["max"])  # nosec B311
                 continue
 
             # Floating point correction (Dual-Moment Alignment: Mean & Variance)
             # 1. Base generation
-            vals = [random.gauss(dist["mean"], dist["std"]) for _ in range(count)]
+            vals = [random.gauss(dist["mean"], dist["std"]) for _ in range(count)]  # nosec B311
 
             # 2. Rescale to Match Gold Moments (Dual-Moment Alignment)
             raw_series = np.array(vals)

@@ -82,10 +82,19 @@ def test_get_loan_demo_context():
     from flask import Flask
 
     app = Flask(__name__)
-    with patch("eval_runner.config.DASHBOARD_API_KEY", "test-key"):
-        with app.test_request_context(headers={"X-AES-API-KEY": "test-key"}):
+    api_key = "test-key"
+    with (
+        patch("eval_runner.config.DASHBOARD_API_KEY", api_key),
+        patch("eval_runner.config.SERVICE_API_KEY", api_key),
+    ):
+        with app.test_request_context(headers={"X-AES-API-KEY": api_key}):
             ctx = get_loan_demo_context()
-            assert ctx.status_code == 200
+            # If wrapped by require_permission, it might return a tuple or Response
+            if isinstance(ctx, tuple):
+                status_code = ctx[1]
+            else:
+                status_code = ctx.status_code
+            assert status_code == 200
 
 
 # --- Engine Gaps ---

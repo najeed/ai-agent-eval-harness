@@ -1,7 +1,6 @@
 """
-generate_industry_datasets.py
-
-Utility to generate realistic, synthetic CSV datasets for all 44 supported industries in the harness.  # noqa: E501
+Utility to generate realistic, synthetic CSV datasets for all 44 supported industries 
+in the harness.
 """
 
 import csv

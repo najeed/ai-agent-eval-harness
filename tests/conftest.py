@@ -69,7 +69,8 @@ def reset_cli_parser():
 def check_loop_hygiene():
     """
     Diagnostic: Ensures that no event loop is left in a 'running' OR 'set' state after a test.
-    In Python 3.14+, Runner.run() crashes if a loop is already running or if the policy is in a weird state.
+    In Python 3.14+, Runner.run() crashes if a loop is already running or if the policy is in a
+    weird state.
     """
     import asyncio
     import warnings
@@ -82,8 +83,10 @@ def check_loop_hygiene():
         loop = asyncio.get_event_loop_policy().get_event_loop()
         if loop is not None:
             warnings.warn(
-                f"Loop pollution: An event loop ({loop}) is still SET in the policy after test completion.",
-                RuntimeWarning, stacklevel=2,
+                f"Loop pollution: An event loop ({loop}) is still SET in the policy after test "
+                "completion.",
+                RuntimeWarning,
+                stacklevel=2,
             )
     except Exception:
         # No loop set, which is the clean state we want.

@@ -1,13 +1,20 @@
+import shlex
 import subprocess
+import sys
 
 
 def run_cmd(cmd):
-    """Executes a CLI command and returns the output string."""
+    """Executes a CLI command and returns the output string (Secured v1.3)."""
     try:
-        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
-        return result.decode("utf-8")
+        # Securely resolve python-m commands using the current interpreter
+        args = shlex.split(cmd)
+        if args[0] == "python":
+            args[0] = sys.executable
+
+        result = subprocess.run(args, capture_output=True, text=True, shell=False, check=True)
+        return result.stdout
     except subprocess.CalledProcessError as e:
-        return f"Error: {e.output.decode('utf-8')}"
+        return f"Error: {e.stderr}"
 
 
 def main():

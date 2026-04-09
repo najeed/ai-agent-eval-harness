@@ -24,6 +24,7 @@ def app(tmp_path, monkeypatch):
 def client(app, monkeypatch):
     api_key = "test-key-123"
     monkeypatch.setattr(config, "DASHBOARD_API_KEY", api_key)
+    monkeypatch.setattr(config, "SERVICE_API_KEY", api_key)
     with app.test_client() as client:
         client.environ_base["HTTP_X_AES_API_KEY"] = api_key
         yield client

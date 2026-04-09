@@ -1,8 +1,7 @@
 """
-taxonomy.py (Zero-Touch version)
-
 Stand-alone failure classification for the Publication Suite.
-Categorizes failures into tool_call_error, state_parity_mismatch, hallucination, timeout, sandbox_breach, and partial_pass.  # noqa: E501
+Categorizes failures: tool_call_error, state_parity_mismatch, hallucination, timeout,
+sandbox_breach, and partial_pass.
 """
 
 import re
@@ -19,7 +18,7 @@ CATEGORIES = [
 
 
 class FailureTaxonomy:
-    """Classifies agent failures based on conversation history and tool results found in run.jsonl."""  # noqa: E501
+    """Classifies agent failures based on conversation history and tool results."""
 
     @staticmethod
     def classify_from_events(events: list[dict[str, Any]]) -> str:

@@ -2,6 +2,7 @@ site_name: MultiAgentEval
 site_description: Enterprise-grade reliability framework for AI agents.
 site_author: Najeed Khan
 site_url: https://najeed.github.io/ai-agent-eval-harness/
+docs_dir: docs-old
 
 theme:
   name: material

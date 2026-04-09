@@ -8,16 +8,20 @@ on:
 concurrency:
   group: pages
   cancel-in-progress: false
+
 permissions:
   contents: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
+      # --- 1. Legacy Docs Build (MkDocs) ---
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
@@ -29,42 +33,51 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install mkdocs-material
-      - run: mkdocs build
+      - name: Build Legacy Metrics (MkDocs)
+        run: mkdocs build
 
+      # --- 2. Primary Docs Build (Starlight) ---
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Build Starlight Docs
+      - name: Build Primary Starlight Docs
+        if: github.ref == 'refs/heads/main'
         run: |
-          cd docs-v2
+          cd docs
           npm install
           npm run build
-      - name: Deploy main docs (MkDocs)
+
+      # --- 3. Deployment Logic ---
+
+      # A. Primary Starlight to root (.) [Main Only]
+      - name: Deploy Primary Docs (Starlight)
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: docs/dist
+          destination_dir: .
+          keep_files: false
+
+      # B. Legacy (Main) to /old [Main Only]
+      - name: Deploy Legacy Docs (Main -> /old)
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: site
-          destination_dir: .
+          destination_dir: old
           keep_files: true
 
-      - name: Deploy main docs (Starlight v2)
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: docs-v2/dist
-          destination_dir: v2
-          keep_files: true
-
-      - name: Deploy dev docs
+      # C. Legacy (Dev) to /old-dev [Dev Only]
+      - name: Deploy Legacy Docs (Dev -> /old-dev)
         if: github.ref == 'refs/heads/dev'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: site
-          destination_dir: dev
+          destination_dir: old-dev
           keep_files: true

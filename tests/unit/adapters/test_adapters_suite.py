@@ -1,7 +1,8 @@
 """
 test_adapters_suite.py
 
-Unified verification suite for AI agent adapters (Claude, Gemini, OpenAI, Grok, AutoGen, CrewAI, LangGraph, etc.).  # noqa: E501
+Unified verification suite for AI agent adapters (Claude, Gemini, OpenAI, Grok, AutoGen, CrewAI,
+LangGraph, etc.).
 Combines high-fidelity aiohttp server stubs with surgical mock-based tests for 100% coverage.
 """
 

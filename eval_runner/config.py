@@ -129,7 +129,7 @@ AUTOGEN_API_URL = os.getenv("AUTOGEN_API_URL", "http://localhost:5002/execute_ta
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.4-pro")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL", "https://api.anthropic.com/v1/messages")
@@ -144,7 +144,7 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 XAI_API_KEY = os.getenv("XAI_API_KEY")
 XAI_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
-XAI_MODEL = os.getenv("XAI_MODEL", "grok-4.20-beta-0309")
+XAI_MODEL = os.getenv("XAI_MODEL", "grok-4.20-multi-agent")
 
 # --- Metric Thresholds & Defaults ---
 CLARITY_MIN_LENGTH = int(os.getenv("CLARITY_MIN_LENGTH", "10"))
@@ -184,9 +184,13 @@ LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "1024"))
 ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"
 
 # --- Security R3 Best Practices ---
+# Service API Key for programmatic / CLI access.
+# If not set, it will fallback to DASHBOARD_API_KEY for compatibility.
+SERVICE_API_KEY = os.getenv("SERVICE_API_KEY", os.getenv("DASHBOARD_API_KEY"))
+
 # Dashboard API Key for sensitive execution.
 # REQUIRED for production. If not set, protected routes will return 501.
-# See: docs/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
+# See: docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 
 # Industrial Feature Toggles (v1.2.4)
@@ -236,7 +240,9 @@ class RegistryManager:
 
     @staticmethod
     def get_resolved_registry() -> dict:
-        """Loads and merges all registry sources (Internal -> Cumulative .d Folder -> Env Overrides)."""
+        """
+        Loads and merges all registry sources (Internal -> Cumulative .d Folder -> Env Overrides).
+        """
         global _SHIM_REGISTRY_CACHE
         if _SHIM_REGISTRY_CACHE is not None:
             return _SHIM_REGISTRY_CACHE

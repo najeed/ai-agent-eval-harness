@@ -1,7 +1,6 @@
 """
-calibrator.py
-
-Industrial calibration utility to measure and visualize judge agreement against human-labeled ground truth.  # noqa: E501
+Industrial calibration utility to measure and visualize judge agreement against human-labeled
+ground truth.
 Supports internal trace events (metadata.human = True) and external golden manifests.
 """
 

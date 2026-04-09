@@ -282,9 +282,9 @@ class TelecomProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.sha256(f"OOKLA-{row.get('quadkey')}".encode()).hexdigest()[
-                            :16
-                        ]
+                        record_id = hashlib.sha256(
+                            f"OOKLA-{row.get('quadkey')}".encode()
+                        ).hexdigest()[:16]
                         results.append(
                             StandardSchema(
                                 id=record_id,
@@ -313,7 +313,9 @@ class TelecomProvider(BaseProvider):
                 name = self.scrub_pii(row.get("provider_name") or row.get("name") or "Unknown")
 
                 # Deterministic tracking ID
-                record_id = hashlib.sha256(f"{p_id}-{artifact.source_url}".encode()).hexdigest()[:16]
+                record_id = hashlib.sha256(
+                    f"{p_id}-{artifact.source_url}".encode()
+                ).hexdigest()[:16]
 
                 # Defensive Key Mapping (Case-Resilient)
                 def get_field(keys):

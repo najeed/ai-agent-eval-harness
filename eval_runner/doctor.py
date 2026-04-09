@@ -29,16 +29,26 @@ def check_security_health():
     """Performs an audit of the security posture (PBAC)."""
     print("  --- Security Audit (PBAC/Industrial) ---")
 
-    # 1. API Key Check
-    api_key = os.getenv("DASHBOARD_API_KEY")
-    if not api_key:
+    # 1. API Key Checks
+    dash_key = os.getenv("DASHBOARD_API_KEY")
+    service_key = os.getenv("SERVICE_API_KEY")
+
+    if not dash_key:
         print("  ❌ DASHBOARD_API_KEY is not set. Console will be inaccessible.")
-    elif len(api_key) < 16:
+    elif len(dash_key) < 16:
         print(
-            f"  ⚠ DASHBOARD_API_KEY is weak ({len(api_key)} chars). Recommend 32+ for production."
+            f"  ⚠ DASHBOARD_API_KEY is weak ({len(dash_key)} chars). Recommend 32+ for production."
         )
     else:
-        print(f"  ✔ DASHBOARD_API_KEY is configured (Length: {len(api_key)})")
+        print(f"  ✔ DASHBOARD_API_KEY is configured (Length: {len(dash_key)})")
+
+    if not service_key:
+        if dash_key:
+            print("  ℹ SERVICE_API_KEY is defaulting to DASHBOARD_API_KEY.")
+        else:
+            print("  ❌ SERVICE_API_KEY is not set. Programmatic REST API will be inaccessible.")
+    else:
+        print(f"  ✔ SERVICE_API_KEY is configured (Length: {len(service_key)})")
 
     # 2. Auth Provider Integrity
     try:
@@ -57,11 +67,11 @@ def check_security_health():
 
     # 3. Session Security (Secret Key)
     # We check if a secret key can be derived (used in app.py)
-    if api_key:
+    if dash_key:
         try:
             import hashlib
 
-            derived = hashlib.sha256(api_key.encode()).hexdigest()
+            derived = hashlib.sha256(dash_key.encode()).hexdigest()
             if derived:
                 print("  ✔ Session SECRET_KEY derivation is functional")
         except Exception:

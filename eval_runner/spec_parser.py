@@ -242,7 +242,8 @@ async def synthesize_tasks_from_prd(markdown_text: str) -> list[dict[str, Any]]:
 
         prompt = f"""
         Extract evaluation tasks from the following PRD. 
-        If no tasks are explicitly listed, derive a balanced set of 3-5 tasks based on 'Business Rules' and 'Tools'.  # noqa: E501
+        If no tasks are explicitly listed, derive a balanced set of 3-5 tasks based on
+        'Business Rules' and 'Tools'.
         Include:
         1. At least one Positive case (successful flow).
         2. At least one Negative case (rejected or manual review flow).

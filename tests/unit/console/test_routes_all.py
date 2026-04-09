@@ -7,7 +7,7 @@ from pathlib import Path
 _TEST_JAIL = Path(tempfile.gettempdir()) / "aes_test_jail_v123_final"
 _ROOT = _TEST_JAIL / "root"
 _RUNS = _ROOT / "runs"
-_DOCS = _ROOT / "docs"
+_DOCS = _ROOT / "docs-old"
 _DEMO = _ROOT / "sample_agent" / "loan_agent_demo"
 
 os.makedirs(_DOCS, exist_ok=True)
@@ -18,6 +18,7 @@ os.makedirs(_DEMO, exist_ok=True)
 os.environ["PROJECT_ROOT"] = str(_ROOT)
 os.environ["RUN_LOG_DIR"] = "runs"  # Relative to PROJECT_ROOT
 os.environ["DASHBOARD_API_KEY"] = "test-key-123"
+os.environ["SERVICE_API_KEY"] = "test-key-123"
 
 import unittest  # noqa: E402
 from unittest.mock import MagicMock, patch  # noqa: E402
@@ -56,6 +57,7 @@ class TestRoutes(unittest.TestCase):
 
         # Absolute authoritative patching for backend config during unit tests
         eval_runner.config.DASHBOARD_API_KEY = "test-key-123"
+        eval_runner.config.SERVICE_API_KEY = "test-key-123"
         patcher_root = patch("eval_runner.config.PROJECT_ROOT", _ROOT)
         patcher_root.start()
         self.addCleanup(patcher_root.stop)

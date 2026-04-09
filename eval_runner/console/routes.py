@@ -1053,7 +1053,7 @@ def _get_all_docs():
     """Private helper to scan for all documentation markdown files."""
     docs = []
     seen_ids = set()
-    base = config.PROJECT_ROOT / "docs"
+    base = config.PROJECT_ROOT / "docs-old"
 
     # Check for auto-generated API docs first to give them priority/specific category
     api_base = base / "api"
@@ -1089,7 +1089,7 @@ def read_doc(doc_path):
     """Read a specific documentation markdown file (Security Jailed)."""
     try:
         # Authoritative Mock-Resilience: Pass raw paths to is_path_safe to avoid StopIteration in tests, E501, E501  # noqa: E501
-        base = config.PROJECT_ROOT / "docs"
+        base = config.PROJECT_ROOT / "docs-old"
         target = base / doc_path
 
         from eval_runner.utils import is_path_safe

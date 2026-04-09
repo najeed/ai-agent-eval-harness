@@ -20,8 +20,8 @@ def test_flight_recorder_refresh_on_run_start():
 
             mock_getenv.side_effect = getenv_initial
             plugin = FlightRecorderPlugin()
-            # Note: FlightRecorderPlugin.__init__ calls subscribe, which we might want to avoid or mock
-            # but for this test it's fine.
+            # Note: FlightRecorderPlugin.__init__ calls subscribe, which we might want to
+            # avoid or mock but for this test it's fine.
 
     assert str(plugin.log_dir) == "initial_dir"
 

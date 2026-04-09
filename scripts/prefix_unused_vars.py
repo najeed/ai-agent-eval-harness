@@ -24,7 +24,8 @@ def prefix_unused_vars():
         path = f["filename"]
         row = f["location"]["row"]
         col = f["location"]["column"]
-        # Extract variable name from message: "Local variable `captured` is assigned to but never used", E501, E501
+        # Extract variable name from message:
+        # "Local variable `captured` is assigned to but never used"
         match = re.search(r"Local variable `([^`]+)` is assigned", f["message"])
         if not match:
             continue

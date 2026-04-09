@@ -150,7 +150,8 @@ class AbstractSandbox(ABC):
                 except:  # noqa: E722
                     pass
             print(
-                f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up (Registry Teardown)."
+                f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up "
+                "(Registry Teardown)."
             )
 
     @abstractmethod

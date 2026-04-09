@@ -2,8 +2,8 @@
 test_auto_translate.py
 
 Unit tests for the Ollama-based auto-translate utility.
-Refactored for high-fidelity (mock-less) verification using real dependencies and local server stubs.  # noqa: E501
-
+Refactored for high-fidelity (mock-less) verification using real dependencies and local server
+stubs.
 """
 
 import asyncio

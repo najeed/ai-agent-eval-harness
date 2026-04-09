@@ -56,7 +56,7 @@ Declare which environment simulators to mount for this benchmark.
 - `enabled_shims`: List of shim keys (e.g., `["database", "stripe", "security"]`).
 - Omit to mount all 20 built-in shims by default.
 - Valid keys: `git`, `api`, `database`, `slack`, `crm`, `email`, `calendar`, `jira`, `cloud`, `terminal`, `stripe`, `erp`, `browser`, `kb`, `support`, `social`, `vector`, `cicd`, `iot`, `security`
-- See [`07_WORLD_SHIMS_REFERENCE.md`](../docs/guides/help/07_WORLD_SHIMS_REFERENCE.md) for per-shim config.
+- See [`07_WORLD_SHIMS_REFERENCE.md`](../docs-old/guides/help/07_WORLD_SHIMS_REFERENCE.md) for per-shim config.
 
 ### 11. Multi-Agent Topology (v0.2) ⭐
 Define state access permissions for multi-agent crews.

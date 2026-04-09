@@ -38,7 +38,8 @@ class Aggregator:
         total_tokens = 0
         for e in events:
             if e.get("event") == "agent_response":
-                # Use a character-based heuristic (standard in LLM pricing when token counts aren't logged), E501, E501
+                # Use a character-based heuristic (standard in LLM pricing when token counts aren't
+                # logged).
                 # 1 token ~= 4 characters for English text.
                 total_tokens += len(str(e.get("content", ""))) // 4
 

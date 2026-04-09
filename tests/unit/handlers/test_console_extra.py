@@ -14,7 +14,10 @@ def client(tmp_path):
     app.config["TESTING"] = True
     # Mock API Key for all console tests in this file
     api_key = "test-session-key"
-    with patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key):
+    with (
+        patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key),
+        patch("eval_runner.console.routes.config.SERVICE_API_KEY", api_key),
+    ):
         with app.test_client() as client:
             # Inject headers into the client for convenience or use them explicitly
             client.environ_base["HTTP_X_AES_API_KEY"] = api_key
@@ -94,20 +97,13 @@ def test_debugger_state_store_events():
 
     # Specific branches
     from eval_runner.events import CoreEvents
-
-    DebuggerStateStore.handle_event(
-        MockEvent("world_state_change", {"state": "s1", "shared_state": "s2"})
-    )
+    DebuggerStateStore.handle_event(MockEvent("world_state_change", {"state": "s1", "shared_state": "s2"}))
     assert DebuggerStateStore._last_state["state"] == "s1"
 
-    DebuggerStateStore.handle_event(
-        MockEvent(CoreEvents.TURN_START, {"turn_idx": 1, "agent_name": "ag"})
-    )
+    DebuggerStateStore.handle_event(MockEvent(CoreEvents.TURN_START, {"turn_idx": 1, "agent_name": "ag"}))
     assert "ag" in DebuggerStateStore._last_state["current_agent"]
 
-    DebuggerStateStore.handle_event(
-        MockEvent(CoreEvents.TOOL_CALL, {"tool": "t1", "arguments": {}})
-    )
+    DebuggerStateStore.handle_event(MockEvent(CoreEvents.TOOL_CALL, {"tool": "t1", "arguments": {}}))
     assert DebuggerStateStore._last_state["last_tool"] == "t1"
 
     DebuggerStateStore.handle_event(MockEvent(CoreEvents.RUN_START, {"scenario": "sc1"}))
@@ -179,7 +175,7 @@ def test_debugger_historical_exception(client, tmp_path):
 
 # --- Docs Branches ---
 def test_docs_github_ignore(client, tmp_path):
-    docs_dir = tmp_path / "docs"
+    docs_dir = tmp_path / "docs-old"
     docs_dir.mkdir()
     (docs_dir / ".github").mkdir()
     (docs_dir / ".github" / "hidden.md").write_text("hidden", encoding="utf-8")
@@ -196,7 +192,7 @@ def test_docs_github_ignore(client, tmp_path):
 
 def test_docs_read_success(client, tmp_path):
     # Setup isolated docs
-    docs_dir = tmp_path / "docs"
+    docs_dir = tmp_path / "docs-old"
     docs_dir.mkdir()
     target_doc = docs_dir / "some.md"
     target_doc.write_text("hello doc", encoding="utf-8")
@@ -205,6 +201,19 @@ def test_docs_read_success(client, tmp_path):
         res = client.get("/api/docs/some.md")
         assert res.status_code == 200
         assert res.json["content"] == "hello doc"
+
+
+def test_read_doc_errors(client, tmp_path):
+    """Test read_doc error handling."""
+    # Setup isolated docs dir
+    docs_dir = tmp_path / "docs-old"
+    docs_dir.mkdir()
+
+    with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
+        # Traversal attempt
+        assert client.get("/api/docs/%2e%2e%2fconfig.py").status_code == 403
+        # Non-existent
+        assert client.get("/api/docs/void.md").status_code == 404
 
 
 # --- Info endpoint provider branches ---

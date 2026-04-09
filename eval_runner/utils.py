@@ -32,7 +32,7 @@ def normalize_industry(industry: str) -> str:
 def is_path_safe(target: str | Path, base: str | Path) -> bool:
     """
     Industrial Path-Traversal Protection (Symlink-Hardened).
-    Ensures that the target path (after full resolution) remains strictly within the base directory jail.
+    Ensures that the target path (after full resolution) remains strictly within the jail.
     Default: Allows access to system temp directories for CI/CD compatibility.
     Strict: Opt-in via AEH_STRICT_JAIL=1 to block external temp access.
     """
@@ -65,9 +65,10 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
         # CRITICAL: We only allow temp access for absolute paths or if NOT in a nested jail.
         if os.environ.get("AEH_STRICT_JAIL") != "1":
             if target_str == temp_str or target_str.startswith(f"{temp_str}/"):
-                # If target was provided as relative, it MUST have landed in Zone A.
-                # If it landed in Zone B but NOT Zone A, and it was relative, it's a traversal escape.
-                if not Path(target).is_absolute() and not target_str.startswith(f"{base_str}/"):
+                # Goal: Relative paths MUST land in Zone A.
+                # If path lands in Zone B but NOT Zone A, and it was relative, it's an escape.
+                is_relative = not Path(target).is_absolute()
+                if is_relative and not target_str.startswith(f"{base_str}/"):
                     return False
                 return True
 

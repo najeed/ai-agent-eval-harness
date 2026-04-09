@@ -16,7 +16,10 @@ def client():
 
     # Mock API Key for integration tests
     api_key = "test-integration-key"
-    with patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key):
+    with (
+        patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key),
+        patch("eval_runner.console.routes.config.SERVICE_API_KEY", api_key),
+    ):
         with app.test_client() as client:
             client.environ_base["HTTP_X_AES_API_KEY"] = api_key
             yield client

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a quick reference for testing the MultiAgentEval. For detailed information, see the comprehensive guides in [`docs/guides/testing/`](docs/guides/testing/).
+This document provides a quick reference for testing the MultiAgentEval. For detailed information, see the comprehensive guides in [`docs-old/guides/testing/`](docs-old/guides/testing/).
 
 ## Quick Start
 
@@ -232,10 +232,10 @@ jobs:
 
 For detailed information, see:
 
-- **[Test Architecture Overview](docs/guides/testing/overview.md)** - Test organization and principles
-- **[Running Tests](docs/guides/testing/running-tests.md)** - Detailed test execution guide
-- **[Writing Tests](docs/guides/testing/writing-tests.md)** - Test development guidelines
-- **[Test Patterns](docs/guides/testing/test-patterns.md)** - Common testing patterns and strategies
+- **[Test Architecture Overview](docs-old/guides/testing/overview.md)** - Test organization and principles
+- **[Running Tests](docs-old/guides/testing/running-tests.md)** - Detailed test execution guide
+- **[Writing Tests](docs-old/guides/testing/writing-tests.md)** - Test development guidelines
+- **[Test Patterns](docs-old/guides/testing/test-patterns.md)** - Common testing patterns and strategies
 
 ## Best Practices
 
@@ -263,7 +263,7 @@ pytest tests/test_scenario_compliance.py
 
 For testing-related questions or issues:
 
-1. Check the detailed guides in `docs/guides/testing/`
+1. Check the detailed guides in `docs-old/guides/testing/`
 2. Review existing test examples in the `tests/` directory
 3. Follow the patterns and conventions established in the codebase
 4. Ensure all tests pass before submitting pull requests 

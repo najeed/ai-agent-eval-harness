@@ -92,7 +92,8 @@ def get_auth_provider() -> AuthManager:
     from .. import config
 
     # Ensure environment is loaded for the API key
-    return StaticKeyProvider(config.DASHBOARD_API_KEY)
+    # Industrial Hardening: Prefer dedicated SERVICE_API_KEY for programmatic access
+    return StaticKeyProvider(config.SERVICE_API_KEY)
 
 
 def require_permission(permission_node: str):

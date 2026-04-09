@@ -61,7 +61,8 @@ def discover_classes_in_package(
     package, base_class: type, instantiate: bool = False, recursive: bool = True
 ) -> dict[str, Any]:
     """
-    Scans a package for submodules and returns a dictionary mapping module stems to their discovered classes.  # noqa: E501
+    Scans a package for submodules and returns a dictionary mapping module stems to their
+    discovered classes.
     """
     results = {}
     package_path = package.__path__

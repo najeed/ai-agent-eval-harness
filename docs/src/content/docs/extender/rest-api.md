@@ -21,6 +21,12 @@ Authenticates a user via an API Key.
 - **Body**: `{"apiKey": "AEH-..."}`
 - **Success**: Sets an encrypted session cookie and returns user metadata.
 
+#### 🛠️ Programmatic Authorization (Headless)
+For CI/CD and programmatic orchestration, you can bypass session state by providing the `X-Api-Key` header with Every request.
+
+- **Header**: `X-Api-Key: {SERVICE_API_KEY}`
+- **Note**: The harness prioritizes `SERVICE_API_KEY` for programmatic headers, falling back to `DASHBOARD_API_KEY` if not configured.
+
 #### `GET /api/auth/handoff`
 Generates a short-lived (60s) JWT handoff token for secure frontend-to-plugin communication.
 
