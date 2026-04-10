@@ -65,7 +65,7 @@ async def analyze_repo(repo_url: str) -> list:
     for i, pattern in enumerate(found_patterns):
         scenario_id = f"auto_{pattern['type']}_{i}"
         scenario = {
-            "aes_version": 1.3,
+            "aes_version": 1.4,
             "metadata": {
                 "id": scenario_id,
                 "name": f"Auto-generated for {pattern['match']}",

@@ -1,15 +1,14 @@
-from eval_runner.verifier import FINGERPRINT_V1_SCHEMA, TraceVerifier
+import json
+from pathlib import Path
 
+import pytest
 
-def test_fingerprint_schema_structure():
-    """Verify FINGERPRINT_V1_SCHEMA has the required core fields."""
-    assert "fingerprint_version" in FINGERPRINT_V1_SCHEMA
-    assert "tool_dna" in FINGERPRINT_V1_SCHEMA
-    assert isinstance(FINGERPRINT_V1_SCHEMA["tool_dna"], list)
+from eval_runner import config
+from eval_runner.verifier import TraceVerifier
 
 
 def test_key_generation(tmp_path):
-    """Test generating ED25519 key pair."""
+    """Test generating ED25519 key pair via TraceVerifier utility."""
     key_dir = tmp_path / "keys"
     TraceVerifier.generate_key_pair(str(key_dir))
 
@@ -24,36 +23,59 @@ def test_key_generation(tmp_path):
     assert "-----BEGIN PUBLIC KEY-----" in pub_content
 
 
-def test_asymmetric_sign_verify(tmp_path):
-    """Test signing and verifying data with ED25519."""
-    key_dir = tmp_path / "keys"
-    TraceVerifier.generate_key_pair(str(key_dir))
+def test_trace_verification_cycle(tmp_path, monkeypatch):
+    """
+    Test the full VC v3.0.0 cycle: compute hash, sign, and verify.
+    This replaces the legacy test_asymmetric_sign_verify.
+    """
+    # 1. Setup - Create a mock trace in a run directory
+    run_id = "test-run-v3"
+    run_dir = tmp_path / "runs" / run_id
+    run_dir.mkdir(parents=True)
+    trace_path = run_dir / "run.jsonl"
+    trace_content = b"{\"event\":\"test\"}"
+    trace_path.write_bytes(trace_content)
 
-    priv_path = str(key_dir / "private_key.pem")
-    pub_path = str(key_dir / "public_key.pem")
+    # 2. Setup Identities
+    identity_id = "tester_id"
+    keys_dir = tmp_path / "keys" / identity_id
+    TraceVerifier.generate_key_pair(str(keys_dir))
 
-    data = b"Enterprise Trust Protocol Trace Data"
-    signature = TraceVerifier.sign_asymmetric(data, priv_path)
+    # Configure TRUST_ROOT and PROJECT_ROOT for testing
+    monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "keys")
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
 
-    # 1. Success case
-    assert TraceVerifier.verify_asymmetric(data, signature, pub_path) is True
+    # 3. Sign Trace
+    manifest = TraceVerifier.sign_trace(
+        str(trace_path),
+        identity_id=identity_id,
+        run_id=run_id
+    )
 
-    # 2. Tampered data
-    assert TraceVerifier.verify_asymmetric(b"Tampered", signature, pub_path) is False
+    assert manifest["vc_version"] == "3.0.0"
+    assert manifest["run_id"] == run_id
+    assert manifest["sha256"] == TraceVerifier.compute_signature(trace_path)
+    assert len(manifest["provenance_chain"]) == 1
+    assert manifest["provenance_chain"][0]["identity"] == identity_id
 
-    # 3. Invalid signature
-    assert TraceVerifier.verify_asymmetric(data, "a" * 64, pub_path) is False
+    # 4. Success Verification
+    manifest_path = run_dir / "run_manifest.json"
+    assert manifest_path.exists()
+    
+    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
 
+    # 5. Tamper Verification (Data mismatch)
+    trace_path.write_bytes(b"TAMPERED")
+    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
-def test_verify_with_wrong_key(tmp_path):
-    """Test verification fails with the wrong public key."""
-    key_dir_1 = tmp_path / "keys1"
-    key_dir_2 = tmp_path / "keys2"
-    TraceVerifier.generate_key_pair(str(key_dir_1))
-    TraceVerifier.generate_key_pair(str(key_dir_2))
-
-    data = b"data"
-    sig = TraceVerifier.sign_asymmetric(data, str(key_dir_1 / "private_key.pem"))
-
-    # Verification with key 2 should fail
-    assert TraceVerifier.verify_asymmetric(data, sig, str(key_dir_2 / "public_key.pem")) is False
+    # 6. Corruption Verification (Manifest mismatch)
+    trace_path.write_bytes(trace_content) # Restore
+    with open(manifest_path, "r") as f:
+        bad_manifest = json.load(f)
+    bad_manifest["sha256"] = "wrong-hash"
+    bad_manifest_path = run_dir / "bad_manifest.json"
+    with open(bad_manifest_path, "w") as f:
+        json.dump(bad_manifest, f)
+    
+    assert TraceVerifier.verify_trace(str(trace_path), str(bad_manifest_path)) is False

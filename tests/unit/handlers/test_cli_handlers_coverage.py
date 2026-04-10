@@ -43,13 +43,12 @@ async def test_handle_inspect_missing(capsys):
     assert "[ERROR] Scenario file not found" in captured.out
 
 
-@pytest.mark.asyncio
-async def test_handle_report_missing_trace(capsys):
+def test_handle_report_missing_trace(capsys):
     """Test 'report' with missing trace file."""
-    args = MagicMock(path="missing.jsonl", share=False)
+    args = MagicMock(run_id="missing-id", share=False)
     analysis.handle_report(args)
     captured = capsys.readouterr()
-    assert "[ERROR] Trace file not found" in captured.out
+    assert "[CRITICAL] FAILED: Trace file for missing-id not found." in captured.out
 
 
 @pytest.mark.asyncio
@@ -123,13 +122,16 @@ async def test_handle_verify_missing(capsys, tmp_path, monkeypatch):
     """Test 'verify' with missing file. Forensic: [CRITICAL] string."""
     # Ensure we are in a safe project jail for this test
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", runs_dir)
 
-    args = MagicMock(path="missing.jsonl", manifest=None, run_id=None)
+    args = MagicMock(path="missing.jsonl", manifest=None, run_id="missing_coverage")
     with pytest.raises(SystemExit) as e:
         await evaluation.handle_verify(args)
     assert e.value.code == 1
     captured = capsys.readouterr()
-    assert "[CRITICAL] FAILED: Trace integrity compromised!" in captured.out
+    assert "[CRITICAL] FAILED: Trace file for missing_coverage missing after vault lookup." in captured.out
 
 
 def test_main_generic_exception():

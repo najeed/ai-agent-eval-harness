@@ -11,7 +11,7 @@ The `multiagent-eval` command-line interface is the primary entry point for all 
 #### `evaluate` — Batch Processing
 Run evaluations on one or more scenarios.
 ```bash
-multiagent-eval evaluate --path <path> [--agent <url>] [--protocol <p>] [--attempts K] [--limit N]
+multiagent-eval evaluate --run-id <id><path> [--agent <url>] [--protocol <p>] [--attempts K] [--limit N]
 ```
 - `--path`: (Required) Path to scenario file, directory, or `.jsonl` dataset.
 - `--agent`: Unified target. Can be a URL (HTTP), a shell command (local), or an address (socket).
@@ -34,7 +34,10 @@ multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent-name <name>
 - `playground`: Open an interactive REPL to talk to your agent directly.
 
 #### `replay` — Trace Debugging
-Re-execute a `run.jsonl` flight recorder log to debug "wrong turns".
+Replay a run interaction history using the Flight Recorder.
+```bash
+multiagent-eval replay --run-id <id>
+```
 
 ---
 
@@ -56,15 +59,15 @@ multiagent-eval certify --run-id <id> [--identity <id>] [--status <s>] [--score 
 - Generates a `Verification Certificate (VC)` with SHA-256 and Identity-based signing.
 
 #### `verify` — Integrity Check
-Cryptographic validation of a trace.
+Cryptographic validation of a trace using autonomous artifact resolution.
 ```bash
-multiagent-eval verify --run-id <id> [--path <path>]
+multiagent-eval verify --run-id <id>
 ```
 
 #### `gate` — CI/CD Enforcement
 The gatekeeper for production deployments. Exits with code `1` on verification failure.
 ```bash
-multiagent-eval gate --run-id <id> [--public-key <path>] [--verify-ledger]
+multiagent-eval gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 ```
 - `--run-id`: [SSOT] Standard Run ID for autonomous artifact discovery.
 - `--verify-ledger`: Perform full forensic hash check of all sidecar artifacts.
@@ -96,10 +99,10 @@ multiagent-eval gate --run-id <id> [--public-key <path>] [--verify-ledger]
 
 | Command | Description |
 |---|---|
-| `report` | Generate a stylized HTML report including reconstruction of Mermaid maps. |
-| `explain` | AI-powered root cause diagnosis with Tiered Confidence Scoring. |
+| `report` | Generate a stylized HTML report from a Run ID using autonomous resolution. |
+| `explain` | AI-powered root cause diagnosis via Run ID forensic resolution. |
 | `leaderboard` | Aggregate multiple traces (`--dir`) into a performance ranking. |
-| `calibrate` | Measure judge agreement against human-labeled ground truth (`--golden`). |
+| `calibrate` | Measure judge agreement against human-labeled ground truth via Run ID. |
 
 ---
 
@@ -135,8 +138,8 @@ multiagent-eval gate --run-id <id> [--public-key <path>] [--verify-ledger]
 
 For external systems (Deployment Gates, Audit Dashboards) that need programmatic verification.
 
-### `GET /api/v1/certificates/<run_id>`
-Retrieves the authoritative Verification Certificate (VC) for a specific run.
+### `GET /v1/certificates/<run_id>`
+Retrieves the authoritative Verification Certificate (VC) for a specific run from the archive.
 
-### `GET /api/v1/verify/<run_id>`
-Stateless verification bridge returning the boolean verification status.
+### `GET /v1/verify/<run_id>`
+Stateless verification bridge returning the boolean verification status via autonomous artifact resolution.

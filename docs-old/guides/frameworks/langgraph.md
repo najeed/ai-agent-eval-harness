@@ -21,10 +21,10 @@ async def execute(request: dict):
 
 ## 2. Register the Agent
 ```bash
-multiagent-eval evaluate --path scenarios/ --agent http://localhost:8000/execute_task --agent-name "LangGraph-Retail-V1"
+multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "LangGraph-Retail-V1"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --path runs/run.jsonl --share
+multiagent-eval report --run-id <id> --share
 ```

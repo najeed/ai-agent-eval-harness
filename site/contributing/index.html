@@ -3940,10 +3940,10 @@
 <h2 id="how-to-contribute">🏗️ How to Contribute<a class="headerlink" href="#how-to-contribute" title="Permanent link">&para;</a></h2>
 <h3 id="1-adding-new-industries-scenarios">1. Adding New Industries &amp; Scenarios<a class="headerlink" href="#1-adding-new-industries-scenarios" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Schema Compliance</strong>: All JSON files must pass the validation checks via <code>multiagent-eval aes validate --path &lt;path&gt;</code>.</li>
+<li><strong>Schema Compliance</strong>: All JSON files must pass the validation checks via <code>multiagent-eval aes validate --run-id <id>&lt;path&gt;</code>.</li>
 <li><strong>Scaffolding</strong>: Use <code>multiagent-eval init --dir &lt;name&gt; --industry &lt;ind&gt;</code> to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.</li>
-<li><strong>Quality Verification</strong>: All scenarios must pass the quality linter (<code>multiagent-eval lint --path &lt;path&gt;</code>). We target a score of <strong>90+</strong> for all official industry libraries.</li>
-<li><strong>Execution</strong>: Ensure your scenario runs correctly with <code>multiagent-eval evaluate --path &lt;your_path&gt;</code>. The harness now supports <strong>Path Decoupling</strong>, allowing you to host and run benchmarks from any directory without repository-internal dependencies.</li>
+<li><strong>Quality Verification</strong>: All scenarios must pass the quality linter (<code>multiagent-eval lint --run-id <id>&lt;path&gt;</code>). We target a score of <strong>90+</strong> for all official industry libraries.</li>
+<li><strong>Execution</strong>: Ensure your scenario runs correctly with <code>multiagent-eval evaluate --run-id <id>&lt;your_path&gt;</code>. The harness now supports <strong>Path Decoupling</strong>, allowing you to host and run benchmarks from any directory without repository-internal dependencies.</li>
 </ul>
 <h3 id="2-the-zero-touch-core-philosophy">2. The Zero-Touch Core Philosophy<a class="headerlink" href="#2-the-zero-touch-core-philosophy" title="Permanent link">&para;</a></h3>
 <p>We strictly adhere to a <strong>Zero-Touch Core</strong> architectural mandate. Pull Requests that modify the core orchestration (<code>eval_runner/runner.py</code>, <code>eval_runner/metrics.py</code>) to handle edge cases or custom platforms will generally be rejected.

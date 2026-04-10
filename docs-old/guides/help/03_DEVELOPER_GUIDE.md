@@ -334,7 +334,7 @@ The harness uses an **ED25519-based signing protocol** to ensure the integrity o
 ### 12.1 Signing Workflow
 - **Key Generation**: If `AES_PRIVATE_KEY` is missing from `.env`, the engine auto-generates a key in `.aes/keys/`.
 - **Manifest Signing**: The `ArtifactPlugin` generates an `audit_manifest.json` for every run, containing hashes of all traces and reports, signed by the system's private key.
-- **Verification**: Use `multiagent-eval verify --path <trace>` to validate the signature against the public key.
+- **Verification**: Use `multiagent-eval verify --run-id <id>` to validate the signature against the public key.
 
 ### 12.2 CI/CD Hard Gates
 The `gate` command enforces these signatures in pipeline environments, preventing unverified or tampered results from passing the build.

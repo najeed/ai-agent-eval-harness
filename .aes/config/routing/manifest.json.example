@@ -1,0 +1,10 @@
+{
+  "environments": {
+    "default": {
+      "type": "sandbox",
+      "provider": "docker",
+      "config": {}
+    }
+  },
+  "tools": {}
+}

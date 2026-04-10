@@ -138,7 +138,8 @@ Utilities & Environment:
         default="reports/latest_results.json",
         help="Path to save the aggregate session report (JSONL/CSV).",
     )
-    eval_parser.add_argument("--limit", type=int, help="Limit the number of scenarios to process")
+    eval_parser.add_argument("--run-id", help="Authoritative Run ID for this evaluation bench.")
+    eval_parser.add_argument("--limit", type=int, help="Limit the number of scenarios to run.")
     eval_parser.add_argument(
         "--attempts", type=int, default=1, help="Number of pass@k attempts per scenario"
     )
@@ -211,10 +212,11 @@ Utilities & Environment:
         "replay", help="Replay a previously recorded run trace (Flight Recorder)"
     )
     replay_parser.add_argument(
-        "--path", default="runs/run.jsonl", help="Path to the .jsonl trace file to replay"
+        "--run-id", required=True, help="[SSOT] Mandatory identifier for the evaluation run"
     )
 
     run_parser = subparsers.add_parser("run", help="Single scenario eval")
+    run_parser.add_argument("--run-id", help="Authoritative Run ID for this run.")
     run_parser.add_argument("--scenario", required=True)
     run_parser.add_argument("--attempts", type=int, default=1)
     run_parser.add_argument("--agent")
@@ -237,18 +239,13 @@ Utilities & Environment:
         "verify", help="Verify the cryptographic integrity of a run trace"
     )
     verify_parser.add_argument(
-        "--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)"
+        "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
     )
-    verify_parser.add_argument("--path", help="[Legacy] Direct path to the trace file to verify")
     certify_parser = subparsers.add_parser(
         "certify", help="Generate a Verification Certificate (VC) for a trace run"
     )
     certify_parser.add_argument(
-        "--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)"
-    )
-    certify_parser.add_argument(
-        "--path",
-        help="[Legacy] Direct path to the results/trace file (e.g. runs/default/run.jsonl)",
+        "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
     )
     certify_parser.add_argument(
         "--identity", "-i", default="system_id", help="Identity ID to use for signing (default: system_id)"
@@ -274,14 +271,7 @@ Utilities & Environment:
         "gate", help="Industrial CI/CD Gatekeeper: Verify certificates and integrity"
     )
     gate_parser.add_argument(
-        "--run-id", help="[SSOT] Standard Run ID for autonomous artifact discovery (Recommended)"
-    )
-    gate_parser.add_argument(
-        "--vc",
-        help="[Legacy] Direct path to the Verification Certificate (*_vc.json or *_manifest.json)",
-    )
-    gate_parser.add_argument(
-        "--public-key", help="Path to the public key for signature verification"
+        "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
     )
     gate_parser.add_argument(
         "--hash", help="Optional commit hash to verify against manifest metadata"
@@ -375,7 +365,7 @@ Utilities & Environment:
         "calibrate", help="Measure and visualize judge agreement against human-labeled ground truth"
     )
     calibrate_parser.add_argument(
-        "--path", required=True, help="Path to the calibrated run trace or results file"
+        "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
     )
     calibrate_parser.add_argument(
         "--golden", help="Optional path to a golden manifest (JSON) for ground truth"
@@ -384,7 +374,10 @@ Utilities & Environment:
         "--plot", action="store_true", help="Generate a visualization of the calibration results"
     )
 
-    subparsers.add_parser("explain", help="Explain trace").add_argument("--path", required=True)
+    explain_parser = subparsers.add_parser("explain", help="Diagnose root causes from evaluation traces")
+    explain_parser.add_argument(
+        "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
+    )
 
     leaderboard_parser = subparsers.add_parser(
         "leaderboard", help="Generate a performance comparison leaderboard from multiple run traces"
@@ -403,7 +396,9 @@ Utilities & Environment:
     report_parser = subparsers.add_parser(
         "report", help="Generate a stylized HTML report from a specific evaluation run"
     )
-    report_parser.add_argument("--path", required=True, help="Path to the results or trace file")
+    report_parser.add_argument(
+        "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
+    )
     report_parser.add_argument(
         "--share", action="store_true", help="Generate a shareable report link (if configured)"
     )

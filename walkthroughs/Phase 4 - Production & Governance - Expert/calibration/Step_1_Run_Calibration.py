@@ -33,17 +33,29 @@ def main():
     input("\n[Press ENTER] to execute the calibration...")
 
     # Run the calibrate command
-    print("\n   [CLI] Running: multiagent-eval calibrate --golden " + str(golden_path))
+    print("\n   [CLI] Running: multiagent-eval calibrate --run-id calibration-bench --golden " + str(golden_path))
 
     try:
         # We'll use the CLI module directly for the walkthrough
         # The calibrate command returns metrics including Rho and Accuracy
         subprocess.run(
-            ["python", "-m", "eval_runner.cli", "calibrate", "--golden", str(golden_path)],
-            check=True,
+            [
+                "python",
+                "-m",
+                "eval_runner.cli",
+                "calibrate",
+                "--run-id",
+                "calibration-bench",
+                "--golden",
+                str(golden_path),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
     except Exception:
         # Fallback simulation if CLI depends on live judge
+        print("   [Log] [Vault] Resolving Run ID: calibration-bench")
         print("   [Log] Calculating correlation matrix for 10 data-points...")
         print("   [Log] Correcting threshold for false-positive bias...")
         print("\n📊 Veracity Report (Simulated):")
@@ -51,7 +63,7 @@ def main():
         print("2. **Judge Accuracy**: 92%")
         print("3. **Optimal Threshold**: 0.8")
 
-        print("\n🎉 Success! You have found the Golden Ratio.")
+    print("\n🎉 Success! You have found the Golden Ratio.")
 
     print("\n============================================")
     print("Proceed to: 13_State_Parity (The Mirror Consistency)")

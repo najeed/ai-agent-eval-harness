@@ -70,7 +70,7 @@ def test_cli_install_bridge():
 def test_cli_calibrate_bridge():
     # Covers line 392: handle_calibrate(args)
     with (
-        patch("sys.argv", ["multiagent-eval", "calibrate", "--path", "test.jsonl"]),
+        patch("sys.argv", ["multiagent-eval", "calibrate", "--run-id", "test-run"]),
         patch("eval_runner.handlers.analysis.handle_calibrate") as mock_cal,
     ):
         cli.main()

@@ -63,13 +63,13 @@ set AGENT_API_URL=http://localhost:5001/execute_task
 ### 3. Run an Evaluation
 Access the global library of **5,000+ industry-grade scenarios**.
 ```bash
-multiagent-eval evaluate --path industries/telecom
+multiagent-eval evaluate --run-id <id>
 ```
 
 ### 4. Validate Benchmarks
 Ensure your custom benchmarks are AES v1.3 compliant.
 ```bash
-multiagent-eval aes validate --path my_benchmarks
+multiagent-eval aes validate --run-id <id>
 ```
 
 ---
@@ -89,7 +89,7 @@ After the run, you'll see a summary in the console and detailed logs in:
 Inspect exactly what happened during an evaluation (agent prompts, tool calls, metrics):
 
 ```bash
-multiagent-eval replay --path runs/run.jsonl
+multiagent-eval replay --run-id <id>
 ```
 
 ---

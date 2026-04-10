@@ -31,7 +31,7 @@ Use the `crewai://` protocol to connect the harness to your agent service.
 
 ```bash
 multiagent-eval evaluate \
-  --path industries/telecom \
+  --run-id <id> \
   --protocol crewai \
   --agent crewai://localhost:8000/execute_task \
   --agent-name "CrewAI-Tech-Support"

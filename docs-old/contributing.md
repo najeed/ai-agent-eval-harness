@@ -25,10 +25,10 @@ git commit -s -m "Your commit message"
 ## 🏗️ How to Contribute
 
 ### 1. Adding New Industries & Scenarios
-- **Schema Compliance**: All JSON files must pass the validation checks via `multiagent-eval aes validate --path <path>`.
+- **Schema Compliance**: All JSON files must pass the validation checks via `multiagent-eval aes validate --run-id <id><path>`.
 - **Scaffolding**: Use `multiagent-eval init --dir <name> --industry <ind>` to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.
-- **Quality Verification**: All scenarios must pass the quality linter (`multiagent-eval lint --path <path>`). We target a score of **90+** for all official industry libraries.
-- **Execution**: Ensure your scenario runs correctly with `multiagent-eval evaluate --path <your_path>`. The harness now supports **Path Decoupling**, allowing you to host and run benchmarks from any directory without repository-internal dependencies.
+- **Quality Verification**: All scenarios must pass the quality linter (`multiagent-eval lint --run-id <id><path>`). We target a score of **90+** for all official industry libraries.
+- **Execution**: Ensure your scenario runs correctly with `multiagent-eval evaluate --run-id <id><your_path>`. The harness now supports **Path Decoupling**, allowing you to host and run benchmarks from any directory without repository-internal dependencies.
 
 ### 2. The Zero-Touch Core Philosophy
 We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests that modify the core orchestration (`eval_runner/runner.py`, `eval_runner/metrics.py`) to handle edge cases or custom platforms will generally be rejected.

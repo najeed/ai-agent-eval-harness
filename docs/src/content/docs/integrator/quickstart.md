@@ -54,11 +54,11 @@ To connect your own agent to the harness:
     ```
 3.  **Run Evaluation**: Use scenarios from the [Industrial Library](/ai-agent-eval-harness/evaluator/industries/).
     ```bash
-    multiagent-eval evaluate --path industries/telecom
+    multiagent-eval evaluate --run-id <id>
     ```
 4.  **Analyze Results**: Replay a trace to debug agent reasoning.
     ```bash
-    multiagent-eval replay --path runs/run.jsonl
+    multiagent-eval replay --run-id <id>
     ```
 
 ---

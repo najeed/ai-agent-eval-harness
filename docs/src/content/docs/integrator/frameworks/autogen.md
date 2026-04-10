@@ -32,7 +32,7 @@ Use the `autogen://` protocol to connect the harness to your agent service.
 
 ```bash
 multiagent-eval evaluate \
-  --path scenarios/finance \
+  --run-id <id> \
   --protocol autogen \
   --agent autogen://localhost:8000/execute_task \
   --agent-name "AutoGen-Finance-Expert"

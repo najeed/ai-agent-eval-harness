@@ -122,8 +122,12 @@ def require_permission(permission_node: str):
                     {"error": f"Forbidden: Permission '{permission_node}' required"}
                 ), 403
 
-            # 2. Check Header (CLI / Programmatic)
-            api_key = request.headers.get("X-AES-API-KEY") or request.headers.get("X-API-Key")
+            # 2. Check Header or Query (CLI / Debug Support)
+            api_key = (
+                request.headers.get("X-AES-API-KEY") 
+                or request.headers.get("X-API-Key")
+                or request.args.get("apiKey")
+            )
 
             if api_key:
                 user = provider.authenticate(api_key)

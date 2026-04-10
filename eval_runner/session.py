@@ -46,6 +46,10 @@ class SessionManager:
         self.max_turns = int(scenario.get("max_turns", MAX_TURNS))
         self.fork_depth = scenario.get("_fork_depth", 0)
 
+        # Identity Propagation (v1.4.1 Hardening)
+        # Allows external tools/plugins to align artifacts with the session identity.
+        os.environ["AES_RUN_ID"] = run_id
+
         # Session-Scoped Infrastructure
         self.event_bus = EventEmitter(run_id=run_id)
         self.plugin_manager = PluginManager()

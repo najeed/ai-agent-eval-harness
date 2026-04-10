@@ -56,7 +56,11 @@ def main():
 
     input("\n[Press ENTER] to execute the security check...")
 
-    print("\n   [CLI] Running: multiagent-eval verify --path " + str(temp_target))
+    print("\n   [CLI] Running: multiagent-eval verify --run-id calibration-bench")
+    
+    # Simulate verification logic for the walkthrough
+    import eval_runner.verifier
+    print("\n[Audit] Performing Vault Resolution...")
     print("\n   [Audit] Checking signature against public key...")
     print("   [Log] [SEC-ERR-001] Signature mismatch detected.")
 

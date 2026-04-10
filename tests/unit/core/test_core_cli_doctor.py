@@ -62,13 +62,15 @@ def test_cli_run_attempts(capsys, tmp_path, monkeypatch):
 
 
 def test_cli_replay_valid(tmp_path, monkeypatch):
-    # Test 'replay' with --path
+    # Test 'replay' with --run-id
     monkeypatch.chdir(tmp_path)
-    trace_file = tmp_path / "test.jsonl"
+    # Create trace file matching the run_id
+    trace_file = tmp_path / "test-run.jsonl"
     trace_file.write_text("{}", encoding="utf-8")
 
     with (
-        patch("sys.argv", ["multiagent-eval", "replay", "--path", str(trace_file)]),
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
+        patch("sys.argv", ["multiagent-eval", "replay", "--run-id", "test-run"]),
         patch(
             "eval_runner.handlers.analysis.trace_utils.load_events",
             return_value=[{"event": "run_start", "run_id": "test"}],

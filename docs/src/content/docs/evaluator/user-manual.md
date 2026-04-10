@@ -28,7 +28,7 @@ A specific step within a scenario.
 Run a suite of scenarios across a directory or industry registry.
 ```bash
 multiagent-eval evaluate \
-  --path industries/telecom \
+  --run-id <id> \
   --agent http://localhost:5001/execute_task \
   --attempts 3 \
   --limit 10

@@ -11,7 +11,7 @@ The `multiagent-eval` CLI is the primary entry point for all evaluation workflow
 Run evaluations on one or more industrial scenarios.
 ```bash
 multiagent-eval evaluate \
-  --path scenarios/finance/ \
+  --run-id <id> \
   --agent http://localhost:5001/execute_task \
   --attempts 3 \
   --limit 10
@@ -65,7 +65,7 @@ Convert production traces into evaluation scenarios for [Regression Testing](/ai
 ### `report`
 Generate stylized HTML reports and Mermaid trajectory maps.
 ```bash
-multiagent-eval report --path runs/run.jsonl --share
+multiagent-eval report --run-id <id> --share
 ```
 
 ### `explain`

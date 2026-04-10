@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    {
+      "id": "compliance_recorder",
+      "module": "eval_runner.plugins.compliance",
+      "enabled": true,
+      "config": {}
+    }
+  ]
+}

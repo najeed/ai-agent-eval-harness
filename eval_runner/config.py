@@ -94,6 +94,42 @@ GOVERNANCE_TTL_DAYS = int(os.getenv("GOVERNANCE_TTL_DAYS", "90"))
 TRUSTED_POLICY_REF = os.getenv("TRUSTED_POLICY_REF", "NIST-AI-100-1")
 ALLOW_SYSTEM_IDENTITY_PROVISIONING = os.getenv("ALLOW_SYSTEM_IDENTITY_PROVISIONING", "false").lower() == "true"
 
+def get_forensic_policy() -> dict:
+    """Helper to retrieve consolidated forensic policy from registry and env."""
+    reg = RegistryManager.get_resolved_registry().get("forensics", {})
+    
+    # Precedence: Env Var > Registry File > Default
+    return {
+        "extensions": os.getenv("FORENSIC_ALLOWED_EXTS", reg.get("extensions", ".jsonl,.log,.json,.png,.jpg,.pdf,.csv,.db,.sqlite,.txt,.parquet,.yaml,.yml,.sql,.patch,.diff,.zip,.tar.gz,.tgz,.html,.svg")).split(","),
+        "mandatory_patterns": os.getenv("FORENSIC_MANDATORY_PATTERNS", reg.get("mandatory_patterns", "audit_.*\\.json")).split(","),
+        "exclusion_patterns": os.getenv("FORENSIC_EXCLUSION_PATTERNS", reg.get("exclusion_patterns", ".*\\.dll$,.*\\.node$,.*\\.exe$,.*\\.cache$,.*\\.tmp$,.*\\.cpuprofile$")).split(","),
+        "max_artifact_size": int(os.getenv("FORENSIC_MAX_ARTIFACT_SIZE", reg.get("max_artifact_size", 5000000)))
+    }
+
+FORENSIC_EXTENSION_ALIASES = {
+    ".jpeg": ".jpg",
+    ".text": ".txt",
+    ".logger": ".log",
+    ".stdout": ".log",
+    ".stderr": ".log",
+    ".out": ".log",
+    ".err": ".log",
+    ".yml": ".yaml",
+    ".sqlite3": ".db",
+    ".db3": ".db",
+}
+
+# System Junk Blacklist (v1.4.1 Hardening)
+SYSTEM_JUNK_FILES = {
+    "AdobeARM.log", "MpCmdRun.log", "pipecom.log", "StructuredQuery.log",
+    "NotifyIconGeneratedAumid", "thumbs.db", "desktop.ini", ".DS_Store"
+}
+
+# Platform Infrastructure Blacklist (v1.4.1 Hardening)
+SYSTEM_JUNK_EXTENSIONS = {
+    ".dll", ".node", ".exe", ".cache", ".tmp", ".cpuprofile", ".pyc", ".pyo", ".pyd"
+}
+
 # --- Configuration Consolidation (Infrastructure Hygiene) ---
 AES_CONFIG_DIR = (PROJECT_ROOT / ".aes" / "config").absolute()
 ROUTING_CONFIG_PATH = AES_CONFIG_DIR / "routing" / "manifest.json"
@@ -101,6 +137,7 @@ ROUTING_D_DIR = AES_CONFIG_DIR / "routing.d"
 
 # Shim Extensions (.aes/config/shims.d/)
 SHIM_RESOURCES_D_DIR = AES_CONFIG_DIR / "shims.d"
+FORENSICS_D_DIR = AES_CONFIG_DIR / "forensics.d"
 
 # Plugins (.aes/config/plugins.json)
 PLUGINS_CONFIG_PATH = AES_CONFIG_DIR / "plugins.json"
@@ -216,7 +253,6 @@ DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
 # --- Shim Registry Manager (v1.3.0 Cumulative Mode) ---
 SHIM_RESOURCES_INTERNAL_PATH = Path(__file__).parent / "resources" / "shim_resources.json"
-SHIM_RESOURCES_D_DIR = PROJECT_ROOT / "shim_resources.d"
 _SHIM_REGISTRY_CACHE = None
 
 
@@ -265,7 +301,7 @@ class RegistryManager:
         if _SHIM_REGISTRY_CACHE is not None:
             return _SHIM_REGISTRY_CACHE
 
-        registry = {"shims": {}}
+        registry = {"shims": {}, "forensics": {}}
 
         # 1. Internal Package Baseline (Sanctioned Core)
         if SHIM_RESOURCES_INTERNAL_PATH.exists():
@@ -277,9 +313,9 @@ class RegistryManager:
             except Exception as e:
                 print(f"      [Config] Warning: Failed to load internal baseline: {e}")
 
-        # 2. Distributed Registry Extensions (.aes/config/shims.d/)
+        # 2. Distributed Registry Extensions (.aes/config/*.d/)
         # This is now the ONLY location for project and environment overrides.
-        search_dirs = [SHIM_RESOURCES_D_DIR]
+        search_dirs = [SHIM_RESOURCES_D_DIR, FORENSICS_D_DIR]
         
         for d_dir in search_dirs:
             if d_dir.exists() and d_dir.is_dir():

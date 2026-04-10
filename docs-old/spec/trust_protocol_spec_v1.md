@@ -11,7 +11,7 @@ graph TD
     C --> E
     
     subgraph "Storage & Retrieval"
-        E -->|Sidecar| F[runs/ID_manifest.json]
+        E -->|Sidecar| F[runs/ID/run_manifest.json]
         E -->|Auth Store| G[reports/certificates/ID_vc.json]
         G --> H[Public API /v1/certificates]
     end
@@ -23,10 +23,21 @@ graph TD
     end
 ```
 
-### The Multi-Layer Forensic Defense
+## 1. The Multi-Layer Forensic Defense
 1.  **Trace Layer (Integrity)**: A SHA-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
 2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
 3.  **Manifest Layer (Authority)**: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an authoritative identity via the **Identity Registry**.
+
+### The Forensic Relevance Engine (Artifact Filtering)
+To prevent "Forensic Bloat" while maintaining industrial accountability, the harness employs an **Authoritative Relevance Engine** for artifact collection. This engine enforces a Three-Tier Filtering Model:
+
+1.  **Tier 1: Core Forensics (Directory-Based)**: 
+    Any artifact located within the `forensics/` sub-directory is automatically included in the ledger, regardless of size or extension.
+2.  **Tier 2: Administrative Overrides (Pattern-Based Bypass)**: 
+    Admins can define `FORENSIC_MANDATORY_PATTERNS` (e.g., `audit_.*\.json`). Files matching these patterns bypass the size quota and functional filters, ensuring critical but heavy artifacts are always anchored.
+3.  **Tier 3: Functional Evidence (Quota-Enforced)**: 
+    General artifacts are collected only if they match `FORENSIC_ALLOWED_EXTS` (including `.sql`, `.patch`, `.diff`, `.sqlite3`, `.zip`, `.html`, `.svg`) and stay within the `FORENSIC_MAX_ARTIFACT_SIZE` (Default: 5MB). System junk (`.dll`, `.exe`, `.cache`) is explicitly excluded via `FORENSIC_EXCLUSION_PATTERNS`.
+    - **Forensic Alias Normalization**: The harness automatically canonicalizes variations (e.g., `.stdout` -> `.log`, `.db3` -> `.db`) before ledgering.
 
 ---
 
@@ -52,10 +63,10 @@ graph TD
 1.  **Generation**: Upon run completion, the harness generates hashes for the trace and all sidecar artifacts.
 2.  **Issuance**: The `IdentityService` resolves the authoritative `system_id` private key and signs the VC v3 manifest.
 3.  **Redundant Storage**:
-    *   **Sidecar**: Stored as `run_ID_manifest.json` for local reproducibility.
+    *   **Sidecar**: Stored as `run_manifest.json` within the run directory for local reproducibility.
     *   **Authoritative Store**: Stored in `reports/certificates/` for the Trust API.
-4.  **Retrieval**: External systems call the public `GET /api/v1/certificates/<run_id>` endpoint to fetch the proof.
-5.  **Validation**: The consumer uses the harness's **Public Key** to verify the signature and then re-computes the SHA-256 of the trace file to ensure a match.
+4.  **Retrieval**: External systems call the public `GET /v1/certificates/<run_id>` endpoint to fetch the proof.
+5.  **Validation**: The consumer uses the harness's **Identity Registry** to verify the signature and then re-computes the SHA-256 of the trace file to ensure a match.
 
 ---
 
@@ -118,8 +129,8 @@ To maintain a secure "Trust Anchor" between the Open Core and the Custom Extensi
 ### C. The Consumer's Verification Logic
 The Custom Extensions Gatekeeper (the consumer) must implement the following logic to enforce a secure "Trust Protocol":
 
-1. **Retrieve VC**: `GET /api/v1/certificates/<run_id>`
-2. **Verify Authority**: Call `TraceVerifier.verify_asymmetric` using the provided **Public Key**.
+1. **Retrieve VC**: `GET /v1/certificates/<run_id>`
+2. **Verify Authority**: Call `TraceVerifier.verify_trace` using the **Identity Registry**.
 3. **Verify Integrity**: Re-hash the local trace file (`sha256sum`) and ensure it matches the `sha256` value inside the verified VC.
 
 ---
@@ -128,12 +139,12 @@ The Custom Extensions Gatekeeper (the consumer) must implement the following log
 
 The Evaluation Harness provides a first-class CLI suite to manage the Trust Protocol workflow:
 
--   **`certify --path <trace.jsonl> [--private-key <key.pem>]`**: 
-    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC). If a private key is provided, an ED25519 signature is appended to the manifest.
--   **`verify --path <trace.jsonl> [--manifest <manifest.json>]`**: 
-    Locally verifies the integrity of a trace file against its manifest (Sidecar).
--   **`gate --vc <vc.json> [--public-key <key.pem>]`**: 
-    A production-grade CI/CD utility that enforces signature and hash verification, exiting with a non-zero code on failure.
+-   **`certify --run-id <id> [--identity system_id] [--status pass]`**: 
+    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and authoritative store.
+-   **`verify --run-id <id>`**: 
+    Locally verifies the integrity of a trace file against its manifest (Sidecar) using autonomous artifact resolution.
+-   **`gate --run-id <id> [--verify-ledger]`**: 
+    A production-grade CI/CD utility that enforces signature and hash verification via the **Identity Registry**, exiting with a non-zero code on failure.
 
 ---
 

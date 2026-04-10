@@ -133,6 +133,9 @@ async def test_handle_taxonomy(mock_args, capsys):
 async def test_handle_verify_missing(capsys, physical_env, monkeypatch):
     """Test 'verify' with missing file. Forensic alignment: Uses [CRITICAL] string."""
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", physical_env)
+    runs_dir = physical_env / "runs"
+    runs_dir.mkdir()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", runs_dir)
 
     # Passing a run-id that doesn't exist in the physical runs/ directory
     args = Namespace(run_id="missing_run", path=None, manifest=None)
@@ -140,7 +143,7 @@ async def test_handle_verify_missing(capsys, physical_env, monkeypatch):
         await evaluation.handle_verify(args)
     assert e.value.code == 1
     captured = capsys.readouterr()
-    assert "[CRITICAL] FAILED: Trace integrity compromised!" in captured.out
+    assert "[CRITICAL] FAILED: Trace file for missing_run missing after vault lookup." in captured.out
 
 
 @pytest.mark.asyncio

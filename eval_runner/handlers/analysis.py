@@ -11,13 +11,33 @@ from ..trace_utils import reconstruct_results_from_events
 
 
 def handle_report(args):
-    """Handler for 'report' command."""
-    print(f"\n[Report] Generating HTML report from: {args.path}")
-    path = Path(args.path)
-    if not path.exists():
-        print(f"[ERROR] Trace file not found at {path}")
+    """
+    Handler for 'report' command.
+    Generates a stylized HTML report from an industrial run trace.
+    """
+    from .. import config
+
+    # --- [SSOT] Mandatory Run ID Resolution ---
+    run_id = args.run_id
+    if not run_id:
+        print("      [CRITICAL] FAILED: Run ID is mandatory for reporting.")
         return
 
+    # Resolve from authoritative vault
+    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    path = run_log_dir / "run.jsonl"
+    
+    if not path.exists():
+        # Fallback for flat traces
+        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+        if flat_trace.exists():
+            path = flat_trace
+        else:
+            print(f"      [CRITICAL] FAILED: Trace file for {run_id} not found.")
+            return
+
+    print(f"\n[Report] Generating HTML report from Run ID: {run_id}")
+    
     events = trace_utils.load_events(path)
     run_start = next((e for e in events if e.get("event") == "run_start"), {})
     metadata = run_start.get("metadata", {})
@@ -45,14 +65,43 @@ def handle_report(args):
 
 def handle_explain(args):
     """Handler for 'explain' command."""
-    trace_path = Path(args.path)
+    from .. import config
+    run_id = args.run_id
+    
+    # Resolve from authoritative vault
+    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    trace_path = run_log_dir / "run.jsonl"
+    
+    if not trace_path.exists():
+        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+        if flat_trace.exists():
+            trace_path = flat_trace
+        else:
+            print(f"      [CRITICAL] FAILED: Trace file for {run_id} not found.")
+            return
+
     explainer.explain_trace(str(trace_path))
 
 
 def handle_calibrate(args):
     """Handler for 'calibrate' command."""
+    from .. import config
+    run_id = args.run_id
+    
+    # Resolve from authoritative vault
+    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    trace_path = run_log_dir / "run.jsonl"
+    
+    if not trace_path.exists():
+        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+        if flat_trace.exists():
+            trace_path = flat_trace
+        else:
+            print(f"      [CRITICAL] FAILED: Trace file for {run_id} not found.")
+            return
+
     calibrator.run_calibration(
-        args.path, golden_path=getattr(args, "golden", None), plot=getattr(args, "plot", False)
+        str(trace_path), golden_path=getattr(args, "golden", None), plot=getattr(args, "plot", False)
     )
 
 

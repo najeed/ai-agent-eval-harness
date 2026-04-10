@@ -106,7 +106,7 @@ python scripts/publication_suite/publication_suite.py --mode standard --agent-na
 ### Slicing by Scenario Path
 Target specific verticals or difficulty tiers by pointing to a specific subdirectory.
 ```bash
-python scripts/publication_suite/publication_suite.py --path scenarios/finance/high_difficulty/
+python scripts/publication_suite/publication_suite.py --run-id <id>
 ```
 
 ### Specifying Agent Protocols

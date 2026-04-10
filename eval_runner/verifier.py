@@ -1,30 +1,18 @@
 import hashlib
 import json
 import logging
+import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from . import config, utils
+from . import config, forensics, utils
 
 logger = logging.getLogger(__name__)
 
-# Baseline schema for OpenCore-compatible Behavioral Fingerprints (v1)
-FINGERPRINT_V1_SCHEMA = {
-    "fingerprint_version": "1.0",
-    "deployment_target": "string",
-    "baseline_hash": "sha256",
-    "tool_dna": [
-        {
-            "tool": "string",
-            "call_count": "int",
-            "avg_latency": "float",
-            "criticality": "low|medium|high",
-        }
-    ],
-    "topology_p95": "float",
-}
+# Baseline schema for VC v3.0.0 (Forensic Integrity)
+VC_V3_SCHEMA_VERSION = "3.0.0"
 
 
 class VerificationResult:
@@ -122,12 +110,8 @@ class TraceVerifier:
 
     @staticmethod
     def compute_signature(file_path: Path) -> str:
-        """Computes the SHA-256 hash of a file."""
-        sha256 = hashlib.sha256()
-        with open(file_path, "rb") as f:
-            while chunk := f.read(8192):
-                sha256.update(chunk)
-        return sha256.hexdigest()
+        """Computes the SHA-256 hash of a file using the forensics utility."""
+        return forensics.compute_file_hash(file_path)
 
     @staticmethod
     def generate_key_pair(output_dir: str):
@@ -164,20 +148,6 @@ class TraceVerifier:
                 )
             )
 
-    @staticmethod
-    def sign_asymmetric(data: bytes, private_key_path: str) -> str:
-        """
-        Signs raw bytes using an ED25519 private key.
-        Legacy compatibility for test harnesses.
-        """
-        from cryptography.hazmat.primitives import serialization
-
-        with open(private_key_path, "rb") as f:
-            private_key = serialization.load_pem_private_key(f.read(), password=None)
-
-        signature = private_key.sign(data)
-        return signature.hex()
-
     @classmethod
     def sign_trace(
         cls,
@@ -205,14 +175,26 @@ class TraceVerifier:
 
         sha256_hash = cls.compute_signature(p)
         
+        # Identity Normalization (Hardening against brittle ID fragmentation)
         if not run_id:
             run_id = p.parent.name if p.name == "run.jsonl" else p.stem
+            
+        # Ensure trace filename aligns with the vault standard if name is generic/temp
+        if p.name != "run.jsonl" and p.parent.name == run_id:
+            try:
+                # Rename the temp trace to the authoritative name
+                new_path = p.parent / "run.jsonl"
+                os.rename(p, new_path)
+                p = new_path
+                logger.info(f"      [Identity] Normalized trace identity: {p.name} -> run.jsonl")
+            except Exception:
+                pass
 
         now = datetime.now().astimezone()
         timestamp = now.strftime("%Y-%m-%dT%H:%M:%S") + f".{now.microsecond // 1000:03d}" + now.strftime("%z")
 
         # 1. Forensic Evidence Ledger (Hashing sidecar artifacts)
-        evidence_ledger = cls._compute_evidence_ledger(p.parent, exclude_files=[p.name])
+        evidence_ledger = cls._compute_evidence_ledger(p.parent, run_id=run_id, exclude_files=[p.name])
 
         # 2. Build Manifest v3.0.0
         manifest = {
@@ -254,7 +236,7 @@ class TraceVerifier:
             logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
 
         # 4. Save Sidecar Manifest
-        sidecar_path = p.parent / f"{p.stem}_manifest.json"
+        sidecar_path = p.parent / "run_manifest.json"
         with open(sidecar_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=4)
 
@@ -271,47 +253,39 @@ class TraceVerifier:
         return manifest
 
     @staticmethod
-    def _compute_evidence_ledger(directory: Path, exclude_files: list[str]) -> dict[str, str]:
-        """Hashes all relevant files in the run directory for forensic integrity."""
-        ledger = {}
-        for root, _, files in os.walk(directory):
-            for file in files:
-                if file in exclude_files or file.endswith("_manifest.json") or file.endswith("_vc.json"):
-                    continue
-                file_path = Path(root) / file
-                rel_path = file_path.relative_to(directory).as_posix()
-                try:
-                    ledger[rel_path] = TraceVerifier.compute_signature(file_path)
-                except Exception:
-                    pass
-        return ledger
+    def _compute_evidence_ledger(directory: Path, run_id: str | None = None, exclude_files: list[str] | None = None) -> dict[str, str]:
+        """
+        Computes a filtered forensic ledger for a directory.
+        Delegates to the ForensicRelevanceEngine with Namespace Affinity Enforcement.
+        """
+        exclude_files = exclude_files or []
+        engine = forensics.ForensicRelevanceEngine()
+        return engine.compute_filtered_ledger(directory, exclude_files=exclude_files, run_id=run_id)
 
     @classmethod
     def get_certificate(
-        cls, trace_path: str, private_key_path: str | None = None
+        cls, trace_path: str, identity_id: str = "system_id"
     ) -> dict[str, Any]:
         """
         Signs a trace and returns the certificate DICT directly (API Helper).
         """
-        return cls.sign_trace(trace_path, private_key_path=private_key_path)
+        return cls.sign_trace(trace_path, identity_id=identity_id)
 
     @classmethod
     async def verify_trace_async(
-        cls, trace_path: str, manifest_path: str, public_key_path: str | None = None, verify_ledger: bool = False
+        cls, trace_path: str, manifest_path: str, verify_ledger: bool = False
     ) -> bool:
         """
         Asynchronous version of verify_trace. Standard for v1.2+ Async-First architecture.
         """
-        # For now, we wrap the sync call to maintain stability while transitioning.
-        # Industrial improvement: Use aiofiles if high-concurrency verification is needed.
-        return cls.verify_trace(trace_path, manifest_path, public_key_path, verify_ledger=verify_ledger)
+        return cls.verify_trace(trace_path, manifest_path, verify_ledger=verify_ledger)
 
     @classmethod
     def verify_trace(
-        cls, trace_path: str, manifest_path: str, public_key_path: str | None = None, verify_ledger: bool = False
+        cls, trace_path: str, manifest_path: str, verify_ledger: bool = False
     ) -> bool:
         """
-        Verifies a trace file against its manifest (VC). Supports v1, v2, and v3.
+        Verifies a trace file against its manifest (VC). Strictly enforces VC v3.0.0+.
         """
         from .identity import IdentityService
 
@@ -330,6 +304,9 @@ class TraceVerifier:
                 manifest = json.load(f)
 
             vc_version = manifest.get("vc_version", "1.0.0")
+            if vc_version < "3.0.0":
+                logger.error(f"Legacy VC Version {vc_version} is no longer supported. (Standard: 3.0.0+)")
+                return False
 
             # 1. Base Integrity Check
             expected_hash = manifest.get("sha256")
@@ -339,7 +316,7 @@ class TraceVerifier:
                 return False
 
             # 2. Forensic Evidence Ledger Check (v3+)
-            if verify_ledger and vc_version >= "3.0.0":
+            if verify_ledger:
                 ledger = manifest.get("evidence_ledger", {})
                 for rel_path, expected_file_hash in ledger.items():
                     file_path = tp.parent / rel_path
@@ -351,89 +328,37 @@ class TraceVerifier:
                         return False
 
             # 3. Governance TTL Check (v3+)
-            if vc_version >= "3.0.0":
-                ts_str = manifest.get("timestamp")
-                ttl_days = manifest.get("governance_ttl", config.GOVERNANCE_TTL_DAYS)
-                try:
-                    # Parse timestamp (e.g. 2026-04-09T14:00:00.000+0530)
-                    # We'll use a simplified check for duration
-                    created_at = datetime.fromisoformat(ts_str)
-                    age = datetime.now().astimezone() - created_at
-                    if age.days > ttl_days:
-                        logger.warning(f"Verification Certificate expired ({age.days} > {ttl_days} days)")
-                        return False
-                except Exception as e:
-                    logger.warning(f"Failed to verify governance TTL: {e}")
+            ts_str = manifest.get("timestamp")
+            ttl_days = manifest.get("governance_ttl", config.GOVERNANCE_TTL_DAYS)
+            try:
+                created_at = datetime.fromisoformat(ts_str)
+                age = datetime.now().astimezone() - created_at
+                if age.days > ttl_days:
+                    logger.warning(f"Verification Certificate expired ({age.days} > {ttl_days} days)")
+                    return False
+            except Exception as e:
+                logger.warning(f"Failed to verify governance TTL: {e}")
 
             # 4. Cryptographic Proof
-            if vc_version >= "3.0.0":
-                chain = manifest.get("provenance_chain", [])
-                if not chain:
-                    logger.warning("No provenance chain found in v3 manifest.")
-                    return False
-                
-                # Check the first signature in the chain (Evaluator)
-                last_node = chain[0]
-                identity_id = last_node.get("identity")
-                sig_hex = last_node.get("signature")
-                
-                manifest_to_verify = manifest.copy()
-                manifest_to_verify.pop("provenance_chain", None)
-                manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
-                
-                public_key = IdentityService.get_public_key(identity_id)
-                public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
-            else:
-                # Legacy Verification (v1/v2)
-                sig_hex = manifest.get("signature_ed25519")
-                if sig_hex:
-                    manifest_to_verify = manifest.copy()
-                    manifest_to_verify.pop("signature_ed25519", None)
-                    manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
-                    
-                    # For legacy, we might still need the public_key_path if not using IdentityService
-                    if public_key_path:
-                        from cryptography.hazmat.primitives import serialization
-                        with open(public_key_path, "rb") as f:
-                            public_key = serialization.load_pem_public_key(f.read())
-                        public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
-                    else:
-                        # Attempt identity resolution for legacy if possible
-                        try:
-                            public_key = IdentityService.get_public_key("system_id")
-                            public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
-                        except Exception:
-                            logger.warning("Legacy signature present but public key not provided.")
+            chain = manifest.get("provenance_chain", [])
+            if not chain:
+                logger.warning("No provenance chain found in v3 manifest.")
+                return False
+            
+            # Check the first signature in the chain (Evaluator)
+            last_node = chain[0]
+            identity_id = last_node.get("identity")
+            sig_hex = last_node.get("signature")
+            
+            manifest_to_verify = manifest.copy()
+            manifest_to_verify.pop("provenance_chain", None)
+            manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
+            
+            public_key = IdentityService.get_public_key(identity_id)
+            public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
 
             return True
         except Exception:
             import traceback
-
             logger.error(f"Verification Failure:\n{traceback.format_exc()}")
             return False
-
-    @staticmethod
-    def verify_asymmetric(data: bytes, signature_hex: str, public_key_path: str) -> bool:
-        """
-        Industrial-grade asymmetric verification helper.
-        Supports ED25519 signature verification using a PEM public key.
-        """
-        from cryptography.hazmat.primitives import serialization
-
-        try:
-            with open(public_key_path, "rb") as f:
-                public_key = serialization.load_pem_public_key(f.read())
-            public_key.verify(bytes.fromhex(signature_hex), data)
-            return True
-        except Exception:
-            return False
-
-    # --- Internal Helpers ---
-
-    @staticmethod
-    def _get_os_walk_files(directory: Path):
-        import os
-        return os.walk(directory)
-
-
-import os  # To ensure os.walk works in the class

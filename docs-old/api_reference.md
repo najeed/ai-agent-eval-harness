@@ -48,12 +48,12 @@ Triggers an evaluation of a specific scenario in a background thread.
 ```
 
 ### 2. Verify Run (Public Trust)
-`GET /api/v1/verify/<run_id>`
+`GET /v1/verify/<run_id>`
 
-Public endpoint that verifies a completed run against its industrial manifest.
+Public endpoint that verifies a completed run against its industrial manifest using autonomous artifact resolution.
 
 ### 3. Retrieve Certificate (Industrial VC)
-`GET /api/v1/certificates/<run_id>`
+`GET /v1/certificates/<run_id>`
 
 Retrieves the authoritative Verification Certificate (VC) for a specific run, including SHA-256 hashes and identity signatures.
 

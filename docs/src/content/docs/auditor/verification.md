@@ -29,21 +29,21 @@ Verify that the harness can communicate with external frameworks using the appro
 - **Protocol**: `autogen://`
 - **Verification**:
   ```bash
-  multiagent-eval evaluate --path industries/telecom --protocol autogen
+  multiagent-eval evaluate --run-id <id> --protocol autogen
   ```
 
 ### LangChain / LangGraph
 - **Protocol**: `langchain://` / `langgraph://`
 - **Verification**:
   ```bash
-  multiagent-eval evaluate --path industries/telecom --protocol langchain
+  multiagent-eval evaluate --run-id <id> --protocol langchain
   ```
 
 ### CrewAI
 - **Protocol**: `crewai://`
 - **Verification**:
   ```bash
-  multiagent-eval evaluate --path industries/telecom --protocol crewai
+  multiagent-eval evaluate --run-id <id> --protocol crewai
   ```
 
 ---
@@ -68,13 +68,13 @@ For industrial certification, we must verify that the LLM-Judge is aligned with 
 ### 1. Rubric Routing
 Run a scenario with a specialized rubric and verify the correct prompt injection in the `run.jsonl` trace.
 ```bash
-multiagent-eval evaluate --path scenarios/clinical_safety_test.json
+multiagent-eval evaluate --run-id <id>
 ```
 
 ### 2. Calibration Command
 Compare judge scores against human labels (if present in the trace).
 ```bash
-multiagent-eval calibrate --path runs/latest_run.jsonl
+multiagent-eval calibrate --run-id <id>
 ```
 The report will provide **Mean Absolute Error (MAE)** and **Pearson Correlation** for the judge.
 

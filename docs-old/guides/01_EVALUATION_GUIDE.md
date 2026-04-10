@@ -94,10 +94,10 @@ Instead of relying solely on local `.json` or `.aes.yaml` files, the `multiagent
 
 ```bash
 # Load the 2023 GAIA validation set
-multiagent-eval evaluate --path gaia://2023
+multiagent-eval evaluate --run-id <id>
 
 # Load AssistantBench tasks
-multiagent-eval evaluate --path assistantbench://v1
+multiagent-eval evaluate --run-id <id>
 ```
 The universal loader will dynamically download these datasets, wrap them in compatible `Scenario` objects, and apply the correct specific evaluation metrics.
 

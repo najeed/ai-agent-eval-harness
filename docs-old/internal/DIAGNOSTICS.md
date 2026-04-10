@@ -6,7 +6,7 @@ This document provides an authoritative guide for locating system logs, executio
 Detailed step-by-step agent interactions are recorded as `.jsonl` files.
 - **Location**: `runs/` (Project Root)
 - **Format**: Each line is a JSON event containing timestamps, event types (prompt, agent_response, tool_call), and status.
-- **Verification**: Use `multiagent-eval verify --path <trace_file>` to check integrity.
+- **Verification**: Use `multiagent-eval verify --run-id <id>` to check integrity.
 
 ## Visual Trajectories (HTML/JSON Reports)
 Formatted reports and visual trace exports.

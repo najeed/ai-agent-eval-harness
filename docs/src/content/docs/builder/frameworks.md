@@ -75,7 +75,7 @@ Once your agent is running (manually or via a native scheme), register it with t
 
 ```bash
 multiagent-eval evaluate \
-  --path scenarios/industrial_bench/ \
+  --run-id <id> \
   --agent http://localhost:8000/execute_task \
   --agent-name "Retail-Orchestrator-V1"
 ```
@@ -83,5 +83,5 @@ multiagent-eval evaluate \
 ## 📊 Generating Results
 After the run completes, generate a [Verified Report](/ai-agent-eval-harness/evaluator/reports/) to analyze the results:
 ```bash
-multiagent-eval report --path runs/run.jsonl --share
+multiagent-eval report --run-id <id> --share
 ```

@@ -43,12 +43,16 @@ async def test_handle_aes_validate_dir(tmp_path, monkeypatch):
 async def test_handle_replay_success(tmp_path, monkeypatch):
     """Test 'replay' command logic with real parser."""
     monkeypatch.chdir(tmp_path)
-    trace_file = tmp_path / "some_trace.jsonl"
+    # Create trace file matching the run_id
+    trace_file = tmp_path / "test-run.jsonl"
     trace_file.write_text("{}", encoding="utf-8")
 
-    args = parse_args(["replay", "--path", str(trace_file)])
+    args = parse_args(["replay", "--run-id", "test-run"])
 
-    with patch("eval_runner.handlers.analysis.trace_utils.load_events") as mock_load:
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
+        patch("eval_runner.handlers.analysis.trace_utils.load_events") as mock_load,
+    ):
         mock_load.return_value = [
             {"event": "run_start", "run_id": "1", "scenario": "s1"},
             {"event": "prompt", "role": "user", "content": "hi"},
@@ -149,7 +153,7 @@ async def test_handle_calibrate_success(tmp_path, monkeypatch):
         json.dumps({"event": "evaluation", "metric": "m1", "value": 0.5})
     )
 
-    args = parse_args(["calibrate", "--path", str(trace_dir)])
+    args = parse_args(["calibrate", "--run-id", "test-run"])
 
     with patch(
         "eval_runner.handlers.analysis.trace_utils.load_events",
@@ -165,7 +169,7 @@ async def test_handle_calibrate_plot(tmp_path, monkeypatch):
     trace_file = tmp_path / "t1.jsonl"
     trace_file.write_text(json.dumps({"event": "evaluation", "metric": "xyz", "value": 1}))
 
-    args = parse_args(["calibrate", "--path", str(trace_file), "--plot"])
+    args = parse_args(["calibrate", "--run-id", "test-run", "--plot"])
 
     mock_plt = MagicMock()
     with (

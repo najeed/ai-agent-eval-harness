@@ -77,7 +77,7 @@ The harness includes industry scenarios under `industries/`. You can use the `li
 ### ✅ Step 2: Run the evaluation
 
 ```bash
-multiagent-eval evaluate --path industries/telecom --export
+multiagent-eval evaluate --run-id <id> --export
 ```
 
 ---
@@ -105,7 +105,7 @@ multiagent-eval run --scenario industries/retail/scenarios/starter_scenario.json
 Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:
 
 ```bash
-multiagent-eval lint --path industries/retail/scenarios/starter_scenario.json
+multiagent-eval lint --run-id <id>
 ```
 
 ---
@@ -115,7 +115,7 @@ multiagent-eval lint --path industries/retail/scenarios/starter_scenario.json
 ### ✅ Replay the run trace
 
 ```bash
-multiagent-eval replay --path runs/run.jsonl
+multiagent-eval replay --run-id <id>
 ```
 
 ### ✅ View in the Visual Dashboard
@@ -138,6 +138,6 @@ Inspect results natively using the **Visual Debugger**. The suite provides a uni
 
 - ✅ Read the **User Manual** (`docs/guides/help/02_USER_MANUAL.md`).
 - 🧠 Read the **Developer Guide** (`docs/guides/help/03_DEVELOPER_GUIDE.md`) for adapters and plugins.
-- 📂 **Path Decoupling (v1.1+)**: You don't have to keep scenarios in `industries/`. You can now run `multiagent-eval evaluate --path <any_folder>` and it will work out of the box!
+- 📂 **Path Decoupling (v1.1+)**: You don't have to keep scenarios in `industries/`. You can now run `multiagent-eval evaluate --run-id <id><any_folder>` and it will work out of the box!
 
 Happy evaluating!

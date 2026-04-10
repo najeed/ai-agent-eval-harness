@@ -66,7 +66,7 @@ AES benchmarks are now fully portable.
 ## 6. Replaying Execution (`run.jsonl`)
 Every AES evaluation produces a `run.jsonl` flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
 ```bash
-multiagent-eval replay --path runs/run.jsonl
+multiagent-eval replay --run-id <id>
 ```
 
 ---

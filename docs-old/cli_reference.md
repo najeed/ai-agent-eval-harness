@@ -7,7 +7,7 @@ The `multiagent-eval` (or `python -m eval_runner`) CLI provides a comprehensive 
 ### `evaluate`
 Run evaluations on one or more scenarios.
 ```bash
-multiagent-eval evaluate --path <path> [--attempts K] [--limit N] [--verbose]
+multiagent-eval evaluate --run-id <id><dataset_path> [--attempts K] [--limit N] [--verbose]
 ```
 - `--agent`: Unified agent target. Can be a URL (for `http`, `autogen`, `langgraph`), a shell command (for `local`), or an address (for `socket`).
 - `--protocol`: Communication protocol for the agent (`http`, `local`, `socket`, `autogen`, `crewai`, etc.).
@@ -72,7 +72,7 @@ multiagent-eval catalog-search --query <term>
 ### `lint`
 Verify scenario quality and AES specification compliance.
 ```bash
-multiagent-eval lint --path <path_to_scenario_or_dir>
+multiagent-eval lint --run-id <id><path_to_scenario_or_dir>
 ```
 - Runs automated checks for metadata quality, valid structure, and duplicate detection.
 - Provides a quality score (0-100) and detailed warning/error report.
@@ -102,7 +102,7 @@ multiagent-eval analyze <github_url>
 ### `aes validate`
 Validate Agent Eval Specification (.aes.yaml) files against the official schema.
 ```bash
-multiagent-eval aes validate --path <path>
+multiagent-eval aes validate --run-id <id><path>
 ```
 - Performs deep structure checking using `jsonschema`.
 - Ensures all mandatory benchmark fields are present.
@@ -114,21 +114,33 @@ multiagent-eval inspect --scenario-path <path>
 ```
 
 ### `verify`
-Verify the integrity of a run trace against an optional manifest.
+Verify the integrity of a run trace using autonomous artifact resolution.
 ```bash
-multiagent-eval verify --path <run.jsonl> [--manifest <manifest.json>]
+multiagent-eval verify --run-id <run_id>
 ```
+- `--run-id`: [SSOT] Mandatory identifier for the evaluation run. The harness automatically locates the trace and its sidecar manifest in the `runs/` vault.
+
+### `certify`
+Generate a Verification Certificate (VC) v3.0.0 for a trace run.
+```bash
+multiagent-eval certify --run-id <id> [--identity system_id] [--status {pass,fail,warning}] [--score 1.0]
+```
+- `--run-id`: [SSOT] Mandatory identifier for the evaluation run.
+- `--identity`: (Optional) Identity ID to use for signing. Defaults to `system_id`.
+- `--status`: (Optional) Compliance status to embed.
+- `--score`: (Optional) Compliance score (0.0-1.0).
+- `--policy-ref`: (Optional) Reference to the policy being certified against.
+- `--ttl`: (Optional) Governance TTL in days.
 
 ### `gate`
 Enforce cryptographic integrity and trace success as a "Hard Gate" in CI/CD pipelines. Returns exit code `0` on success, `1` on failure.
 ```bash
-multiagent-eval gate --path <run.jsonl> [--vc <fingerprint.json>] [--hash <commit_hash>] [--public-key <path>]
+multiagent-eval gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 ```
-- `--path`: Path to the execution trace (`run.jsonl`).
-- `--vc`: (Optional) Path to the Verification Certificate (Fingerprint V1). If provided, triggers asymmetric signature validation.
+- `--run-id`: [SSOT] Mandatory identifier for the evaluation run. Automatically resolves the manifest from the vault.
 - `--hash`: (Optional) Expected Git commit hash to verify against the trace's metadata.
-- `--public-key`: (Optional) Path to the ED25519 public key. Defaults to `~/.aes/keys/public_key.pem`.
-- **Validation**: Enforces both SHA-256 binary integrity and (if enabled) asymmetric cryptographic sealing. Also checks that the trace ended in a `SUCCESS` state.
+- `--verify-ledger`: (Optional) Perform full forensic hash check of all sidecar artifacts.
+- **Validation**: Enforces SHA-256 binary integrity, **Identity Registry** signature validation, and Forensic Ledger consistency.
 
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
@@ -188,15 +200,16 @@ multiagent-eval failures search <query>
 ## Debugging & Exploration
 
 ### `replay`
-Re-execute a `run.jsonl` flight recorder log to debug "wrong turns".
+Replay a previously recorded run trace (Flight Recorder).
 ```bash
-multiagent-eval replay --path <path/to/run.jsonl>
+multiagent-eval replay --run-id <id>
 ```
+- `--run-id`: [SSOT] Mandatory identifier for the evaluation run.
 
 ### `explain`
-Automatically analyze a `run.jsonl` trace to diagnose root causes with high-fidelity tiered scoring and actionable technical fixes.
+Automatically analyze a run trace to diagnose root causes with high-fidelity tiered scoring and actionable technical fixes.
 ```bash
-multiagent-eval explain --path <path/to/run.jsonl>
+multiagent-eval explain --run-id <id>
 ```
 **Forensic Features:**
 - **Tiered Confidence Scoring**: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
@@ -206,7 +219,7 @@ multiagent-eval explain --path <path/to/run.jsonl>
 ### `calibrate`
 Measure alignment between the LLM judge and human ground truth in a flight recorder log.
 ```bash
-multiagent-eval calibrate --path <path/to/run.jsonl>
+multiagent-eval calibrate --run-id <id> [--golden <path>] [--plot]
 ```
 **Metrics:** Calculates Pearson Correlation and Mean Absolute Error (MAE) based on paired `luna_judge_score` and `human_score` events.
 
@@ -249,7 +262,7 @@ multiagent-eval quickstart
 ### `report`
 Generate a standalone Premium HTML report from an execution trace.
 ```bash
-multiagent-eval report --path <path/to/run.jsonl>
+multiagent-eval report --run-id <id> [--share]
 ```
 **Feature Highlights:**
 - **Trace Reconstruction**: Automatically reconstructs hierarchical task results, metrics, and triage tags from historical JSONL events.

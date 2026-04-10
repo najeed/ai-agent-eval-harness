@@ -75,7 +75,7 @@ The suite offers granular control over the evaluation campaign:
 
 - **Path Slicing**: Target specific verticals or difficulty tiers.
   ```bash
-  python scripts/publication_suite/publication_suite.py --path scenarios/finance/high_difficulty/
+  python scripts/publication_suite/publication_suite.py --run-id <id>
   ```
 - **Custom Protocols**: Support for `socket://`, `local://`, and `framework://` prefixes.
 - **Parallel Scaling**: Utilize `--parallel <N>` to scale workers across multiple cores.

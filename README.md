@@ -232,9 +232,9 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **`ci generate`**: One-click scaffolding of GitHub Actions workflows for evaluation-on-PR.
 - **`failures search`**: Intelligence-driven retrieval of edge cases from the global failure corpus.
 - **`explain`**: AI-powered trace diagnostics (loops, timeouts, PII leaks) via `--path <run.jsonl>`.
-- **`certify`**: Generate a non-repudiable Verification Certificate (VC) for a specific run trace.
-- **`verify`**: Verify the cryptographic integrity of a run trace against a public key.
-- **`gate`**: Industrial "Hard Gating" tool for CI/CD pipelines to enforce signature and hash matches.
+- **`certify`**: Generate a non-repudiable Verification Certificate (VC) for a specific run trace using `--run-id`.
+- **`verify`**: Verify the cryptographic integrity of a run trace using autonomous artifact resolution via `--run-id`.
+- **`gate`**: Industrial "Hard Gating" tool for CI/CD pipelines to enforce signature and hash matches via `--run-id`.
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 - **`aes add-standard`**: Expand the global industrial registry with new standard definitions (ID, Name, Industry, Description).
 - **`init --standard <id>`**: Rapidly scaffold a dedicated, industry-compliant evaluation environment for a specific standard (e.g., `init --standard ISO_20022`).

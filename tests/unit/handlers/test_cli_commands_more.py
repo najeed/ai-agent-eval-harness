@@ -111,13 +111,13 @@ async def test_handle_explain_basic(tmp_path, monkeypatch):
 
     monkeypatch.chdir(tmp_path)
 
-    args = parse_args(["explain", "--path", "ghost.jsonl"])
+    args = parse_args(["explain", "--run-id", "ghost"])
     handle_explain(args)
 
     real_file = tmp_path / "real.jsonl"
     real_file.write_text("{}", encoding="utf-8")
 
-    args = parse_args(["explain", "--path", str(real_file)])
+    args = parse_args(["explain", "--run-id", "real"])
     with patch(
         "eval_runner.explainer.explain_trace",
         return_value={"confidence": 0.9, "root_cause": "cpu", "suggestion": "fix"},
@@ -132,13 +132,13 @@ async def test_handle_calibrate_basic(tmp_path, monkeypatch):
 
     monkeypatch.chdir(tmp_path)
 
-    args = parse_args(["calibrate", "--path", "ghost.jsonl"])
+    args = parse_args(["calibrate", "--run-id", "ghost"])
     handle_calibrate(args)
 
     real_file = tmp_path / "real.jsonl"
     real_file.write_text("{}", encoding="utf-8")
 
-    args = parse_args(["calibrate", "--path", str(real_file)])
+    args = parse_args(["calibrate", "--run-id", "real"])
 
     with patch(
         "eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read bad")

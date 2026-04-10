@@ -10,7 +10,6 @@ import json
 import pytest
 
 from eval_runner import config
-from eval_runner import config
 from eval_runner.verifier import TraceVerifier
 
 
@@ -44,19 +43,22 @@ def test_compute_signature(tmp_path):
 
 
 def test_sign_trace_success(tmp_path):
-    """Verifies successful generation of a manifest.json file."""
-    trace_file = tmp_path / "run_123.jsonl"
+    """Verifies successful generation of a run_manifest.json file."""
+    # Place trace in a run-like directory
+    run_dir = tmp_path / "run_123"
+    run_dir.mkdir()
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text('{"event": "start"}', encoding="utf-8")
 
     manifest = TraceVerifier.sign_trace(str(trace_file), metadata={"user": "test_bot"})
 
     # 1. Verify returned dictionary
-    assert manifest["trace_file"] == "run_123.jsonl"
+    assert manifest["trace_file"] == "run.jsonl"
     assert manifest["metadata"]["user"] == "test_bot"
     assert "sha256" in manifest
 
-    # 2. Verify file on disk (backward compatibility)
-    manifest_path = tmp_path / "run_123_manifest.json"
+    # 2. Verify file on disk (Standard vault sidecar)
+    manifest_path = run_dir / "run_manifest.json"
     assert manifest_path.exists()
 
     with open(manifest_path, encoding="utf-8") as f:
@@ -73,11 +75,13 @@ def test_sign_trace_not_found():
 
 def test_verify_trace_success(tmp_path):
     """Verifies that a valid trace and manifest pair return True."""
-    trace_file = tmp_path / "valid.jsonl"
+    run_dir = tmp_path / "run_valid"
+    run_dir.mkdir()
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text("content", encoding="utf-8")
 
     TraceVerifier.sign_trace(str(trace_file))
-    manifest_path = tmp_path / "valid_manifest.json"
+    manifest_path = run_dir / "run_manifest.json"
 
     result = TraceVerifier.verify_trace(str(trace_file), str(manifest_path))
     assert result is True
@@ -85,11 +89,13 @@ def test_verify_trace_success(tmp_path):
 
 def test_verify_trace_tampered(tmp_path):
     """Verifies that a tampered trace file fails validation."""
-    trace_file = tmp_path / "tamper_me.jsonl"
+    run_dir = tmp_path / "run_tamper"
+    run_dir.mkdir()
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text("original", encoding="utf-8")
 
     TraceVerifier.sign_trace(str(trace_file))
-    manifest_path = tmp_path / "tamper_me_manifest.json"
+    manifest_path = run_dir / "run_manifest.json"
 
     # Tamper with the trace
     trace_file.write_text("manipulated", encoding="utf-8")

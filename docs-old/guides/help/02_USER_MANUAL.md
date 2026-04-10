@@ -65,7 +65,7 @@ Metrics score an agent’s performance. Built-in metrics include:
 ### 🧪 `evaluate` — batch evaluation
 
 ```bash
-multiagent-eval evaluate --path industries/telecom --format jsonl --output reports/latest_results.json --attempts 3
+multiagent-eval evaluate --run-id <id> --format jsonl --output reports/latest_results.json --attempts 3
 ```
 
 **Key options:**
@@ -99,8 +99,10 @@ multiagent-eval evaluate --path industries/telecom --format jsonl --output repor
 | `run` | `--scenario`, `-k`, `-f`, `-v`, `--agent` | Execution of a single specific scenario file |
 | `playground` | `--agent`, `--protocol`, `-v` | Interactive REPL for real-time agent experimentation |
 | `record` | `--agent`, `--protocol`, `--agent-name` | Capture live interactions into an executable trace |
-| `replay` | `--path` | Replay a recorded trace via the Flight Recorder |
-| `verify` | `--path`, `--manifest` | Verify cryptographic integrity of a run trace |
+| `replay` | `--run-id` | Replay a recorded trace via the Flight Recorder |
+| `verify` | `--run-id` | Verify cryptographic integrity of a run trace using autonomous resolution |
+| `certify` | `--run-id`, `--identity` | Generate a Verification Certificate (VC) for a specific run |
+| `gate` | `--run-id`, `--verify-ledger` | Hard Gate CI/CD enforcement with Identity Registry verification |
 | `quickstart` | (none) | 60-second engine demonstration (spawns agent + eval) |
 | **Specifications** | | |
 | `aes validate` | `--path` | Validate a scenario against AES JSON schema |
@@ -113,11 +115,11 @@ multiagent-eval evaluate --path industries/telecom --format jsonl --output repor
 | `mutate` | `--input`, `--type`, `-f` | Generate adversarial/edge-case scenario variants |
 | `spec-to-eval` | `--input`, `--output` | Convert Markdown PRD/Spec to Scenario JSON |
 | **Analysis & Reporting** | | |
-| `calibrate` | `--path`, `--plot` | Measure judge agreement against human labels |
-| `explain` | `--path` | Diagnose root causes from evaluation traces |
+| `calibrate` | `--run-id`, `--plot` | Measure judge agreement against human labels |
+| `explain` | `--run-id` | Diagnose root causes from evaluation traces |
 | `leaderboard` | `--dir`, `--output` | Generate performance rankings from run traces |
 | `list-metrics` | (none) | Display all registered evaluation metrics |
-| `report` | `--path`, `--share` | Generate stylized HTML reports from run traces |
+| `report` | `--run-id`, `--share` | Generate stylized HTML reports from run traces |
 | `taxonomy` | (none) | Display the official AEH failure taxonomy |
 | **Environment** | | |
 | `init` | `--dir`, `--industry`, `--registry` | Scaffold a new benchmark environment |
@@ -209,7 +211,7 @@ multiagent-eval doctor
 ### 🎨 `report` — Premium Visual Reporting
 Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
 ```bash
-multiagent-eval report --path runs/run_<id>.jsonl
+multiagent-eval report --run-id <id>
 ```
 
 ### ✨ `scenario generate` — Interactive Scaffolding
@@ -239,7 +241,7 @@ multiagent-eval list --search "telecom"
 ### 🧹 `lint` — Quality Scoring
 Check your scenarios for AES compliance and technical quality.
 ```bash
-multiagent-eval lint --path industries/telecom/scenarios/troubleshooting_v1.json
+multiagent-eval lint --run-id <id>
 ```
 - **90-100**: High quality, CI-ready.
 - **70-89**: Warning (Missing metadata or low complexity).
@@ -264,7 +266,7 @@ multiagent-eval analyze https://github.com/example/agent
 ### 🤖 `explain` — Trace Analysis
 Automated diagnostic analysis of `run.jsonl` traces to identify root causes of agent failures.
 ```bash
-multiagent-eval explain --path runs/run.jsonl
+multiagent-eval explain --run-id <id>
 ```
 
 ### 🛠️ Visual Scenario Editor
@@ -328,7 +330,7 @@ multiagent-eval run --scenario industries/<your_industry>/scenarios/<file>.json
 4. (Optional) Run an industry batch:
 
 ```bash
-multiagent-eval evaluate --path industries/<your_industry>
+multiagent-eval evaluate --run-id <id><your_industry>
 ```
 
 ## Cumulative Industrial Registry (v1.3.0)

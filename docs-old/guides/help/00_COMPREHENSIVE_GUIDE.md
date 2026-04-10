@@ -30,13 +30,13 @@ multiagent-eval quickstart
 - `multiagent-eval console`: Launch the React Visual Debugger GUI for visual management.
 - `multiagent-eval doctor`: Check your environment health.
 - `multiagent-eval list --search <query>`: Search the scenario catalog (supports faceted filtering).
-- `multiagent-eval lint --path <path>`: Verify scenario quality and AES specification compliance.
+- `multiagent-eval lint --run-id <id><path>`: Verify scenario quality and AES specification compliance.
 - `multiagent-eval spec-to-eval --fill-defaults`: Convert rough specs into valid, lint-passable scenarios.
 - `multiagent-eval auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
 - `multiagent-eval run --scenario <benchmark-uri>`: Zero-config execution for community benchmarks (GAIA, AssistantBench).
-- `multiagent-eval report --path <path>`: Generate a standalone Premium HTML report (reconstructed from any `.jsonl` trace).
-- `multiagent-eval gate --run <id>`: Enforce cryptographic integrity in a CI/CD pipeline using the **Trust Protocol**.
-- `multiagent-eval replay --path <path>`: View the step-by-step history of a run in terminal.
+- `multiagent-eval report --run-id <id>`: Generate a standalone Premium HTML report (reconstructed from any `.jsonl` trace).
+- `multiagent-eval gate --run-id <id>`: Enforce cryptographic integrity in a CI/CD pipeline using the **Trust Protocol**.
+- `multiagent-eval replay --run-id <id>`: View the step-by-step history of a run in terminal.
 - Advanced Utilities: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
 
 > [!NOTE]
@@ -55,7 +55,7 @@ multiagent-eval quickstart
 - **Plugin System**: Lifecycle hooks to extend the harness without modifying the core.
 
 ### 2.2 Advanced CLI
-- `evaluate --path <dir> --attempts 3`: Run batch evaluations with pass@k scoring.
+- `evaluate --run-id <id><dir> --attempts 3`: Run batch evaluations with pass@k scoring.
 - `import-drift --input <pord.jsonl>`: Convert production traces into regression tests.
 - `mutate --input <file> --type injection`: Generate adversarial test variants for red-teaming.
 - **Advanced Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain` ([Reference](../../cli_reference.md)).

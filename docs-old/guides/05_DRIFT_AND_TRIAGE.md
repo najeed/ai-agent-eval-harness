@@ -50,7 +50,7 @@ While triage applies categorical tags, the `explain` command performs a deep for
 
 ### Usage
 ```bash
-multiagent-eval explain --path runs/run.jsonl
+multiagent-eval explain --run-id <id>
 ```
 
 ### Forensic Features

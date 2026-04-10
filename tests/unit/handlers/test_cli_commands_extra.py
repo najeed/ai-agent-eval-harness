@@ -26,7 +26,7 @@ async def test_handle_report_exceptions(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # File not found
-    args = parse_args(["report", "--path", "ghost.jsonl"])
+    args = parse_args(["report", "--run-id", "ghost"])
     try:
         await handle_report(args)
     except Exception:
@@ -36,7 +36,7 @@ async def test_handle_report_exceptions(tmp_path, monkeypatch):
     real_file = tmp_path / "real.jsonl"
     real_file.write_text("{}", encoding="utf-8")
 
-    args = parse_args(["report", "--path", str(real_file)])
+    args = parse_args(["report", "--run-id", "real"])
     with patch(
         "eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read fail")
     ):
@@ -54,18 +54,20 @@ async def test_handle_replay_exceptions(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # File not found
-    args = parse_args(["replay", "--path", "ghost.jsonl"])
-    with pytest.raises(SystemExit) as e:
-        await handle_replay(args)
+    args = parse_args(["replay", "--run-id", "ghost"])
+    with patch("eval_runner.config.RUN_LOG_DIR", tmp_path):
+        with pytest.raises(SystemExit) as e:
+            await handle_replay(args)
     assert e.value.code == 1
 
     # Read error
     real_file = tmp_path / "read_err.jsonl"
     real_file.write_text("{}", encoding="utf-8")
 
-    args = parse_args(["replay", "--path", str(real_file)])
-    with patch(
-        "eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read fail")
+    args = parse_args(["replay", "--run-id", "read_err"])
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
+        patch("eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read fail"))
     ):
         try:
             await handle_replay(args)

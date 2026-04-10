@@ -127,6 +127,7 @@ async def handle_evaluate(args):
                     args_dict = {}
                 await engine.run_evaluation(
                     scenario,
+                    run_id=getattr(args, "run_id", None),
                     metadata={"args": args_dict, **agent_metadata},
                 )
 
@@ -180,7 +181,10 @@ async def handle_run(args):
             if not isinstance(attempts, int):
                 attempts = 1
             await engine.run_evaluation(
-                scenario, attempts=attempts, metadata={"args": args_dict, **agent_metadata}
+                scenario,
+                run_id=getattr(args, "run_id", None),
+                attempts=attempts,
+                metadata={"args": args_dict, **agent_metadata},
             )
             scenario_name = scenario.get("title", scenario.get("scenario_id", "Unknown Scenario"))
             print(f"\n   [CLI] Evaluation complete for {scenario_name}")
@@ -213,17 +217,39 @@ async def handle_playground(args):
 
 
 async def handle_replay(args):
-    """Handler for 'replay' command."""
-    print(f"\n[Replay] Reconstructing from: {args.path}")
-    path = Path(args.path)
+    """
+    Handler for 'replay' command. 
+    Reconstructs the interaction history from a run trace.
+    """
+    from .. import trace_utils
+
+    # --- [SSOT] Mandatory Run ID Resolution ---
+    run_id = args.run_id
+    if not run_id:
+        print("❌ Error: Run ID is mandatory for replay.")
+        sys.exit(1)
+        return
+
+    # Resolve from authoritative vault
+    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    path = run_log_dir / "run.jsonl"
+    
+    # [INDUSTRIAL HARDENING] Absolute Security Cage Check
     if not _ensure_path_safe(path, "Replay file"):
         sys.exit(1)
         return
 
+    print(f"\n[Replay] Reconstructing from Run ID: {run_id}")
+    
     if not path.exists():
-        print(f"[ERROR] Replay file not found at {path}")
-        sys.exit(1)
-        return
+        # Fallback for flat traces
+        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+        if flat_trace.exists():
+            path = flat_trace
+        else:
+            print(f"[ERROR] Replay trace not found for Run ID '{run_id}'")
+            sys.exit(1)
+            return
 
     events = trace_utils.load_events(path)
     for event in events:
@@ -249,39 +275,43 @@ async def handle_verify(args):
 
     from eval_runner.verifier import TraceVerifier
 
-    # --- [SSOT] Artifact Resolution ---
-    trace_path = args.path
-    manifest_path = None
-
-    if args.run_id:
-        # Autonomous resolve from authoritative vault
-        run_log_dir = config.RUN_LOG_DIR / args.run_id
-        trace_path = str(run_log_dir / "run.jsonl")
-        # Standardize on run_manifest.json as the sidecar identity
-        manifest_path = str(run_log_dir / "run_manifest.json")
-        print(f"      [Identity] Resolved trace for {args.run_id} -> {trace_path}")
-        print(f"      [Identity] Resolved manifest for {args.run_id} -> {manifest_path}")
-
-    if not trace_path:
-        print("Error: Must provide either --run-id or --path for verification.")
-        sys.exit(1)
-
-    tp = Path(trace_path)
-    if not _ensure_path_safe(tp, "Trace file"):
+    # --- [SSOT] Mandatory Run ID Resolution ---
+    run_id = args.run_id # Verified mandatory by CLI parser
+    
+    if not run_id:
+        print("      [CRITICAL] FAILED: Run ID is mandatory for verification.")
         sys.exit(1)
         return
 
-    if not tp.exists():
-        print(
-            f"      [CRITICAL] FAILED: Trace integrity compromised! (File not found: {trace_path})"
-        )
+    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    trace_path = run_log_dir / "run.jsonl"
+    manifest_path = run_log_dir / "run_manifest.json"
+    
+    # [INDUSTRIAL HARDENING] Check security cage BEFORE existence to catch traversals early
+    if not _ensure_path_safe(trace_path, "Trace file"):
         sys.exit(1)
         return
 
-    # If verifying via --path without --run-id, assume manifest is the default sidecar
-    if not manifest_path:
-        p = Path(trace_path)
-        manifest_path = str(p.parent / f"{p.stem}_manifest.json")
+    print(f"      [Identity] Resolving trace for {run_id} -> {trace_path}")
+    print(f"      [Identity] Resolving manifest for {run_id} -> {manifest_path}")
+
+    if not trace_path.exists():
+        # Fallback for flat traces that haven't been migrated yet (Windows compatibility)
+        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+        if flat_trace.exists():
+            trace_path = flat_trace
+        else:
+            print(f"      [CRITICAL] FAILED: Trace file for {run_id} missing after vault lookup.")
+            sys.exit(1)
+
+    if not manifest_path.exists():
+        # Fallback for sidecar manifest
+        sidecar = (config.RUN_LOG_DIR / f"{run_id}_manifest.json").resolve()
+        if sidecar.exists():
+            manifest_path = sidecar
+        else:
+            print(f"      [CRITICAL] FAILED: Manifest for {run_id} missing (Certification required).")
+            sys.exit(1)
 
     # Canonical Verification Call (Pillar 1)
     # TraceVerifier.verify_trace is the industrial standard method.
@@ -302,34 +332,35 @@ async def handle_gate(args):
     """
     from .. import verifier
 
-    # Industrial Discovery: Resolve manifest via --vc or --run-id
-    run_id = getattr(args, "run_id", None)
-    vc_path_str = getattr(args, "vc", None)
-
-    if not run_id and not vc_path_str:
-        print("[GATE] FAILURE: Explicit Run ID (--run-id) or Certificate path (--vc) is required.")
+    # [Autonomous Discovery] Standard mandatory Run ID
+    run_id = args.run_id
+    if not run_id:
+        print("[GATE] FAILURE: Run ID is mandatory for gating.")
         sys.exit(1)
         return
 
-    # Absolute Identity (SSOT) Resolve Logic
-    vc_path = None
-    if run_id:
-        # Standard Vault lookup (Primary Case)
-        vault_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-        # Sidecar lookup (Refactor Fallback)
-        sidecar_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+    # [INDUSTRIAL HARDENING] Immediate Resolution and Safety Check
+    # We resolve the vault path and check safety before existence to prevent leak-via-existence
+    vault_path = (config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json").resolve()
+    if not _ensure_path_safe(vault_path, "Verification Certificate"):
+        sys.exit(1)
+        return
+    # 2. Check Standard Sidecar (Primary for v1-v5 Narrative)
+    sidecar_path = (config.RUN_LOG_DIR / run_id / "run_manifest.json").resolve()
 
-        if vault_path.exists():
-            vc_path = vault_path
-        elif sidecar_path.exists():
-            vc_path = sidecar_path
+    if vault_path.exists():
+        vc_path = vault_path
+    elif sidecar_path.exists():
+        vc_path = sidecar_path
+    else:
+        # Final fallback for flat sidecars (Windows regression compatibility)
+        flat_sidecar = (config.RUN_LOG_DIR / f"{run_id}_manifest.json").resolve()
+        if flat_sidecar.exists():
+            vc_path = flat_sidecar
         else:
-            print(f"[GATE] FAILURE: Manifest not found for Run ID '{run_id}' in Vault or Sidecar.")
+            print(f"[GATE] FAILURE: Manifest not found for Run ID '{run_id}' in Sidecar or Vault.")
             sys.exit(1)
             return
-    else:
-        # Legacy direct path lookup (Deprecated)
-        vc_path = Path(vc_path_str)
 
     if not _ensure_path_safe(vc_path, "Verification Certificate"):
         sys.exit(1)
@@ -346,12 +377,17 @@ async def handle_gate(args):
         trace_name = manifest.get("trace_file", "run.jsonl")
 
         # Identity-Aware Trace Resolution
-        if run_id:
-            # If we have run_id, we look in the deterministic log directory
-            trace_path = config.RUN_LOG_DIR / run_id / trace_name
-        else:
-            # Legacy anchor path
-            trace_path = vc_path.parent / trace_name
+        trace_path = (config.RUN_LOG_DIR / run_id / trace_name).resolve()
+        
+        if not trace_path.exists():
+            # Fallback for flat traces
+            flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+            if flat_trace.exists():
+                trace_path = flat_trace
+            else:
+                print(f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}")
+                sys.exit(1)
+                return
 
         if not trace_path.exists():
             print(f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}")
@@ -400,21 +436,31 @@ async def handle_certify(args):
     """
     from .. import verifier
 
-    # Industrial Discovery: Resolve trace via --run-id or --path
-    run_id = getattr(args, "run_id", None)
-    trace_path_str = getattr(args, "path", None)
+    # [Autonomous Discovery] Mandatory Run ID
+    run_id = args.run_id
+    if not run_id:
+        print("❌ Error: Run ID is mandatory for certification.")
+        sys.exit(1)
+        return
+    
+    # Resolve from mandatory industrial run log directory
+    trace_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
 
-    if not run_id and not trace_path_str:
-        print("❌ Error: Explicit Run ID (--run-id) or trace path (--path) is required.")
+    # [INDUSTRIAL HARDENING] Check security cage BEFORE existence
+    if not _ensure_path_safe(trace_path, "Trace file"):
         sys.exit(1)
         return
 
-    # Absolute Identity (SSOT) Resolve Logic
-    if run_id:
-        # Resolve from mandatory industrial run log directory
-        trace_path = config.RUN_LOG_DIR / run_id / "run.jsonl"
-    else:
-        trace_path = Path(trace_path_str)
+    if not trace_path.exists():
+        # Check for legacy flat trace
+        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+        if flat_trace.exists():
+            trace_path = flat_trace
+        else:
+            # Revert to standard "Error: Trace file not found" for test compatibility
+            print(f"Error: Trace file not found for Run ID {run_id}")
+            sys.exit(1)
+            return
 
     if not _ensure_path_safe(trace_path, "Trace file"):
         sys.exit(1)

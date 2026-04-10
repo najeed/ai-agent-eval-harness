@@ -12,7 +12,7 @@ from .. import config
 from .auth import auth_bp
 from .auth_manager import Permission, require_permission
 from .demo_agent import demo_bp
-from .routes import core_bp, register_core_routes
+from .routes import core_bp, register_core_routes, trust_bp
 
 # Ensure environment variables are loaded before ANY other configuration usage (R6)
 load_dotenv()
@@ -29,7 +29,11 @@ def create_app():
     manager.load_plugins()
     from eval_runner.catalog import ScenarioCatalog
 
-    ScenarioCatalog.get_instance().load_index()
+    # [STARTUP ACCELERATION]: Bypass heavy indexing for Trust Portal Stability
+    if not config.ENABLE_DEMO:
+        ScenarioCatalog.get_instance().load_index()
+    else:
+        print("   [Industrial Start] Lazy Catalog active for Demo Stability.", flush=True)
 
     # Set static_folder using the project root for absolute reliability
     ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
@@ -46,6 +50,7 @@ def create_app():
     CORS(app, supports_credentials=True)  # Explicit support for session cookies
     app.register_blueprint(auth_bp)
     app.register_blueprint(core_bp)
+    app.register_blueprint(trust_bp)
     app.register_blueprint(demo_bp)
 
     # Hardened API Error Handlers (Prevents "Unexpected token <" regressions)
@@ -89,15 +94,15 @@ def create_app():
             except Exception:
                 pass
 
-    # Re-assert core paths to prevent plugin overrides
-    core_paths = {
-        "community": "https://github.com/najeed/ai-agent-eval-harness",
-        "demo": "/demo",
-        "loan_demo": "/demo/loan",
+    # Re-assert core paths and industrial components to prevent plugin overrides
+    core_overrides = {
+        "community": {"path": "https://github.com/najeed/ai-agent-eval-harness"},
+        "demo": {"path": "/demo"},
+        "loan_demo": {"path": "/demo/loan"}
     }
     for item in nav_registry:
-        if item.get("id") in core_paths:
-            item["path"] = core_paths[item["id"]]
+        if item.get("id") in core_overrides:
+            item.update(core_overrides[item.get("id")])
 
     # Endpoint to serve the unified navigation menu (API Priority)
     app.config["NAV_REGISTRY"] = nav_registry

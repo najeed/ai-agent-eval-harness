@@ -2,11 +2,117 @@ import hashlib
 import json
 import logging
 import os
+import re
 import shutil
 from pathlib import Path
 from typing import Any, Dict, List
 
+from . import config
+
 logger = logging.getLogger(__name__)
+
+
+def compute_file_hash(file_path: Path) -> str:
+    """Computes SHA-256 hash of a file. (Module Level Utility)"""
+    sha256 = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        while chunk := f.read(8192):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+
+class ForensicRelevanceEngine:
+    """
+    Authoritative Filtering Engine for Participation-First Artifact Collection.
+    Optimizes evidence ledgers by enforcing strict relevance criteria across three tiers.
+    """
+
+    def __init__(self, profile: dict | None = None):
+        profile = profile or {}
+        policy = config.get_forensic_policy()
+        
+        self.allowed_exts = set(profile.get("extensions", policy["extensions"]))
+        self.mandatory_patterns = profile.get("mandatory_patterns", policy["mandatory_patterns"])
+        self.exclusion_patterns = profile.get("exclusion_patterns", policy["exclusion_patterns"])
+        self.max_size = profile.get("max_artifact_size", policy["max_artifact_size"])
+        self.aliases = config.FORENSIC_EXTENSION_ALIASES
+
+    def is_relevant(self, path: Path, run_id: str | None = None, is_dedicated_dir: bool = False) -> bool:
+        """
+        Determines relevance based on the three-tier model:
+        Tier 1: Participatory Root (forensics/) -> Always Included.
+        Tier 2: Mandatory Patterns -> Always Included (Bypasses Size Cap).
+        Tier 3: Functional Extensions -> Included if size < MAX_ARTIFACT_SIZE.
+        
+        Namespace Affinity: If NOT in a dedicated directory, only allow run_id prefixed files.
+        """
+        # 1. Tier 1: Absolute Mandatory (Participation Root)
+        is_forensics_subdir = "forensics" in path.parts
+        if is_forensics_subdir:
+            return True
+
+        # 2. Global Safety: Hidden files, manifest files, and System Junk
+        if path.name.startswith(".") or path.name.endswith("_manifest.json") or path.name.endswith("_vc.json"):
+            return False
+
+        if path.name in config.SYSTEM_JUNK_FILES:
+            return False
+            
+        if any(path.name.endswith(ext) for ext in config.SYSTEM_JUNK_EXTENSIONS):
+            return False
+
+        if any(re.match(p, path.name) for p in self.exclusion_patterns):
+            return False
+
+        # 3. Namespace Affinity Enforcement
+        # If NOT in a dedicated dir and NOT in forensics/, only allow run_id prefixed files
+        if not is_dedicated_dir and not is_forensics_subdir:
+            if run_id and not path.name.startswith(run_id):
+                return False
+
+        # 4. Tier 2: Mandatory Patterns (Administrative Override)
+        if any(re.match(p, path.name) for p in self.mandatory_patterns):
+            return True
+
+        # 5. Tier 3: Functional Extension Whitelist
+        suffix = path.suffix.lower()
+        canonical_suffix = self.aliases.get(suffix, suffix)
+        
+        if canonical_suffix not in self.allowed_exts:
+            return False
+
+        # Apply Storage Safety (Size Cap) for Tier 3 only
+        try:
+            if path.stat().st_size > self.max_size:
+                logger.debug(f"[Forensics] Excluding oversized artifact ({path.stat().st_size}b): {path.name}")
+                return False
+        except (FileNotFoundError, PermissionError):
+            return False
+
+        return True
+
+    def compute_filtered_ledger(self, directory: Path, exclude_files: list[str], run_id: str | None = None) -> Dict[str, str]:
+        """
+        Computes a filtered forensic ledger for a directory.
+        Implements Namespace Affinity Enforcement.
+        """
+        ledger = {}
+        is_dedicated_dir = run_id and directory.name == run_id
+        
+        for root, _, files in os.walk(directory):
+            for file in files:
+                file_path = Path(root) / file
+                if file in exclude_files:
+                    continue
+
+                if self.is_relevant(file_path, run_id=run_id, is_dedicated_dir=is_dedicated_dir):
+                    rel_path = file_path.relative_to(directory).as_posix()
+                    try:
+                        ledger[rel_path] = compute_file_hash(file_path)
+                    except Exception as e:
+                        logger.warning(f"[Forensics] Failed to hash {rel_path}: {e}")
+        return ledger
+
 
 class ForensicCollector:
     """
@@ -59,22 +165,13 @@ class ForensicCollector:
             
             try:
                 shutil.copy2(src, dest)
-                ledger[alias] = self._compute_hash(dest)
+                ledger[alias] = compute_file_hash(dest)
             except Exception as e:
                 logger.error(f"[Forensics] Failed to collect artifact {alias}: {e}")
 
         # 2. Add snapshots to ledger
         for turn, path in self._state_snapshots.items():
             rel_path = f"forensics/{path.name}"
-            ledger[rel_path] = self._compute_hash(path)
+            ledger[rel_path] = compute_file_hash(path)
 
         return ledger
-
-    @staticmethod
-    def _compute_hash(file_path: Path) -> str:
-        """Computes SHA-256 hash of a file."""
-        sha256 = hashlib.sha256()
-        with open(file_path, "rb") as f:
-            while chunk := f.read(8192):
-                sha256.update(chunk)
-        return sha256.hexdigest()

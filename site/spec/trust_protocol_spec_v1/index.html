@@ -4275,11 +4275,11 @@ This enables "Zero-Touch" security where the harness remains provider-agnostic w
 <h2 id="7-cli-integration-industrial-standard">7. CLI Integration (Industrial Standard)<a class="headerlink" href="#7-cli-integration-industrial-standard" title="Permanent link">&para;</a></h2>
 <p>The Evaluation Harness provides a first-class CLI suite to manage the Trust Protocol workflow:</p>
 <ul>
-<li><strong><code>certify --path &lt;trace.jsonl&gt; [--private-key &lt;key.pem&gt;]</code></strong>: 
+<li><strong><code>certify --run-id <id>&lt;trace.jsonl&gt; [--private-key &lt;key.pem&gt;]</code></strong>: 
     Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC). If a private key is provided, an ED25519 signature is appended to the manifest.</li>
-<li><strong><code>verify --path &lt;trace.jsonl&gt; [--manifest &lt;manifest.json&gt;]</code></strong>: 
+<li><strong><code>verify --run-id <id>&lt;trace.jsonl&gt; [--manifest &lt;manifest.json&gt;]</code></strong>: 
     Locally verifies the integrity of a trace file against its manifest (Sidecar).</li>
-<li><strong><code>gate --vc &lt;vc.json&gt; [--public-key &lt;key.pem&gt;]</code></strong>: 
+<li><strong><code>gate --run-id <id>&lt;vc.json&gt; [&lt;key.pem&gt;]</code></strong>: 
     A production-grade CI/CD utility that enforces signature and hash verification, exiting with a non-zero code on failure.</li>
 </ul>
 <hr />

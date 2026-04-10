@@ -84,9 +84,9 @@ def test_ci_generate_command():
 
 
 def test_explain_command():
-    """Verify explain command handler uses --path."""
+    """Verify explain command handler uses --run-id."""
     with patch("eval_runner.handlers.analysis.handle_explain") as mock_explain:
-        with patch("sys.argv", ["multiagent-eval", "explain", "--path", "runs/run.jsonl"]):
+        with patch("sys.argv", ["multiagent-eval", "explain", "--run-id", "test-run"]):
             cli.main()
             mock_explain.assert_called_once()
 
@@ -102,9 +102,9 @@ def test_evaluate_command():
 
 
 def test_report_command():
-    """Verify report command handler uses --path."""
+    """Verify report command handler uses --run-id."""
     with patch("eval_runner.handlers.analysis.handle_report") as mock_report:
-        with patch("sys.argv", ["multiagent-eval", "report", "--path", "runs/run.jsonl"]):
+        with patch("sys.argv", ["multiagent-eval", "report", "--run-id", "test-run"]):
             cli.main()
             mock_report.assert_called_once()
 
@@ -133,9 +133,9 @@ async def test_handle_init_success(tmp_path, monkeypatch):
 
 
 def test_calibrate_command():
-    """Verify calibrate command handler uses --path."""
+    """Verify calibrate command handler uses --run-id."""
     with patch("eval_runner.handlers.analysis.handle_calibrate") as mock_cal:
-        with patch("sys.argv", ["multiagent-eval", "calibrate", "--path", "runs/run.jsonl"]):
+        with patch("sys.argv", ["multiagent-eval", "calibrate", "--run-id", "test-run"]):
             cli.main()
             mock_cal.assert_called_once()
 

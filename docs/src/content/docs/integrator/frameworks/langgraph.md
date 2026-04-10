@@ -31,7 +31,7 @@ Use the `langgraph://` protocol to connect the harness to your agent service.
 
 ```bash
 multiagent-eval evaluate \
-  --path scenarios/finance \
+  --run-id <id> \
   --protocol langgraph \
   --agent langgraph://localhost:8000/execute_task \
   --agent-name "LangGraph-Fintech-Orchestrator"

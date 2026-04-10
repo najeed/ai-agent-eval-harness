@@ -19,7 +19,7 @@ from eval_runner import cli
             ["multiagent-eval", "auto-translate", "--input", "x"],
             "eval_runner.handlers.environment.handle_auto_translate",
         ),
-        (["multiagent-eval", "replay"], "eval_runner.handlers.evaluation.handle_replay"),
+        (["multiagent-eval", "replay", "--run-id", "test"], "eval_runner.handlers.evaluation.handle_replay"),
         (
             ["multiagent-eval", "mutate", "--input", "x", "--type", "typo"],
             "eval_runner.handlers.scenarios.handle_mutate",

@@ -97,9 +97,9 @@ logs/
 docs-old/_build/
 docs-old/build/
 
-runs/
+/runs/
 /results/
-reports/
+/reports/
 tmp/
 .tmp/
 /scratch/
@@ -124,7 +124,7 @@ sample_agent/output/
 scenarios/index.json
 
 # --- Generated internal tasks ---
-tasks/
+/tasks/
 
 # --- Cryptographic Keys ---
 .aes/keys/

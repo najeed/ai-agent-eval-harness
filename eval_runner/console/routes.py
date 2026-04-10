@@ -16,6 +16,7 @@ from eval_runner.simulators import get_simulator_registry
 from .auth_manager import Permission, require_permission
 
 core_bp = Blueprint("core", __name__, url_prefix="/api")
+trust_bp = Blueprint("trust", __name__) # Top-level v1/ namespace
 
 
 def get_catalog():
@@ -159,7 +160,7 @@ def cleanup_runs():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-@core_bp.route("/v1/certificates/<run_id>", methods=["GET"])
+@trust_bp.route("/v1/certificates/<run_id>", methods=["GET"])
 def get_verification_certificate(run_id):
     """
     Public Trust Protocol endpoint.
@@ -177,10 +178,19 @@ def get_verification_certificate(run_id):
         except Exception as e:
             return jsonify({"error": f"Failed to retrieve certificate: {str(e)}"}), 500
 
-    # 2. Fallback to sidecar in runs directory (Standard Reproducibility)
+    # 2. Look in Run ID Vault (Standard Standardized Platform)
+    vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+    if vault_manifest.exists():
+        try:
+            with open(vault_manifest, encoding="utf-8") as f:
+                return jsonify(json.load(f))
+        except Exception as e:
+            return jsonify({"error": f"Failed to retrieve vault manifest: {str(e)}"}), 500
+
+    # 3. Fallback to legacy sidecar patterns (Standard Reproducibility)
     sidecar_manifest = (
         config.RUN_LOG_DIR / f"run_{run_id}_manifest.json"
-    )  # Handling both run_ and direct
+    )
     if not sidecar_manifest.exists():
         sidecar_manifest = config.RUN_LOG_DIR / f"{run_id}_manifest.json"
 
@@ -201,57 +211,65 @@ def get_verification_certificate(run_id):
     ), 404
 
 
-@core_bp.route("/v1/verify/<run_id>", methods=["GET"])
+@trust_bp.route("/v1/verify/<run_id>", methods=["GET"])
 def verify_run_public(run_id):
     """
     Public Verification API (Unprotected).
     Verifies the integrity of a run trace against its issued certificate.
-    Returns the boolean verification status and metadata.
+    [INDUSTRIAL NORMALIZATION]: Strictly uses the runs/<run_id>/ standard directory.
     """
     from eval_runner.verifier import TraceVerifier
 
-    # 1. Authoritative Lookup (Same logic as get_verification_certificate)
-    cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-    trace_path = config.RUN_LOG_DIR / f"{run_id}.jsonl"
+    # Authoritative Absolute Resolution
+    run_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    trace_path = (run_dir / "run.jsonl").resolve()
+    manifest_path = (run_dir / "run_manifest.json").resolve()
 
-    if not cert_path.exists():
-        # Fallback to sidecar locations
-        sidecar_manifest = config.RUN_LOG_DIR / f"run_{run_id}_manifest.json"
-        if not sidecar_manifest.exists():
-            sidecar_manifest = config.RUN_LOG_DIR / f"{run_id}_manifest.json"
-        cert_path = sidecar_manifest
+    print(f"   [Gating] Checking Integrity for {run_id}...", flush=True)
+
+    if not manifest_path.exists():
+        # Fallback for runs certified before normalization or via legacy reporting
+        sidecar = (config.RUN_LOG_DIR / f"{run_id}_manifest.json").resolve()
+        if sidecar.exists(): 
+            manifest_path = sidecar
+            print(f"   [Gating] Manifest found at sidecar: {manifest_path}", flush=True)
+        else:
+            print(f"   [Gating] 404 FAIL: Manifest not found at {manifest_path} or {sidecar}", flush=True)
+            return jsonify({
+                "error": "Verification Failed: Trace or Certificate not found.",
+                "message": f"Run {run_id} has not been standardized for production gating."
+            }), 404
 
     if not trace_path.exists():
-        # Fallback to demo traces if applicable
-        demo_path = config.RUN_LOG_DIR / "demo" / f"{run_id}.jsonl"
-        if demo_path.exists():
-            trace_path = demo_path
-
-    if not cert_path.exists() or not trace_path.exists():
-        return (
-            jsonify(
-                {
-                    "run_id": run_id,
-                    "verified": False,
-                    "error": "Trace or Verification Certificate not found.",
-                    "status": "not_found",
-                }
-            ),
-            404,
-        )
+        # Resilient fallback for flat traces that haven't been migrated yet
+        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
+        if flat_trace.exists():
+            trace_path = flat_trace
+            print(f"   [Gating] Trace found at flat fallback: {trace_path}", flush=True)
+        else:
+            print(f"   [Gating] 404 FAIL: Trace not found at {trace_path} or {flat_trace}", flush=True)
+            return jsonify({"error": f"Evaluation trace for {run_id} missing."}), 404
 
     # 2. Execute Verification logic (unprotected bridge)
     try:
         # verify_trace handles both SHA-256 and ED25519 (if PK is in the manifest)
         # For public verification, we assume integrity check is the baseline.
-        is_valid = TraceVerifier.verify_trace(str(trace_path), str(cert_path))
+        print(f"   [Gating] Verifying {trace_path.name} vs {manifest_path.name}", flush=True)
+        is_valid = TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
+
+        # Forensic Audit: Determine if signature was verified
+        method = "SHA-256 integrity check"
+        with open(manifest_path, encoding="utf-8") as f:
+            manifest = json.load(f)
+            if manifest.get("provenance_chain"):
+                method = "ED25519 cryptographic signature proof"
 
         return jsonify(
             {
                 "run_id": run_id,
                 "verified": is_valid,
                 "timestamp": datetime.now().astimezone().isoformat(),
-                "method": "SHA-256 integrity check",
+                "method": method,
             }
         )
     except Exception as e:
@@ -434,17 +452,29 @@ def execute_demo_command():
         cmd_args = shlex.split(cmd)
 
         # On Windows, we must find the full path for non-exe binaries like multiagent-eval
-        if cmd_args[0].startswith("multiagent-eval"):
-            # Check for multiagent-eval.exe or .bat in PATH
+        if cmd_args[0] in ["multiagent-eval"]:
             import shutil as _shutil
-
+            import sys
+            
+            # 1. Try to find the binary in PATH
             exe = (
                 _shutil.which(cmd_args[0])
                 or _shutil.which(f"{cmd_args[0]}.exe")
                 or _shutil.which(f"{cmd_args[0]}.bat")
             )
+            
             if exe:
                 cmd_args[0] = exe
+            else:
+                # 2. Fallback to Module Invocation (Deterministic & Robust)
+                # Replaces ['multiagent-eval', 'subcommand', ...] with [sys.executable, '-m', 'eval_runner.cli', 'subcommand', ...]
+                # Or ['spec-to-eval', ...] with [sys.executable, '-m', 'eval_runner.cli', 'spec-to-eval', ...]
+                new_args = [sys.executable, "-m", "eval_runner.cli"]
+                if cmd_args[0] == "multiagent-eval":
+                    new_args.extend(cmd_args[1:])
+                else:
+                    new_args.extend(cmd_args)
+                cmd_args = new_args
 
         result = subprocess.run(cmd_args, shell=False, capture_output=True, text=True, timeout=60)
         return jsonify(
@@ -717,10 +747,18 @@ def get_run_status(run_id):
 @require_permission(Permission.EVAL_TRIGGER)
 def evaluate_scenario():
     """Trigger an evaluation in the background."""
+    # [INDUSTRIAL DIAGNOSTIC]: Log the incoming request body for forensic auditing
     data = request.json or {}
+    print(f"   [API] /api/evaluate - Request Body: {json.dumps(data)}", flush=True)
+    
     path_str = data.get("path")
     if not path_str:
-        return jsonify({"error": "Missing 'path' parameter"}), 400
+        # Check for 'scenario' as a fallback for legacy v1.3.x plugins
+        path_str = data.get("scenario")
+        
+    if not path_str:
+        print(f"   [API] 400 Bad Request - Missing 'path' parameter. Full Content: {request.get_data().decode()}", flush=True)
+        return jsonify({"error": "Missing 'path' parameter", "status": 400}), 400
 
     # Authoritative Path Resolution (v1.2.3 Hardening)
     path = Path(path_str)
@@ -926,7 +964,7 @@ def ping():
     return jsonify({"status": "pong", "version": f"v{config.VERSION}-verified"})
 
 
-@core_bp.route("/api/v1/identity/<identity_id>/public_key", methods=["GET"])
+@core_bp.route("/v1/identity/<identity_id>/public_key", methods=["GET"])
 @require_permission(Permission.IDENTITY_READ)
 def get_public_key(identity_id):
     """
@@ -946,7 +984,7 @@ def get_public_key(identity_id):
         return jsonify({"error": str(e)}), 500
 
 
-@core_bp.route("/api/v1/certify", methods=["POST"])
+@core_bp.route("/v1/certify", methods=["POST"])
 @require_permission(Permission.CERTIFY_WRITE)
 def certify_run():
     """
@@ -960,30 +998,70 @@ def certify_run():
     if not run_id:
         return jsonify({"error": "run_id is required"}), 400
 
-    # Industrial Resolve: Manifest must be within the run_log_dir
-    run_dir = config.RUN_LOG_DIR / run_id
-    trace_path = run_dir / "run.jsonl"
+    # Universal Trace Resolver: Finding the Source Telemetry
+    candidates = [
+        (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve(),      # Standard Nested
+        (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve(),         # Standard Flat
+        (config.RUN_LOG_DIR / "demo" / f"{run_id}.jsonl").resolve() # Demo Mode
+    ]
+    
+    source_trace = None
+    for cand in candidates:
+        if cand.exists():
+            source_trace = cand
+            break
+            
+    if not source_trace:
+        print(f"   [Certification] 404 FAIL: Source trace for {run_id} not found in candidates: {[str(c) for c in candidates]}", flush=True)
+        return jsonify({"error": f"Trace file for run_id '{run_id}' not found in audit registry."}), 404
 
-    if not trace_path.exists():
-        return jsonify({"error": f"Trace file for run_id '{run_id}' not found at {trace_path}"}), 404
-
+    # [STRUCTURAL NORMALIZATION]: Migrate to standard runs/<run_id>/run.jsonl
+    target_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target_trace = (target_dir / "run.jsonl").resolve()
+    
     try:
-        # [VC v3] Sign with provided compliance metadata
-        manifest = TraceVerifier.sign_trace(
-            str(trace_path),
-            identity_id=data.get("identity", "system_id"),
-            compliance_status=data.get("status", "pass"),
-            compliance_score=float(data.get("score", 1.0)),
-            policy_ref=data.get("policy_ref"),
-            ttl_days=int(data.get("ttl", config.GOVERNANCE_TTL_DAYS)),
-        )
+        # Atomic Copy-and-Read (ACR): Resilience for Windows File Locks (WinError 32)
+        import shutil
+        import tempfile
+        
+        # We always copy to the target location if it doesn't match the source
+        if source_trace.resolve() != target_trace.resolve():
+            shutil.copy2(source_trace, target_trace)
+            print(f"   [Normalization] Migrated {source_trace.name} -> {target_trace}", flush=True)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl") as tmp:
+            tmp_path = Path(tmp.name)
+            shutil.copy2(target_trace, tmp_path)
+            
+        try:
+            # [VC v3] Sign with provided compliance metadata
+            manifest = TraceVerifier.sign_trace(
+                str(tmp_path),
+                identity_id=data.get("identity", "system_id"),
+                compliance_status=data.get("status", "pass"),
+                compliance_score=float(data.get("score", 1.0)),
+                policy_ref=data.get("policy_ref"),
+                ttl_days=int(data.get("ttl", config.GOVERNANCE_TTL_DAYS)),
+            )
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+        # Authoritative Manifest Save (Standard Location)
+        manifest_path = target_dir / "run_manifest.json"
+        with open(manifest_path, "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=2)
 
         return jsonify(
             {
                 "status": "certified",
                 "run_id": run_id,
-                "manifest_path": str(run_dir / "run_manifest.json"),
-                "sha256": manifest.get("sha256"),
+                "manifest": {
+                    "sha256": manifest.get("sha256"),
+                    "manifest_path": str(manifest_path),
+                    "certified_at": datetime.now().isoformat()
+                }
             }
         )
     except Exception as e:

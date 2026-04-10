@@ -57,8 +57,8 @@ The harness supports three primary communication modes for agents:
 ### Community Benchmarks
 You can pull and format datasets from global benchmarks on-the-fly using URIs:
 ```bash
-multiagent-eval evaluate --path gaia://2023
-multiagent-eval evaluate --path assistantbench://v1
+multiagent-eval evaluate --run-id <id>
+multiagent-eval evaluate --run-id <id>
 ```
 
 ---

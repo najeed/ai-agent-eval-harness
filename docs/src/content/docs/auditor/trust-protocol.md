@@ -19,9 +19,9 @@ graph TD
     C --> E
     
     subgraph "Verification"
-        E -->|Public API| H[GET /api/v1/certificates]
+        E -->|Public API| H[GET /v1/certificates]
         H --> I[Deployment Gate]
-        I -->|Verify Auth| J[Public Key]
+        I -->|Verify Auth| J[Identity Registry]
         I -->|Verify Content| A
     end
 ```
@@ -66,7 +66,7 @@ The `gate` utility is the final gatekeeper for production deployments. It exits 
 3. Any item in the **Evidence Ledger** is missing or tampered with.
 
 ```bash
-multiagent-eval gate --run-id <id> --verify-ledger --public-key <path>
+multiagent-eval gate --run-id <id> --verify-ledger
 ```
 
 ---

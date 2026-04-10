@@ -30,7 +30,7 @@ Use the `langchain://` protocol to connect the harness to your agent service.
 
 ```bash
 multiagent-eval evaluate \
-  --path scenarios/retail \
+  --run-id <id> \
   --protocol langchain \
   --agent langchain://localhost:8000/execute_task \
   --agent-name "LangChain-Retail-Bot"

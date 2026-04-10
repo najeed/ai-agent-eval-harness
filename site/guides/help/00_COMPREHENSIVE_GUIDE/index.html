@@ -3989,13 +3989,13 @@ It is organized into three levels: <strong>Quick Start</strong>, <strong>User Ma
 <li><code>multiagent-eval console</code>: Launch the React Visual Debugger GUI for visual management.</li>
 <li><code>multiagent-eval doctor</code>: Check your environment health.</li>
 <li><code>multiagent-eval list --search &lt;query&gt;</code>: Search the scenario catalog (supports faceted filtering).</li>
-<li><code>multiagent-eval lint --path &lt;path&gt;</code>: Verify scenario quality and AES specification compliance.</li>
+<li><code>multiagent-eval lint --run-id <id>&lt;path&gt;</code>: Verify scenario quality and AES specification compliance.</li>
 <li><code>multiagent-eval spec-to-eval --fill-defaults</code>: Convert rough specs into valid, lint-passable scenarios.</li>
 <li><code>multiagent-eval auto-translate --input &lt;doc&gt;</code>: Convert PDFs/Docs into JSON scenarios using Ollama.</li>
 <li><code>multiagent-eval run --scenario &lt;benchmark-uri&gt;</code>: Zero-config execution for community benchmarks (GAIA, AssistantBench).</li>
-<li><code>multiagent-eval report --path &lt;path&gt;</code>: Generate a standalone Premium HTML report (reconstructed from any <code>.jsonl</code> trace).</li>
+<li><code>multiagent-eval report --run-id <id>&lt;path&gt;</code>: Generate a standalone Premium HTML report (reconstructed from any <code>.jsonl</code> trace).</li>
 <li><code>multiagent-eval gate --run &lt;id&gt;</code>: Enforce cryptographic integrity in a CI/CD pipeline using the <strong>Trust Protocol</strong>.</li>
-<li><code>multiagent-eval replay --path &lt;path&gt;</code>: View the step-by-step history of a run in terminal.</li>
+<li><code>multiagent-eval replay --run-id <id>&lt;path&gt;</code>: View the step-by-step history of a run in terminal.</li>
 <li>Advanced Utilities: <code>install</code>, <code>analyze</code>, <code>ci generate</code>, <code>failures search</code>, and <code>explain</code>.</li>
 </ul>
 <blockquote>
@@ -4015,7 +4015,7 @@ It is organized into three levels: <strong>Quick Start</strong>, <strong>User Ma
 </ul>
 <h3 id="22-advanced-cli">2.2 Advanced CLI<a class="headerlink" href="#22-advanced-cli" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>evaluate --path &lt;dir&gt; --attempts 3</code>: Run batch evaluations with pass@k scoring.</li>
+<li><code>evaluate --run-id <id>&lt;dir&gt; --attempts 3</code>: Run batch evaluations with pass@k scoring.</li>
 <li><code>import-drift --input &lt;pord.jsonl&gt;</code>: Convert production traces into regression tests.</li>
 <li><code>mutate --input &lt;file&gt; --type injection</code>: Generate adversarial test variants for red-teaming.</li>
 <li><strong>Advanced Utilities</strong>: <code>install</code>, <code>analyze</code>, <code>ci generate</code>, <code>failures search</code>, and <code>explain</code> (<a href="../../../cli_reference/">Reference</a>).</li>

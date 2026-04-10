@@ -40,7 +40,7 @@ AGENT_API_URL=http://localhost:5001/execute
 Run a benchmark using the default HTTP protocol:
 
 ```bash
-multiagent-eval evaluate --path industries/telecom
+multiagent-eval evaluate --run-id <id>
 ```
 
 ---
@@ -68,19 +68,19 @@ MultiAgentEval includes native adapters for the leading agentic frameworks.
 ### AutoGen
 ```bash
 pip install pyautogen
-multiagent-eval evaluate --path industries/finance --protocol autogen --agent autogen://localhost:5002
+multiagent-eval evaluate --run-id <id> --protocol autogen --agent autogen://localhost:5002
 ```
 
 ### LangChain / LangGraph
 ```bash
 pip install langchain langgraph
-multiagent-eval evaluate --path industries/retail --protocol langgraph --agent langgraph://localhost:8000/graph
+multiagent-eval evaluate --run-id <id> --protocol langgraph --agent langgraph://localhost:8000/graph
 ```
 
 ### CrewAI
 ```bash
 pip install crewai
-multiagent-eval evaluate --path industries/telecom --protocol crewai
+multiagent-eval evaluate --run-id <id> --protocol crewai
 ```
 
 ---
@@ -90,7 +90,7 @@ multiagent-eval evaluate --path industries/telecom --protocol crewai
 ### Trace Replay
 If your agent makes a "wrong turn," use the `replay` command to step through the interaction logs.
 ```bash
-multiagent-eval replay --path runs/run.jsonl
+multiagent-eval replay --run-id <id>
 ```
 
 ### Visual Debugger
