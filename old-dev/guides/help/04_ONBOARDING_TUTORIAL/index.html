@@ -4104,7 +4104,7 @@
 <h3 id="step-1-pick-a-built-in-industry-scenario">✅ Step 1: Pick a built-in industry scenario<a class="headerlink" href="#step-1-pick-a-built-in-industry-scenario" title="Permanent link">&para;</a></h3>
 <p>The harness includes industry scenarios under <code>industries/</code>. You can use the <code>list</code> command above or browse the file system.</p>
 <h3 id="step-2-run-the-evaluation">✅ Step 2: Run the evaluation<a class="headerlink" href="#step-2-run-the-evaluation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>industries/telecom<span class="w"> </span>--export
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--export
 </code></pre></div>
 <hr />
 <h2 id="3-add-your-own-industry-scenario">3 Add your own industry / scenario<a class="headerlink" href="#3-add-your-own-industry-scenario" title="Permanent link">&para;</a></h2>
@@ -4122,12 +4122,12 @@
 <hr />
 <h2 id="4-validate-scenario-quality">4 Validate Scenario Quality<a class="headerlink" href="#4-validate-scenario-quality" title="Permanent link">&para;</a></h2>
 <p>Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>multiagent-eval<span class="w"> </span>lint<span class="w"> </span>--path<span class="w"> </span>industries/retail/scenarios/starter_scenario.json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>multiagent-eval<span class="w"> </span>lint<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <hr />
 <h2 id="5-inspect-the-output">5 Inspect the Output<a class="headerlink" href="#5-inspect-the-output" title="Permanent link">&para;</a></h2>
 <h3 id="replay-the-run-trace">✅ Replay the run trace<a class="headerlink" href="#replay-the-run-trace" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--path<span class="w"> </span>runs/run.jsonl
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <h3 id="view-in-the-visual-dashboard">✅ View in the Visual Dashboard<a class="headerlink" href="#view-in-the-visual-dashboard" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>multiagent-eval<span class="w"> </span>console
@@ -4144,7 +4144,7 @@
 <ul>
 <li>✅ Read the <strong>User Manual</strong> (<code>docs/guides/help/02_USER_MANUAL.md</code>).</li>
 <li>🧠 Read the <strong>Developer Guide</strong> (<code>docs/guides/help/03_DEVELOPER_GUIDE.md</code>) for adapters and plugins.</li>
-<li>📂 <strong>Path Decoupling (v1.1+)</strong>: You don't have to keep scenarios in <code>industries/</code>. You can now run <code>multiagent-eval evaluate --path &lt;any_folder&gt;</code> and it will work out of the box!</li>
+<li>📂 <strong>Path Decoupling (v1.1+)</strong>: You don't have to keep scenarios in <code>industries/</code>. You can now run <code>multiagent-eval evaluate --run-id &lt;id&gt;&lt;any_folder&gt;</code> and it will work out of the box!</li>
 </ul>
 <p>Happy evaluating!</p>
 

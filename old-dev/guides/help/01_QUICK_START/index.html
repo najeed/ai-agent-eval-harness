@@ -4058,11 +4058,11 @@
 </code></pre></div></p>
 <h3 id="3-run-an-evaluation">3. Run an Evaluation<a class="headerlink" href="#3-run-an-evaluation" title="Permanent link">&para;</a></h3>
 <p>Access the global library of <strong>5,000+ industry-grade scenarios</strong>.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>industries/telecom
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="4-validate-benchmarks">4. Validate Benchmarks<a class="headerlink" href="#4-validate-benchmarks" title="Permanent link">&para;</a></h3>
 <p>Ensure your custom benchmarks are AES v1.3 compliant.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>multiagent-eval<span class="w"> </span>aes<span class="w"> </span>validate<span class="w"> </span>--path<span class="w"> </span>my_benchmarks
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>multiagent-eval<span class="w"> </span>aes<span class="w"> </span>validate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <hr />
 <h2 id="viewing-results">📊 Viewing Results<a class="headerlink" href="#viewing-results" title="Permanent link">&para;</a></h2>
@@ -4074,7 +4074,7 @@
 <hr />
 <h2 id="replay-a-run-trace">🔍 Replay a Run Trace<a class="headerlink" href="#replay-a-run-trace" title="Permanent link">&para;</a></h2>
 <p>Inspect exactly what happened during an evaluation (agent prompts, tool calls, metrics):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--path<span class="w"> </span>runs/run.jsonl
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <hr />
 <h2 id="useful-environment-variables">⚙️ Useful Environment Variables<a class="headerlink" href="#useful-environment-variables" title="Permanent link">&para;</a></h2>

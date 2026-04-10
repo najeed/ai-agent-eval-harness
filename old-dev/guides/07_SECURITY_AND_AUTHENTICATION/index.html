@@ -4525,13 +4525,13 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 <p>A <strong>Behavioral Fingerprint</strong> (or Verification Certificate - VC) is a signed JSON snapshot that ensures a run's environment precisely matches the intended evaluation criteria.
 - <strong>Content Integrity</strong>: Uses <strong>SHA-256 content hashing</strong> to generate a unique fingerprint of the raw <code>.jsonl</code> trace file. If a single character in the trace is modified post-execution, the hash mismatch invalidates the certificate.
 - <strong>Scenario Topology</strong>: The fingerprint includes a cryptographic binding to the scenario's DAG structure and tool definitions, ensuring the agent was not tested against a weakened or modified variant.
-- <strong>CLI Issuance</strong>: The <code>certify --path &lt;trace.jsonl&gt;</code> command is used to issue a non-repudiable Verification Certificate (VC) for a specific run trace.</p>
+- <strong>CLI Issuance</strong>: The <code>certify --run-id &lt;id&gt;</code> command is used to issue a non-repudiable Verification Certificate (VC) for a specific run trace.</p>
 <h3 id="b-certification-api">B. Certification API<a class="headerlink" href="#b-certification-api" title="Permanent link">&para;</a></h3>
 <p>The <strong>Certification API</strong> serves as a public "Trust Anchor," allowing external systems and CI/CD gates to verify the authenticity of an evaluation run without requiring administrative access to the harness.</p>
 <ul>
 <li><strong>Endpoint</strong>: <code>GET /api/v1/certificates/&lt;run_id&gt;</code></li>
 <li><strong>Response</strong>: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the <strong>signature_ed25519</strong> field from the issuing harness.</li>
-<li><strong>Verification CLI</strong>: Stakeholders can use the <code>verify --path &lt;trace.jsonl&gt;</code> command locally or the <code>gate --vc &lt;vc.json&gt;</code> command in CI/CD pipelines to verify the signature (authoritative field: <code>signature_ed25519</code>) and re-compute the trace hash locally to prove absolute veracity.</li>
+<li><strong>Verification CLI</strong>: Stakeholders can use the <code>verify --run-id &lt;id&gt;</code> command locally or the <code>gate --run-id &lt;id&gt;</code> command in CI/CD pipelines to verify the signature (authoritative field: <code>signature_ed25519</code>) and re-compute the trace hash locally to prove absolute veracity.</li>
 </ul>
 <h3 id="c-hms-ready-architecture">C. HMS-Ready Architecture<a class="headerlink" href="#c-hms-ready-architecture" title="Permanent link">&para;</a></h3>
 <p>The Trust Protocol is designed for <strong>HMS-Readiness</strong>, supporting the transition to professional Hardware Security Modules (HSM) or Cloud KMS providers.

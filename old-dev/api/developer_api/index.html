@@ -1179,10 +1179,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get-apiv1certificatesrun_id" class="md-nav__link">
+  <a href="#get-v1certificatesrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GET /api/v1/certificates/&lt;run_id&gt;
+        GET /v1/certificates/&lt;run_id&gt;
       
     </span>
   </a>
@@ -1190,10 +1190,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get-apiv1verifyrun_id" class="md-nav__link">
+  <a href="#get-v1verifyrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GET /api/v1/verify/&lt;run_id&gt;
+        GET /v1/verify/&lt;run_id&gt;
       
     </span>
   </a>
@@ -4080,10 +4080,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get-apiv1certificatesrun_id" class="md-nav__link">
+  <a href="#get-v1certificatesrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GET /api/v1/certificates/&lt;run_id&gt;
+        GET /v1/certificates/&lt;run_id&gt;
       
     </span>
   </a>
@@ -4091,10 +4091,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get-apiv1verifyrun_id" class="md-nav__link">
+  <a href="#get-v1verifyrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GET /api/v1/verify/&lt;run_id&gt;
+        GET /v1/verify/&lt;run_id&gt;
       
     </span>
   </a>
@@ -4130,7 +4130,7 @@
 <h3 id="execution-commands">🚀 Execution Commands<a class="headerlink" href="#execution-commands" title="Permanent link">&para;</a></h3>
 <h4 id="evaluate-batch-processing"><code>evaluate</code> — Batch Processing<a class="headerlink" href="#evaluate-batch-processing" title="Permanent link">&para;</a></h4>
 <p>Run evaluations on one or more scenarios.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>&lt;path&gt;<span class="w"> </span><span class="o">[</span>--agent<span class="w"> </span>&lt;url&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--protocol<span class="w"> </span>&lt;p&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--attempts<span class="w"> </span>K<span class="o">]</span><span class="w"> </span><span class="o">[</span>--limit<span class="w"> </span>N<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;&lt;path&gt;<span class="w"> </span><span class="o">[</span>--agent<span class="w"> </span>&lt;url&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--protocol<span class="w"> </span>&lt;p&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--attempts<span class="w"> </span>K<span class="o">]</span><span class="w"> </span><span class="o">[</span>--limit<span class="w"> </span>N<span class="o">]</span>
 </code></pre></div>
 - <code>--path</code>: (Required) Path to scenario file, directory, or <code>.jsonl</code> dataset.
 - <code>--agent</code>: Unified target. Can be a URL (HTTP), a shell command (local), or an address (socket).
@@ -4151,13 +4151,15 @@
 <li><code>playground</code>: Open an interactive REPL to talk to your agent directly.</li>
 </ul>
 <h4 id="replay-trace-debugging"><code>replay</code> — Trace Debugging<a class="headerlink" href="#replay-trace-debugging" title="Permanent link">&para;</a></h4>
-<p>Re-execute a <code>run.jsonl</code> flight recorder log to debug "wrong turns".</p>
+<p>Replay a run interaction history using the Flight Recorder.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+</code></pre></div></p>
 <hr />
 <h3 id="trust-protocol-certification-gating">🛡️ Trust Protocol (Certification &amp; Gating)<a class="headerlink" href="#trust-protocol-certification-gating" title="Permanent link">&para;</a></h3>
 <p>The Trust Protocol ensures that evaluations are authentic and tamper-proof.</p>
 <h4 id="certify-generate-manifest"><code>certify</code> — Generate Manifest<a class="headerlink" href="#certify-generate-manifest" title="Permanent link">&para;</a></h4>
 <p>Signed integrity anchoring for a run.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--identity<span class="w"> </span>&lt;id&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--status<span class="w"> </span>&lt;s&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--score<span class="w"> </span>&lt;n&gt;<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--identity<span class="w"> </span>&lt;id&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--status<span class="w"> </span>&lt;s&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--score<span class="w"> </span>&lt;n&gt;<span class="o">]</span>
 </code></pre></div>
 - <code>--run-id</code>: [SSOT] Standard Run ID for autonomous artifact discovery (Recommended).
 - <code>--identity</code>: Identity ID to use for signing (default: <code>system_id</code>).
@@ -4167,12 +4169,12 @@
 - <code>--fingerprint</code>: Optional hardware/environment fingerprint ID.
 - Generates a <code>Verification Certificate (VC)</code> with SHA-256 and Identity-based signing.</p>
 <h4 id="verify-integrity-check"><code>verify</code> — Integrity Check<a class="headerlink" href="#verify-integrity-check" title="Permanent link">&para;</a></h4>
-<p>Cryptographic validation of a trace.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>verify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--path<span class="w"> </span>&lt;path&gt;<span class="o">]</span>
+<p>Cryptographic validation of a trace using autonomous artifact resolution.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>multiagent-eval<span class="w"> </span>verify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h4 id="gate-cicd-enforcement"><code>gate</code> — CI/CD Enforcement<a class="headerlink" href="#gate-cicd-enforcement" title="Permanent link">&para;</a></h4>
 <p>The gatekeeper for production deployments. Exits with code <code>1</code> on verification failure.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>multiagent-eval<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--public-key<span class="w"> </span>&lt;path&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verify-ledger<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--hash<span class="w"> </span>&lt;commit_hash&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verify-ledger<span class="o">]</span>
 </code></pre></div>
 - <code>--run-id</code>: [SSOT] Standard Run ID for autonomous artifact discovery.
 - <code>--verify-ledger</code>: Perform full forensic hash check of all sidecar artifacts.
@@ -4238,11 +4240,11 @@
 <tbody>
 <tr>
 <td><code>report</code></td>
-<td>Generate a stylized HTML report including reconstruction of Mermaid maps.</td>
+<td>Generate a stylized HTML report from a Run ID using autonomous resolution.</td>
 </tr>
 <tr>
 <td><code>explain</code></td>
-<td>AI-powered root cause diagnosis with Tiered Confidence Scoring.</td>
+<td>AI-powered root cause diagnosis via Run ID forensic resolution.</td>
 </tr>
 <tr>
 <td><code>leaderboard</code></td>
@@ -4250,7 +4252,7 @@
 </tr>
 <tr>
 <td><code>calibrate</code></td>
-<td>Measure judge agreement against human-labeled ground truth (<code>--golden</code>).</td>
+<td>Measure judge agreement against human-labeled ground truth via Run ID.</td>
 </tr>
 </tbody>
 </table>
@@ -4344,10 +4346,10 @@
 <hr />
 <h2 id="public-trust-api-rest">🌐 Public Trust API (REST)<a class="headerlink" href="#public-trust-api-rest" title="Permanent link">&para;</a></h2>
 <p>For external systems (Deployment Gates, Audit Dashboards) that need programmatic verification.</p>
-<h3 id="get-apiv1certificatesrun_id"><code>GET /api/v1/certificates/&lt;run_id&gt;</code><a class="headerlink" href="#get-apiv1certificatesrun_id" title="Permanent link">&para;</a></h3>
-<p>Retrieves the authoritative Verification Certificate (VC) for a specific run.</p>
-<h3 id="get-apiv1verifyrun_id"><code>GET /api/v1/verify/&lt;run_id&gt;</code><a class="headerlink" href="#get-apiv1verifyrun_id" title="Permanent link">&para;</a></h3>
-<p>Stateless verification bridge returning the boolean verification status.</p>
+<h3 id="get-v1certificatesrun_id"><code>GET /v1/certificates/&lt;run_id&gt;</code><a class="headerlink" href="#get-v1certificatesrun_id" title="Permanent link">&para;</a></h3>
+<p>Retrieves the authoritative Verification Certificate (VC) for a specific run from the archive.</p>
+<h3 id="get-v1verifyrun_id"><code>GET /v1/verify/&lt;run_id&gt;</code><a class="headerlink" href="#get-v1verifyrun_id" title="Permanent link">&para;</a></h3>
+<p>Stateless verification bridge returning the boolean verification status via autonomous artifact resolution.</p>
 
 
 

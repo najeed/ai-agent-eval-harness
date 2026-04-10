@@ -5153,7 +5153,7 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 <ul>
 <li><strong>Key Generation</strong>: If <code>AES_PRIVATE_KEY</code> is missing from <code>.env</code>, the engine auto-generates a key in <code>.aes/keys/</code>.</li>
 <li><strong>Manifest Signing</strong>: The <code>ArtifactPlugin</code> generates an <code>audit_manifest.json</code> for every run, containing hashes of all traces and reports, signed by the system's private key.</li>
-<li><strong>Verification</strong>: Use <code>multiagent-eval verify --path &lt;trace&gt;</code> to validate the signature against the public key.</li>
+<li><strong>Verification</strong>: Use <code>multiagent-eval verify --run-id &lt;id&gt;</code> to validate the signature against the public key.</li>
 </ul>
 <h3 id="122-cicd-hard-gates">12.2 CI/CD Hard Gates<a class="headerlink" href="#122-cicd-hard-gates" title="Permanent link">&para;</a></h3>
 <p>The <code>gate</code> command enforces these signatures in pipeline environments, preventing unverified or tampered results from passing the build.</p>

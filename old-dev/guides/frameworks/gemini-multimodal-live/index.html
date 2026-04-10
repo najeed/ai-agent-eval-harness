@@ -3789,10 +3789,10 @@
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="2-register-the-agent">2. Register the Agent<a class="headerlink" href="#2-register-the-agent" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>scenarios/<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Gemini-1.5-Pro-Live&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Gemini-1.5-Pro-Live&quot;</span>
 </code></pre></div>
 <h2 id="3-generate-verified-report">3. Generate Verified Report<a class="headerlink" href="#3-generate-verified-report" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--path<span class="w"> </span>runs/run.jsonl<span class="w"> </span>--share
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--share
 </code></pre></div>
 
 

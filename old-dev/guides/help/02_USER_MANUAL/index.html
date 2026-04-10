@@ -5236,7 +5236,7 @@
 <hr />
 <h2 id="running-evaluations-cli">▶️ Running Evaluations (CLI)<a class="headerlink" href="#running-evaluations-cli" title="Permanent link">&para;</a></h2>
 <h3 id="evaluate-batch-evaluation">🧪 <code>evaluate</code> — batch evaluation<a class="headerlink" href="#evaluate-batch-evaluation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>industries/telecom<span class="w"> </span>--format<span class="w"> </span>jsonl<span class="w"> </span>--output<span class="w"> </span>reports/latest_results.json<span class="w"> </span>--attempts<span class="w"> </span><span class="m">3</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--format<span class="w"> </span>jsonl<span class="w"> </span>--output<span class="w"> </span>reports/latest_results.json<span class="w"> </span>--attempts<span class="w"> </span><span class="m">3</span>
 </code></pre></div>
 <p><strong>Key options:</strong>
 - <code>--path</code> (required): Path to scenario file, directory, or remote URI
@@ -5295,13 +5295,23 @@
 </tr>
 <tr>
 <td><code>replay</code></td>
-<td><code>--path</code></td>
+<td><code>--run-id</code></td>
 <td>Replay a recorded trace via the Flight Recorder</td>
 </tr>
 <tr>
 <td><code>verify</code></td>
-<td><code>--path</code>, <code>--manifest</code></td>
-<td>Verify cryptographic integrity of a run trace</td>
+<td><code>--run-id</code></td>
+<td>Verify cryptographic integrity of a run trace using autonomous resolution</td>
+</tr>
+<tr>
+<td><code>certify</code></td>
+<td><code>--run-id</code>, <code>--identity</code></td>
+<td>Generate a Verification Certificate (VC) for a specific run</td>
+</tr>
+<tr>
+<td><code>gate</code></td>
+<td><code>--run-id</code>, <code>--verify-ledger</code></td>
+<td>Hard Gate CI/CD enforcement with Identity Registry verification</td>
 </tr>
 <tr>
 <td><code>quickstart</code></td>
@@ -5365,12 +5375,12 @@
 </tr>
 <tr>
 <td><code>calibrate</code></td>
-<td><code>--path</code>, <code>--plot</code></td>
+<td><code>--run-id</code>, <code>--plot</code></td>
 <td>Measure judge agreement against human labels</td>
 </tr>
 <tr>
 <td><code>explain</code></td>
-<td><code>--path</code></td>
+<td><code>--run-id</code></td>
 <td>Diagnose root causes from evaluation traces</td>
 </tr>
 <tr>
@@ -5385,7 +5395,7 @@
 </tr>
 <tr>
 <td><code>report</code></td>
-<td><code>--path</code>, <code>--share</code></td>
+<td><code>--run-id</code>, <code>--share</code></td>
 <td>Generate stylized HTML reports from run traces</td>
 </tr>
 <tr>
@@ -5505,7 +5515,7 @@
 </code></pre></div></p>
 <h3 id="report-premium-visual-reporting">🎨 <code>report</code> — Premium Visual Reporting<a class="headerlink" href="#report-premium-visual-reporting" title="Permanent link">&para;</a></h3>
 <p>Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--path<span class="w"> </span>runs/run_&lt;id&gt;.jsonl
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="scenario-generate-interactive-scaffolding">✨ <code>scenario generate</code> — Interactive Scaffolding<a class="headerlink" href="#scenario-generate-interactive-scaffolding" title="Permanent link">&para;</a></h3>
 <p>Bootstrap new test cases without writing JSON by hand.
@@ -5525,7 +5535,7 @@
 </code></pre></div></p>
 <h3 id="lint-quality-scoring">🧹 <code>lint</code> — Quality Scoring<a class="headerlink" href="#lint-quality-scoring" title="Permanent link">&para;</a></h3>
 <p>Check your scenarios for AES compliance and technical quality.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>multiagent-eval<span class="w"> </span>lint<span class="w"> </span>--path<span class="w"> </span>industries/telecom/scenarios/troubleshooting_v1.json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>multiagent-eval<span class="w"> </span>lint<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 - <strong>90-100</strong>: High quality, CI-ready.
 - <strong>70-89</strong>: Warning (Missing metadata or low complexity).
@@ -5542,7 +5552,7 @@
 </code></pre></div></p>
 <h3 id="explain-trace-analysis">🤖 <code>explain</code> — Trace Analysis<a class="headerlink" href="#explain-trace-analysis" title="Permanent link">&para;</a></h3>
 <p>Automated diagnostic analysis of <code>run.jsonl</code> traces to identify root causes of agent failures.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>multiagent-eval<span class="w"> </span>explain<span class="w"> </span>--path<span class="w"> </span>runs/run.jsonl
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>multiagent-eval<span class="w"> </span>explain<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="visual-scenario-editor">🛠️ Visual Scenario Editor<a class="headerlink" href="#visual-scenario-editor" title="Permanent link">&para;</a></h3>
 <p>Built into the Visual Debugger (<code>multiagent-eval console</code>), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.</p>
@@ -5593,7 +5603,7 @@ The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</c
 <ol>
 <li>(Optional) Run an industry batch:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>industries/&lt;your_industry&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;&lt;your_industry&gt;
 </code></pre></div>
 <h2 id="cumulative-industrial-registry-v130">Cumulative Industrial Registry (v1.3.0)<a class="headerlink" href="#cumulative-industrial-registry-v130" title="Permanent link">&para;</a></h2>
 <p>For high-stakes evaluations, the harness separates core infrastructure definitions from environment-specific overrides using a <strong>Cumulative Layered Model</strong>.</p>

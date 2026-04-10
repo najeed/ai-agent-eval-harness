@@ -4025,12 +4025,12 @@
 <hr />
 <h3 id="2-execution">2. Execution<a class="headerlink" href="#2-execution" title="Permanent link">&para;</a></h3>
 <p>Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (<code>run.jsonl</code>).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>scenarios/healthcare/
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <hr />
 <h3 id="3-running-the-calibrator">3. Running the Calibrator<a class="headerlink" href="#3-running-the-calibrator" title="Permanent link">&para;</a></h3>
 <p>Use the <code>calibrate</code> command to generate an alignment report.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>calibrate<span class="w"> </span>--path<span class="w"> </span>runs/latest_run.jsonl
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>calibrate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <h2 id="interpreting-alignment-metrics">Interpreting Alignment Metrics<a class="headerlink" href="#interpreting-alignment-metrics" title="Permanent link">&para;</a></h2>
 <h3 id="pearson-correlation">Pearson Correlation<a class="headerlink" href="#pearson-correlation" title="Permanent link">&para;</a></h3>

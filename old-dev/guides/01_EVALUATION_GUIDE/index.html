@@ -4084,10 +4084,10 @@
 <h2 id="community-benchmarks">Community Benchmarks<a class="headerlink" href="#community-benchmarks" title="Permanent link">&para;</a></h2>
 <p>Instead of relying solely on local <code>.json</code> or <code>.aes.yaml</code> files, the <code>multiagent-eval</code> can now pull and format datasets from major community benchmarks on-the-fly using URIs.</p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Load the 2023 GAIA validation set</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>gaia://2023
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Load AssistantBench tasks</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>assistantbench://v1
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 The universal loader will dynamically download these datasets, wrap them in compatible <code>Scenario</code> objects, and apply the correct specific evaluation metrics.</p>
 <h2 id="multi-agent-scenario-schema">Multi-Agent Scenario Schema<a class="headerlink" href="#multi-agent-scenario-schema" title="Permanent link">&para;</a></h2>
