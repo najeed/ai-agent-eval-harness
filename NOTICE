@@ -17,5 +17,13 @@ This product includes software developed by the following third-party projects:
 - opentelemetry-api (Apache 2.0)
 - opentelemetry-sdk (Apache 2.0)
 - google-genai (Apache 2.0)
+- pypdf (BSD-3-Clause)
+- python-docx (MIT)
+- streamlit (Apache 2.0)
+- pandas (BSD-3-Clause)
+- pygments (BSD-2-Clause)
+- langchain-core (MIT)
+- pyasn1 (BSD-2-Clause)
+- python-dotenv (BSD-3-Clause)
 
 For more information, see the LICENSES/ directory and COMPLIANCE.md.
