@@ -96,7 +96,7 @@ class SessionManager:
                     },
                 )
                 logger.info(
-                    "      [Routing] Infrastructure resolved " f"via capabilities: {capabilities}"
+                    f"      [Routing] Infrastructure resolved via capabilities: {capabilities}"
                 )
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:

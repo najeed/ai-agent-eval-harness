@@ -4,7 +4,7 @@ from pathlib import Path
 
 def main():
     print("============================================")
-    print("MultiAgentEval: Failure Bundle Generator")
+    print("AgentV: Failure Bundle Generator")
     print("============================================")
     print("\n   [Capture] Populating 10 varied failure traces for investigation...")
 

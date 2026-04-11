@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "MultiAgentEval"
+project = "AgentV"
 copyright = "2025, Najeed Khan"
 author = "Najeed Khan"
 release = "0.0.1"

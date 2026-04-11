@@ -1,6 +1,6 @@
 # Agent-Harness Interaction Contract (Agent API)
 
-This document describes the expected API contract between the MultiAgentEval harness and the AI agent under test. This is **not** the documentation for the harness's own REST API or CLI (see [Developer API](api/developer_api.md)).
+This document describes the expected API contract between the AgentV harness and the AI agent under test. This is **not** the documentation for the harness's own REST API or CLI (see [Developer API](api/developer_api.md)).
 
 ## Endpoint
 
@@ -252,4 +252,4 @@ The following industry-standard rubrics are available out-of-the-box:
 ```
 
 ## Visual Debugger Integration
-The **Visual Debugger** (`multiagent-eval console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React dashboard.
+The **Visual Debugger** (`agentv console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React dashboard.

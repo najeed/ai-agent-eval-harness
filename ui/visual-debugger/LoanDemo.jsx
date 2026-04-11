@@ -3,8 +3,8 @@ const { useState, useEffect } = React;
 // Authoritative Story Module Helpers (Established outside render to prevent unmount loops v1.2.3)
 const GetIcon = (props) => (window.Icon ? <window.Icon {...props} /> : null);
 const GetVisualDebugger = ({ apiFetch, ...props }) => (
-    window.VisualDebugger 
-        ? <window.VisualDebugger apiFetch={apiFetch} {...props} /> 
+    window.VisualDebugger
+        ? <window.VisualDebugger apiFetch={apiFetch} {...props} />
         : <div className="p-8 text-neutral-500">Debugger not loaded</div>
 );
 
@@ -123,11 +123,11 @@ const LoanDemo = ({ apiFetch }) => {
     };
 
     const handleGenerateAssets = async () => {
-        const cmd1 = 'multiagent-eval spec-to-eval --input sample_agent/loan_agent_demo/loan_prd.md --output sample_agent/loan_agent_demo/loan_approval_scenario.json';
+        const cmd1 = 'agentv spec-to-eval --input sample_agent/loan_agent_demo/loan_prd.md --output sample_agent/loan_agent_demo/loan_approval_scenario.json';
         const data = await runCommand(cmd1);
 
         if (data) {
-            const cmd2 = 'multiagent-eval aes validate --path sample_agent/loan_agent_demo/loan_approval_scenario.json --export sample_agent/loan_agent_demo/loan_approval.aes.yaml';
+            const cmd2 = 'agentv aes validate --path sample_agent/loan_agent_demo/loan_approval_scenario.json --export sample_agent/loan_agent_demo/loan_approval.aes.yaml';
             await runCommand(cmd2);
             fetch('/api/demo/loan/context')
                 .then(res => res.json())
@@ -138,7 +138,7 @@ const LoanDemo = ({ apiFetch }) => {
 
     const handleRunEval = async () => {
         setExecuting(true);
-        const cmd = 'multiagent-eval evaluate --path sample_agent/loan_agent_demo/loan_approval_scenario.json';
+        const cmd = 'agentv evaluate --path sample_agent/loan_agent_demo/loan_approval_scenario.json';
         setTerminalOutput(prev => [...prev,
         { type: 'cmd', text: `$ ${cmd}` }
         ]);
@@ -488,7 +488,7 @@ const LoanDemo = ({ apiFetch }) => {
                                     {executing && (
                                         <div className="flex gap-2 animate-pulse">
                                             <span className="text-emerald-500 font-bold">$</span>
-                                            <span className="text-slate-200">multiagent-eval evaluate --path ...</span>
+                                            <span className="text-slate-200">agentv evaluate --path ...</span>
                                             <span className="w-1.5 h-3.5 bg-emerald-500/50"></span>
                                         </div>
                                     )}
@@ -630,7 +630,7 @@ You MUST adhere to the following rules:
                             </div>
                             <div className="flex gap-4">
                                 <div className="px-6 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 font-black rounded-full text-[10px] uppercase tracking-widest flex items-center gap-2">
-                                    <Icon name="check" size={14} /> <span>FINAL PASS: multiagent-eval evaluate --path ...</span>
+                                    <Icon name="check" size={14} /> <span>FINAL PASS: agentv evaluate --path ...</span>
                                 </div>
                                 <button onClick={() => setStep(8)} className="px-6 py-2 bg-white text-black font-black rounded-full text-[10px] uppercase tracking-widest z-50">Scale with Confidence →</button>
                             </div>

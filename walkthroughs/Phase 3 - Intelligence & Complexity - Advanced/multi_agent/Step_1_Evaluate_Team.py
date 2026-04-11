@@ -21,7 +21,7 @@ def main():
     input("\n[Press ENTER] to launch the Silent Swarm...")
 
     # Run the evaluation
-    print(f"\n   [CLI] Running: multiagent-eval evaluate --path {scenario_path}")
+    print(f"\n   [CLI] Running: agentv evaluate --path {scenario_path}")
     print("   [Log] Initializing Researcher node...")
     time.sleep(1)
     print("   [Log] Researcher outputting sensor data to Writer...")

@@ -3,7 +3,7 @@ title: Finance Sector
 description: High-fidelity financial data extraction and auditing for AI agents.
 ---
 
-The Finance sector is the foundational "Anchor" for the MultiAgentEval engine, providing gold-standard XBRL and macro indicators for benchmarking financial agents.
+The Finance sector is the foundational "Anchor" for the AgentV engine, providing gold-standard XBRL and macro indicators for benchmarking financial agents.
 
 ## 📊 Status: **HARDENED**
 

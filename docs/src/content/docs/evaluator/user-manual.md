@@ -27,7 +27,7 @@ A specific step within a scenario.
 ### 🧪 `evaluate` — Batch Execution
 Run a suite of scenarios across a directory or industry registry.
 ```bash
-multiagent-eval evaluate \
+agentv evaluate \
   --run-id <id> \
   --agent http://localhost:5001/execute_task \
   --attempts 3 \
@@ -37,7 +37,7 @@ multiagent-eval evaluate \
 ### 🧩 `run` — Single Scenario
 Use this for rapid iteration during prompt engineering or scenario design.
 ```bash
-multiagent-eval run --scenario industries/finance/scenarios/loan_v1.json -v
+agentv run --scenario industries/finance/scenarios/loan_v1.json -v
 ```
 
 ### ⚡ CLI Command Quick Reference
@@ -52,7 +52,7 @@ multiagent-eval run --scenario industries/finance/scenarios/loan_v1.json -v
 
 ## 🖥️ Integrated Visual Suite
 
-The **Visual Console** (launch with `multiagent-eval console`) provides a high-density interface for trajectory analysis:
+The **Visual Console** (launch with `agentv console`) provides a high-density interface for trajectory analysis:
 
 - **Visual AES Builder**: Drag-and-drop node-based interface for designing scenarios.
 - **Trajectory Maps**: Interactive React Flow graphs showing every agent turn and tool call.
@@ -65,11 +65,11 @@ The **Visual Console** (launch with `multiagent-eval console`) provides a high-d
 ### Import Drift
 Convert production traces into actionable evaluation scenarios for regression testing.
 ```bash
-multiagent-eval import-drift --input logs.jsonl --industry healthcare
+agentv import-drift --input logs.jsonl --industry healthcare
 ```
 
 ### The Triage Engine
-MultiAgentEval isolates failures by combining three layers:
+AgentV isolates failures by combining three layers:
 1.  **State Layer (VFS)**: Compares physical sandbox changes against expectations.
 2.  **Logic Layer**: Detects reasoning loops and infinite re-planning stalls.
 3.  **Security Layer**: Pinpoints guardrail violations and PII leaks.

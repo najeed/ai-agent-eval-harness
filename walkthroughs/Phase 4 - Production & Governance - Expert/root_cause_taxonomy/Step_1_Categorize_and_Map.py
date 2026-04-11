@@ -5,7 +5,7 @@ from pathlib import Path
 
 def main():
     print("============================================")
-    print("MultiAgentEval: Root Cause Taxonomy")
+    print("AgentV: Root Cause Taxonomy")
     print("Scenario: The Forensic Heatmap")
     print("============================================")
 

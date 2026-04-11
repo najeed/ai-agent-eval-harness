@@ -3,7 +3,7 @@ from __future__ import annotations
 """
 loader.py
 
-This module provides utilities for loading scenario and dataset files for the MultiAgentEval.
+This module provides utilities for loading scenario and dataset files for the AgentV.
 It supports loading scenario JSON files with schema validation, and dataset loading for CSV/JSONL.
 """
 
@@ -17,9 +17,70 @@ from jsonschema import ValidationError  # type: ignore, E402, E402  # noqa: E402
 
 from .trace_utils import load_events  # noqa: E402
 
-# Load the schema once at module level (Industrial Standard v1.4.0)
-_SCHEMA_PATH = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
+# --- UNIVERSAL IMMUTABLE REGISTRY (Industrial Purity v1.4.0) ---
+_REGISTRY_CACHE = None
+_SPEC_ROOT = Path(__file__).parent.parent / "spec"
+_SCHEMA_PATH = _SPEC_ROOT / "aes" / "aes.schema.json"
 _SCENARIO_SCHEMA = None
+
+
+def _normalize_uri(p: Path) -> str:
+    """Industrial-grade URI normalization for Windows (Lower-case drive letters)."""
+    posix_path = p.as_posix()
+    if ":" in posix_path:
+        drive, rest = posix_path.split(":", 1)
+        posix_path = f"{drive.lower()}:{rest}"
+    return f"file:///{posix_path}"
+
+
+def get_universal_registry():
+    """
+    Core industrial-grade registry for all forensic specifications.
+    Pre-compiles root schemas and definitions into an immutable collection.
+    """
+    global _REGISTRY_CACHE
+    if _REGISTRY_CACHE is not None:
+        return _REGISTRY_CACHE
+
+    from referencing import Registry, Resource
+    from referencing.jsonschema import DRAFT7
+
+    registry = Registry()
+
+    # Recursively index every JSON file (Root Schemas and Definitions) in the spec/ directory
+    for json_path in _SPEC_ROOT.glob("**/*.json"):
+        try:
+            with open(json_path, encoding="utf-8") as f:
+                json_data = json.load(f)
+
+            # Industrial Hardening: Canonical URI normalization
+            file_uri = _normalize_uri(json_path)
+
+            # Anchor Logic: Ensure the resource knows its identity for relative $ref resolution
+            if "$id" not in json_data:
+                json_data["$id"] = file_uri
+
+            # Ensure every resource has a specification (default to DRAFT7 for fragments)
+            if "$schema" in json_data:
+                resource = Resource.from_contents(json_data)
+            else:
+                resource = Resource.from_contents(json_data, default_specification=DRAFT7)
+
+            registry = registry.with_resource(file_uri, resource)
+
+            # Optimization: Specifically index the parent for relative sibling resolution
+            if json_path.name.endswith(".schema.json"):
+                base_uri = _normalize_uri(json_path.parent) + "/"
+                registry = registry.with_resource(base_uri, resource)
+        except Exception as e:
+            # Critical Boot-Time Failure: Spec integrity is mandatory
+            import sys
+
+            sys.stderr.write(f"   [Loader] CRITICAL: Failed to index resource {json_path}: {e}\n")
+            raise
+
+    _REGISTRY_CACHE = registry
+    return _REGISTRY_CACHE
 
 
 def _get_schema() -> dict:
@@ -27,7 +88,7 @@ def _get_schema() -> dict:
     global _SCENARIO_SCHEMA
     if _SCENARIO_SCHEMA is None:
         with open(_SCHEMA_PATH) as f:
-            _SCENARIO_SCHEMA = json.loads(f.read())
+            _SCENARIO_SCHEMA = json.load(f)
     return _SCENARIO_SCHEMA
 
 
@@ -137,15 +198,23 @@ def load_scenario(
             f"This harness requires v1.4.0 for Forensic Integrity compliance."
         )
 
-    # Handle validation with Ref Resolution
+    # Handle validation with the Universal Immutable Registry (No-Debt Standard)
     try:
-        from jsonschema import RefResolver, ValidationError, validate
+        from jsonschema import ValidationError
+        from jsonschema.validators import validator_for
 
+        registry = get_universal_registry()
         schema = _get_schema()
-        # Resolve definitions relative to the root aes.schema.json
-        resolver = RefResolver(f"file:///{_SCHEMA_PATH.parent.as_posix()}/", schema)
 
-        validate(instance=scenario_data, schema=schema, resolver=resolver)
+        # Anchor Logic: Ensure the schema dict is associated with its canonical identity
+        # The Registry provides all external $ref resolution without I/O side effects
+        if "$id" not in schema:
+            schema["$id"] = _normalize_uri(_SCHEMA_PATH)
+
+        validator_cls = validator_for(schema)
+        validator = validator_cls(schema, registry=registry)
+        validator.validate(instance=scenario_data)
+
     except ValidationError as e:
         print(f"   [Loader] Validation Error in {file_path}: {e.message}")
         raise

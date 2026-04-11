@@ -1,17 +1,17 @@
 # Developer API & CLI Reference
 
-This document is the authoritative reference for AI engineers using the MultiAgentEval harness. It covers the CLI interface, environment configuration, and public Trust Protocol endpoints.
+This document is the authoritative reference for AI engineers using the AgentV harness. It covers the CLI interface, environment configuration, and public Trust Protocol endpoints.
 
 ## CLI Core Interface
 
-The `multiagent-eval` command-line interface is the primary entry point for all evaluation workflows.
+The `agentv` command-line interface is the primary entry point for all evaluation workflows.
 
 ### 🚀 Execution Commands
 
 #### `evaluate` — Batch Processing
 Run evaluations on one or more scenarios.
 ```bash
-multiagent-eval evaluate --run-id <id><path> [--agent <url>] [--protocol <p>] [--attempts K] [--limit N]
+agentv evaluate --run-id <id><path> [--agent <url>] [--protocol <p>] [--attempts K] [--limit N]
 ```
 - `--path`: (Required) Path to scenario file, directory, or `.jsonl` dataset.
 - `--agent`: Unified target. Can be a URL (HTTP), a shell command (local), or an address (socket).
@@ -26,7 +26,7 @@ multiagent-eval evaluate --run-id <id><path> [--agent <url>] [--protocol <p>] [-
 #### `run` — Single Scenario
 Execute a specific scenario or a Benchmark URI (e.g., `gaia://`).
 ```bash
-multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent-name <name>]
+agentv run --scenario <path_or_uri> [--attempts K] [--agent-name <name>]
 ```
 
 #### `record` & `playground` — Interactive Prototyping
@@ -36,7 +36,7 @@ multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent-name <name>
 #### `replay` — Trace Debugging
 Replay a run interaction history using the Flight Recorder.
 ```bash
-multiagent-eval replay --run-id <id>
+agentv replay --run-id <id>
 ```
 
 ---
@@ -48,7 +48,7 @@ The Trust Protocol ensures that evaluations are authentic and tamper-proof.
 #### `certify` — Generate Manifest
 Signed integrity anchoring for a run.
 ```bash
-multiagent-eval certify --run-id <id> [--identity <id>] [--status <s>] [--score <n>]
+agentv certify --run-id <id> [--identity <id>] [--status <s>] [--score <n>]
 ```
 - `--run-id`: [SSOT] Standard Run ID for autonomous artifact discovery (Recommended).
 - `--identity`: Identity ID to use for signing (default: `system_id`).
@@ -61,13 +61,13 @@ multiagent-eval certify --run-id <id> [--identity <id>] [--status <s>] [--score 
 #### `verify` — Integrity Check
 Cryptographic validation of a trace using autonomous artifact resolution.
 ```bash
-multiagent-eval verify --run-id <id>
+agentv verify --run-id <id>
 ```
 
 #### `gate` — CI/CD Enforcement
 The gatekeeper for production deployments. Exits with code `1` on verification failure.
 ```bash
-multiagent-eval gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
+agentv gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 ```
 - `--run-id`: [SSOT] Standard Run ID for autonomous artifact discovery.
 - `--verify-ledger`: Perform full forensic hash check of all sidecar artifacts.

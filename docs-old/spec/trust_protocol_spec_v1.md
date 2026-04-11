@@ -1,5 +1,5 @@
 # Trust Protocol Standard v1.4.1 (Forensic Baseline)
-The Trust Protocol is designed to provide **immutable proof of run integrity** for the MultiAgentEval Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate v3).
+The Trust Protocol is designed to provide **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate v3).
 
 ```mermaid
 graph TD

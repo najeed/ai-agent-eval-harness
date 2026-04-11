@@ -1,6 +1,6 @@
 ---
 title: Lifecycle Hooks Reference
-description: Detailed reference for all available MultiAgentEval plugin lifecycle hooks.
+description: Detailed reference for all available AgentV plugin lifecycle hooks.
 ---
 
 Hooks are the primary way to inject logic into the evaluation engine. All hooks are synchronous unless specified otherwise.
@@ -50,7 +50,7 @@ Hooks are the primary way to inject logic into the evaluation engine. All hooks 
 
 ### `on_register_commands(self, registry)`
 - **Trigger**: During CLI initialization.
-- **Use Case**: Add custom subcommands under `multiagent-eval plugin`.
+- **Use Case**: Add custom subcommands under `agentv plugin`.
 
 ### `on_register_console_routes(self, app, nav_registry)`
 - **Trigger**: When the Visual Suite (Flask) server starts.

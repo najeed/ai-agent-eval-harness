@@ -4,7 +4,7 @@ from pathlib import Path
 
 def main():
     print("============================================")
-    print("MultiAgentEval: Parity Drift Simulator")
+    print("AgentV: Parity Drift Simulator")
     print("============================================")
     print("\n   [Drifter] Introducing a subtle configuration discrepancy...")
 

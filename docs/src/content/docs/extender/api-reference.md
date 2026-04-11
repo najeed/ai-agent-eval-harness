@@ -1,13 +1,13 @@
 ---
 title: Extender API Reference
-description: Detailed reference for the MultiAgentEval Console REST API and internal core libraries.
+description: Detailed reference for the AgentV Console REST API and internal core libraries.
 ---
 
 The Extender API is designed for system integrators, dashboard developers, and platform engineers. It includes the Console REST API and the core libraries for orchestration and metrics.
 
 ## 🌉 Console REST API
 
-When running `multiagent-eval console`, the harness launches a Flask-based REST API (default: `http://localhost:5000/api`).
+When running `agentv console`, the harness launches a Flask-based REST API (default: `http://localhost:5000/api`).
 
 ### 🔐 Authentication & Permissions
 Access is governed by the [Security Protocol](/ai-agent-eval-harness/auditor/security/).

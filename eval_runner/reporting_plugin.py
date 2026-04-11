@@ -126,13 +126,13 @@ class ReportingPlugin(BaseEvalPlugin):
 # Generated on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 # 
 # Usage:
-# 1. Ensure you have the multiagent-eval installed: pip install .
+# 1. Ensure you have the agentv installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: multiagent-eval run --scenario {scenario_path}
+# 3. RUN: agentv run --scenario {scenario_path}
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-multiagent-eval run --scenario {scenario_path}
+agentv run --scenario {scenario_path}
 """
         # Additional safety for scenarios that might contain shell commands
         content = content.replace("os.system", "[REDACTED]").replace("subprocess", "[REDACTED]")

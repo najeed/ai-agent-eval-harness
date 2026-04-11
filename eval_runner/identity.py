@@ -1,7 +1,7 @@
 """
 identity.py
 
-Centralized Identity Service for MultiAgentEval.
+Centralized Identity Service for AgentV.
 Abstracts key discovery and cryptographic provenance across different backends.
 Supports Local PEM files by default, extensible to Vault or AWS KMS.
 """
@@ -98,8 +98,8 @@ class IdentityService:
             try:
                 priv = IdentityService.get_private_key(identity_id)
                 return priv.public_key()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Public key derivation fallback failed for {identity_id}: {e}")
 
         if key_path.exists():
             try:

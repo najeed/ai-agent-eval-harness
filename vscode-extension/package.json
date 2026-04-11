@@ -1,7 +1,7 @@
 {
   "name": "ai-agent-eval-harness",
-  "displayName": "MultiAgentEval",
-  "description": "VS Code extension for the MultiAgentEval",
+  "displayName": "AgentV",
+  "description": "VS Code extension for the AgentV",
   "version": "0.1.0",
   "publisher": "opencore",
   "engines": {
@@ -16,17 +16,17 @@
   "contributes": {
     "commands": [
       {
-        "command": "multiagent-eval.runScenario",
+        "command": "agentv.runScenario",
         "title": "Eval: Run Scenario"
       },
       {
-        "command": "multiagent-eval.openConsole",
+        "command": "agentv.openConsole",
         "title": "Eval: Open Visual Debugger"
       }
     ],
     "keybindings": [
       {
-        "command": "multiagent-eval.openConsole",
+        "command": "agentv.openConsole",
         "key": "f5",
         "when": "editorTextFocus"
       }

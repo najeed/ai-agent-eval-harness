@@ -12,7 +12,7 @@ from eval_runner import cli, tool_sandbox
 def test_cli_evaluate_bridge():
     # Covers line 308: asyncio.run(run_evaluate(args))
     with (
-        patch("sys.argv", ["multiagent-eval", "evaluate", "--path", "test.json"]),
+        patch("sys.argv", ["agentv", "evaluate", "--path", "test.json"]),
         patch(
             "eval_runner.handlers.evaluation.handle_evaluate", new_callable=AsyncMock
         ) as mock_eval,
@@ -27,7 +27,7 @@ def test_cli_evaluate_bridge():
 def test_cli_lint_bridge():
     # Covers line 312: handle_lint(args)
     with (
-        patch("sys.argv", ["multiagent-eval", "lint", "--path", "test.json"]),
+        patch("sys.argv", ["agentv", "lint", "--path", "test.json"]),
         patch("eval_runner.handlers.scenarios.handle_lint") as mock_lint,
     ):
         cli.main()
@@ -37,7 +37,7 @@ def test_cli_lint_bridge():
 def test_cli_init_bridge():
     # Covers line 314: handle_init(args)
     with (
-        patch("sys.argv", ["multiagent-eval", "init", "--dir", "tmp_init"]),
+        patch("sys.argv", ["agentv", "init", "--dir", "tmp_init"]),
         patch("eval_runner.handlers.environment.handle_init") as mock_init,
     ):
         cli.main()
@@ -48,7 +48,7 @@ def test_cli_list_metrics_bridge(capsys):
     # Covers lines 316-320: Registered Metrics list
     # The command is 'list-metrics'
     with (
-        patch("sys.argv", ["multiagent-eval", "list-metrics"]),
+        patch("sys.argv", ["agentv", "list-metrics"]),
         patch("eval_runner.metrics.MetricRegistry._metrics", {"test_metric": 1}),
     ):
         cli.main()
@@ -60,7 +60,7 @@ def test_cli_list_metrics_bridge(capsys):
 def test_cli_install_bridge():
     # Covers line 380: handle_install(args)
     with (
-        patch("sys.argv", ["multiagent-eval", "install", "telecom-pack"]),
+        patch("sys.argv", ["agentv", "install", "telecom-pack"]),
         patch("eval_runner.handlers.environment.handle_install") as mock_inst,
     ):
         cli.main()
@@ -70,7 +70,7 @@ def test_cli_install_bridge():
 def test_cli_calibrate_bridge():
     # Covers line 392: handle_calibrate(args)
     with (
-        patch("sys.argv", ["multiagent-eval", "calibrate", "--run-id", "test-run"]),
+        patch("sys.argv", ["agentv", "calibrate", "--run-id", "test-run"]),
         patch("eval_runner.handlers.analysis.handle_calibrate") as mock_cal,
     ):
         cli.main()

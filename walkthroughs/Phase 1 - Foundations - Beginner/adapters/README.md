@@ -23,7 +23,7 @@ python walkthroughs/Phase 1 - Foundations - Beginner/adapters/Step_1_Configure_A
 ### Step 3: Run the Local Evaluation
 Once configured, execute a scenario against our `local_agent_shim.py` mock.
 ```bash
-multiagent-eval evaluate --path scenarios/telecom/connectivity_check.json
+agentv evaluate --path scenarios/telecom/connectivity_check.json
 ```
 
 ## 📊 Key Concepts

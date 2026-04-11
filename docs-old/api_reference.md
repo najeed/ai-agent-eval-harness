@@ -64,4 +64,4 @@ Retrieves the authoritative Verification Certificate (VC) for a specific run, in
 For headless CI/CD, use the following pattern:
 1. POST to `/api/evaluate`
 2. Poll the report directory for the generated `aggregated_results.json` or `run.jsonl`.
-3. Verify the run using the `multiagent-eval verify` CLI tool for industrial gating.
+3. Verify the run using the `agentv verify` CLI tool for industrial gating.

@@ -1,7 +1,7 @@
 """
 plugins.py
 
-Plugin management system for MultiAgentEval.
+Plugin management system for AgentV.
 Handles dynamic discovery and loading of evaluation plugins.
 Updated to respect Zero-Touch architecture and immutable core.
 """
@@ -92,28 +92,62 @@ class PluginManager:
                 plugin_cls = entry_point.load()
                 if not any(isinstance(p, plugin_cls) for p in self.plugins):
                     self.plugins.append(plugin_cls())
-            except Exception:
-                pass
+            except Exception as e:
+                # Forensic Transparency: Log all entry-point failures
+                print(
+                    f"   [PluginManager] Warning: Entry-point load failure "
+                    f"({entry_point.name}): {e}"
+                )
 
-        # 2. Load manually registered persistent plugins
+        # 2. Load manually registered persistent plugins (Industrial Dictionary Schema Only)
         if PERSISTENT_PLUGINS_PATH.exists():
             try:
+                from jsonschema.validators import validator_for
+
+                from .loader import get_universal_registry
+
                 with open(PERSISTENT_PLUGINS_PATH, encoding="utf-8") as f:
-                    persistent = json.load(f)
-                    for plugin_path in persistent.get("plugins", []):
-                        try:
-                            # Assuming format "module.ClassName"
-                            module_name, class_name = plugin_path.rsplit(".", 1)
-                            module = importlib.import_module(module_name)
-                            plugin_cls = getattr(module, class_name)
-                            if not any(isinstance(p, plugin_cls) for p in self.plugins):
-                                self.plugins.append(plugin_cls())
-                        except Exception as e:
-                            print(
-                                f"   [PluginManager] Failed to load persistent plugin {plugin_path}: {e}"  # noqa: E501
-                            )
+                    registry_data = json.load(f)
+
+                # --- Forensic Purity: Validate the Registry against the Universal Schema ---
+                universal_registry = get_universal_registry()
+                # Resolve the official plugins schema
+                schema_path = config.PROJECT_ROOT / "spec" / "plugins" / "plugins.schema.json"
+                schema_uri = schema_path.as_uri()
+                try:
+                    schema_resource = universal_registry.resolver().lookup(schema_uri).contents
+                    validator_cls = validator_for(schema_resource)
+                    validator = validator_cls(schema_resource, registry=universal_registry)
+                    validator.validate(instance=registry_data)
+                except Exception as ve:
+                    # Registry Drift detected: This is a critical forensic warning
+                    msg = (
+                        f"   [PluginManager] CRITICAL: Registry Drift in {PERSISTENT_PLUGINS_PATH}"
+                    )
+                    print(f"{msg}: {ve}")
+                    # In purity mode, we proceed but the warning is logged to the forensic trail
+
+                for plugin_def in registry_data.get("plugins", []):
+                    if not plugin_def.get("enabled", True):
+                        continue
+
+                    module_path = plugin_def.get("module")
+                    if not module_path:
+                        continue
+
+                    try:
+                        # Standard format "module.ClassName"
+                        module_name, class_name = module_path.rsplit(".", 1)
+                        module = importlib.import_module(module_name)
+                        plugin_cls = getattr(module, class_name)
+                        if not any(isinstance(p, plugin_cls) for p in self.plugins):
+                            self.plugins.append(plugin_cls())
+                    except Exception as e:
+                        print(f"   [PluginManager] Failed to load plugin {module_path}: {e}")
             except Exception as e:
-                print(f"   [PluginManager] Failed to read {PERSISTENT_PLUGINS_PATH}: {e}")
+                # Fail Fast: Registry corruption is a forensic blocker
+                msg = f"CRITICAL: Failed to read forensic registry {PERSISTENT_PLUGINS_PATH}: {e}"
+                raise ValueError(msg) from e
 
         # 3. Dynamic search in project-root 'plugins' directory
         root_plugins = discovery.discover_plugins_in_directory(
@@ -124,7 +158,7 @@ class PluginManager:
                 self.plugins.append(p)
 
         # 4. Fallback for Internal Essential Plugins & Ecosystem Adapters
-        # Industrial-Grade Discovery: Ensures core capabilities are loaded even if entry-points are shadowed., E501, E501  # noqa: E501
+        # Discovery: Ensures core capabilities are loaded if entry-points are shadowed.
         internal_manifest = []
 
         # -- Core Essentials --
@@ -133,6 +167,7 @@ class PluginManager:
 
             internal_manifest.append(CoveragePlugin)
         except ImportError:
+            # Debug log only for internal skips (expected in some envs)
             pass
 
         try:
@@ -270,37 +305,46 @@ class PluginManager:
                     )
         return True
 
-    def register_persistent(self, plugin_path: str):
-        """Register a plugin persistently by adding it to plugins.json."""
+    def register_persistent(self, plugin_path: str, plugin_id: str | None = None):
+        """Register a plugin persistently using the modern dictionary schema."""
         PERSISTENT_PLUGINS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        data = {"plugins": []}
+        registry = {"plugins": []}
         if PERSISTENT_PLUGINS_PATH.exists():
             with open(PERSISTENT_PLUGINS_PATH, encoding="utf-8") as f:
-                data = json.load(f)
+                registry = json.load(f)
 
-        if plugin_path not in data["plugins"]:
-            data["plugins"].append(plugin_path)
+        # Extraction and collision check
+        existing_paths = [p.get("module") for p in registry["plugins"]]
+
+        if plugin_path not in existing_paths:
+            # Auto-generate ID if missing
+            pid = plugin_id or plugin_path.split(".")[-1].lower()
+            registry["plugins"].append(
+                {"id": pid, "module": plugin_path, "enabled": True, "config": {}}
+            )
             with open(PERSISTENT_PLUGINS_PATH, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=4)
-            print(f"   [Plugins] Persistent registration saved: {plugin_path}")
+                json.dump(registry, f, indent=4)
+            print(f"   [Plugins] Persistent registration saved: {pid} ({plugin_path})")
         else:
-            print(f"   [Plugins] Plugin legacy already exists: {plugin_path}")
+            print(f"   [Plugins] Plugin path already exists in registry: {plugin_path}")
 
     def unregister_persistent(self, plugin_path: str):
-        """Unregister a plugin persistently."""
+        """Unregister a plugin persistently by removing it from the dictionary-based registry."""
         if not PERSISTENT_PLUGINS_PATH.exists():
             return
 
         with open(PERSISTENT_PLUGINS_PATH, encoding="utf-8") as f:
-            data = json.load(f)
+            registry = json.load(f)
 
-        if plugin_path in data["plugins"]:
-            data["plugins"].remove(plugin_path)
+        initial_count = len(registry["plugins"])
+        registry["plugins"] = [p for p in registry["plugins"] if p.get("module") != plugin_path]
+
+        if len(registry["plugins"]) < initial_count:
             with open(PERSISTENT_PLUGINS_PATH, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=4)
-            print(f"   [Plugins] Persistent registration removed: {plugin_path}")
+                json.dump(registry, f, indent=4)
+            print(f"   [Plugins] Persistent registration removed for path: {plugin_path}")
         else:
-            print(f"   [Plugins] Plugin not found in persistence: {plugin_path}")
+            print(f"   [Plugins] No plugin found with path: {plugin_path}")
 
 
 manager = PluginManager()

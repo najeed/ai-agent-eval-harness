@@ -46,7 +46,7 @@ Every trace captures a sanitized snapshot of the host's `shim_resources.json`.
 
 ## Validation
 ```bash
-multiagent-eval aes validate --path my_benchmark.aes.json
+agentv aes validate --path my_benchmark.aes.json
 ```
 
 ## Configuration Layout (.aes/config/)

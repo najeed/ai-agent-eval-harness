@@ -11,7 +11,7 @@ The **Drift Importer** (`import-drift`) allows you to convert production interac
 
 ### Usage
 ```bash
-multiagent-eval import-drift --input path/to/trace.json --industry telecom
+agentv import-drift --input path/to/trace.json --industry telecom
 ```
 
 ### Trace Format
@@ -55,7 +55,7 @@ While triage provides categorical tags, the `explain` command performs a deep fo
 
 ### Usage
 ```bash
-multiagent-eval explain --run-id <id>
+agentv explain --run-id <id>
 ```
 
 ### Forensic Features

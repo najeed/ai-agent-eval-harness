@@ -4,7 +4,7 @@ Learn how to diagnostically categorize agentic failures and visualize systemic w
 
 ## 🎯 Objectives
 - Categorize 10 failures into standard groups (**Reasoning**, **Tool Use**, **Domain Knowledge**).
-- Understand the **Root Cause Taxonomy** used in the MultiAgentEval framework.
+- Understand the **Root Cause Taxonomy** used in the AgentV framework.
 - Generate a **Failure Heatmap** (`failure_heatmap.json`) to visualize technical debt.
 
 ## 🚀 Steps

@@ -22,7 +22,7 @@ def main():
 
     # Run the auto-translate command
     print(
-        "\n   [CLI] Running: multiagent-eval auto-translate --prd "
+        "\n   [CLI] Running: agentv auto-translate --prd "
         + str(prd_path)
         + " --output "
         + str(output_path)

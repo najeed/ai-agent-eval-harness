@@ -1,6 +1,6 @@
 # README: Human-In-The-Loop (The Human Governor)
 
-Learn how to implement **Shared Governance** by using the "Wait State" mechanisms within the MultiAgentEval framework.
+Learn how to implement **Shared Governance** by using the "Wait State" mechanisms within the AgentV framework.
 
 ## 🎯 Objectives
 - Understand **HITL Triggers** and why they are necessary for "High-Impact" actions.

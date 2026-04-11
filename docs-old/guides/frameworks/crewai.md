@@ -1,6 +1,6 @@
-# Quickstart: CrewAI + MultiAgentEval
+# Quickstart: CrewAI + AgentV
 
-Bring multi-agent crew evaluation to the MultiAgentEval.
+Bring multi-agent crew evaluation to the AgentV.
 
 ## 1. Setup Your Agent API
 Wrap your crew in an API that processes task requests.
@@ -22,10 +22,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Crew
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "CrewAI-Financial-Analyst"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "CrewAI-Financial-Analyst"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

@@ -1,11 +1,11 @@
 # Reproduction script for state-test
-# Generated on 2026-04-11 06:46:02
+# Generated on 2026-04-11 08:54:59
 # 
 # Usage:
-# 1. Ensure you have the multiagent-eval installed: pip install .
+# 1. Ensure you have the agentv installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: multiagent-eval run --scenario scenarios/state-test.json
+# 3. RUN: agentv run --scenario scenarios/state-test.json
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-multiagent-eval run --scenario scenarios/state-test.json
+agentv run --scenario scenarios/state-test.json

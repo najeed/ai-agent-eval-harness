@@ -1,11 +1,11 @@
 # Reproduction script for policy-test
-# Generated on 2026-04-11 06:46:01
+# Generated on 2026-04-11 08:54:58
 # 
 # Usage:
-# 1. Ensure you have the multiagent-eval installed: pip install .
+# 1. Ensure you have the agentv installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: multiagent-eval run --scenario scenarios/policy-test.json
+# 3. RUN: agentv run --scenario scenarios/policy-test.json
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-multiagent-eval run --scenario scenarios/policy-test.json
+agentv run --scenario scenarios/policy-test.json

@@ -3,14 +3,14 @@ title: CLI Reference
 description: Command-line interface for industrial-grade agent evaluation and analysis.
 ---
 
-The `multiagent-eval` CLI is the primary entry point for all evaluation workflows, providing tools for execution, specification, and forensic analysis.
+The `agentv` CLI is the primary entry point for all evaluation workflows, providing tools for execution, specification, and forensic analysis.
 
 ## 🚀 Execution Commands
 
 ### `evaluate`
 Run evaluations on one or more industrial scenarios.
 ```bash
-multiagent-eval evaluate \
+agentv evaluate \
   --run-id <id> \
   --agent http://localhost:5001/execute_task \
   --attempts 3 \
@@ -24,7 +24,7 @@ multiagent-eval evaluate \
 ### `run`
 Execute a single specific scenario or a [Benchmark URI](/ai-agent-eval-harness/extender/api-reference/).
 ```bash
-multiagent-eval run --scenario gaia://2023_all
+agentv run --scenario gaia://2023_all
 ```
 
 ### `record` & `playground`
@@ -38,7 +38,7 @@ multiagent-eval run --scenario gaia://2023_all
 ### `certify`
 Generate an immutable Verification Certificate (VC) for a specific run.
 ```bash
-multiagent-eval certify --run-id <id> --status pass --score 0.95
+agentv certify --run-id <id> --status pass --score 0.95
 ```
 
 ### `verify` & `gate`
@@ -52,7 +52,7 @@ multiagent-eval certify --run-id <id> --status pass --score 0.95
 ### `spec-to-eval`
 Convert Markdown PRDs/Specs into executable AES JSON using [Hybrid Parsing](/ai-agent-eval-harness/evaluator/aes-spec/).
 ```bash
-multiagent-eval spec-to-eval --input prd.md --output scenario.json --fill-defaults
+agentv spec-to-eval --input prd.md --output scenario.json --fill-defaults
 ```
 
 ### `import-drift`
@@ -65,7 +65,7 @@ Convert production traces into evaluation scenarios for [Regression Testing](/ai
 ### `report`
 Generate stylized HTML reports and Mermaid trajectory maps.
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```
 
 ### `explain`
@@ -78,11 +78,11 @@ AI-powered root cause diagnosis with [Tiered Confidence Scoring](/ai-agent-eval-
 ### `doctor`
 Audit local dependencies, environment variables, and configuration health.
 ```bash
-multiagent-eval doctor
+agentv doctor
 ```
 
 ### `init`
 Scaffold a new benchmark environment and industry registry.
 ```bash
-multiagent-eval init --industry fintech
+agentv init --industry fintech
 ```

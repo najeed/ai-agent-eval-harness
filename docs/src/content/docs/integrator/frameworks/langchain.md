@@ -3,7 +3,7 @@ title: LangChain
 description: Connect your LangChain chains and agents to the evaluation platform.
 ---
 
-MultiAgentEval provides native support for LangChain, allowing you to evaluate chains, agents, and complex RAG workflows.
+AgentV provides native support for LangChain, allowing you to evaluate chains, agents, and complex RAG workflows.
 
 ## 1. Setup Your Agent API
 
@@ -29,7 +29,7 @@ async def execute(request: dict):
 Use the `langchain://` protocol to connect the harness to your agent service.
 
 ```bash
-multiagent-eval evaluate \
+agentv evaluate \
   --run-id <id> \
   --protocol langchain \
   --agent langchain://localhost:8000/execute_task \
@@ -38,7 +38,7 @@ multiagent-eval evaluate \
 
 ## 3. Verify Grounding
 
-If your LangChain agent uses RAG, MultiAgentEval can track and visualize **Grounding Coverage** heatmaps to show which parts of your knowledge base were used to answer specific tasks.
+If your LangChain agent uses RAG, AgentV can track and visualize **Grounding Coverage** heatmaps to show which parts of your knowledge base were used to answer specific tasks.
 
 ```bash
 # Reports are generated automatically in:

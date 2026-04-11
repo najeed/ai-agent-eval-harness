@@ -48,8 +48,8 @@ ROUTING_D_DIR = AES_CONFIG_DIR / "routing.d"
 SHIM_RESOURCES_D_DIR = AES_CONFIG_DIR / "shims.d"
 FORENSICS_D_DIR = AES_CONFIG_DIR / "forensics.d"
 
-# Plugins (.aes/config/plugins.json)
-PLUGINS_CONFIG_PATH = AES_CONFIG_DIR / "plugins.json"
+# Plugins (.aes/config/plugins/registry.json)
+PLUGINS_CONFIG_PATH = AES_CONFIG_DIR / "plugins" / "registry.json"
 
 # --- Shim Registry Manager (v1.3.0 Cumulative Mode) ---
 SHIM_RESOURCES_INTERNAL_PATH = Path(__file__).parent / "resources" / "shim_resources.json"

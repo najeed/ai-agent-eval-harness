@@ -1,6 +1,6 @@
 [project]
-name = "multiagent-verify"
-version = "1.4.1"
+name = "agentv"
+version = "1.4.2"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
@@ -43,7 +43,7 @@ packages = ["eval_runner", "dataproc_engine", "industries"]
 "*" = ["*.json", "*.jsonl", "*.csv", "*.md", "*.yaml", "*.yml"]
 
 [project.scripts]
-multiagent-eval = "eval_runner.cli:main"
+agentv = "eval_runner.cli:main"
 
 [project.entry-points."eval_runner.plugins"]
 coverage = "eval_runner.coverage_plugin:CoveragePlugin"

@@ -1,6 +1,6 @@
-# MultiAgentEval Guide
+# AgentV Guide
 
-> This document is the single authoritative reference for using, extending, and developing the MultiAgentEval framework.
+> This document is the single authoritative reference for using, extending, and developing the AgentV framework.
 > It is organized into three levels: **Quick Start**, **User Manual**, and **Developer Guide**.
 
 ---
@@ -9,7 +9,7 @@
 
 ### 1.1 Install and Run
 
-1. Clone and install MultiAgentEval:
+1. Clone and install AgentV:
 ```bash
 git clone https://github.com/najeed/ai-agent-eval-harness.git
 cd ai-agent-eval-harness
@@ -18,25 +18,25 @@ pip install -e .
 
 2. Run the Quickstart Demo:
 ```bash
-multiagent-eval quickstart
+agentv quickstart
 ```
 
 **What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a **Premium HTML report** in `reports/`. 
 
 > [!TIP]
-> **Integrated Visual Suite**: Launch the premium web dashboard via `multiagent-eval console`. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch `RemoteBridgePlugin`.
+> **Integrated Visual Suite**: Launch the premium web dashboard via `agentv console`. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch `RemoteBridgePlugin`.
 
 ### 1.2 Useful CLI Commands
-- `multiagent-eval console`: Launch the React Visual Debugger GUI for visual management.
-- `multiagent-eval doctor`: Check your environment health.
-- `multiagent-eval list --search <query>`: Search the scenario catalog (supports faceted filtering).
-- `multiagent-eval lint --run-id <id><path>`: Verify scenario quality and AES specification compliance.
-- `multiagent-eval spec-to-eval --fill-defaults`: Convert rough specs into valid, lint-passable scenarios.
-- `multiagent-eval auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
-- `multiagent-eval run --scenario <benchmark-uri>`: Zero-config execution for community benchmarks (GAIA, AssistantBench).
-- `multiagent-eval report --run-id <id>`: Generate a standalone Premium HTML report (reconstructed from any `.jsonl` trace).
-- `multiagent-eval gate --run-id <id>`: Enforce cryptographic integrity in a CI/CD pipeline using the **Trust Protocol**.
-- `multiagent-eval replay --run-id <id>`: View the step-by-step history of a run in terminal.
+- `agentv console`: Launch the React Visual Debugger GUI for visual management.
+- `agentv doctor`: Check your environment health.
+- `agentv list --search <query>`: Search the scenario catalog (supports faceted filtering).
+- `agentv lint --run-id <id><path>`: Verify scenario quality and AES specification compliance.
+- `agentv spec-to-eval --fill-defaults`: Convert rough specs into valid, lint-passable scenarios.
+- `agentv auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
+- `agentv run --scenario <benchmark-uri>`: Zero-config execution for community benchmarks (GAIA, AssistantBench).
+- `agentv report --run-id <id>`: Generate a standalone Premium HTML report (reconstructed from any `.jsonl` trace).
+- `agentv gate --run-id <id>`: Enforce cryptographic integrity in a CI/CD pipeline using the **Trust Protocol**.
+- `agentv replay --run-id <id>`: View the step-by-step history of a run in terminal.
 - Advanced Utilities: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
 
 > [!NOTE]
@@ -79,7 +79,7 @@ The harness uses a **Zero-Touch Core** design, where all major capabilities are 
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.
 - **Observability**: Subscribe to `CoreEvents` via the `EventEmitter` for non-blocking logging.
 - **Advanced Evaluation**: Standard support for dot-notation in state verification, High-Fidelity Calculation Accuracy, and Judge Guarding (strict failure for required metrics).
-- **Secure Namespaces**: Legacy `extend_cli` is removed. Use `on_register_commands` to register commands under the `multiagent-eval plugin <name>` sub-command.
+- **Secure Namespaces**: Legacy `extend_cli` is removed. Use `on_register_commands` to register commands under the `agentv plugin <name>` sub-command.
 - **Ecosystem Adapters**: Official, zero-touch support for **LangChain**, **Ollama**, **OpenAI**, **Gemini**, **Claude**, **AutoGen**, and **xAI Grok**.
 - **Immutability**: TurnContext and EvaluationContext are frozen to prevent accidental side-effects.
 
@@ -93,7 +93,7 @@ pytest tests/
 
 For industry-specific scenarios:
 ```bash
-multiagent-eval run --scenario industries/<ind>/scenarios/<file>.json
+agentv run --scenario industries/<ind>/scenarios/<file>.json
 ```
 
 ---

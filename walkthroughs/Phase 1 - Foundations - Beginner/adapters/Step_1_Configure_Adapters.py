@@ -34,7 +34,7 @@ def main():
 
     print("\n============================================")
     print("The Bridge is built. Now, run this command:")
-    print("multiagent-eval evaluate --path scenarios/telecom/connectivity_check.json")
+    print("agentv evaluate --path scenarios/telecom/connectivity_check.json")
     print("============================================")
 
 

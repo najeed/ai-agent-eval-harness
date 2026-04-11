@@ -98,7 +98,11 @@ def get_system_info():
 
     try:
         last_indexed = getattr(catalog, "manifest", {}).get("updated_at", "unknown")
-    except Exception:
+    except Exception as e:
+        # Forensic visibility into catalog manifest errors
+        import sys
+
+        sys.stderr.write(f"   [Console] Warning: Failed to retrieve catalog index timestamp: {e}\n")
         last_indexed = "unknown"
 
     # 4. Security Hardening: Mask absolute paths for remote users
@@ -120,7 +124,11 @@ def get_system_info():
                     rel_part = str(p)[len(str(root)) :].lstrip("\\/")
                     return f"./{rel_part}"
             return p.name  # Fallback to basename only for safety
-        except Exception:
+        except Exception as e:
+            # forensic visibility for path masking failures
+            import sys
+
+            sys.stderr.write(f"   [Console] Warning: Masking failure for path {path_val}: {e}\n")
             return "hidden"  # Maximum safety fallback
 
     return jsonify(
@@ -330,10 +338,10 @@ def execute_demo_command():
 
     # Industrial Command Whitelist (Hardened v1.2.3)
     allowed_prefixes = [
-        "multiagent-eval spec-to-eval",
-        "multiagent-eval evaluate",
-        "multiagent-eval aes validate",
-        "multiagent-eval triage",
+        "agentv spec-to-eval",
+        "agentv evaluate",
+        "agentv aes validate",
+        "agentv triage",
         "copy ",
         "cp ",
         "type ",
@@ -452,12 +460,12 @@ def execute_demo_command():
                         }
                     )
 
-        # Fallback to Secure Subprocess for external binaries (python, multiagent-eval)
+        # Fallback to Secure Subprocess for external binaries (python, agentv)
         # Secure Remediation (R0.1): Eliminate shell=True RCE
         cmd_args = shlex.split(cmd)
 
-        # On Windows, we must find the full path for non-exe binaries like multiagent-eval
-        if cmd_args[0] in ["multiagent-eval"]:
+        # On Windows, we must find the full path for non-exe binaries like agentv
+        if cmd_args[0] in ["agentv"]:
             import shutil as _shutil
             import sys
 
@@ -472,12 +480,12 @@ def execute_demo_command():
                 cmd_args[0] = exe
             else:
                 # 2. Fallback to Module Invocation (Deterministic & Robust)
-                # Replaces ['multiagent-eval', 'subcommand', ...] with
+                # Replaces ['agentv', 'subcommand', ...] with
                 # [sys.executable, '-m', 'eval_runner.cli', 'subcommand', ...]
                 # Or ['spec-to-eval', ...] with
                 # [sys.executable, '-m', 'eval_runner.cli', 'spec-to-eval', ...]
                 new_args = [sys.executable, "-m", "eval_runner.cli"]
-                if cmd_args[0] == "multiagent-eval":
+                if cmd_args[0] == "agentv":
                     new_args.extend(cmd_args[1:])
                 else:
                     new_args.extend(cmd_args)
@@ -653,10 +661,17 @@ def list_runs():
                                     "timestamp": event.get("timestamp"),
                                 }
                             )
-                    except Exception:
-                        pass
-        except Exception:
-            pass
+                    except Exception as e:
+                        # Log corrupted log lines for forensics
+                        import sys
+
+                        sys.stderr.write(
+                            f"   [Console] Warning: Corrupted line in {run_log}: {e}\n"
+                        )
+        except Exception as e:
+            import sys
+
+            sys.stderr.write(f"   [Console] Error reading global log {run_log}: {e}\n")
     # Add static demo traces to the list for visibility/quick-access
     from eval_runner.console.demo_traces import DEMO_IDS
 
@@ -707,8 +722,10 @@ def list_runs():
                             "path": str(p.relative_to(config.RUN_LOG_DIR)),
                         }
                     )
-        except Exception:
-            pass
+        except Exception as e:
+            import sys
+
+            sys.stderr.write(f"   [Console] Warning: Failed to process individual trace {p}: {e}\n")
 
     # Sort by timestamp descending
     runs.sort(key=lambda x: x.get("timestamp", ""), reverse=True)

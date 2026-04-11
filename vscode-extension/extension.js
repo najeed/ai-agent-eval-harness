@@ -5,16 +5,16 @@ const { execFile } = require('child_process');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	console.log('MultiAgentEval is now active!');
+	console.log('AgentV is now active!');
 
-	let runScenario = vscode.commands.registerCommand('multiagent-eval.runScenario', function () {
+	let runScenario = vscode.commands.registerCommand('agentv.runScenario', function () {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor && activeEditor.document.fileName.endsWith('.json')) {
 			const filePath = activeEditor.document.fileName;
 			vscode.window.showInformationMessage(`Running Eval Trace for: ${filePath}`);
-			
+
 			// Safely run the CLI using execFile to prevent shell injection
-			execFile('multiagent-eval', ['evaluate', '--path', filePath], (error, stdout, stderr) => {
+			execFile('agentv', ['evaluate', '--path', filePath], (error, stdout, stderr) => {
 				if (error) {
 					vscode.window.showErrorMessage(`Eval Failed: ${stderr || error.message}`);
 					return;
@@ -26,14 +26,14 @@ function activate(context) {
 		}
 	});
 
-	let openConsole = vscode.commands.registerCommand('multiagent-eval.openConsole', function () {
+	let openConsole = vscode.commands.registerCommand('agentv.openConsole', function () {
 		vscode.env.openExternal(vscode.Uri.parse('http://localhost:5000'));
 	});
 
 	context.subscriptions.push(runScenario, openConsole);
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
 	activate,

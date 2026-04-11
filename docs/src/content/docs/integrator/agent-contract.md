@@ -3,7 +3,7 @@ title: Agent Interaction Contract
 description: Reference for the API contract between the harness and the AI agent under test.
 ---
 
-This document describes the expected API contract between the MultiAgentEval harness and the AI agent.
+This document describes the expected API contract between the AgentV harness and the AI agent.
 
 ## 📡 Primary Endpoint
 By default, the harness expects the agent to expose a REST endpoint:

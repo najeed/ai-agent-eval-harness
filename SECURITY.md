@@ -22,7 +22,7 @@ For detailed technical information on these features, please refer to:
 
 ## Reporting a Vulnerability
 
-We take the security of the MultiAgentEval seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of the AgentV seriously. If you discover a security vulnerability, please follow these steps:
 
 ### How to Report
 
@@ -60,7 +60,7 @@ We follow responsible disclosure practices:
    - Use `pip-audit` or similar tools to check for known vulnerabilities
    - Pin dependency versions in requirements files
 
-### MultiAgentEval Security
+### AgentV Security
 
 1. **Code Execution**: 
    - Use secure sandboxes for agent code execution

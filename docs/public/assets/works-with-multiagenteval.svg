@@ -27,9 +27,9 @@
       <text x="8" y="4" fill="#FFFFFF" font-family="Verdana, sans-serif" font-size="8.3" font-weight="600" text-anchor="middle">Works with</text>
     </g>
     
-    <!-- Right Section (MultiAgentEval Blue) -->
+    <!-- Right Section (AgentV Blue) -->
     <rect x="80" width="80" height="20" fill="url(#right_grad)"/>
-    <text x="120" y="14" fill="#1B3B5F" font-family="Verdana, sans-serif" font-size="8.5" font-weight="900" text-anchor="middle">MultiAgentEval</text>
+    <text x="120" y="14" fill="#1B3B5F" font-family="Verdana, sans-serif" font-size="8.5" font-weight="900" text-anchor="middle">AgentV</text>
   </g>
   
   <rect width="160" height="1" y="0" fill="white" fill-opacity="0.1" clip-path="url(#clip)"/>

@@ -1,9 +1,9 @@
 ---
 title: Industrial Sector Taxonomy
-description: Explore the 30+ industrial sectors and 1,800+ core functions supported by MultiAgentEval.
+description: Explore the 30+ industrial sectors and 1,800+ core functions supported by AgentV.
 ---
 
-MultiAgentEval provides high-fidelity, industry-specific data extraction and behavioral benchmarks across a wide range of sectors. Each sector includes unique data sources, schemas, and [Core Functions](/ai-agent-eval-harness/builder/core-functions/).
+AgentV provides high-fidelity, industry-specific data extraction and behavioral benchmarks across a wide range of sectors. Each sector includes unique data sources, schemas, and [Core Functions](/ai-agent-eval-harness/builder/core-functions/).
 
 ## 🏗️ Core Industrial Sectors
 
@@ -21,7 +21,7 @@ MultiAgentEval provides high-fidelity, industry-specific data extraction and beh
 
 ## 🔬 Cross-Sector Intelligence
 
-For complex enterprise agents, MultiAgentEval supports cross-sector scenarios (e.g., a "Fintech" agent analyzing "Telecomm" infrastructure debt). All sectors share a unified [Standard Schema](/ai-agent-eval-harness/evaluator/aes-spec/) ensuring interoperability.
+For complex enterprise agents, AgentV supports cross-sector scenarios (e.g., a "Fintech" agent analyzing "Telecomm" infrastructure debt). All sectors share a unified [Standard Schema](/ai-agent-eval-harness/evaluator/aes-spec/) ensuring interoperability.
 
 ### Unified Standard Schema
 Every industry record is normalized to the following fields:

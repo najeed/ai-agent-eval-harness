@@ -3,7 +3,7 @@ title: LLM & Ecosystem Providers
 description: Configuration for Anthropic, Gemini, Grok, Ollama, OpenAI, and other ecosystem adapters.
 ---
 
-MultiAgentEval uses **Ecosystem Adapters** to transparently map evaluation tasks to specific LLM providers. All provider configurations are managed via environment variables to ensure secure, zero-touch deployment.
+AgentV uses **Ecosystem Adapters** to transparently map evaluation tasks to specific LLM providers. All provider configurations are managed via environment variables to ensure secure, zero-touch deployment.
 
 ## ⚙️ Environment Configuration
 

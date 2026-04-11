@@ -1,5 +1,5 @@
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, mock_open, patch
 
 import pytest
 
@@ -47,7 +47,7 @@ def test_cli_run_attempts(capsys, tmp_path, monkeypatch):
     with (
         patch(
             "sys.argv",
-            ["multiagent-eval", "run", "--scenario", "test_scenario.json", "--attempts", "2"],
+            ["agentv", "run", "--scenario", "test_scenario.json", "--attempts", "2"],
         ),
         patch("eval_runner.loader.load_scenario", return_value={"scenario_id": "test"}),
         patch("eval_runner.plugins.manager.load_plugins"),
@@ -70,7 +70,8 @@ def test_cli_replay_valid(tmp_path, monkeypatch):
 
     with (
         patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
-        patch("sys.argv", ["multiagent-eval", "replay", "--run-id", "test-run"]),
+        patch("sys.argv", ["agentv", "replay", "--run-id", "test-run"]),
+        patch("eval_runner.plugins.manager.load_plugins"),
         patch(
             "eval_runner.handlers.analysis.trace_utils.load_events",
             return_value=[{"event": "run_start", "run_id": "test"}],
@@ -101,9 +102,10 @@ async def test_cli_cleanup_interactive_yes(tmp_path, monkeypatch):
     # Test 'contribute' flow - Verify it does not leak folders
     (tmp_path / "industries" / "test_ind" / "scenarios").mkdir(parents=True, exist_ok=True)
     with (
-        patch("sys.argv", ["multiagent-eval", "contribute"]),
+        patch("sys.argv", ["agentv", "contribute"]),
         patch("builtins.input", side_effect=["test_title", "test_ind", "n"]),
-        patch("builtins.open", MagicMock()),
+        patch("eval_runner.plugins.manager.load_plugins"),
+        patch("builtins.open", mock_open(read_data='{"plugins": []}')),
     ):
         cli.main()
         # Coverage verified by reaching the end of the method
@@ -112,7 +114,8 @@ async def test_cli_cleanup_interactive_yes(tmp_path, monkeypatch):
 def test_cli_main_keyboard_interrupt():
     # Test KeyboardInterrupt in main()
     with (
-        patch("sys.argv", ["multiagent-eval", "doctor"]),
+        patch("sys.argv", ["agentv", "doctor"]),
+        patch("eval_runner.plugins.manager.load_plugins"),
         patch("eval_runner.handlers.environment.handle_doctor", side_effect=KeyboardInterrupt),
     ):
         with pytest.raises(SystemExit) as exc:
@@ -123,7 +126,8 @@ def test_cli_main_keyboard_interrupt():
 def test_cli_main_exception_handling():
     # Test general exception handling in main()
     with (
-        patch("sys.argv", ["multiagent-eval", "doctor"]),
+        patch("sys.argv", ["agentv", "doctor"]),
+        patch("eval_runner.plugins.manager.load_plugins"),
         patch(
             "eval_runner.handlers.environment.handle_doctor", side_effect=Exception("Fatal Error")
         ),

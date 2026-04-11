@@ -188,8 +188,8 @@ class TraceVerifier:
                 os.rename(p, new_path)
                 p = new_path
                 logger.info(f"      [Identity] Normalized trace identity: {p.name} -> run.jsonl")
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"      [Identity] Failed to normalize trace identity for {p}: {e}")
 
         now = datetime.now().astimezone()
         ts_base = now.strftime("%Y-%m-%dT%H:%M:%S")
@@ -254,8 +254,8 @@ class TraceVerifier:
             cert_path = cert_dir / f"{run_id}_vc.json"
             with open(cert_path, "w", encoding="utf-8") as f:
                 json.dump(manifest, f, indent=4)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"      [Verifier] Failed to save authoritative certificate backup: {e}")
 
         return manifest
 

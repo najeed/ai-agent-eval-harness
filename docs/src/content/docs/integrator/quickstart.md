@@ -1,9 +1,9 @@
 ---
 title: Quick Start
-description: Get up and running with MultiAgentEval in under 60 seconds.
+description: Get up and running with AgentV in under 60 seconds.
 ---
 
-This guide is for developers and evaluators who want to see MultiAgentEval in action with minimal setup.
+This guide is for developers and evaluators who want to see AgentV in action with minimal setup.
 
 ## 🚀 The 60-Second Demo
 
@@ -14,7 +14,7 @@ The fastest way to explore the harness is the `quickstart` command. It handles a
 pip install -e .
 
 # 2. Run the Quickstart
-multiagent-eval quickstart
+agentv quickstart
 ```
 
 ### What Happens:
@@ -32,13 +32,13 @@ When you're ready to build benchmarks for your specific industrial use case:
 ### 1. Scaffold the Project
 Generate a starter workspace with realistic industry datasets.
 ```bash
-multiagent-eval init --dir my_benchmarks --industry finance
+agentv init --dir my_benchmarks --industry finance
 ```
 
 ### 2. Auto-Translate Existing Specs
 Convert PDF or Markdown PRDs into executable AES JSON scenarios (requires [Ollama](https://ollama.com/)).
 ```bash
-multiagent-eval auto-translate --input specs/loan_approval.pdf --industry finance
+agentv auto-translate --input specs/loan_approval.pdf --industry finance
 ```
 
 ---
@@ -54,11 +54,11 @@ To connect your own agent to the harness:
     ```
 3.  **Run Evaluation**: Use scenarios from the [Industrial Library](/ai-agent-eval-harness/evaluator/industries/).
     ```bash
-    multiagent-eval evaluate --run-id <id>
+    agentv evaluate --run-id <id>
     ```
 4.  **Analyze Results**: Replay a trace to debug agent reasoning.
     ```bash
-    multiagent-eval replay --run-id <id>
+    agentv replay --run-id <id>
     ```
 
 ---

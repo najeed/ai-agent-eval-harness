@@ -1,8 +1,8 @@
 """
-Test package for the MultiAgentEval.
+Test package for the AgentV.
 
 This package contains comprehensive test suites for all major components
-of the MultiAgentEval, including scenario loading, agent
+of the AgentV, including scenario loading, agent
 API testing, metrics calculation, evaluation runner functionality,
 schema validation, and tool sandbox behavior.
 

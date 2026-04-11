@@ -1,9 +1,9 @@
 ---
 title: Developer Guide
-description: Core architecture, internals, and extension patterns for MultiAgentEval engineers.
+description: Core architecture, internals, and extension patterns for AgentV engineers.
 ---
 
-This guide is for engineers building on or extending the MultiAgentEval harness.
+This guide is for engineers building on or extending the AgentV harness.
 
 ## 📂 Repository Architecture
 
@@ -74,4 +74,4 @@ The `ToolSandbox` ensures that each evaluation run has a clean, isolated environ
 The harness uses an **ED25519 asymmetric signing protocol** for non-repudiable audit trails.
 - **Key Storage**: Keys are stored in `.aes/keys/`.
 - **Manifests**: Every run generates a signed `audit_manifest.json`.
-- **Gating**: Use `multiagent-eval gate` in the CI/CD pipeline to enforce signature verification.
+- **Gating**: Use `agentv gate` in the CI/CD pipeline to enforce signature verification.

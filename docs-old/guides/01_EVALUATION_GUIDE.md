@@ -69,7 +69,7 @@ Beyond the CLI, the harness provides a **Unified React SPA** Visual Debugger for
 
 Launch with:
 ```bash
-multiagent-eval console
+agentv console
 ```
 
 
@@ -90,14 +90,14 @@ multiagent-eval console
 
 ## Community Benchmarks
 
-Instead of relying solely on local `.json` or `.aes.yaml` files, the `multiagent-eval` can now pull and format datasets from major community benchmarks on-the-fly using URIs.
+Instead of relying solely on local `.json` or `.aes.yaml` files, the `agentv` can now pull and format datasets from major community benchmarks on-the-fly using URIs.
 
 ```bash
 # Load the 2023 GAIA validation set
-multiagent-eval evaluate --run-id <id>
+agentv evaluate --run-id <id>
 
 # Load AssistantBench tasks
-multiagent-eval evaluate --run-id <id>
+agentv evaluate --run-id <id>
 ```
 The universal loader will dynamically download these datasets, wrap them in compatible `Scenario` objects, and apply the correct specific evaluation metrics.
 

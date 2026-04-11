@@ -1,4 +1,4 @@
-# Quickstart: OpenAI Assistants + MultiAgentEval
+# Quickstart: OpenAI Assistants + AgentV
 
 Evaluate your OpenAI Assistant configurations using the harness.
 
@@ -24,10 +24,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Assistant
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "OpenAI-Assistant-V2"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "OpenAI-Assistant-V2"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

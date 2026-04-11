@@ -1,7 +1,7 @@
 """
 taxonomy.py
 
-Centralized failure classification engine for MultiAgentEval.
+Centralized failure classification engine for AgentV.
 Maps trajectory patterns to industry-standard failure categories.
 """
 

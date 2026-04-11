@@ -41,7 +41,7 @@ def main():
 
     # Run the import-drift command
     print(
-        "\n   [CLI] Running: multiagent-eval import-drift --log "
+        "\n   [CLI] Running: agentv import-drift --log "
         + str(log_path)
         + " --output "
         + str(output_path)

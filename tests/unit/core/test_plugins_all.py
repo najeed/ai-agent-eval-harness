@@ -61,7 +61,12 @@ class TestPlugins(unittest.TestCase):
 
         # 2. Persistent - cover missing file (Line 100) and broken load (113)
         mock_persistent_path.exists.return_value = True
-        mock_data = {"plugins": ["my_mod.MyPlugin", "broken_mod.Broken"]}
+        mock_data = {
+            "plugins": [
+                {"module": "my_mod.MyPlugin", "enabled": True},
+                {"module": "broken_mod.Broken", "enabled": True},
+            ]
+        }
         m_open = mock_open(read_data=json.dumps(mock_data))
 
         # 3. Dynamic
@@ -71,7 +76,7 @@ class TestPlugins(unittest.TestCase):
         # We need to refined import_module mock to handle 'mock.patch' internals
         orig_import = plugins.importlib.import_module
 
-        def import_side(name):
+        def import_side(name, *args, **kwargs):
             if name.startswith("eval_runner"):
                 # Force ImportError for optional internal plugins
                 if any(
@@ -95,7 +100,7 @@ class TestPlugins(unittest.TestCase):
             if "broken_mod" in name:
                 raise Exception("Import Boom")
             # For unittest.mock or other system modules, use original
-            return orig_import(name)
+            return orig_import(name, *args, **kwargs)
 
         with patch("builtins.open", m_open):
             with patch("importlib.import_module", side_effect=import_side):
@@ -148,7 +153,9 @@ class TestPlugins(unittest.TestCase):
         mock_path.parent = MagicMock()
 
         # Registration with existing file
-        m_existing = mock_open(read_data=json.dumps({"plugins": ["existing.P"]}))
+        m_existing = mock_open(
+            read_data=json.dumps({"plugins": [{"module": "existing.P", "enabled": True}]})
+        )
         with patch("builtins.open", m_existing):
             plugins.manager.register_persistent("new.P")
             # Already exists (Line 222)
@@ -156,7 +163,9 @@ class TestPlugins(unittest.TestCase):
 
         # Unregistration missing path (Line 238)
         mock_path.exists.return_value = True
-        m_unregister = mock_open(read_data=json.dumps({"plugins": ["some.P"]}))
+        m_unregister = mock_open(
+            read_data=json.dumps({"plugins": [{"module": "some.P", "enabled": True}]})
+        )
         with patch("builtins.open", m_unregister):
             plugins.manager.unregister_persistent("missing.P")
 

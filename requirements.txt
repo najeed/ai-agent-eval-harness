@@ -1,5 +1,5 @@
 # requirements.txt
-# Core runtime dependencies for MultiAgentEval.
+# Core runtime dependencies for AgentV.
 # Install with: pip install -r requirements.txt
 
 # --- Web Framework ---

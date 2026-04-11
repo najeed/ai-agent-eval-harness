@@ -17,7 +17,7 @@ def test_evaluate_protocol_propagation():
     """Verifies that 'evaluate' correctly parses and propagates protocols."""
     # We use a real parser flow by calling cli.main() but patching the handler
     test_args = [
-        "multiagent-eval",
+        "agentv",
         "evaluate",
         "--path",
         "scenarios/test.json",
@@ -42,7 +42,7 @@ def test_evaluate_protocol_propagation():
 def test_run_protocol_propagation():
     """Verifies that 'run' correctly parses and propagates protocols."""
     test_args = [
-        "multiagent-eval",
+        "agentv",
         "run",
         "--scenario",
         "scenarios/test.json",
@@ -66,7 +66,7 @@ def test_run_protocol_propagation():
 def test_record_protocol_propagation():
     """Verifies that 'record' correctly parses and propagates protocols."""
     test_args = [
-        "multiagent-eval",
+        "agentv",
         "record",
         "--protocol",
         "local",
@@ -88,7 +88,7 @@ def test_record_protocol_propagation():
 def test_playground_protocol_propagation():
     """Verifies that 'playground' correctly parses and propagates protocols."""
     test_args = [
-        "multiagent-eval",
+        "agentv",
         "playground",
         "--protocol",
         "local",
@@ -109,6 +109,6 @@ def test_playground_protocol_propagation():
 
 def test_cli_help_is_snappy():
     """Verifies that help output is still accessible and hasn't regressed."""
-    with patch("sys.argv", ["multiagent-eval", "--help"]), pytest.raises(SystemExit) as e:
+    with patch("sys.argv", ["agentv", "--help"]), pytest.raises(SystemExit) as e:
         cli.main()
     assert e.value.code == 0

@@ -3,7 +3,7 @@ from __future__ import annotations
 """
 spec_parser.py
 
-Utility for parsing Markdown PRDs into validated JSON scenario stubs for the MultiAgentEval.
+Utility for parsing Markdown PRDs into validated JSON scenario stubs for the AgentV.
 """
 
 import json  # noqa: E402

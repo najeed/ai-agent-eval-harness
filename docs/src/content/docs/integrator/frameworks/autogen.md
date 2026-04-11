@@ -3,7 +3,7 @@ title: Microsoft AutoGen
 description: Evaluate your AutoGen agent workflows using standardized benchmarks.
 ---
 
-MultiAgentEval provides native support for AutoGen agent workflows, allowing you to measure the performance of complex multi-agent conversations.
+AgentV provides native support for AutoGen agent workflows, allowing you to measure the performance of complex multi-agent conversations.
 
 ## 1. Setup Your Agent API
 
@@ -31,7 +31,7 @@ async def execute(request: dict):
 Use the `autogen://` protocol to connect the harness to your agent service.
 
 ```bash
-multiagent-eval evaluate \
+agentv evaluate \
   --run-id <id> \
   --protocol autogen \
   --agent autogen://localhost:8000/execute_task \
@@ -43,5 +43,5 @@ multiagent-eval evaluate \
 Launch the console to see the internal transitions between your AutoGen agents visualized in a high-fidelity trajectory map.
 
 ```bash
-multiagent-eval console
+agentv console
 ```

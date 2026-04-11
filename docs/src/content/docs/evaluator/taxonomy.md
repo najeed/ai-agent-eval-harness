@@ -3,7 +3,7 @@ title: Failure Taxonomy
 description: NIST-aligned failure registry for forensic agent diagnostics.
 ---
 
-To replace brittle, heuristic-based error matching, MultiAgentEval implements a formal **Stratified Failure Taxonomy**. This hierarchical classification enables forensic-grade root-cause diagnostics and NIST alignment.
+To replace brittle, heuristic-based error matching, AgentV implements a formal **Stratified Failure Taxonomy**. This hierarchical classification enables forensic-grade root-cause diagnostics and NIST alignment.
 
 ## 🏛️ Classification Hierarchy
 

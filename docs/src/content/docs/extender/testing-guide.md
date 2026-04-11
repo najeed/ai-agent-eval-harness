@@ -1,9 +1,9 @@
 ---
 title: Test Architecture & Best Practices
-description: Guide for testing the MultiAgentEval harness and its extensions.
+description: Guide for testing the AgentV harness and its extensions.
 ---
 
-MultiAgentEval uses a comprehensive testing strategy to ensure the reliability and correctness of the evaluation core. This guide is for developers extending the harness or contributing to the core.
+AgentV uses a comprehensive testing strategy to ensure the reliability and correctness of the evaluation core. This guide is for developers extending the harness or contributing to the core.
 
 ## 🏗️ Test Directory Structure
 
@@ -32,7 +32,7 @@ tests/
 
 ### 3. Compliance Tests (`test_doctor.py`)
 - **Focus**: Environment verification and AES schema validity.
-- **Usage**: Run `multiagent-eval doctor` to trigger these diagnostics.
+- **Usage**: Run `agentv doctor` to trigger these diagnostics.
 
 ---
 

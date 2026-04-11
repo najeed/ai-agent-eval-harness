@@ -19,7 +19,7 @@ def main():
     input("\n[Press ENTER] to see the recursion in action...")
 
     # Run the evaluation
-    print(f"\n   [CLI] Running: multiagent-eval evaluate --path {scenario_path}")
+    print(f"\n   [CLI] Running: agentv evaluate --path {scenario_path}")
     print("   [Log] [Turn 1] Writer task started...")
     time.sleep(1)
     print("   [Log] [Turn 1] Auditor check: FAILED (Insufficient stability).")

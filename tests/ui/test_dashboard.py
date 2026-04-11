@@ -18,7 +18,7 @@ async def test_dashboard_discovery_on_load(dashboard_server):
         await page.wait_for_selector("section[data-testid='stSidebar']", timeout=10000)
 
         # 2. Verify Page Title
-        await expect(page).to_have_title("MultiAgentEval Lab")
+        await expect(page).to_have_title("AgentV Lab")
 
         # 3. Verify discovery of mock data
         await expect(page.get_by_text("Select Evaluation Run")).to_be_visible()

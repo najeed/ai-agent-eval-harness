@@ -3,7 +3,7 @@ from __future__ import annotations
 """
 reporter.py
 
-This module provides reporting utilities for MultiAgentEval.
+This module provides reporting utilities for AgentV.
 It generates summary reports, exports detailed trajectories, and generates Mermaid visualizations.
 """
 
@@ -483,5 +483,5 @@ def cleanup_old_reports(days: int = 7):
                 try:
                     f.unlink()
                     print(f"      [Reporter] Cleaned up old report: {f.name}")
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"      [Reporter] Warning: Failed to clean up old report {f.name}: {e}")

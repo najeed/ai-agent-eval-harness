@@ -1,6 +1,6 @@
-# Feature Inventory - MultiAgentEval
+# Feature Inventory - AgentV
 
-This document provides a comprehensive inventory of the capabilities, tools, and technical features of the Zero-Touch MultiAgentEval.
+This document provides a comprehensive inventory of the capabilities, tools, and technical features of the Zero-Touch AgentV.
 
 ## 1. Zero-Touch Core (Evaluation Engine)
 The foundation of the harness, designed for framework-agnostic execution and high-fidelity measurement.
@@ -51,7 +51,7 @@ Professional-grade dashboards and debugging tools.
 - **Failure Taxonomy**: Automated classification of failures into `hallucination`, `timeout`, `sandbox_breach`, etc.
 - **Interactive Trajectory Map**: Interactive Mermaid graphs visualizing agent decision paths and environment loops.
 
-## 7. Developer Experience (`multiagent-eval`)
+## 7. Developer Experience (`agentv`)
 Diagnostics and maintenance utilities for the engineer.
 - **Quickstart Demo**: 60-second "Instant Gratification" flow including agent spawn and premium report generation.
 - **Interactive Contributor Wizard**: Step-by-step CLI (`contribute`) for building and submitting scenarios to the library.

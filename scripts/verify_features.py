@@ -63,7 +63,7 @@ FEATURES = [
 
 def verify():
     print("=" * 60)
-    print(" MultiAgentEval - FEATURE VERIFICATION SUITE")
+    print(" AgentV - FEATURE VERIFICATION SUITE")
     print("=" * 60)
 
     matrix = []

@@ -112,7 +112,7 @@ def show_registry_report():
 
 async def run_doctor(show_registry: bool = False):
     """Environment validation logic."""
-    print("\n[Doctor] MultiAgentEval - Environment Doctor\n")
+    print("\n[Doctor] AgentV - Environment Doctor\n")
 
     # 1. Python Version
     py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"

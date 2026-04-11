@@ -1,9 +1,9 @@
 ---
 title: Feature Inventory
-description: Comprehensive overview of MultiAgentEval capabilities, tools, and technical features.
+description: Comprehensive overview of AgentV capabilities, tools, and technical features.
 ---
 
-This inventory provides a comprehensive overview of the capabilities, tools, and technical features of the Zero-Touch MultiAgentEval platform.
+This inventory provides a comprehensive overview of the capabilities, tools, and technical features of the Zero-Touch AgentV platform.
 
 ## 1. Zero-Touch Core (Evaluation Engine)
 
@@ -56,7 +56,7 @@ Professional-grade dashboards and debugging tools.
 - **Failure Taxonomy**: Automated classification of failures into a stratified, NIST-aligned failure hierarchy.
 - **Interactive Trajectory Map**: Visual timeline in the Visual Debugger visualizing agent decision paths.
 
-## 7. Developer Experience (`multiagent-eval`)
+## 7. Developer Experience (`agentv`)
 
 Diagnostics and maintenance utilities for the engineer.
 - **Quickstart Demo**: 60-second "Instant Gratification" flow including agent spawn and premium report generation.

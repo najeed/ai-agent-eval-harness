@@ -1,5 +1,5 @@
 """
-Utility to generate realistic, synthetic CSV datasets for all 44 supported industries 
+Utility to generate realistic, synthetic CSV datasets for all 44 supported industries
 in the harness.
 """
 

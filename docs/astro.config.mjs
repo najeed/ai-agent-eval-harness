@@ -8,7 +8,7 @@ export default defineConfig({
 	base: '/ai-agent-eval-harness/',
 	integrations: [
 		starlight({
-			title: 'MultiAgentEval',
+			title: 'AgentV',
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/najeed/ai-agent-eval-harness' }
 			],

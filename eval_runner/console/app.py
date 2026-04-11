@@ -91,8 +91,11 @@ def create_app():
         if method and callable(method):
             try:
                 method(app, nav_registry)
-            except Exception:
-                pass
+            except Exception as e:
+                print(
+                    f"   [Console] Warning: Route registration failed for "
+                    f"{plugin.__class__.__name__}: {e}"
+                )
 
     # Re-assert core paths and industrial components to prevent plugin overrides
     core_overrides = {

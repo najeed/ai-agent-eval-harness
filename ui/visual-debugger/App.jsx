@@ -75,7 +75,7 @@ const Sidebar = ({ activeTab, setActiveTab, navItems, systemInfo }) => (
                     <Icon name="debugger" size={24} />
                 </div>
                 <div>
-                    <h1 className="font-bold text-slate-100 tracking-tight">MultiAgentEval</h1>
+                    <h1 className="font-bold text-slate-100 tracking-tight">AgentV</h1>
                     <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Visual Suite</p>
                 </div>
             </div>

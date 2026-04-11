@@ -1,5 +1,5 @@
 # requirements-dev.txt
-# Development and testing dependencies for MultiAgentEval contributors.
+# Development and testing dependencies for AgentV contributors.
 # Install with: pip install -r requirements-dev.txt
 #
 # Includes all runtime dependencies:

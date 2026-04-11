@@ -1,6 +1,6 @@
 # PyPI Distribution Guide
 
-This guide details the process of building and publishing the `eval_runner` package (MultiAgentEval) to PyPI.
+This guide details the process of building and publishing the `eval_runner` package (AgentV) to PyPI.
 
 ## Prerequisites
 

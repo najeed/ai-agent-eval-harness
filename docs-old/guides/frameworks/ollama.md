@@ -1,4 +1,4 @@
-# Quickstart: Ollama + MultiAgentEval
+# Quickstart: Ollama + AgentV
 
 Test your local agent workflows powered by Ollama.
 
@@ -22,10 +22,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Model
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Ollama-Llama3-Local"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Ollama-Llama3-Local"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

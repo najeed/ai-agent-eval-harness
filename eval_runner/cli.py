@@ -1,7 +1,7 @@
 """
 cli.py
 
-Main entry point for the MultiAgentEval CLI.
+Main entry point for the AgentV CLI.
 Refactored to use modular handlers for better maintainability.
 """
 
@@ -58,7 +58,7 @@ def get_parser(is_help=False):
         available_protocols = ["http", "local", "socket"]
 
     usage_text = """
-Usage: multiagent-eval <command> [options]
+Usage: agentv <command> [options]
 
 Core Evaluation:
   console        Launch the Visual Debugger (Web UI & REST API)
@@ -106,7 +106,7 @@ Utilities & Environment:
   registry       Synchronize industry scenario registries
 """
     parser = argparse.ArgumentParser(
-        description="MultiAgentEval (OpenCore)",
+        description="AgentV (OpenCore)",
         formatter_class=argparse.RawTextHelpFormatter,
         usage=usage_text if is_help else None,
     )
@@ -533,7 +533,7 @@ def main():
     """Main CLI entrance."""
     is_help = "-h" in sys.argv or "--help" in sys.argv
     if "--version" in sys.argv:
-        print(f"MultiAgentEval {__version__}")
+        print(f"AgentV {__version__}")
         sys.exit(0)
 
     try:

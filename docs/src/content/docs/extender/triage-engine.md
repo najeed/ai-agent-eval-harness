@@ -3,11 +3,11 @@ title: Triage Engine & VFS
 description: Deep dive into the forensic state-level triage and Virtual File System (VFS).
 ---
 
-MultiAgentEval isolates the root cause of an agent's failure by moving beyond simple log analysis and into **State-Level Trajectory Triage**.
+AgentV isolates the root cause of an agent's failure by moving beyond simple log analysis and into **State-Level Trajectory Triage**.
 
 ## 1. The "State Parity" Check (VFS Delta)
 
-Unlike standard benchmarks that only check for text output, MultiAgentEval maintains a **Virtual File System (VFS)**.
+Unlike standard benchmarks that only check for text output, AgentV maintains a **Virtual File System (VFS)**.
 - **VFS-Aware Shims**: Every [World Shim](/ai-agent-eval-harness/extender/shimming/) (Database, Git, Slack, etc.) is "VFS-aware."
 - **State Comparison**: When an agent executes a tool, the engine compares the resulting sandbox state against the ground truth defined in the scenario.
 - **Patient Zero**: If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the "Patient Zero" step.

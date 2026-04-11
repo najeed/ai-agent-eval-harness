@@ -9,7 +9,7 @@ AES is an industrial-grade specification used to define benchmarks that are fram
 
 - **Human Readable**: Standardized JSON/YAML schema.
 - **Framework Agnostic**: One spec to evaluate LangGraph, CrewAI, AutoGen, or custom agents.
-- **CI/CD Ready**: Native validation via JSON Schema and the `multiagent-eval lint` tool.
+- **CI/CD Ready**: Native validation via JSON Schema and the `agentv lint` tool.
 - **Deterministic DAGs**: Task dependencies are defined as nodes and edges in a directed acyclic graph.
 
 ---

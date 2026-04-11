@@ -245,8 +245,11 @@ def demo_evaluate_route():
             for ev in inner:
                 ev["task_id"] = task["task_id"]
             all_events.extend(inner)
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"[DemoAgent] Warning: Failed to load sub-trace for {task['task_id']}: {e}",
+                flush=True,
+            )
 
         task_results.append(
             {

@@ -1,16 +1,16 @@
 ---
 title: State-Level Trajectory Triage
-description: How MultiAgentEval isolates root causes using VFS Deltas and the Heuristic Triage Engine.
+description: How AgentV isolates root causes using VFS Deltas and the Heuristic Triage Engine.
 ---
 
-MultiAgentEval isolates the root cause of an agent's failure by moving beyond simple log analysis and into **State-Level Trajectory Triage**. It works across three distinct layers:
+AgentV isolates the root cause of an agent's failure by moving beyond simple log analysis and into **State-Level Trajectory Triage**. It works across three distinct layers:
 
 ## 1. The "State Parity" Check (VFS Delta)
 
-Unlike standard benchmarks that only check the agent's final text response, MultiAgentEval maintains a **Virtual File System (VFS)** logic within its simulators.
+Unlike standard benchmarks that only check the agent's final text response, AgentV maintains a **Virtual File System (VFS)** logic within its simulators.
 
 *   **VFS-Aware Shims**: Every World Shim (Database, Jira, Git, etc.) is "VFS-aware."
-*   **State Comparison**: When an agent executes a tool, MultiAgentEval compares the resulting system state against the "Ground Truth" defined in the scenario.
+*   **State Comparison**: When an agent executes a tool, AgentV compares the resulting system state against the "Ground Truth" defined in the scenario.
 *   **Patient Zero**: If the agent queries the wrong table or fails to commit a file, the State Divergence is marked immediately as the "Patient Zero" step.
 
 ---
@@ -35,13 +35,13 @@ In the Visual Debugger, the **"Isolate Root Cause"** feature automatically scrol
 | **Logic** | Loops & Stalls | Identifies when an agent's reasoning has hit a dead-end. |
 | **Security** | Policy Violations | Pinpoints exactly which guardrail was triggered and why. |
 
-By combining these, MultiAgentEval can distinguish between an agent that hallucinated a tool's existence vs. an agent that used the right tool but with the wrong parameters.
+By combining these, AgentV can distinguish between an agent that hallucinated a tool's existence vs. an agent that used the right tool but with the wrong parameters.
 
 ---
 
 ## 4. Stratified Failure Taxonomy
 
-To achieve industrial-grade diagnostics, MultiAgentEval has transitioned from brittle error string matching to a formal, **NIST-aligned Failure Registry**.
+To achieve industrial-grade diagnostics, AgentV has transitioned from brittle error string matching to a formal, **NIST-aligned Failure Registry**.
 
 ### Hierarchical Root-Cause Analysis
 Failures are stratified into hierarchical categories:

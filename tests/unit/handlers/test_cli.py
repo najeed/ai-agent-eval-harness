@@ -56,7 +56,7 @@ def test_detect_framework_custom(tmp_path):
 def test_install_command():
     """Verify install command handler. (Migrated from test_visionary_cli.py)"""
     with patch("eval_runner.handlers.environment.handle_install") as mock_install:
-        with patch("sys.argv", ["multiagent-eval", "install", "telecom-pack"]):
+        with patch("sys.argv", ["agentv", "install", "telecom-pack"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_install.assert_called_once()
@@ -66,7 +66,7 @@ def test_install_command():
 def test_analyze_command():
     """Verify analyze command handler. (Migrated from test_visionary_cli.py)"""
     with patch("eval_runner.handlers.environment.handle_analyze") as mock_analyze:
-        with patch("sys.argv", ["multiagent-eval", "analyze", "https://github.com/test"]):
+        with patch("sys.argv", ["agentv", "analyze", "https://github.com/test"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_analyze.assert_called_once()
@@ -76,7 +76,7 @@ def test_analyze_command():
 def test_ci_generate_command():
     """Verify CI generate command handler. (Migrated from test_visionary_cli.py)"""
     with patch("eval_runner.handlers.environment.handle_ci_generate") as mock_ci:
-        with patch("sys.argv", ["multiagent-eval", "ci", "generate"]):
+        with patch("sys.argv", ["agentv", "ci", "generate"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_ci.assert_called_once()
@@ -86,7 +86,7 @@ def test_ci_generate_command():
 def test_explain_command():
     """Verify explain command handler uses --run-id."""
     with patch("eval_runner.handlers.analysis.handle_explain") as mock_explain:
-        with patch("sys.argv", ["multiagent-eval", "explain", "--run-id", "test-run"]):
+        with patch("sys.argv", ["agentv", "explain", "--run-id", "test-run"]):
             cli.main()
             mock_explain.assert_called_once()
 
@@ -94,7 +94,7 @@ def test_explain_command():
 def test_evaluate_command():
     """Verify evaluate command handler uses --path."""
     with patch("eval_runner.handlers.evaluation.handle_evaluate") as mock_eval:
-        with patch("sys.argv", ["multiagent-eval", "evaluate", "--path", "scenarios/finance/"]):
+        with patch("sys.argv", ["agentv", "evaluate", "--path", "scenarios/finance/"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_eval.assert_called_once()
@@ -104,7 +104,7 @@ def test_evaluate_command():
 def test_report_command():
     """Verify report command handler uses --run-id."""
     with patch("eval_runner.handlers.analysis.handle_report") as mock_report:
-        with patch("sys.argv", ["multiagent-eval", "report", "--run-id", "test-run"]):
+        with patch("sys.argv", ["agentv", "report", "--run-id", "test-run"]):
             cli.main()
             mock_report.assert_called_once()
 
@@ -112,7 +112,7 @@ def test_report_command():
 def test_lint_command():
     """Verify lint command handler uses --path."""
     with patch("eval_runner.handlers.scenarios.handle_lint") as mock_lint:
-        with patch("sys.argv", ["multiagent-eval", "lint", "--path", "scenarios/"]):
+        with patch("sys.argv", ["agentv", "lint", "--path", "scenarios/"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_lint.assert_called_once()
@@ -124,7 +124,7 @@ async def test_handle_init_success(tmp_path, monkeypatch):
     """Test 'init' command with real isolated directory."""
     monkeypatch.chdir(tmp_path)
     with (
-        patch("sys.argv", ["multiagent-eval", "init"]),
+        patch("sys.argv", ["agentv", "init"]),
         patch("builtins.input", side_effect=["y", "http://localhost:5001/execute_task"]),
         patch("eval_runner.cli.safe_run_async") as mock_safe,
     ):
@@ -135,7 +135,7 @@ async def test_handle_init_success(tmp_path, monkeypatch):
 def test_calibrate_command():
     """Verify calibrate command handler uses --run-id."""
     with patch("eval_runner.handlers.analysis.handle_calibrate") as mock_cal:
-        with patch("sys.argv", ["multiagent-eval", "calibrate", "--run-id", "test-run"]):
+        with patch("sys.argv", ["agentv", "calibrate", "--run-id", "test-run"]):
             cli.main()
             mock_cal.assert_called_once()
 
@@ -143,7 +143,7 @@ def test_calibrate_command():
 def test_aes_validate_command():
     """Verify aes validate command handler uses --path."""
     with patch("eval_runner.handlers.scenarios.handle_aes_validate") as mock_aes:
-        with patch("sys.argv", ["multiagent-eval", "aes", "validate", "--path", "spec.aes.yaml"]):
+        with patch("sys.argv", ["agentv", "aes", "validate", "--path", "spec.aes.yaml"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_aes.assert_called_once()
@@ -153,7 +153,7 @@ def test_aes_validate_command():
 def test_run_command():
     """Verify run command handler uses --scenario."""
     with patch("eval_runner.handlers.evaluation.handle_run") as mock_run:
-        with patch("sys.argv", ["multiagent-eval", "run", "--scenario", "scenarios/test.json"]):
+        with patch("sys.argv", ["agentv", "run", "--scenario", "scenarios/test.json"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_run.assert_called_once()
@@ -163,7 +163,7 @@ def test_run_command():
 def test_failures_search_command():
     """Verify failures search command handler. (Migrated from test_visionary_cli.py)"""
     with patch("eval_runner.handlers.environment.handle_failures_search") as mock_failures:
-        with patch("sys.argv", ["multiagent-eval", "failures", "search", "pii"]):
+        with patch("sys.argv", ["agentv", "failures", "search", "pii"]):
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
                 cli.main()
                 mock_failures.assert_called_once()

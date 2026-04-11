@@ -1,7 +1,7 @@
 """
 utils.py
 
-Architectural utilities for the MultiAgentEval harness.
+Architectural utilities for the AgentV harness.
 """
 
 import os
@@ -73,8 +73,11 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
                 return True
 
         return False
-    except Exception:
+    except Exception as e:
         # Fail-closed for any resolution errors (Security Standard)
+        import sys
+
+        sys.stderr.write(f"   [Utils] CRITICAL: Path resolution error (Fail-Closed): {e}\n")
         return False
 
 
@@ -126,8 +129,10 @@ def rmtree_resilient(path: str | Path, retries: int = 5, delay: float = 0.2):
         try:
             os.chmod(path, stat.S_IWRITE)
             func(path)
-        except Exception:
-            pass
+        except Exception as e:
+            import sys
+
+            sys.stderr.write(f"   [Utils] Warning: Failed to force R/W bits on {path}: {e}\n")
 
     for attempt in range(retries):
         try:
@@ -142,9 +147,13 @@ def rmtree_resilient(path: str | Path, retries: int = 5, delay: float = 0.2):
                     temp_name = p.parent / f"{p.name}.deleted.{int(time.time())}"
                     p.rename(temp_name)
                     shutil.rmtree(temp_name, ignore_errors=True)
-                except Exception:
-                    # If all else fails, propagate the error in strict environments
-                    pass
+                except Exception as e:
+                    # If all else fails, log it to the forensic trail
+                    import sys
+
+                    sys.stderr.write(
+                        f"   [Utils] Warning: Failed to remove {p} after all retries: {e}\n"
+                    )
 
 
 def generate_id(prefix: str = "id") -> str:

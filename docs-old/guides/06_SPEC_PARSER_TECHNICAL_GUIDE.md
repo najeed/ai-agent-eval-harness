@@ -1,6 +1,6 @@
 # Technical Guide: Spec-to-Eval Hybrid Parsing Strategy
 
-The `multiagent-eval spec-to-eval` command transforms raw Markdown PRDs (Product Requirement Documents) into executable JSON/AES scenarios. It employs a **Hybrid Parsing Strategy** to balance deterministic precision with LLM flexibility.
+The `agentv spec-to-eval` command transforms raw Markdown PRDs (Product Requirement Documents) into executable JSON/AES scenarios. It employs a **Hybrid Parsing Strategy** to balance deterministic precision with LLM flexibility.
 
 ---
 
@@ -49,5 +49,5 @@ If the structural parser finds **no tasks** (indicating a non-standard or highly
 ## 📖 4. Workflow Example
 To convert a PRD and fill in missing schema defaults in one go:
 ```bash
-multiagent-eval spec-to-eval --input docs/specs/my_prd.md --output scenarios/my_scenario.json --fill-defaults --force
+agentv spec-to-eval --input docs/specs/my_prd.md --output scenarios/my_scenario.json --fill-defaults --force
 ```

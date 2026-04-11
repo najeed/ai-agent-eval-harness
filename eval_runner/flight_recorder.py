@@ -111,9 +111,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 # [Staff Requirement] Force physical sync to prevent metadata corruption on crash
                 os.fsync(handle.fileno())
                 handle.close()
-            except (AttributeError, ImportError, ValueError):
+            except (AttributeError, ImportError, ValueError) as shut_e:
                 # Guard against shutdown races where os or handles are already cleared
-                pass
+                # but log for forensic visibility in debug mode
+                sys.stderr.write(
+                    f"   [FlightRecorder] [DEBUG] Shutdown race in finalize: {shut_e}\n"
+                )
             except Exception as e:
                 sys.stderr.write(
                     f"   [FlightRecorder] [WARNING] Finalization error on {path_str}: {e}\n"
@@ -151,8 +154,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             try:
                 handle.flush()
                 os.fsync(handle.fileno())
-            except Exception:
-                pass
+            except Exception as e:
+                sys.stderr.write(f"   [FlightRecorder] [WARNING] Flush error: {e}\n")
 
     # Note: methods like before_evaluation are still available if needed
     # but handle_event covers most needs for the Flight Recorder.

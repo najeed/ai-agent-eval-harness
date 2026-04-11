@@ -19,7 +19,7 @@
     },
     "harness_version": {
       "type": "string",
-      "description": "The version of the multiagent-verify engine used"
+      "description": "The version of the agentv engine used"
     },
     "run_id": {
       "type": "string",

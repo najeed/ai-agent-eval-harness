@@ -73,7 +73,7 @@ def main():
 
     input("\n[Press ENTER] to see the failure...")
 
-    print("\n   [Mutated] Running: multiagent-eval evaluate --path " + str(mutated_file))
+    print("\n   [Mutated] Running: agentv evaluate --path " + str(mutated_file))
     print("   [Log] Agent Error: Could not resolve 'Account ID' due to character mismatch.")
     print("   [Mutated] Score: 0% (Failure)")
 

@@ -1,4 +1,4 @@
-# 🏁 Quick Start — MultiAgentEval
+# 🏁 Quick Start — AgentV
 
 > Get up and running in under 60 seconds. This guide is for people who want to run an evaluation with minimal setup.
 
@@ -13,7 +13,7 @@ The fastest way to see the harness in action is the `quickstart` command. It aut
 pip install -e .
 
 # 2. Run the Quickstart
-multiagent-eval quickstart
+agentv quickstart
 ```
 
 **What happens:**
@@ -31,13 +31,13 @@ When you're ready to start building benchmarks for your own use-case:
 ### 1. Scaffold the Project
 Generate a starter workspace linked to automatically generated realistic datasets.
 ```bash
-multiagent-eval init --dir my_benchmarks --industry finance
+agentv init --dir my_benchmarks --industry finance
 ```
 
 ### 2. Auto-Translate Existing Specs
 If you already have PDF or Markdown guidelines, convert them into JSON scenarios automatically (requires local `Ollama`):
 ```bash
-multiagent-eval auto-translate --input specs/loan_approval.pdf --industry finance
+agentv auto-translate --input specs/loan_approval.pdf --industry finance
 ```
 
 ---
@@ -63,13 +63,13 @@ set AGENT_API_URL=http://localhost:5001/execute_task
 ### 3. Run an Evaluation
 Access the global library of **5,000+ industry-grade scenarios**.
 ```bash
-multiagent-eval evaluate --run-id <id>
+agentv evaluate --run-id <id>
 ```
 
 ### 4. Validate Benchmarks
 Ensure your custom benchmarks are AES v1.3 compliant.
 ```bash
-multiagent-eval aes validate --run-id <id>
+agentv aes validate --run-id <id>
 ```
 
 ---
@@ -80,7 +80,7 @@ After the run, you'll see a summary in the console and detailed logs in:
 - `reports/latest_results.json`
 - `runs/run.jsonl` (Flight Recorder)
 - `reports/report_<id>.html` (**Premium HTML Report** with trace reconstruction)
-- **Interactive Dashboard:** Run `multiagent-eval console` for visual background evaluation and live DNA debugging.
+- **Interactive Dashboard:** Run `agentv console` for visual background evaluation and live DNA debugging.
 
 ---
 
@@ -89,7 +89,7 @@ After the run, you'll see a summary in the console and detailed logs in:
 Inspect exactly what happened during an evaluation (agent prompts, tool calls, metrics):
 
 ```bash
-multiagent-eval replay --run-id <id>
+agentv replay --run-id <id>
 ```
 
 ---

@@ -60,11 +60,11 @@ AUTOGEN_API_URL=http://localhost:5002/query
    ```
 3. **Verify Adapter**:
    ```bash
-   multiagent-eval run --scenario scenarios/luna_demo.json --protocol ollama --agent ollama://llama3
+   agentv run --scenario scenarios/luna_demo.json --protocol ollama --agent ollama://llama3
    ```
 4. **Verify Luna-Judge (Ollama fallback)**:
    - Ensure `JUDGE_PROVIDER=ollama` in `.env`.
-   - Run: `multiagent-eval evaluate --run-id <id>`
+   - Run: `agentv evaluate --run-id <id>`
 
 ---
 
@@ -80,7 +80,7 @@ AUTOGEN_API_URL=http://localhost:5002/query
 2. **Run Sample AutoGen Agent**: (Requires a separate server script or the `quickstart` mock).
 3. **Run Evaluation**:
    ```bash
-   multiagent-eval evaluate --run-id <id> --protocol autogen --agent autogen://localhost:5002
+   agentv evaluate --run-id <id> --protocol autogen --agent autogen://localhost:5002
    ```
 
 ### B. LangChain / LangGraph
@@ -92,11 +92,11 @@ AUTOGEN_API_URL=http://localhost:5002/query
    ```
 2. **Verify LangChain Adapter**:
    ```bash
-   multiagent-eval evaluate --run-id <id> --protocol langchain --agent langchain://localhost:8000/my-agent
+   agentv evaluate --run-id <id> --protocol langchain --agent langchain://localhost:8000/my-agent
    ```
 3. **Verify LangGraph (Structural)**:
    - Since the LangGraph adapter is currently an **Architectural Mock**, verification confirms the engine's ability to route requests through the plugin hook without hardcoding.
-   - Run: `multiagent-eval evaluate --run-id <id> --protocol langgraph`
+   - Run: `agentv evaluate --run-id <id> --protocol langgraph`
 
 ### C. CrewAI
 **Goal**: Verify task-based multi-agent orchestration.
@@ -107,7 +107,7 @@ AUTOGEN_API_URL=http://localhost:5002/query
    ```
 2. **Verify Adapter (Structural Mock)**:
    - Verification confirms the lifecycle hook `on_discover_adapters` correctly registers the `crewai://` protocol.
-   - Run: `multiagent-eval evaluate --run-id <id> --protocol crewai`
+   - Run: `agentv evaluate --run-id <id> --protocol crewai`
 
 ---
 
@@ -117,22 +117,22 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
 
 | Provider | Protocol | Verification Command |
 | :--- | :--- | :--- |
-| **OpenAI** | `openai://` | `multiagent-eval run --protocol openai --agent openai://gpt-5.4-mini` |
-| **Anthropic**| `claude://` | `multiagent-eval run --protocol claude --agent claude://claude-4-6-sonnet` |
-| **Google** | `gemini://` | `multiagent-eval run --protocol gemini --agent gemini://gemini-2.5-flash` |
-| **xAI** | `grok://` | `multiagent-eval run --protocol grok --agent grok://grok-4.20-multi-agent` |
+| **OpenAI** | `openai://` | `agentv run --protocol openai --agent openai://gpt-5.4-mini` |
+| **Anthropic**| `claude://` | `agentv run --protocol claude --agent claude://claude-4-6-sonnet` |
+| **Google** | `gemini://` | `agentv run --protocol gemini --agent gemini://gemini-2.5-flash` |
+| **xAI** | `grok://` | `agentv run --protocol grok --agent grok://grok-4.20-multi-agent` |
 
 ---
 
 ## 🔌 5. Plugin Verification
 
 ### A. RemoteBridgePlugin (Live Debugger)
-1. Launch the console: `multiagent-eval console`.
+1. Launch the console: `agentv console`.
 2. Run an evaluation.
 3. Observe real-time state updates in the **Visual Debugger** tab. This verifies the `on_agent_turn_start` and `on_turn_end` hooks.
 
 ### C. CoveragePlugin (Grounding Heatmaps)
-1. Run: `multiagent-eval evaluate --run-id <id>`.
+1. Run: `agentv evaluate --run-id <id>`.
 2. Check `reports/coverage/`: Verify that `telecom_coverage.html` is generated. This ensures the `on_tool_result` hook is correctly capturing grounding events.
 
 ---
@@ -144,7 +144,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
 1. **Verify Rubric Selection**:
    - Run a scenario with a specialized rubric:
      ```bash
-     multiagent-eval evaluate --run-id <id>
+     agentv evaluate --run-id <id>
      ```
    - Check the `run.jsonl` trace to ensure the correct rubric prompt was injected (requires inspecting the event payload).
 
@@ -152,7 +152,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
    - Ensure you have a `run.jsonl` with both `luna_judge_score` and `human_score` field.
    - Run:
      ```bash
-     multiagent-eval calibrate --run-id <id>
+     agentv calibrate --run-id <id>
      ```
    - Verify the ASCII "JUDGE CALIBRATION REPORT" is displayed with MAE and Pearson Correlation.
 
@@ -160,7 +160,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
 
 ## ✅ 7. Final "Production-Ready" Checklist
 
-- [ ] `multiagent-eval doctor` returns all GREEN status.
+- [ ] `agentv doctor` returns all GREEN status.
 - [ ] No `ImportError` when running any ecosystem adapter.
 - [ ] API keys are correctly masked in log outputs.
 - [ ] Timeouts are respected (verified by setting `DEFAULT_ADAPTER_TIMEOUT=1`).

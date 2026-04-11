@@ -1,6 +1,6 @@
 # Walkthrough: Industrial Judge Calibration
 
-Welcome to the MultiAgentEval Calibration walkthrough! This guide will teach you how to ensure your AI "Judge" is making consistent and accurate evaluation decisions compared to human benchmarks.
+Welcome to the AgentV Calibration walkthrough! This guide will teach you how to ensure your AI "Judge" is making consistent and accurate evaluation decisions compared to human benchmarks.
 
 ## 🎯 Objectives
 - Understand the difference between **Judge Scores** and **Human Ground Truth**.
@@ -56,7 +56,7 @@ The walkthrough script also runs **Step 4**. Note how the metrics change when a 
 > **Recommended Threshold**: This is the "Magic Number". If the calibrator suggests `0.65`, you should update your scenario's `threshold` parameter to match!
 
 ---
-*MultiAgentEval (v1.2.3) - Guided Experience Layer*
+*AgentV (v1.2.3) - Guided Experience Layer*
 
 
 

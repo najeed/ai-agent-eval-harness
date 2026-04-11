@@ -10,8 +10,9 @@ from eval_runner.console.app import create_app
 def client():
     # Force known API Keys by patching the config module directly
     # because these are set at import time from env vars.
-    with patch("eval_runner.config.DASHBOARD_API_KEY", "test_dash_key_12345"), patch(
-        "eval_runner.config.SERVICE_API_KEY", "test_service_key_67890"
+    with (
+        patch("eval_runner.config.DASHBOARD_API_KEY", "test_dash_key_12345"),
+        patch("eval_runner.config.SERVICE_API_KEY", "test_service_key_67890"),
     ):
         app = create_app()
         app.config["TESTING"] = True
@@ -95,8 +96,9 @@ def test_evaluate_endpoint_security_dash_key_fallback(client, tmp_path):
 
     # We need to ensure config.SERVICE_API_KEY is updated for this test
     # because it was set at module load time.
-    with patch("eval_runner.config.SERVICE_API_KEY", "fallback_dash_key"), patch(
-        "eval_runner.config.PROJECT_ROOT", tmp_path
+    with (
+        patch("eval_runner.config.SERVICE_API_KEY", "fallback_dash_key"),
+        patch("eval_runner.config.PROJECT_ROOT", tmp_path),
     ):
         app = create_app()
         app.config["TESTING"] = True

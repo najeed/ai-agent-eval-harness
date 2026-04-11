@@ -1,4 +1,4 @@
-# Onboarding Tutorial — MultiAgentEval
+# Onboarding Tutorial — AgentV
 
 Welcome to the harness! This tutorial walks a first-time user (e.g., a Product Manager or Engineering first-timer) through a complete evaluation workflow with real commands and expected outputs.
 
@@ -44,15 +44,15 @@ python -m pip install -r requirements.txt
 Run:
 
 ```bash
-multiagent-eval --help
+agentv --help
 ```
 
 > ✅ Expected output snippet:
 >
 > ```text
-> usage: multiagent-eval [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
+> usage: agentv [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
 > 
-> MultiAgentEval (OpenCore)
+> AgentV (OpenCore)
 > ```
 
 ### ✅ Step 3: Explore the Scenario Catalog
@@ -61,7 +61,7 @@ Before running an evaluation, discover what's available:
 
 ```bash
 # List all telecom scenarios
-multiagent-eval list --search "telecom"
+agentv list --search "telecom"
 ```
 
 > ✅ Expected output: A table of matching scenarios with IDs and titles.
@@ -77,7 +77,7 @@ The harness includes industry scenarios under `industries/`. You can use the `li
 ### ✅ Step 2: Run the evaluation
 
 ```bash
-multiagent-eval evaluate --run-id <id> --export
+agentv evaluate --run-id <id> --export
 ```
 
 ---
@@ -89,13 +89,13 @@ Instead of manually typing out JSON, the easiest way to start a new industry ben
 1. Scaffold the environment:
 
 ```bash
-multiagent-eval init --dir industries/retail --industry retail
+agentv init --dir industries/retail --industry retail
 ```
 
 2. Run the newly generated scenario:
 
 ```bash
-multiagent-eval run --scenario industries/retail/scenarios/starter_scenario.json
+agentv run --scenario industries/retail/scenarios/starter_scenario.json
 ```
 
 ---
@@ -105,7 +105,7 @@ multiagent-eval run --scenario industries/retail/scenarios/starter_scenario.json
 Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:
 
 ```bash
-multiagent-eval lint --run-id <id>
+agentv lint --run-id <id>
 ```
 
 ---
@@ -115,13 +115,13 @@ multiagent-eval lint --run-id <id>
 ### ✅ Replay the run trace
 
 ```bash
-multiagent-eval replay --run-id <id>
+agentv replay --run-id <id>
 ```
 
 ### ✅ View in the Visual Dashboard
 
 ```bash
-multiagent-eval console
+agentv console
 ```
 
 Inspect results natively using the **Visual Debugger**. The suite provides a unified hub for the entire lifecycle:
@@ -138,6 +138,6 @@ Inspect results natively using the **Visual Debugger**. The suite provides a uni
 
 - ✅ Read the **User Manual** (`docs/guides/help/02_USER_MANUAL.md`).
 - 🧠 Read the **Developer Guide** (`docs/guides/help/03_DEVELOPER_GUIDE.md`) for adapters and plugins.
-- 📂 **Path Decoupling (v1.1+)**: You don't have to keep scenarios in `industries/`. You can now run `multiagent-eval evaluate --run-id <id><any_folder>` and it will work out of the box!
+- 📂 **Path Decoupling (v1.1+)**: You don't have to keep scenarios in `industries/`. You can now run `agentv evaluate --run-id <id><any_folder>` and it will work out of the box!
 
 Happy evaluating!

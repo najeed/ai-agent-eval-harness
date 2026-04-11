@@ -43,8 +43,9 @@ class ArtifactPlugin(BaseEvalPlugin):
         if env_key:
             try:
                 return serialization.load_pem_private_key(env_key.encode(), password=None)
-            except Exception:
-                pass
+            except Exception as e:
+                # Forensic Audit: Key format errors must be signaled
+                print(f"      [ArtifactPlugin] Warning: Failed to load key from environment: {e}")
 
         # Priority 2: Persistent file
         if key_path.exists():
@@ -162,12 +163,12 @@ class ArtifactPlugin(BaseEvalPlugin):
         # Verify Signature if present
         if is_valid and "signature_ed25519" in manifest:
             try:
-                base64.b64encode(
-                    manifest.pop("signature_ed25519").encode()
-                )  # Dummy access to show logic
-                # Real verification requires full manifest dict without sig
-                pass
-            except Exception:
-                pass
+                # Signature validation logic hook (Industrial placeholder for future chain audit)
+                sig_data = manifest.get("signature_ed25519")
+                if not sig_data:
+                    is_valid = False
+            except Exception as e:
+                print(f"      [ArtifactPlugin] Signature verification failure: {e}")
+                is_valid = False
 
         return {"is_valid": is_valid, "details": results}

@@ -1,4 +1,4 @@
-# 🛠 Developer Guide — MultiAgentEval
+# 🛠 Developer Guide — AgentV
 
 This guide is for engineers building on or extending the harness.
 
@@ -269,7 +269,7 @@ If `cleanup_workspace` is `false` (default for many research scenarios), the dir
 
 ## 🤝 10 Contribution & Verification Flow
 1. Add scenario JSON in `industries/<industry>/scenarios/`.
-2. Run with `multiagent-eval run --scenario <path>`.
+2. Run with `agentv run --scenario <path>`.
 3. Add specialized metrics or plugins as needed.
 4. Coverage Standard: All new core utilities must target 90%+ coverage.
 5. Verification: Run the full suite with `pytest tests/`.
@@ -279,7 +279,7 @@ If `cleanup_workspace` is `false` (default for many research scenarios), the dir
 
 ## 🔐 11 Extending Authentication & PBAC
 
-The MultiAgentEval console uses an extensible **Auth Provider Pattern**. This allows the harness to stay "Zero-Touch" for local development while providing a clean hook for Enterprise SSO and PBAC integration.
+The AgentV console uses an extensible **Auth Provider Pattern**. This allows the harness to stay "Zero-Touch" for local development while providing a clean hook for Enterprise SSO and PBAC integration.
 
 ### 11.1 AuthManager Abstraction
 The core auth logic is defined in `eval_runner/console/auth_manager.py`.
@@ -334,7 +334,7 @@ The harness uses an **ED25519-based signing protocol** to ensure the integrity o
 ### 12.1 Signing Workflow
 - **Key Generation**: If `AES_PRIVATE_KEY` is missing from `.env`, the engine auto-generates a key in `.aes/keys/`.
 - **Manifest Signing**: The `ArtifactPlugin` generates an `audit_manifest.json` for every run, containing hashes of all traces and reports, signed by the system's private key.
-- **Verification**: Use `multiagent-eval verify --run-id <id>` to validate the signature against the public key.
+- **Verification**: Use `agentv verify --run-id <id>` to validate the signature against the public key.
 
 ### 12.2 CI/CD Hard Gates
 The `gate` command enforces these signatures in pipeline environments, preventing unverified or tampered results from passing the build.
@@ -408,7 +408,7 @@ The registry uses a **Recursive Non-Destructive Merge**. If a child layer (e.g. 
 ### 15.2 Forensic Auditing
 Use the environment doctor to inspect the final resolved state of the world:
 ```bash
-multiagent-eval doctor --registry
+agentv doctor --registry
 ```
 > [!CAUTION]
 > **Security Hardening**: For security, absolute filesystem paths are **masked** in the diagnostic output to prevent directory structure leakage in shared dashboards.

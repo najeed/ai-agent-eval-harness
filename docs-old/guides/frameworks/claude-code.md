@@ -1,4 +1,4 @@
-# Quickstart: Claude Code + MultiAgentEval
+# Quickstart: Claude Code + AgentV
 
 Rigorous evaluation for Claude-powered agents and MCP (Model Context Protocol) servers.
 
@@ -24,10 +24,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Agent
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Claude-Sonnet-Chef"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Claude-Sonnet-Chef"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

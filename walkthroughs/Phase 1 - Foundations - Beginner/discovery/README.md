@@ -12,13 +12,13 @@ This module will teach you how to navigate the Scenario Catalog and find the ind
 ### Step 1: The Master List
 Run the basic list command to see the entire industrial map.
 ```bash
-multiagent-eval list
+agentv list
 ```
 
 ### Step 2: Search for Finance
 Need to find benchmarks related to banking and ledgers? Use the query filter.
 ```bash
-multiagent-eval list --query finance
+agentv list --query finance
 ```
 
 ### Step 3: Run the Discovery Script

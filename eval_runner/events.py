@@ -91,8 +91,9 @@ class EventEmitter:
                 # If subscriber is a bound method of a class with cleanup logic
                 if hasattr(sub, "__self__") and hasattr(sub.__self__, "close_all"):
                     sub.__self__.close_all()
-            except Exception:
-                pass
+            except Exception as e:
+                # Forensic Transparency: Log cleanup failures for auditing
+                print(f"   [Events] Warning: Subscriber cleanup failure: {e}")
         self._subscribers = []
 
     def emit(self, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):

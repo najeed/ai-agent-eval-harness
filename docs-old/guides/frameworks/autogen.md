@@ -1,4 +1,4 @@
-# Quickstart: AutoGen + MultiAgentEval
+# Quickstart: AutoGen + AgentV
 
 Evaluate your AutoGen agent workflows using standardized benchmarks.
 
@@ -24,10 +24,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Agent
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "AutoGen-Dev-Agent"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "AutoGen-Dev-Agent"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

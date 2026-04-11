@@ -13,5 +13,5 @@ Scenarios in this directory are structured as deterministic state-transition map
 ## 🧪 Execution
 To run the gold standard evaluation for this industry:
 ```bash
-multiagent-eval evaluate --path industries/unstructured/gold --attempts 3 --ija-threshold 0.85
+agentv evaluate --path industries/unstructured/gold --attempts 3 --ija-threshold 0.85
 ```

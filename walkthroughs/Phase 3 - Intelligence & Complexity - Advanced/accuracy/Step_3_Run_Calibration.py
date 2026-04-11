@@ -7,11 +7,11 @@ def main():
     print("\n" + "=" * 60)
     print("WALKTHROUGH: STEP 3 - RUN CALIBRATION")
     print("=" * 60)
-    print("\nIn this step, we will use the MultiAgentEval CLI to measure")
+    print("\nIn this step, we will use the AgentV CLI to measure")
     print("how closely the 'GPT-4o' judge matched our 'Human' ground truth.")
     print("\n[Executing CLI Command]:")
     print(
-        "multiagent-eval calibrate --path Step_1_Evaluation_Trace.jsonl --golden Step_2_Human_Ground_Truth.json"  # noqa: E501
+        "agentv calibrate --path Step_1_Evaluation_Trace.jsonl --golden Step_2_Human_Ground_Truth.json"  # noqa: E501
     )
     print("-" * 60)
 

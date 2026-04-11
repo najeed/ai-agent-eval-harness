@@ -32,9 +32,9 @@ def test_no_hardcoded_version_in_logic():
     Search for hardcoded v1.3.x strings in the eval_runner/ directory.
     Excludes comments and the config.py implementation itself.
     """
-    # Regex to find '1.3.0', '1.3.1', etc. in string assignments or quotes
-    # Matches patterns like "1.3.0" or '1.3.0' but ignores comments starting with #
-    version_pattern = re.compile(r'["\']1\.3\.\d+["\']')
+    # Regex to find '1.4.0', '1.4.1', etc. in string assignments or quotes
+    # Matches patterns like "1.4.0" or '1.4.0' but ignores comments starting with #
+    version_pattern = re.compile(r'["\']1\.4\.\d+["\']')
 
     forbidden_matches = []
 

@@ -1,9 +1,9 @@
 ---
 title: CrewAI
-description: Bring multi-agent crew evaluation to the MultiAgentEval platform.
+description: Bring multi-agent crew evaluation to the AgentV platform.
 ---
 
-MultiAgentEval provides native support for CrewAI, allowing you to evaluate role-based agent orchestration and collaborative task execution.
+AgentV provides native support for CrewAI, allowing you to evaluate role-based agent orchestration and collaborative task execution.
 
 ## 1. Setup Your Agent API
 
@@ -30,7 +30,7 @@ async def execute(request: dict):
 Use the `crewai://` protocol to connect the harness to your agent service.
 
 ```bash
-multiagent-eval evaluate \
+agentv evaluate \
   --run-id <id> \
   --protocol crewai \
   --agent crewai://localhost:8000/execute_task \
@@ -43,5 +43,5 @@ The `crewai://` protocol utilizes the **Behavioral DNA** bus to track task hand-
 
 ```bash
 # View the agent hand-offs in the Visual Debugger
-multiagent-eval console
+agentv console
 ```

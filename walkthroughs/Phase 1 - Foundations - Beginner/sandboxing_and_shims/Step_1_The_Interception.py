@@ -21,10 +21,10 @@ def main():
     input("\n[Press ENTER] to let the agent try... and watch the 'Fortress' hold.")
 
     # Run the evaluation
-    print(f"\n   [CLI] Running: multiagent-eval evaluate --path {scenario_path}")
+    print(f"\n   [CLI] Running: agentv evaluate --path {scenario_path}")
     print("   [Warden] Intercepting all system calls via 'GitSimulator' shims...")
 
-    # Using python -m eval_runner.cli instead of direct multiagent-eval for portability
+    # Using python -m eval_runner.cli instead of direct agentv for portability
     try:
         subprocess.run(
             ["python", "-m", "eval_runner.cli", "evaluate", "--path", str(scenario_path)],

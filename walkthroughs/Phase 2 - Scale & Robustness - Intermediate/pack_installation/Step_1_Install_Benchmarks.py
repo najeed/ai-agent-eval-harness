@@ -14,7 +14,7 @@ def main():
     input("\n[Press ENTER] to install the 'telecom' pack...")
 
     # Run the install-pack command
-    print("\n   [CLI] Running: multiagent-eval install-pack telecom")
+    print("\n   [CLI] Running: agentv install-pack telecom")
     try:
         # We'll use the CLI module directly for the walkthrough
         subprocess.run(["python", "-m", "eval_runner.cli", "install-pack", "telecom"], check=True)

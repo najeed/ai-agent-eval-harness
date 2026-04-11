@@ -3,7 +3,7 @@ title: Security & Authentication
 description: Industrial-grade security standards, authentication protocols, and NIST AI-100-1 alignment.
 ---
 
-MultiAgentEval is **Secure-by-Design**. It protects evaluation infrastructure and data veracity using a multi-layered security model including mandatory API keys, sandbox isolation, and NIST-aligned trustworthiness metrics.
+AgentV is **Secure-by-Design**. It protects evaluation infrastructure and data veracity using a multi-layered security model including mandatory API keys, sandbox isolation, and NIST-aligned trustworthiness metrics.
 
 ## 🔑 The `DASHBOARD_API_KEY`
 

@@ -3,7 +3,7 @@ title: Agent Evaluation Specification (AES)
 description: Technical reference for the AES v1.4 schema and the spec-to-eval hybrid parser.
 ---
 
-The **Agent Evaluation Specification (AES)** is the formal standard used by MultiAgentEval to defineexecutable benchmarks. Version 1.4 introduces a **Hybrid Parsing Strategy** that allows evaluation suites to be generated directly from raw Product Requirement Documents (PRDs).
+The **Agent Evaluation Specification (AES)** is the formal standard used by AgentV to defineexecutable benchmarks. Version 1.4 introduces a **Hybrid Parsing Strategy** that allows evaluation suites to be generated directly from raw Product Requirement Documents (PRDs).
 
 ## 🏗️ The AES v1.4 Schema
 
@@ -67,7 +67,7 @@ If the structural parser fails to find tasks, the engine automatically triggers 
 To convert a PRD and backfill schema defaults:
 
 ```bash
-multiagent-eval spec-to-eval \
+agentv spec-to-eval \
   --input docs/specs/fraud_prd.md \
   --output scenarios/fraud.json \
   --fill-defaults \

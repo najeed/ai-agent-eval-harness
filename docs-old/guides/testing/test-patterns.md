@@ -2,7 +2,7 @@
 
 ## Common Testing Patterns for Evaluation Frameworks
 
-This document outlines common testing patterns and strategies specifically designed for evaluation frameworks like the MultiAgentEval.
+This document outlines common testing patterns and strategies specifically designed for evaluation frameworks like the AgentV.
 
 ## Evaluation Engine Testing Patterns
 

@@ -4,7 +4,7 @@ from pathlib import Path
 
 def main():
     print("============================================")
-    print("MultiAgentEval: Golden Truth Generator")
+    print("AgentV: Golden Truth Generator")
     print("============================================")
     print("\n   [Expert] Blessing evaluation runs with human labels...")
 

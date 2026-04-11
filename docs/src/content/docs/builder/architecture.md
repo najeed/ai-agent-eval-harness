@@ -1,9 +1,9 @@
 ---
 title: System Architecture
-description: Technical deep-dive into the MultiAgentEval engine, event bus, and security guardrails.
+description: Technical deep-dive into the AgentV engine, event bus, and security guardrails.
 ---
 
-MultiAgentEval is built on a **"Zero-Touch Core"** philosophy. The central engine remains framework-agnostic, while all industry-specific logic, communication protocols, and simulators are injected via a pluggable architecture.
+AgentV is built on a **"Zero-Touch Core"** philosophy. The central engine remains framework-agnostic, while all industry-specific logic, communication protocols, and simulators are injected via a pluggable architecture.
 
 ## 🏗️ High-Level Architecture
 
@@ -31,7 +31,7 @@ The heart of the system is the **Global Event Bus**. Every state transition in t
 
 ## 🛡️ Enterprise Security Guardrails
 
-MultiAgentEval is designed for adversarial environments, enforcing strict guardrails at the core level:
+AgentV is designed for adversarial environments, enforcing strict guardrails at the core level:
 
 | Threat | Mitigation |
 | :--- | :--- |

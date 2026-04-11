@@ -1,4 +1,4 @@
-# Quickstart: Gemini Multimodal Live + MultiAgentEval
+# Quickstart: Gemini Multimodal Live + AgentV
 
 Evaluate the latest Gemini agents using the harness for multimodal and reasoning benchmarks.
 
@@ -23,10 +23,10 @@ async def execute(request: dict):
 
 ## 2. Register the Agent
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Gemini-1.5-Pro-Live"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Gemini-1.5-Pro-Live"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

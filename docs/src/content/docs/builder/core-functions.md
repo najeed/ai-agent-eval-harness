@@ -3,11 +3,11 @@ title: Guide to Core Functions
 description: A comprehensive reference of the 1,500+ granular tags used to classify agent tasks across 30+ industrial sectors.
 ---
 
-To provide granular diagnostic analysis, every scenario in MultiAgentEval is tagged with a **Core Function** within its broader use case. This taxonomy ensures that failures are classified not just by sector (e.g., Finance), but by the specific skill required (e.g., Accounts Payable).
+To provide granular diagnostic analysis, every scenario in AgentV is tagged with a **Core Function** within its broader use case. This taxonomy ensures that failures are classified not just by sector (e.g., Finance), but by the specific skill required (e.g., Accounts Payable).
 
 ## 📊 High-Level Taxonomy
 
-The MultiAgentEval core supports 1,800+ function identifiers across the following major sectors:
+The AgentV core supports 1,800+ function identifiers across the following major sectors:
 
 | Sector | Primary Focus | Key Use Cases |
 | :--- | :--- | :--- |

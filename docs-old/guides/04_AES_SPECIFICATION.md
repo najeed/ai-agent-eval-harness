@@ -66,7 +66,7 @@ AES benchmarks are now fully portable.
 ## 6. Replaying Execution (`run.jsonl`)
 Every AES evaluation produces a `run.jsonl` flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
 ```bash
-multiagent-eval replay --run-id <id>
+agentv replay --run-id <id>
 ```
 
 ---
@@ -128,7 +128,7 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
  | Field | Description |
  | :--- | :--- |
  | `version` | The Fingerprint schema version (currently `1.0`). |
- | `engine` | The version of the `multiagent-eval` engine used. |
+ | `engine` | The version of the `agentv` engine used. |
  | `timestamp` | UTC ISO-8601 creation time. |
  | `topology_hash` | SHA-256 hash of the `scenario.workflow` structure. |
  | `tool_dna_hash` | Hash of the tool definitions and descriptions available to the agent. |
@@ -170,7 +170,7 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
  
  ### Scaffold Environments
  ```bash
- multiagent-eval init --standard ISO_20022
+ agentv init --standard ISO_20022
  ```
  
  - **Standards Coverage**: Finance (ISO 20022), Healthcare (HL7 FHIR), Manufacturing (Digital Twins), Logistics (JSON-LD Traceability).
@@ -190,7 +190,7 @@ Refers to the **Agent Eval Standard** itself (e.g., `1.3`). It defines the schem
 - **v1.4**: Current-Stable. Supports **VC v3**, **Capabilities**, and **Identity Registry**.
 
 ### `harness_version` (The Engine)
-Refers to the **MultiAgent-Eval Engine** build (e.g., `1.3.0`). This is automatically injected into the [run.jsonl](/eval_runner/verifier.py) and manifest by the "Referee."
+Refers to the **AgentV Engine** build (e.g., `1.3.0`). This is automatically injected into the [run.jsonl](/eval_runner/verifier.py) and manifest by the "Referee."
 
 > [!IMPORTANT]
 > **Industrial Rule**: A single `aes_version` standard can be satisfied by multiple `harness_version` engine builds (bugfixes, optimizations), but a trace is only **Forensically Valid** if the `harness_version` supports the requested `aes_version`.

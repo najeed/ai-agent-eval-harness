@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a quick reference for testing the MultiAgentEval. For detailed information, see the comprehensive guides in [`docs-old/guides/testing/`](docs-old/guides/testing/).
+This document provides a quick reference for testing the AgentV. For detailed information, see the comprehensive guides in [`docs-old/guides/testing/`](docs-old/guides/testing/).
 
 ## Quick Start
 

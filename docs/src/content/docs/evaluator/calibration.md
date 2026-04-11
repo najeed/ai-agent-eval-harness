@@ -35,7 +35,7 @@ Ensure your scenarios include a `human_score` field in the criteria metadata. Th
 Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (`run.jsonl`).
 
 ```bash
-multiagent-eval evaluate --run-id <id>
+agentv evaluate --run-id <id>
 ```
 
 ---
@@ -44,7 +44,7 @@ multiagent-eval evaluate --run-id <id>
 Use the `calibrate` command to generate an alignment report.
 
 ```bash
-multiagent-eval calibrate --run-id <id>
+agentv calibrate --run-id <id>
 ```
 
 ## Interpreting Alignment Metrics

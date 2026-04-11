@@ -30,8 +30,8 @@ Keys are organized by identity name (e.g., `system_id`). Each identity has its o
 ### Automating Signature (VC v3)
 Evaluation runs can automatically generate a signed VC v3 manifest upon completion:
 ```bash
-multiagent-eval evaluate --run-id <id>
-multiagent-eval certify --run-id <id>
+agentv evaluate --run-id <id>
+agentv certify --run-id <id>
 ```
 This will produce a `run_manifest.json` sidecar containing the **Forensic Evidence Ledger**. 
 
@@ -66,13 +66,13 @@ The `gate` command is designed for use in GitHub Actions, GitLab CI, or Jenkins.
 ### Basic Integrity Gate (SHA-256)
 Verifies that the trace ended in `SUCCESS` and its internal hashes match:
 ```bash
-multiagent-eval gate --run-id latest
+agentv gate --run-id latest
 ```
 
 ### Full Cryptographic Gate (ED25519)
 Verifies the signature against a public key and matches it to a specific scenario fingerprint:
 ```bash
-multiagent-eval gate \
+agentv gate \
   --run-id <id> \
   --verify-ledger \
   --hash ${{ github.sha }}
@@ -89,12 +89,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Evaluation
-        run: multiagent-eval evaluate --run-id <id>
+        run: agentv evaluate --run-id <id>
       
       - name: Trust Protocol Gate
         run: |
           # Use 'latest' to resolve the most recent run in the vault
-          multiagent-eval gate \
+          agentv gate \
             --run-id latest \
             --hash ${{ github.sha }}
 ```

@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MultiAgentEval - Publication Suite (Zero-Touch)")
+    parser = argparse.ArgumentParser(description="AgentV - Publication Suite (Zero-Touch)")
     parser.add_argument(
         "--mode", choices=["pilot", "standard"], default="standard", help="Run mode"
     )

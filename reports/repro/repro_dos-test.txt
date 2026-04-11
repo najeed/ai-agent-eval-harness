@@ -1,11 +1,11 @@
 # Reproduction script for dos-test
-# Generated on 2026-04-11 06:44:56
+# Generated on 2026-04-11 08:54:15
 # 
 # Usage:
-# 1. Ensure you have the multiagent-eval installed: pip install .
+# 1. Ensure you have the agentv installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: multiagent-eval run --scenario scenarios/dos-test.json
+# 3. RUN: agentv run --scenario scenarios/dos-test.json
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-multiagent-eval run --scenario scenarios/dos-test.json
+agentv run --scenario scenarios/dos-test.json

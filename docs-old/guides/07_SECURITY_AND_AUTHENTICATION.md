@@ -1,6 +1,6 @@
 # Guide: Security and Authentication
 
-The MultiAgentEval harness is designed with a **Secure-by-Design** philosophy to protect your infrastructure and data during industrial-scale agent evaluations. A central component of this security is the `DASHBOARD_API_KEY`.
+The AgentV harness is designed with a **Secure-by-Design** philosophy to protect your infrastructure and data during industrial-scale agent evaluations. A central component of this security is the `DASHBOARD_API_KEY`.
 
 ## The `DASHBOARD_API_KEY`
 
@@ -180,7 +180,7 @@ If you encounter a `401 Unauthorized` error when accessing the Visual Debugger o
 - **Exact Match**: The key is case-sensitive and must exactly match the value in your `.env` file or environment.
 
 ### 3. Server Configuration
-- **Environment Variable**: Run `multiagent-eval doctor` to verify that the `DASHBOARD_API_KEY` is correctly detected by the harness.
+- **Environment Variable**: Run `agentv doctor` to verify that the `DASHBOARD_API_KEY` is correctly detected by the harness.
 - **501 Not Implemented**: If you see this error, it means **no key** is configured. The harness will block all sensitive routes until a key is provided.
 
 For further assistance, contact `ai.eval.harness.contact+security@gmail.com`.

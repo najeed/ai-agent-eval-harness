@@ -1,13 +1,13 @@
 ---
 title: Evaluation Guide
-description: Core philosophy behind MultiAgentEval scenarios and performance analysis.
+description: Core philosophy behind AgentV scenarios and performance analysis.
 ---
 
 This guide explains the philosophy behind our evaluation scenarios, the structure of the industrial corpus, and how to interpret results.
 
 ## 📚 The Industrial Corpus
 
-MultiAgentEval ships with a production-grade corpus of **5,000+ scenarios** across 45+ industrial sectors. This includes:
+AgentV ships with a production-grade corpus of **5,000+ scenarios** across 45+ industrial sectors. This includes:
 - **Cross-Industry**: Inter-sector policy negotiation and data handoffs.
 - **Ethical Guardrails**: Hardened safety, bias, and PII leakage tests.
 - **Interactive Complexity**: Multi-turn flows involving Human-In-The-Loop (HITL).
@@ -57,8 +57,8 @@ The harness supports three primary communication modes for agents:
 ### Community Benchmarks
 You can pull and format datasets from global benchmarks on-the-fly using URIs:
 ```bash
-multiagent-eval evaluate --run-id <id>
-multiagent-eval evaluate --run-id <id>
+agentv evaluate --run-id <id>
+agentv evaluate --run-id <id>
 ```
 
 ---
@@ -72,5 +72,5 @@ Beyond the CLI, the **Visual Console** provides real-time playback of agent traj
 
 Launch with:
 ```bash
-multiagent-eval console
+agentv console
 ```

@@ -3,16 +3,16 @@ title: Governance & Compliance
 description: Forensic governance, NIST AI-100-1 alignment, and license obligations.
 ---
 
-MultiAgentEval is designed for high-stakes industrial environments where traceability and regulatory compliance are non-negotiable.
+AgentV is designed for high-stakes industrial environments where traceability and regulatory compliance are non-negotiable.
 
 ## 1. Forensic Governance (v1.4.1)
 
-MultiAgentEval mandates the **VC v3 forensic standard** for all production-grade evaluations.
+AgentV mandates the **VC v3 forensic standard** for all production-grade evaluations.
 
 - **Identity-based signing**: All traces are signed via the **Identity Registry** (ED25519) to ensure non-repudiation.
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated sidecar artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
 - **Environmental Provenance**: Every trace is mathematically bound to a **Provisioning Hash** of the registry state at the time of execution.
-- **Hard Gating**: Deployment pipelines are enforced via the `multiagent-eval gate` command, which blocks promotion if cryptographic signatures or forensic hashes fail to match the sanctioned baseline.
+- **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic signatures or forensic hashes fail to match the sanctioned baseline.
 
 ## 2. NIST AI-100-1 Alignment
 
@@ -26,7 +26,7 @@ The framework satisfies industrial audit requirements defined by **NIST AI-100-1
 ## 3. License Obligations
 
 ### Core Framework License
-MultiAgentEval is distributed under the **Apache License 2.0**.
+AgentV is distributed under the **Apache License 2.0**.
 
 ### Third-Party Dependencies
 The framework utilizes several permissive-licensed (MIT, BSD, Apache 2.0) libraries.

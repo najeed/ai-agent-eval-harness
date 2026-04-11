@@ -21,11 +21,9 @@ def main():
     input("\n[Press ENTER] to launch the Blitz...")
 
     # Run the evaluation with concurrency
-    print(
-        f"\n   [CLI] Running: multiagent-eval evaluate --manifest {manifest_path} --concurrency 5"
-    )
+    print(f"\n   [CLI] Running: agentv evaluate --manifest {manifest_path} --concurrency 5")
 
-    # Using python -m eval_runner.cli instead of direct multiagent-eval for portability
+    # Using python -m eval_runner.cli instead of direct agentv for portability
     try:
         # We limit the number of scenarios for the demo but keep the concurrency logic visible
         subprocess.run(

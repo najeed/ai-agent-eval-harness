@@ -1,7 +1,7 @@
 """
 dashboard/app.py
 
-Streamlit application for visualizing MultiAgentEval trajectories and metrics.
+Streamlit application for visualizing AgentV trajectories and metrics.
 """
 
 import json
@@ -12,7 +12,7 @@ import streamlit as st
 
 # Set page configuration for a premium look
 st.set_page_config(
-    page_title="MultiAgentEval Lab",
+    page_title="AgentV Lab",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("🤖 MultiAgentEval Lab: Trajectory Dashboard")
+st.title("🤖 AgentV Lab: Trajectory Dashboard")
 
 # Trajectory discovery
 TRAJECTORY_DIR = Path(os.environ.get("TRAJECTORY_DIR", "reports/trajectories"))

@@ -33,10 +33,7 @@ def main():
     input("\n[Press ENTER] to execute the calibration...")
 
     # Run the calibrate command
-    print(
-        "\n   [CLI] Running: multiagent-eval calibrate --run-id "
-        f"calibration-bench --golden {golden_path}"
-    )
+    print(f"\n   [CLI] Running: agentv calibrate --run-id calibration-bench --golden {golden_path}")
 
     try:
         # We'll use the CLI module directly for the walkthrough

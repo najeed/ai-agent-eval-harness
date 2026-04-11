@@ -1,4 +1,4 @@
-# 🧠 User Manual — MultiAgentEval
+# 🧠 User Manual — AgentV
 
 This guide is for users who want to run and understand evaluations without diving into internal implementation details.
 
@@ -65,7 +65,7 @@ Metrics score an agent’s performance. Built-in metrics include:
 ### 🧪 `evaluate` — batch evaluation
 
 ```bash
-multiagent-eval evaluate --run-id <id> --format jsonl --output reports/latest_results.json --attempts 3
+agentv evaluate --run-id <id> --format jsonl --output reports/latest_results.json --attempts 3
 ```
 
 **Key options:**
@@ -136,7 +136,7 @@ multiagent-eval evaluate --run-id <id> --format jsonl --output reports/latest_re
 ### 🧩 `run` — single scenario
 
 ```bash
-multiagent-eval run --scenario scenarios/your_scenario.json -k 2 -f -v
+agentv run --scenario scenarios/your_scenario.json -k 2 -f -v
 ```
 
 Use this for rapid iteration and debugging. It supports the same core execution flags as `evaluate` (e.g., `--agent`, `--protocol`, `--seed`).
@@ -167,15 +167,15 @@ These utilities are designed to get you from "installation" to "first eval" in s
 ### 🏃 `quickstart` — The 60-Second Demo
 Runs a complete evaluation loop using the built-in sample agent in your terminal.
 ```bash
-multiagent-eval quickstart
+agentv quickstart
 ```
 *   Spawns the sample agent server process.
 *   Runs a telecom troubleshooting scenario.
 *   Generates a **Premium HTML report** (Mermaid trajectories enabled) in `reports/`.
-*   **Note:** This command is designed for CLI-only instant feedback; use `multiagent-eval console` for the visual experience.
+*   **Note:** This command is designed for CLI-only instant feedback; use `agentv console` for the visual experience.
 
 ```bash
-multiagent-eval console --port 5000
+agentv console --port 5000
 ```
 
 ---
@@ -205,43 +205,43 @@ Replay agent trajectories with professional-grade precision:
 ### 🔍 `doctor` — Environment Validator
 Troubleshoot your installation and connectivity.
 ```bash
-multiagent-eval doctor
+agentv doctor
 ```
 
 ### 🎨 `report` — Premium Visual Reporting
 Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
 ```bash
-multiagent-eval report --run-id <id>
+agentv report --run-id <id>
 ```
 
 ### ✨ `scenario generate` — Interactive Scaffolding
 Bootstrap new test cases without writing JSON by hand.
 ```bash
-multiagent-eval scenario generate
+agentv scenario generate
 ```
 
 ### ⏺ `record` — Trace Capture
 Capture real interactions with your agent to create new eval scenarios.
 ```bash
-multiagent-eval record --agent http://localhost:5001/execute_task
+agentv record --agent http://localhost:5001/execute_task
 ```
 
 ### 🎮 `playground` — Interactive Experimentation
 Talk to your agent directly in the CLI and see how it performs.
 ```bash
-multiagent-eval playground --agent http://localhost:5001/execute_task
+agentv playground --agent http://localhost:5001/execute_task
 ```
 
 ### 🔍 `list` — Scenario Catalog Search
 Discover scenarios across the built-in and downloaded libraries.
 ```bash
-multiagent-eval list --search "telecom"
+agentv list --search "telecom"
 ```
 
 ### 🧹 `lint` — Quality Scoring
 Check your scenarios for AES compliance and technical quality.
 ```bash
-multiagent-eval lint --run-id <id>
+agentv lint --run-id <id>
 ```
 - **90-100**: High quality, CI-ready.
 - **70-89**: Warning (Missing metadata or low complexity).
@@ -254,23 +254,23 @@ multiagent-eval lint --run-id <id>
 ### 📦 `install` — Scenario Packs
 Rapidly deploy industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
 ```bash
-multiagent-eval install telecom-pack
+agentv install telecom-pack
 ```
 
 ### 🔬 `analyze` — Repo Scanning
 Scan agent repositories to identify tool patterns and auto-generate matching AES scenarios.
 ```bash
-multiagent-eval analyze https://github.com/example/agent
+agentv analyze https://github.com/example/agent
 ```
 
 ### 🤖 `explain` — Trace Analysis
 Automated diagnostic analysis of `run.jsonl` traces to identify root causes of agent failures.
 ```bash
-multiagent-eval explain --run-id <id>
+agentv explain --run-id <id>
 ```
 
 ### 🛠️ Visual Scenario Editor
-Built into the Visual Debugger (`multiagent-eval console`), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.
+Built into the Visual Debugger (`agentv console`), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.
 
 ---
 
@@ -298,7 +298,7 @@ Built into the Visual Debugger (`multiagent-eval console`), this tool provides a
 The simplest way to add a completely new industry is to generate a bootstrapped setup using `init`, which automatically creates a starter scenario and linked synthetic datasets.
 
 ```bash
-multiagent-eval init --dir industries/my_industry --industry my_industry
+agentv init --dir industries/my_industry --industry my_industry
 ```
 
 If you prefer to add them manually:
@@ -324,13 +324,13 @@ mkdir -p industries/<your_industry>/scenarios
 3. Run it via CLI:
 
 ```bash
-multiagent-eval run --scenario industries/<your_industry>/scenarios/<file>.json
+agentv run --scenario industries/<your_industry>/scenarios/<file>.json
 ```
 
 4. (Optional) Run an industry batch:
 
 ```bash
-multiagent-eval evaluate --run-id <id><your_industry>
+agentv evaluate --run-id <id><your_industry>
 ```
 
 ## Cumulative Industrial Registry (v1.3.0)
@@ -358,7 +358,7 @@ Place your configurations in the `shim_resources.d/` folder as `.json` or `.yaml
 ### 🔍 Auditing Your Registry
 To see exactly how your registry is merged and which sources are contributing to your environment, use the doctor utility:
 ```bash
-multiagent-eval doctor --registry
+agentv doctor --registry
 ```
 > [!NOTE]
 > **Security**: Absolute filesystem paths are masked in this report to prevent directory structure leakage.
@@ -450,7 +450,7 @@ Used when `--attempts > 1` to measure stability across runs.
 Convert production traces into evaluation scenarios:
 
 ```bash
-multiagent-eval import-drift --input production_trace.jsonl --industry telecom --output-dir industries/telecom/scenarios
+agentv import-drift --input production_trace.jsonl --industry telecom --output-dir industries/telecom/scenarios
 ```
 
 ### 🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)
@@ -506,7 +506,7 @@ The "Isolate Root Cause" engine and the Failure Corpus search for the following 
 Use the `failures search` command to find similar patterns across your historical runs using freeform search terms.
 
 ```bash
-multiagent-eval failures search "PII leak"
+agentv failures search "PII leak"
 ```
 
 #### Searchable Examples
@@ -526,7 +526,7 @@ multiagent-eval failures search "PII leak"
 
 ## 🚀 Advanced Setup (Docker)
 
-For environments requiring full process isolation or a localized enterprise stack, MultiAgentEval supports deployment via Docker Compose.
+For environments requiring full process isolation or a localized enterprise stack, AgentV supports deployment via Docker Compose.
 
 ### Launching the Lab Mode Stack
 ```bash

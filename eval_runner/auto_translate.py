@@ -61,7 +61,7 @@ async def translate_to_scenario(
 
     prompt = f"""
 You are an expert evaluator converting raw unstructured requirement documents into structured 
-JSON scenarios for the MultiAgentEval.
+JSON scenarios for the AgentV.
 
 Your task is to analyze the following document and synthesize a valid JSON scenario that meets 
 the official AES (Agent Eval Specification) schema.

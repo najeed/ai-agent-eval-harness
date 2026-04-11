@@ -1,4 +1,4 @@
-# Quickstart: LangChain + MultiAgentEval
+# Quickstart: LangChain + AgentV
 
 Connect your LangChain chains and agents to the evaluation platform.
 
@@ -21,10 +21,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Agent
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "LangChain-Agent-V1"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "LangChain-Agent-V1"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

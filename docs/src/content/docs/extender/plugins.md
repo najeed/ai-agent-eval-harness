@@ -1,9 +1,9 @@
 ---
 title: Plugin Development Guide
-description: Build industrial-grade extensions for the zero-touch MultiAgentEval core.
+description: Build industrial-grade extensions for the zero-touch AgentV core.
 ---
 
-MultiAgentEval is built on a strict **Zero-Touch Core** philosophy. All custom business logic, API integrations, and industry-specific CLI commands are injected via the modular Plugin System.
+AgentV is built on a strict **Zero-Touch Core** philosophy. All custom business logic, API integrations, and industry-specific CLI commands are injected via the modular Plugin System.
 
 ## 🛠️ Developer Quick Setup
 
@@ -61,7 +61,7 @@ The plugin system provides hooks at every stage of the evaluation loop.
 | **`on_agent_turn_start`** | `context: TurnContext` | Intercept the conversation flow. |
 | **`on_tool_request`** | `context`, `tool`, `args` | **Critical Security Hook**. Block or modify tools. |
 | **`on_tool_result`** | `context`, `tool`, `result` | Observe tool outputs for drift detection. |
-| **`on_register_commands`**| `registry` | Inject custom commands into the `multiagent-eval` CLI. |
+| **`on_register_commands`**| `registry` | Inject custom commands into the `agentv` CLI. |
 | **`on_register_console_routes`** | `app`, `nav` | Add custom views to the [Integrated Console](/ai-agent-eval-harness/extender/api-reference/). |
 
 ---

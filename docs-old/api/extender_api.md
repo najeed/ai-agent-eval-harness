@@ -1,10 +1,10 @@
 # Platform Extender API Reference
 
-The Platform Extender API is designed for system integrators, dashboard developers, and platform engineers who want to build on top of the MultiAgentEval harness.
+The Platform Extender API is designed for system integrators, dashboard developers, and platform engineers who want to build on top of the AgentV harness.
 
 ## 🌉 The Console REST API
 
-When you run `multiagent-eval console`, the harness launches a Flask-based REST API (default: `http://localhost:5000/api`).
+When you run `agentv console`, the harness launches a Flask-based REST API (default: `http://localhost:5000/api`).
 
 ### 🔐 Authentication & Permissions
 

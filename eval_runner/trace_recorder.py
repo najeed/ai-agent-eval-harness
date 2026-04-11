@@ -8,7 +8,7 @@ import aiohttp
 
 async def record_interaction(agent_url: str):
     """Simple loop to record interactions with an agent."""
-    print("\n[Trace Recorder] MultiAgentEval - Trace Recorder")
+    print("\n[Trace Recorder] AgentV - Trace Recorder")
     print(f"Target Agent: {agent_url}\n")
     print("Type 'exit' or 'quit' to stop recording.\n")
 
@@ -89,7 +89,7 @@ async def record_interaction(agent_url: str):
                 f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")
 
         print(f"\n✅ Recording saved to: {log_file}")
-        print(f"Tip: You can replay this with 'multiagent-eval replay --path {log_file}'")
+        print(f"Tip: You can replay this with 'agentv replay --path {log_file}'")
 
 
 if __name__ == "__main__":

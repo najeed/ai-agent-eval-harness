@@ -1,6 +1,6 @@
 # Compliance & Third-Party Licenses
 
-This document outlines the license obligations and compliance steps for the MultiAgent Verification Framework (`multiagent-verify`), as of **April 2026**.
+This document outlines the license obligations and compliance steps for the MultiAgent Verification Framework (`agentv`), as of **April 2026**.
 
 ## 1. Core Framework License
 The MultiAgent Verification Framework is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
@@ -45,7 +45,7 @@ To remain compliant with these licenses, the following steps are handled automat
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
 - **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard ED25519 keys, replacing unmanaged legacy key paths.
 - **Environmental Provenance**: AES v1.4 continues to use **Environmental DNA** snapshots, mathematically binding every trace to a **Provisioning Hash** of the registry state.
-- **Hard Gating**: Deployment pipelines are enforced via the `multiagent-eval gate` command, which blocks promotion if cryptographic VC v3 signatures or forensic hashes fail to match the sanctioned baseline.
+- **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic VC v3 signatures or forensic hashes fail to match the sanctioned baseline.
 
 ### Environmental DNA & Evidence Snapshots
 - [x] **Registry Snapshots**: Every evaluation captures a point-in-time snapshot of the resolved environment registry.

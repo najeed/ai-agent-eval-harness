@@ -56,7 +56,7 @@ def main():
 
     input("\n[Press ENTER] to execute the security check...")
 
-    print("\n   [CLI] Running: multiagent-eval verify --run-id calibration-bench")
+    print("\n   [CLI] Running: agentv verify --run-id calibration-bench")
 
     # Simulate verification logic for the walkthrough
     print("\n[Audit] Performing Vault Resolution...")

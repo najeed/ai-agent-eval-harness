@@ -25,7 +25,7 @@ class TestReportingPlugin(unittest.TestCase):
 
         with open(repro_file) as f:
             content = f.read()
-            self.assertIn("multiagent-eval run --scenario scenarios/finance/my_test.json", content)
+            self.assertIn("agentv run --scenario scenarios/finance/my_test.json", content)
 
         # Cleanup
         # repro_file.unlink()
@@ -41,7 +41,7 @@ class TestReportingPlugin(unittest.TestCase):
 
         with open(repro_file) as f:
             content = f.read()
-            self.assertIn("multiagent-eval run --scenario scenarios/default_test.json", content)
+            self.assertIn("agentv run --scenario scenarios/default_test.json", content)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,11 @@
 <!-- README.md (root of the project) -->
 
-# 🤖 MultiAgentEval - The Enterprise-Grade Reliability Framework for AI Agents
+# 🤖 AgentV - The Enterprise-Grade Reliability Framework for AI Agents
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-86%25-brightgreen.svg)](TESTING.md)
 [![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-92%25-brightgreen.svg)](eval_runner/utils.py)
-[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-VC%20v3.0.0-gold.svg)](docs-old/spec/trust_protocol_spec_v1.md)
@@ -15,7 +15,7 @@
 
 ## 🛡️ Industrial AI Agent Verification & Trustworthiness
 
-MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **April 2026**, the framework is aligned with the **NIST AI-100-1** trustworthiness framework, providing high-fidelity telemetry (**Behavioral DNA**) and deterministic verification of agent reliability across core industrial sectors.
+AgentV is a **Verification OS** for mission-critical AI agents. As of **April 2026**, the framework is aligned with the **NIST AI-100-1** trustworthiness framework, providing high-fidelity telemetry (**Behavioral DNA**) and deterministic verification of agent reliability across core industrial sectors.
 
 [![NIST AI-100-1](https://img.shields.io/badge/Alignment-NIST%20AI--100--1--Aligned-brightgreen.svg)](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#nist-ai-100-1-alignment-suite-r4)
 [![Behavioral DNA](https://img.shields.io/badge/Telemetry-Behavioral%20DNA--v2-blue.svg)](docs-old/architecture.md#eventemitter-bus-passive-observation)
@@ -32,20 +32,20 @@ MultiAgentEval is a **Verification OS** for mission-critical AI agents. As of **
 
 ### 🛡️ Add the Badge to Your Agent
 
-Showcase your agent's rigorous reliability by adding the official **Works with MultiAgentEval** badge to your repository to show that it has been evaluated by the MultiAgentEval framework.
+Showcase your agent's rigorous reliability by adding the official **Works with AgentV** badge to your repository to show that it has been evaluated by the AgentV framework.
 
 #### Option 1: Using img.shields.io
 You can use the Shields.io service to generate a consistent badge for your project:
 
 ```markdown
-[![Works with MultiAgentEval](https://img.shields.io/badge/Works%20with-MultiAgentEval-2c62c7)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://img.shields.io/badge/Works%20with-AgentV-2c62c7)](https://github.com/najeed/ai-agent-eval-harness)
 ```
 
 #### Option 2: Using GitHub Asset
 Alternatively, link directly to our high-fidelity SVG asset:
 
 ```markdown
-[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 ```
 
 ## Table of Contents
@@ -67,10 +67,10 @@ Alternatively, link directly to our high-fidelity SVG asset:
 Get from zero to evaluated in seconds:
 ```bash
 pip install -e .
-multiagent-eval quickstart
+agentv quickstart
 ```
 *   **Result**: Launches mock agent, executes a telecom scenario, and builds a report.
-*   **Next Step**: `multiagent-eval console` for the visual dashboard.
+*   **Next Step**: `agentv console` for the visual dashboard.
 
 
 ## Mission
@@ -142,13 +142,13 @@ The harness is organized into the following key components:
 > pip install -e .
 >
 > # 4. Run the Deterministic Quickstart (CLI)
-> multiagent-eval quickstart
+> agentv quickstart
 > ```
 >
 > **What it does:** Spawns a deterministic in-process mock agent, executes a telecom troubleshooting evaluation, and generates a rich HTML report in `reports/`. 100% offline-ready.
 
 > [!TIP]
-> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `multiagent-eval console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs-old/guides/help/02_USER_MANUAL.md#visual-suite) for details.
+> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `agentv console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs-old/guides/help/02_USER_MANUAL.md#visual-suite) for details.
 
 ## 📂 The Global Scenario Corpus
 
@@ -182,13 +182,13 @@ Comprehensive coverage for **50+ verticals** including:
 3.  **Run Evaluation**: 
     ```bash
     # Standard HTTP (default)
-    multiagent-eval evaluate --path industries/telecom
+    agentv evaluate --path industries/telecom
 
     # Local Subprocess (stdin/stdout)
-    multiagent-eval evaluate --path my_scenarios/ --protocol local --agent-cmd "python my_agent.py"
+    agentv evaluate --path my_scenarios/ --protocol local --agent-cmd "python my_agent.py"
 
     # Socket (TCP/Unix)
-    multiagent-eval evaluate --path tests/scenarios --protocol socket --agent-socket "localhost:9000"
+    agentv evaluate --path tests/scenarios --protocol socket --agent-socket "localhost:9000"
     ```
 
 > [!NOTE]
@@ -283,7 +283,7 @@ The harness includes a unified **React-powered SPA** that simplifies management 
 
 **Quick Launch:**
 ```bash
-multiagent-eval console
+agentv console
 ```
 *Access via browser at `http://localhost:5000`. The console features an adaptive, premium dark-mode UI with high-density data visualizations.*
 
@@ -331,7 +331,7 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 See the [Security and Authentication Guide](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
 
 ### Run Trace Warning
-All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `multiagent-eval cleanup-runs --days 7`.
+All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `agentv cleanup-runs --days 7`.
 
 ### Troubleshooting
 
@@ -360,7 +360,7 @@ This orchestrates the Flask backend, the React frontend, and the Streamlit analy
 ### Running Lab Mode without Docker
 If you cannot install Docker, run these 3 commands in separate terminals:
 1. `python sample_agent/agent_app.py`
-2. `multiagent-eval console`
+2. `agentv console`
 3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
 
 ## How to Contribute

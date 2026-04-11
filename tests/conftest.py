@@ -1,7 +1,7 @@
 """
 conftest.py
 
-Shared fixtures and configuration for the MultiAgentEval test suite.
+Shared fixtures and configuration for the AgentV test suite.
 """
 
 import pytest

@@ -22,7 +22,7 @@ export const useDemoHelper = (setTerminalOutput, setLatestRunId, setVerifiedRunI
 
     const runEval = async (scenarioPath, agentUrl) => {
         setTerminalOutput([{ text: `Executing Evaluation Suite: ${scenarioPath}...`, type: "system" }]);
-        const data = await runCommand(`multiagent-eval evaluate --path ${scenarioPath} --agent ${agentUrl}`);
+        const data = await runCommand(`agentv evaluate --path ${scenarioPath} --agent ${agentUrl}`);
         if (data) {
             setTerminalOutput(prev => [...prev, ...data.stdout.split('\n').map(l => ({ text: l, type: 'info' }))]);
             const match = data.stdout.match(/Run ID:\s*([^\s\n]+)/);
@@ -42,7 +42,7 @@ export const useDemoHelper = (setTerminalOutput, setLatestRunId, setVerifiedRunI
 
     const runTriage = async (runId) => {
         setTerminalOutput([{ text: `Isolating Root Cause for ${runId}...`, type: "system" }]);
-        const data = await runCommand(`multiagent-eval triage --run-id ${runId}`);
+        const data = await runCommand(`agentv triage --run-id ${runId}`);
         if (data) {
             setTerminalOutput(prev => [...prev, ...data.stdout.split('\n').map(l => ({ text: l, type: 'info' }))]);
             return true;
@@ -55,7 +55,7 @@ export const useDemoHelper = (setTerminalOutput, setLatestRunId, setVerifiedRunI
         const patchRes = await runCommand(`copy ${source} ${target}`);
         if (patchRes) {
             setTerminalOutput(prev => [...prev, { text: "Patch applied successfully. Verifying fix...", type: "info" }]);
-            const verifyData = await runCommand(`multiagent-eval evaluate --path ${scenarioPath} --agent ${agentUrl}`);
+            const verifyData = await runCommand(`agentv evaluate --path ${scenarioPath} --agent ${agentUrl}`);
             if (verifyData) {
                 setTerminalOutput(prev => [...prev, ...verifyData.stdout.split('\n').map(l => ({ text: l, type: 'info' }))]);
                 const match = verifyData.stdout.match(/Run ID:\s*([^\s\n]+)/);

@@ -2,7 +2,7 @@
 
 ## 1. Standalone Package Architecture
 The `dataproc-engine` is designed as a **standalone Python package** located in the `dataproc_engine/` directory. It has its own `pyproject.toml` to ensure:
-*   **Decoupling**: The engine can be versioned, tested, and distributed independently of the `multiagent-eval` framework.
+*   **Decoupling**: The engine can be versioned, tested, and distributed independently of the `agentv` framework.
 *   **Minimal Dependencies**: It only requires `click`, `pydantic`, `aiohttp`, `pandas`, and `pyarrow`, avoiding the bloat of the root harness (e.g., `Flask`, `sentence-transformers`).
 *   **CLI Registration**: The `dataproc-cli` is registered as a project script within this sub-package.
 

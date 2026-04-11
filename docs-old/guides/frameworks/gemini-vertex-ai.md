@@ -1,4 +1,4 @@
-# Quickstart: Gemini Vertex AI + MultiAgentEval
+# Quickstart: Gemini Vertex AI + AgentV
 
 Evaluate your enterprise Gemini models on Google Cloud Vertex AI.
 
@@ -20,10 +20,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Enterprise Agent
 ```bash
-multiagent-eval evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "VertexAI-Gemini-Pro"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "VertexAI-Gemini-Pro"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

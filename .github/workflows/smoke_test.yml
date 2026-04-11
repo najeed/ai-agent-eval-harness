@@ -33,5 +33,5 @@ jobs:
           python -m pytest tests/test_catalog.py tests/test_linter.py tests/test_adapters_discovery.py
       - name: Run Deterministic Smoke Test
         run: |
-          multiagent-eval quickstart
+          agentv quickstart
         # quickstart uses a mock agent and deterministic scenario

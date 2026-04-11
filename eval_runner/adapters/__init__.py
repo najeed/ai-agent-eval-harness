@@ -86,5 +86,8 @@ async def socket_adapter(payload: dict, address: str, **kwargs):
         writer.close()
         try:
             await writer.wait_closed()
-        except Exception:
-            pass
+        except Exception as e:
+            # Forensic visibility into cleanup failures
+            import sys
+
+            sys.stderr.write(f"   [Adapters] Warning: Socket cleanup failure: {e}\n")

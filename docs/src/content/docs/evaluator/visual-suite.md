@@ -3,7 +3,7 @@ title: Interactive Visual Suite
 description: Unified React dashboard for trajectory analysis, live DNA debugging, and visual scenario construction.
 ---
 
-The **Interactive Visual Suite** (launched via `multiagent-eval console`) is a high-density forensic interface for managing the entire agent evaluation lifecycle.
+The **Interactive Visual Suite** (launched via `agentv console`) is a high-density forensic interface for managing the entire agent evaluation lifecycle.
 
 ## 🔍 Visual Debugger & Trajectory Maps
 

@@ -5,7 +5,7 @@ import aiohttp
 
 async def run_playground(agent_url: str):
     """Interactive playground loop."""
-    print("\n🎮 MultiAgentEval - Playground")
+    print("\n🎮 AgentV - Playground")
     print(f"Agent: {agent_url}")
     print("Experiment with your agent in real-time. Type 'exit' to quit.\n")
 

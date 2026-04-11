@@ -1,9 +1,9 @@
 ---
 title: Agent Integration Guide
-description: Step-by-step instructions for connecting your AI agents to the MultiAgentEval harness.
+description: Step-by-step instructions for connecting your AI agents to the AgentV harness.
 ---
 
-Integrating an agent with MultiAgentEval follows a "Zero-Touch" philosophy, supporting everything from local Python scripts to enterprise-grade HTTP services.
+Integrating an agent with AgentV follows a "Zero-Touch" philosophy, supporting everything from local Python scripts to enterprise-grade HTTP services.
 
 ## 🚀 Quick Start (HTTP)
 
@@ -40,14 +40,14 @@ AGENT_API_URL=http://localhost:5001/execute
 Run a benchmark using the default HTTP protocol:
 
 ```bash
-multiagent-eval evaluate --run-id <id>
+agentv evaluate --run-id <id>
 ```
 
 ---
 
 ## 🛠 Supported Agent Protocols
 
-MultiAgentEval supports a wide range of communication patterns. Use the `--protocol` and `--agent` flags to select your target.
+AgentV supports a wide range of communication patterns. Use the `--protocol` and `--agent` flags to select your target.
 
 | Protocol | Description | CLI Example |
 | :--- | :--- | :--- |
@@ -63,24 +63,24 @@ MultiAgentEval supports a wide range of communication patterns. Use the `--proto
 
 ## 🏗 Framework Adapters
 
-MultiAgentEval includes native adapters for the leading agentic frameworks.
+AgentV includes native adapters for the leading agentic frameworks.
 
 ### AutoGen
 ```bash
 pip install pyautogen
-multiagent-eval evaluate --run-id <id> --protocol autogen --agent autogen://localhost:5002
+agentv evaluate --run-id <id> --protocol autogen --agent autogen://localhost:5002
 ```
 
 ### LangChain / LangGraph
 ```bash
 pip install langchain langgraph
-multiagent-eval evaluate --run-id <id> --protocol langgraph --agent langgraph://localhost:8000/graph
+agentv evaluate --run-id <id> --protocol langgraph --agent langgraph://localhost:8000/graph
 ```
 
 ### CrewAI
 ```bash
 pip install crewai
-multiagent-eval evaluate --run-id <id> --protocol crewai
+agentv evaluate --run-id <id> --protocol crewai
 ```
 
 ---
@@ -90,13 +90,13 @@ multiagent-eval evaluate --run-id <id> --protocol crewai
 ### Trace Replay
 If your agent makes a "wrong turn," use the `replay` command to step through the interaction logs.
 ```bash
-multiagent-eval replay --run-id <id>
+agentv replay --run-id <id>
 ```
 
 ### Visual Debugger
 Launch the `console` to see real-time Mermaid trajectories of your agent's decision-making process.
 ```bash
-multiagent-eval console
+agentv console
 ```
 :::tip
 In the Visual Debugger, use the **"Isolate Root Cause"** feature to jump directly to the turn where your agent diverged from the ground truth.

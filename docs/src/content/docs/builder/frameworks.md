@@ -1,9 +1,9 @@
 ---
 title: Framework Integration Guide
-description: Connect LangGraph, AutoGen, CrewAI, and other agent frameworks to MultiAgentEval.
+description: Connect LangGraph, AutoGen, CrewAI, and other agent frameworks to AgentV.
 ---
 
-MultiAgentEval is framework-agnostic. You can evaluate agents built with any library (LangChain, AutoGen, CrewAI, etc.) using either **Native Adapters** or **Manual API Wrapping**.
+AgentV is framework-agnostic. You can evaluate agents built with any library (LangChain, AutoGen, CrewAI, etc.) using either **Native Adapters** or **Manual API Wrapping**.
 
 ## 🔌 Native Ecosystem Adapters
 
@@ -16,7 +16,7 @@ For the highest level of integration, use native adapters. These typically requi
 
 **Usage:**
 ```bash
-multiagent-eval evaluate --agent langgraph://my_retail_node
+agentv evaluate --agent langgraph://my_retail_node
 ```
 
 ---
@@ -74,7 +74,7 @@ async def execute(request: dict):
 Once your agent is running (manually or via a native scheme), register it with the evaluation engine:
 
 ```bash
-multiagent-eval evaluate \
+agentv evaluate \
   --run-id <id> \
   --agent http://localhost:8000/execute_task \
   --agent-name "Retail-Orchestrator-V1"
@@ -83,5 +83,5 @@ multiagent-eval evaluate \
 ## 📊 Generating Results
 After the run completes, generate a [Verified Report](/ai-agent-eval-harness/evaluator/reports/) to analyze the results:
 ```bash
-multiagent-eval report --run-id <id> --share
+agentv report --run-id <id> --share
 ```

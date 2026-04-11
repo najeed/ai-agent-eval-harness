@@ -2,7 +2,7 @@
 
 # Guide: Adding a New Industry
 
-This guide provides a step-by-step process for adding a new industry to the MultiAgentEval.
+This guide provides a step-by-step process for adding a new industry to the AgentV.
 
 ## Step 1: Create the Directory Structure
 
@@ -53,7 +53,7 @@ python -c "from eval_runner.loader import load_scenario; from pathlib import Pat
 Launch the dashboard to ensure your new industry and scenarios are appearing correctly in the library:
 
 ```bash
-multiagent-eval console
+agentv console
 ```
 
 Navigate to the **Library** tab to view your JSON structure and trigger a test run visually.

@@ -1,13 +1,13 @@
 # CLI Reference
 
-The `multiagent-eval` (or `python -m eval_runner`) CLI provides a comprehensive suite of tools for agent evaluation, management, and debugging.
+The `agentv` (or `python -m eval_runner`) CLI provides a comprehensive suite of tools for agent evaluation, management, and debugging.
 
 ## Core Commands
 
 ### `evaluate`
 Run evaluations on one or more scenarios.
 ```bash
-multiagent-eval evaluate --run-id <id><dataset_path> [--attempts K] [--limit N] [--verbose]
+agentv evaluate --run-id <id><dataset_path> [--attempts K] [--limit N] [--verbose]
 ```
 - `--agent`: Unified agent target. Can be a URL (for `http`, `autogen`, `langgraph`), a shell command (for `local`), or an address (for `socket`).
 - `--protocol`: Communication protocol for the agent (`http`, `local`, `socket`, `autogen`, `crewai`, etc.).
@@ -45,7 +45,7 @@ When `--attempts` > 1, the harness generates:
 ### `run`
 Execute a single scenario file or a Benchmark URI.
 ```bash
-multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent-name <name>] [--verbose] [--output <path>]
+agentv run --scenario <path_or_uri> [--attempts K] [--agent-name <name>] [--verbose] [--output <path>]
 ```
 - `--attempts`: Number of attempts for the single scenario.
 - `--agent-name`: Human-readable name for reporting.
@@ -53,12 +53,12 @@ multiagent-eval run --scenario <path_or_uri> [--attempts K] [--agent-name <name>
 - `--output`: Save results to a specific JSON file.
 - `--seed`: Random seed for deterministic evaluation.
 - `--protocol`: Communication protocol override.
-- **Example (Benchmark):** `multiagent-eval run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
+- **Example (Benchmark):** `agentv run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
 
 ### `list`
 Search the scenario catalog with keyword and faceted filtering.
 ```bash
-multiagent-eval list [--search <query>] [--refresh]
+agentv list [--search <query>] [--refresh]
 ```
 - `--search`: Search scenarios by title, industry, or tags.
 - `--refresh`: Rebuild the scenario index from source.
@@ -66,13 +66,13 @@ multiagent-eval list [--search <query>] [--refresh]
 ### `catalog-search`
 Deep search across indexed scenario metadata.
 ```bash
-multiagent-eval catalog-search --query <term>
+agentv catalog-search --query <term>
 ```
 
 ### `lint`
 Verify scenario quality and AES specification compliance.
 ```bash
-multiagent-eval lint --run-id <id><path_to_scenario_or_dir>
+agentv lint --run-id <id><path_to_scenario_or_dir>
 ```
 - Runs automated checks for metadata quality, valid structure, and duplicate detection.
 - Provides a quality score (0-100) and detailed warning/error report.
@@ -80,29 +80,29 @@ multiagent-eval lint --run-id <id><path_to_scenario_or_dir>
 ### `init`
 Scaffold a new benchmark directory with starter scenarios for a specific industry. Automatically links the scenario to realistic synthetic CSV datasets.
 ```bash
-multiagent-eval init --dir <directory_name> --industry <industry_name> [--protocol <p>] [--agent-cmd <cmd>]
+agentv init --dir <directory_name> --industry <industry_name> [--protocol <p>] [--agent-cmd <cmd>]
 ```
 
 ### `install`
 Install curated scenario packs (e.g., `telecom-pack`, `rag-agent-pack`).
 ```bash
-multiagent-eval install <pack-name>
+agentv install <pack-name>
 ```
-**Example:** `multiagent-eval install telecom-pack` downloads and registers a bundle of 100+ telecom-specific agent scenarios.
+**Example:** `agentv install telecom-pack` downloads and registers a bundle of 100+ telecom-specific agent scenarios.
 
 ### `analyze`
 Scan an agent's GitHub repository to identify tool patterns and auto-generate matching AES scenarios.
 ```bash
-multiagent-eval analyze <github_url>
+agentv analyze <github_url>
 ```
-**Example:** `multiagent-eval analyze https://github.com/my-org/my-agent` scaffolds scenarios in `scenarios/auto/` based on detected tool definitions.
+**Example:** `agentv analyze https://github.com/my-org/my-agent` scaffolds scenarios in `scenarios/auto/` based on detected tool definitions.
 
 ## Specification & Validation
 
 ### `aes validate`
 Validate Agent Eval Specification (.aes.yaml) files against the official schema.
 ```bash
-multiagent-eval aes validate --run-id <id><path>
+agentv aes validate --run-id <id><path>
 ```
 - Performs deep structure checking using `jsonschema`.
 - Ensures all mandatory benchmark fields are present.
@@ -110,20 +110,20 @@ multiagent-eval aes validate --run-id <id><path>
 ### `inspect`
 Show formatted metadata for a specific scenario file.
 ```bash
-multiagent-eval inspect --scenario-path <path>
+agentv inspect --scenario-path <path>
 ```
 
 ### `verify`
 Verify the integrity of a run trace using autonomous artifact resolution.
 ```bash
-multiagent-eval verify --run-id <run_id>
+agentv verify --run-id <run_id>
 ```
 - `--run-id`: [SSOT] Mandatory identifier for the evaluation run. The harness automatically locates the trace and its sidecar manifest in the `runs/` vault.
 
 ### `certify`
 Generate a Verification Certificate (VC) v3.0.0 for a trace run.
 ```bash
-multiagent-eval certify --run-id <id> [--identity system_id] [--status {pass,fail,warning}] [--score 1.0]
+agentv certify --run-id <id> [--identity system_id] [--status {pass,fail,warning}] [--score 1.0]
 ```
 - `--run-id`: [SSOT] Mandatory identifier for the evaluation run.
 - `--identity`: (Optional) Identity ID to use for signing. Defaults to `system_id`.
@@ -135,7 +135,7 @@ multiagent-eval certify --run-id <id> [--identity system_id] [--status {pass,fai
 ### `gate`
 Enforce cryptographic integrity and trace success as a "Hard Gate" in CI/CD pipelines. Returns exit code `0` on success, `1` on failure.
 ```bash
-multiagent-eval gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
+agentv gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 ```
 - `--run-id`: [SSOT] Mandatory identifier for the evaluation run. Automatically resolves the manifest from the vault.
 - `--hash`: (Optional) Expected Git commit hash to verify against the trace's metadata.
@@ -145,7 +145,7 @@ multiagent-eval gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
 ```bash
-multiagent-eval spec-to-eval --input <prd.md> [--output <scenario.json>]
+agentv spec-to-eval --input <prd.md> [--output <scenario.json>]
 ```
 - `--input` (or `--path`): Path to the Markdown specification file.
 - `--output`: Optional. Custom output path for the generated JSON (defaults to `scenario.json`).
@@ -160,14 +160,14 @@ multiagent-eval spec-to-eval --input <prd.md> [--output <scenario.json>]
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.
 ```bash
-multiagent-eval auto-translate --input <document.pdf> --model <model_name> --industry <industry>
+agentv auto-translate --input <document.pdf> --model <model_name> --industry <industry>
 ```
 **Requirement:** `Ollama` must be running locally.
 
 ### `ci generate`
 Scaffold a `.github/workflows/agent_eval.yml` file to run evaluations automatically on Pull Requests.
 ```bash
-multiagent-eval ci generate
+agentv ci generate
 ```
 
 ## Drift & Research
@@ -175,41 +175,41 @@ multiagent-eval ci generate
 ### `import-drift`
 Convert production traces (interaction logs) into reusable evaluation scenarios.
 ```bash
-multiagent-eval import-drift --input <trace.json> --industry <industry>
+agentv import-drift --input <trace.json> --industry <industry>
 ```
 
 ### `mutate`
 Generate adversarial variants of a scenario (e.g., adding typos, prompt injection).
 ```bash
-multiagent-eval mutate --input <scenario.json> --type <mutation_type>
+agentv mutate --input <scenario.json> --type <mutation_type>
 ```
 
 ### `export`
 Convert internal execution traces (`run.jsonl`) into externally shareable dataset formats (like HuggingFace Datasets).
 ```bash
-multiagent-eval export --input <run.jsonl> --format hf --output <dataset.json>
+agentv export --input <run.jsonl> --format hf --output <dataset.json>
 ```
 
 ### `failures search`
 Query the global Failure Corpus to retrieve known failing edge cases for specific topics (e.g., PII, timeouts).
 ```bash
-multiagent-eval failures search <query>
+agentv failures search <query>
 ```
-**Example:** `multiagent-eval failures search "pii leaks"` discovers and imports realistic failing scenarios from the corpus.
+**Example:** `agentv failures search "pii leaks"` discovers and imports realistic failing scenarios from the corpus.
 
 ## Debugging & Exploration
 
 ### `replay`
 Replay a previously recorded run trace (Flight Recorder).
 ```bash
-multiagent-eval replay --run-id <id>
+agentv replay --run-id <id>
 ```
 - `--run-id`: [SSOT] Mandatory identifier for the evaluation run.
 
 ### `explain`
 Automatically analyze a run trace to diagnose root causes with high-fidelity tiered scoring and actionable technical fixes.
 ```bash
-multiagent-eval explain --run-id <id>
+agentv explain --run-id <id>
 ```
 **Forensic Features:**
 - **Tiered Confidence Scoring**: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
@@ -219,20 +219,20 @@ multiagent-eval explain --run-id <id>
 ### `calibrate`
 Measure alignment between the LLM judge and human ground truth in a flight recorder log.
 ```bash
-multiagent-eval calibrate --run-id <id> [--golden <path>] [--plot]
+agentv calibrate --run-id <id> [--golden <path>] [--plot]
 ```
 **Metrics:** Calculates Pearson Correlation and Mean Absolute Error (MAE) based on paired `luna_judge_score` and `human_score` events.
 
 ### `playground`
 Launch an interactive REPL to talk to an agent directly in the terminal.
 ```bash
-multiagent-eval playground [--agent <url>] [--protocol <p>] [--agent-cmd <cmd>] [--agent-name <name>] [--verbose]
+agentv playground [--agent <url>] [--protocol <p>] [--agent-cmd <cmd>] [--agent-name <name>] [--verbose]
 ```
 
 ### `record`
 Record a live interaction with an agent and save it as a structured trace.
 ```bash
-multiagent-eval record [--agent <url>] [--protocol <p>] [--agent-cmd <cmd>] [--agent-name <name>] [--verbose]
+agentv record [--agent <url>] [--protocol <p>] [--agent-cmd <cmd>] [--agent-name <name>] [--verbose]
 ```
 
 ## Utilities
@@ -244,25 +244,25 @@ Launch the Visual Debugger backend API and Unified React SPA. The debugger provi
 - **Background Evaluation**: Trigger runs directly from the UI; the console handles background execution and event streaming.
 - **Visual Debugger**: Real-time trajectory playback with interactive state inspection powered by the `DebuggerStateStore`.
 ```bash
-multiagent-eval console [--host 127.0.0.1] [--port 5000]
+agentv console [--host 127.0.0.1] [--port 5000]
 ```
 
 ### `doctor`
 Check the local environment for missing dependencies or configuration issues.
 ```bash
-multiagent-eval doctor
+agentv doctor
 ```
 
 ### `quickstart`
 Run a 60-second guided demo that spawns a mock agent and executes an evaluation.
 ```bash
-multiagent-eval quickstart
+agentv quickstart
 ```
 
 ### `report`
 Generate a standalone Premium HTML report from an execution trace.
 ```bash
-multiagent-eval report --run-id <id> [--share]
+agentv report --run-id <id> [--share]
 ```
 **Feature Highlights:**
 - **Trace Reconstruction**: Automatically reconstructs hierarchical task results, metrics, and triage tags from historical JSONL events.
@@ -272,7 +272,7 @@ multiagent-eval report --run-id <id> [--share]
 ### `scenario generate`
 Interactively workspace to generate new test scenarios via a terminal wizard.
 ```bash
-multiagent-eval scenario generate
+agentv scenario generate
 ```
 
 ## Plugin Commands
@@ -280,7 +280,7 @@ multiagent-eval scenario generate
 ### `plugin <name> <command>`
 Execute plugin-specific subcommands. Plugins register their own commands under a secure namespace to prevent command hijacking.
 ```bash
-multiagent-eval plugin <plugin_name> <command> [options]
+agentv plugin <plugin_name> <command> [options]
 ```
 
-> **Security Note:** All plugin commands are namespaced under `multiagent-eval plugin <name>` to prevent command hijacking. 
+> **Security Note:** All plugin commands are namespaced under `agentv plugin <name>` to prevent command hijacking. 

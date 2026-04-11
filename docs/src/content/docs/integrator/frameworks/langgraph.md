@@ -3,7 +3,7 @@ title: LangGraph (v2)
 description: Connect your LangGraph state machines to the harness for rigorous evaluation.
 ---
 
-MultiAgentEval provides native support for LangGraph, allowing you to evaluate state-aware agentic graphs and loops.
+AgentV provides native support for LangGraph, allowing you to evaluate state-aware agentic graphs and loops.
 
 ## 1. Setup Your Agent API
 
@@ -30,7 +30,7 @@ async def execute(request: dict):
 Use the `langgraph://` protocol to connect the harness to your agent service.
 
 ```bash
-multiagent-eval evaluate \
+agentv evaluate \
   --run-id <id> \
   --protocol langgraph \
   --agent langgraph://localhost:8000/execute_task \
@@ -43,5 +43,5 @@ The `langgraph://` protocol is optimized for the **Visual Debugger**. It capture
 
 ```bash
 # Launch the console to see the graph transitions
-multiagent-eval console
+agentv console
 ```

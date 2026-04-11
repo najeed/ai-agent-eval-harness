@@ -28,7 +28,7 @@ def main():
     input("\n[Press ENTER] to list all indexed scenarios...")
 
     # Run the list command
-    print("\n   [CLI] Running: multiagent-eval list")
+    print("\n   [CLI] Running: agentv list")
     output = run_cmd("python -m eval_runner.cli list")
     print("-" * 40)
     print(output)
@@ -40,7 +40,7 @@ def main():
     input("\n[Press ENTER] to filter the catalog for 'finance'...")
 
     # Run the search command
-    print("\n   [CLI] Running: multiagent-eval list --query finance")
+    print("\n   [CLI] Running: agentv list --query finance")
     search_output = run_cmd("python -m eval_runner.cli list --query finance")
     print("-" * 40)
     print(search_output)

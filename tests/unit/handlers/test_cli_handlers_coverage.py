@@ -11,17 +11,17 @@ from eval_runner.handlers import analysis, environment, evaluation, scenarios
 
 @pytest.fixture
 def mock_argv():
-    with patch("sys.argv", ["multiagent-eval"]):
+    with patch("sys.argv", ["agentv"]):
         yield sys.argv
 
 
 def test_cli_version(capsys):
     """Test --version flag."""
-    with patch("sys.argv", ["multiagent-eval", "--version"]):
+    with patch("sys.argv", ["agentv", "--version"]):
         with pytest.raises(SystemExit):
             cli.main()
         captured = capsys.readouterr()
-        assert "MultiAgentEval" in captured.out
+        assert "AgentV" in captured.out
 
 
 @pytest.mark.asyncio
@@ -139,7 +139,7 @@ async def test_handle_verify_missing(capsys, tmp_path, monkeypatch):
 def test_main_generic_exception():
     """Test generic Exception handling in main(). Forensic: Trigger inside try-block."""
     with patch("eval_runner.handlers.scenarios.handle_list", side_effect=Exception("Unexpected")):
-        with patch("sys.argv", ["multiagent-eval", "list"]):
+        with patch("sys.argv", ["agentv", "list"]):
             with pytest.raises(SystemExit) as e:
                 cli.main()
             assert e.value.code == 1
@@ -173,7 +173,7 @@ def test_cli_plugin_registration(capsys):
     plugin_inst = MockPlugin()
     with patch.object(manager, "plugins", [plugin_inst]):
         # We need to trigger get_parser with 'plugin' in argv or help
-        with patch("sys.argv", ["multiagent-eval", "plugin", "mock-cmd"]):
+        with patch("sys.argv", ["agentv", "plugin", "mock-cmd"]):
             try:
                 cli.main()
             except SystemExit:
@@ -187,7 +187,7 @@ def test_cli_plugin_registration(capsys):
 def test_main_keyboard_interrupt():
     """Test KeyboardInterrupt handling in main()."""
     with patch("eval_runner.cli.get_parser", side_effect=KeyboardInterrupt):
-        with patch("sys.argv", ["multiagent-eval", "list"]):
+        with patch("sys.argv", ["agentv", "list"]):
             with pytest.raises(SystemExit) as e:
                 cli.main()
             assert e.value.code == 130
@@ -195,7 +195,7 @@ def test_main_keyboard_interrupt():
 
 def test_main_help(capsys):
     """Test handling of --help flag."""
-    with patch("sys.argv", ["multiagent-eval", "--help"]):
+    with patch("sys.argv", ["agentv", "--help"]):
         with pytest.raises(SystemExit):
             cli.main()
         captured = capsys.readouterr()
