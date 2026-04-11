@@ -30,20 +30,20 @@ def explain_trace(trace_path: Path) -> dict:
         reason_lower = diagnosis["root_cause"].lower()
         if diagnosis["confidence"] >= 0.85:
             if "policy" in reason_lower or "compliance" in reason_lower:
-                diagnosis[
-                    "suggestion"
-                ] = "Review the AES safety policies and ensure the agent's prompt includes necessary guardrails (e.g., PII protection)."  # noqa: E501
+                diagnosis["suggestion"] = (
+                    "Review the AES safety policies and ensure the agent's prompt includes necessary guardrails (e.g., PII protection)."  # noqa: E501
+                )
             elif "system" in reason_lower or "connection" in reason_lower or "tool" in reason_lower:
-                diagnosis[
-                    "suggestion"
-                ] = "Check the tool implementation and infrastructure health at the pinpointed turn."  # noqa: E501
+                diagnosis["suggestion"] = (
+                    "Check the tool implementation and infrastructure health at the pinpointed turn."  # noqa: E501
+                )
         elif diagnosis["confidence"] >= 0.5:
-            diagnosis[
-                "suggestion"
-            ] = "The agent failed to reach a conclusion. Try increasing EVAL_MAX_TURNS or refining the task objective."  # noqa: E501
+            diagnosis["suggestion"] = (
+                "The agent failed to reach a conclusion. Try increasing EVAL_MAX_TURNS or refining the task objective."  # noqa: E501
+            )
         else:
-            diagnosis[
-                "suggestion"
-            ] = "Review the full trajectory in the Visual Debugger for subtle logic deviations."
+            diagnosis["suggestion"] = (
+                "Review the full trajectory in the Visual Debugger for subtle logic deviations."
+            )
 
     return diagnosis

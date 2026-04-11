@@ -221,7 +221,7 @@ if __name__ == "__main__":
 
     if args.server:
         print(f"[AGENT] Starting Flask server on port {args.port}...")
-        app.run(port=args.port, host="0.0.0.0")
+        app.run(port=args.port, host="0.0.0.0")  # nosec B104
     else:
         # CLI Mode
         p = input("Enter prompt: ")

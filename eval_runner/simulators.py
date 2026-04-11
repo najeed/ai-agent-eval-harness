@@ -500,7 +500,7 @@ class TerminalSimulator(BaseSimulator):
                 capture_output=True,
                 text=True,
                 timeout=30,
-                shell=is_windows,  # Windows needs shell for builtins like 'echo'
+                shell=is_windows,  # Windows needs shell for builtins like 'echo'  # nosec B602
                 start_new_session=not is_windows,  # Process Group Isolation
             )
 

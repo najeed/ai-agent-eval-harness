@@ -41,7 +41,7 @@ def dashboard_server():
     start_time = time.time()
     while time.time() - start_time < 30:
         try:
-            response = requests.get(f"http://localhost:{port}")
+            response = requests.get(f"http://localhost:{port}", timeout=5)
             if response.status_code == 200:
                 break
         except requests.RequestException:

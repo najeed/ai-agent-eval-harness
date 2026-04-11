@@ -36,12 +36,12 @@ def verify_run(run_id, trace_path, public_key_path):
     print(f"[*] Fetching certificate from: {cert_url}")
 
     try:
-        response = requests.get(cert_url)
+        response = requests.get(cert_url, timeout=10)
         if response.status_code != 200:
             print(f"[!] Error: Failed to fetch certificate (HTTP {response.status_code})")
             return False
 
-        vc = response.get_json()
+        vc = response.json()
     except Exception as e:
         print(f"[!] Network Error: {e}")
         return False

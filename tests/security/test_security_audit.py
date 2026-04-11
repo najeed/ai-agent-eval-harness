@@ -252,9 +252,9 @@ def test_cli_no_extend_cli():
     """BaseEvalPlugin must NOT have an extend_cli method (deprecated)."""
     from eval_runner.plugins import BaseEvalPlugin
 
-    assert not hasattr(
-        BaseEvalPlugin, "extend_cli"
-    ), "extend_cli was deprecated in favor of on_register_commands."
+    assert not hasattr(BaseEvalPlugin, "extend_cli"), (
+        "extend_cli was deprecated in favor of on_register_commands."
+    )
 
 
 # ──────────────────────────────────────────────────────────────────────────────

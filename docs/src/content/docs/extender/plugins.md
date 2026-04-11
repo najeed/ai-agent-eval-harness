@@ -122,6 +122,25 @@ All plugin hooks are subject to a **5-second timeout** (`PLUGIN_TIMEOUT`). If a 
 
 ---
 
+## 🔍 Diagnostic & CI Enforcement
+
+### Strict Mode (`STRICT_PLUGINS`)
+To prevent "ghost" registrations or malformed configurations from polluting your environment, AgentV supports a **Strict Mode**.
+
+| Mode | Environment Variable | Behavior |
+| :--- | :--- | :--- |
+| **Resilient** | `STRICT_PLUGINS=false` (Default) | Logs a warning if a plugin fails to load and continues. Recommended for production. |
+| **Strict** | `STRICT_PLUGINS=true` | Raises a `ValueError` if any registered plugin fails to load. Used in CI and the local test suite. |
+
+To enable Strict Mode locally for debugging:
+```bash
+$env:STRICT_PLUGINS = "true"  # PowerShell
+# or
+export STRICT_PLUGINS=true    # Linux/macOS
+```
+
+---
+
 ## 🌐 Extending Environment Simulators
 
 The `on_register_simulators` hook allows you to inject **World Shims** (Zero-Touch Environment Mocks).

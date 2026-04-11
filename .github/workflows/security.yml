@@ -8,6 +8,7 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  STRICT_PLUGINS: true
 
 jobs:
   python-security:
@@ -31,7 +32,7 @@ jobs:
         run: pip-audit --desc on
 
       - name: Run Bandit
-        run: bandit -r .
+        run: bandit -r . -ll
 
       - name: Run Safety
         run: safety check

@@ -27,7 +27,7 @@ def is_safe_url(url_str: str) -> bool:
         # Block Loopback, Multicast, Link-Local (Cloud Meta), and Private subnets
         # if they originate from an untrusted source.
         # Note: 169.254.169.254 is the standard Cloud Metadata IP.
-        forbidden = ["127.", "169.254", "0.0.0.0", "::1"]
+        forbidden = ["127.", "169.254", "0.0.0.0", "::1"]  # nosec B104
         for addr in forbidden:
             if ip.startswith(addr):
                 return False

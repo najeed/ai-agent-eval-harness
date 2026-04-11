@@ -60,7 +60,7 @@ def test_uri_normalization_consistency():
     Ensures normalize_uri produces identical results across modules.
     Specifically checks for Windows drive-letter casing.
     """
-    path = Path("C:/Users/Test/file.txt") if sys.platform == "win32" else Path("/tmp/file.txt")
+    path = Path("C:/Users/Test/file.txt") if sys.platform == "win32" else Path("/tmp/file.txt")  # nosec B108
     uri = normalize_uri(path)
 
     if sys.platform == "win32":

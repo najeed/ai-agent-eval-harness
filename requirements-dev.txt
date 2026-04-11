@@ -19,12 +19,12 @@ langchain-core>=1.2.28
 pyasn1>=0.6.3
 
 # --- Code Quality & Security ---
-ruff>=0.15.10
+ruff==0.15.10
 black>=26.3.1
 flake8>=7.3.0
 isort>=8.0.1
 pip-audit>=2.10.0
-bandit>=1.9.4
+bandit==1.9.4
 safety>=3.7.0
 
 # --- Type Checking ---

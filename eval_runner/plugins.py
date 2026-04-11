@@ -21,6 +21,7 @@ from . import config, discovery
 
 PLUGIN_TIMEOUT = config.PLUGIN_TIMEOUT
 PERSISTENT_PLUGINS_PATH = config.PLUGINS_CONFIG_PATH
+STRICT_PLUGINS = os.getenv("STRICT_PLUGINS", "false").lower() == "true"
 
 
 def _invoke_with_timeout(func, *args, **kwargs):
@@ -148,10 +149,13 @@ class PluginManager:
                         if not any(isinstance(p, plugin_cls) for p in self.plugins):
                             self.plugins.append(plugin_cls())
                     except Exception as e:
-                        print(
+                        msg = (
                             f"   [PluginManager] Failed to load plugin "
                             f"{module_name}.{class_name}: {e}"
                         )
+                        if STRICT_PLUGINS:
+                            raise ValueError(msg) from e
+                        print(msg)
             except Exception as e:
                 # Fail Fast: Registry corruption is a forensic blocker
                 msg = f"CRITICAL: Failed to read forensic registry {PERSISTENT_PLUGINS_PATH}: {e}"

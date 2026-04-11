@@ -132,3 +132,32 @@ pytest_plugins = []
 def pytest_configure(config):
     """Register custom markers and configure pytest-asyncio for Python 3.14+."""
     config.addinivalue_line("markers", "asyncio: mark test as an asyncio test")
+
+
+@pytest.fixture(autouse=True)
+def isolate_plugin_registry(tmp_path, monkeypatch):
+    """
+    Global Safety Net: Automatically isolates the plugin registry for ALL tests.
+    Redirects PERSISTENT_PLUGINS_PATH to a temporary file.
+    Enables STRICT_PLUGINS mode to catch registration errors during tests.
+    """
+    import json
+
+    # Create an empty registry in a nested directory to avoid polluting the root tmp_path
+    # which some tests (like linter tests) scan for scenarios.
+    registry_dir = tmp_path / ".isolated_config"
+    registry_file = registry_dir / "registry.isolated"
+    registry_dir.mkdir(parents=True, exist_ok=True)
+    with open(registry_file, "w", encoding="utf-8") as f:
+        json.dump({"plugins": []}, f)
+
+    # Monkeypatch the authoritative paths in plugins.py
+    from eval_runner import plugins
+
+    monkeypatch.setattr(plugins, "PERSISTENT_PLUGINS_PATH", registry_file)
+    monkeypatch.setattr(plugins, "STRICT_PLUGINS", True)
+
+    # Also patch the environment variable for any child processes or lookups
+    monkeypatch.setenv("STRICT_PLUGINS", "true")
+
+    return registry_file
