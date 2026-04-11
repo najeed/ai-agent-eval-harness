@@ -455,6 +455,9 @@ class SessionManager:
         """Handles Human-In-The-Loop interaction."""
         import os
 
+        # Record the pause event for audit/forensics regardless of CI mode
+        self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
+
         if os.getenv("CI", "").lower() == "true":
             response = f"Auto-approved (CI-Override): {prompt}"
             self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
@@ -462,7 +465,6 @@ class SessionManager:
             return response
 
         # Standard interactive input
-        self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
 
         # Check if we are in a TTY or have a way to get input
         import sys

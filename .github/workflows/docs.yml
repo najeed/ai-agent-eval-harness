@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - dev
+  workflow_dispatch:
 
 concurrency:
   group: pages
@@ -11,27 +12,33 @@ concurrency:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Source
+        uses: actions/checkout@v5
+
+      - name: Checkout Persistence Branch (gh-pages)
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: final-site
+        continue-on-error: true
+
+      - name: Initialize Persistence Path
+        run: mkdir -p final-site
 
       # --- 1. Legacy Docs Build (MkDocs) ---
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
-      - run: echo "cache_id=$(date --utc +%V)" >> $GITHUB_ENV
-      - uses: actions/cache@v5
-        with:
-          key: mkdocs-material-${{ env.cache_id }}
-          path: .cache
-          restore-keys: |
-            mkdocs-material-
       - run: pip install mkdocs-material
       - name: Build Legacy Metrics (MkDocs)
         run: mkdocs build
@@ -57,48 +64,40 @@ jobs:
           cd docs
           npm run build -- --base /ai-agent-eval-harness/dev/
 
-      # --- 3. Deployment Logic ---
-
-      # A. Primary Starlight to root (.) [Main Only]
-      - name: Deploy Primary Docs (Starlight -> Root)
+      # --- 3. Assembly Logic (Merge into Persistence Path) ---
+      - name: Assemble Site (Main)
         if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: docs/dist
-          destination_dir: .
-          keep_files: true
+        run: |
+          # Starlight to Root
+          cp -rv docs/dist/* final-site/
+          # MkDocs to /old
+          mkdir -p final-site/old
+          cp -rv site/* final-site/old/
 
-      # B. Primary Starlight to /dev [Dev Only]
-      - name: Deploy Primary Docs (Starlight -> /dev)
+      - name: Assemble Site (Dev)
         if: github.ref == 'refs/heads/dev'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: docs/dist
-          destination_dir: dev
-          keep_files: true
+        run: |
+          # Starlight to /dev
+          mkdir -p final-site/dev
+          cp -rv docs/dist/* final-site/dev/
+          # MkDocs to /old-dev
+          mkdir -p final-site/old-dev
+          cp -rv site/* final-site/old-dev/
 
-      # C. Legacy (Main) to /old [Main Only]
-      - name: Deploy Legacy Docs (Main -> /old)
-        if: github.ref == 'refs/heads/main'
+      # --- 4. Deployment & Persistence ---
+      - name: Sync Persistence Branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./final-site
           publish_branch: gh-pages
-          publish_dir: site
-          destination_dir: old
-          keep_files: true
+          keep_files: false # final-site already contains the merged state
 
-      # D. Legacy (Dev) to /old-dev [Dev Only]
-      - name: Deploy Legacy Docs (Dev -> /old-dev)
-        if: github.ref == 'refs/heads/dev'
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: site
-          destination_dir: old-dev
-          keep_files: true
+          path: ./final-site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

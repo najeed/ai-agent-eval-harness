@@ -185,8 +185,9 @@ class TestSession:
         with patch("eval_runner.events.EventEmitter.emit"):
             with patch("sys.stdin.isatty", return_value=True):
                 with patch("builtins.input", return_value="yes"):
-                    res = await session._handle_hitl("task-1", "approve?")
-                    assert res == "yes"
+                    with patch.dict(os.environ, {"CI": "false"}):
+                        res = await session._handle_hitl("task-1", "approve?")
+                        assert res == "yes"
 
     @pytest.mark.asyncio
     async def test_handle_hitl_non_interactive(self, session):

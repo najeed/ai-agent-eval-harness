@@ -46,6 +46,9 @@ jobs:
         ruff check .
         ruff format --check .
 
+    - name: Install Playwright Browsers
+      run: python -m playwright install --with-deps chromium
+
     - name: Test with pytest
       run: pytest tests/ --cov=eval_runner -v -p no:plugin_gateway
       env:
