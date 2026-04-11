@@ -135,3 +135,6 @@ scenarios/index.json
 *.local.json
 *.local.yaml
 *.local.yml
+
+# --- Generated Documentation ---
+/site/
