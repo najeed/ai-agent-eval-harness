@@ -29,7 +29,7 @@
     
     
       
-        <title>CrewAI - MultiAgentEval</title>
+        <title>CrewAI - AgentV</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quickstart-crewai-multiagenteval" class="md-skip">
+        <a href="#quickstart-crewai-agentv" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -3770,8 +3770,8 @@
 
 
 
-<h1 id="quickstart-crewai-multiagenteval">Quickstart: CrewAI + MultiAgentEval<a class="headerlink" href="#quickstart-crewai-multiagenteval" title="Permanent link">&para;</a></h1>
-<p>Bring multi-agent crew evaluation to the MultiAgentEval.</p>
+<h1 id="quickstart-crewai-agentv">Quickstart: CrewAI + AgentV<a class="headerlink" href="#quickstart-crewai-agentv" title="Permanent link">&para;</a></h1>
+<p>Bring multi-agent crew evaluation to the AgentV.</p>
 <h2 id="1-setup-your-agent-api">1. Setup Your Agent API<a class="headerlink" href="#1-setup-your-agent-api" title="Permanent link">&para;</a></h2>
 <p>Wrap your crew in an API that processes task requests.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crewai</span><span class="w"> </span><span class="kn">import</span> <span class="n">Crew</span><span class="p">,</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Task</span>
@@ -3788,10 +3788,10 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="2-register-your-crew">2. Register Your Crew<a class="headerlink" href="#2-register-your-crew" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;CrewAI-Financial-Analyst&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;CrewAI-Financial-Analyst&quot;</span>
 </code></pre></div>
 <h2 id="3-generate-verified-report">3. Generate Verified Report<a class="headerlink" href="#3-generate-verified-report" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--share
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--share
 </code></pre></div>
 
 

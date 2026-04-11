@@ -29,7 +29,7 @@
     
     
       
-        <title>Quickstart - MultiAgentEval</title>
+        <title>Quickstart - AgentV</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quick-start-multiagenteval" class="md-skip">
+        <a href="#quick-start-agentv" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4014,7 +4014,7 @@
 
 
 
-<h1 id="quick-start-multiagenteval">🏁 Quick Start — MultiAgentEval<a class="headerlink" href="#quick-start-multiagenteval" title="Permanent link">&para;</a></h1>
+<h1 id="quick-start-agentv">🏁 Quick Start — AgentV<a class="headerlink" href="#quick-start-agentv" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Get up and running in under 60 seconds. This guide is for people who want to run an evaluation with minimal setup.</p>
 </blockquote>
@@ -4025,7 +4025,7 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># 2. Run the Quickstart</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>multiagent-eval<span class="w"> </span>quickstart
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>agentv<span class="w"> </span>quickstart
 </code></pre></div>
 <p><strong>What happens:</strong>
 1. Spawns a <strong>deterministic in-process</strong> sample agent (requires no API keys).
@@ -4037,11 +4037,11 @@
 <p>When you're ready to start building benchmarks for your own use-case:</p>
 <h3 id="1-scaffold-the-project">1. Scaffold the Project<a class="headerlink" href="#1-scaffold-the-project" title="Permanent link">&para;</a></h3>
 <p>Generate a starter workspace linked to automatically generated realistic datasets.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>init<span class="w"> </span>--dir<span class="w"> </span>my_benchmarks<span class="w"> </span>--industry<span class="w"> </span>finance
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>init<span class="w"> </span>--dir<span class="w"> </span>my_benchmarks<span class="w"> </span>--industry<span class="w"> </span>finance
 </code></pre></div></p>
 <h3 id="2-auto-translate-existing-specs">2. Auto-Translate Existing Specs<a class="headerlink" href="#2-auto-translate-existing-specs" title="Permanent link">&para;</a></h3>
 <p>If you already have PDF or Markdown guidelines, convert them into JSON scenarios automatically (requires local <code>Ollama</code>):
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>auto-translate<span class="w"> </span>--input<span class="w"> </span>specs/loan_approval.pdf<span class="w"> </span>--industry<span class="w"> </span>finance
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>auto-translate<span class="w"> </span>--input<span class="w"> </span>specs/loan_approval.pdf<span class="w"> </span>--industry<span class="w"> </span>finance
 </code></pre></div></p>
 <hr />
 <h2 id="manual-setup-the-standard-way">🛠 Manual Setup (The "Standard" Way)<a class="headerlink" href="#manual-setup-the-standard-way" title="Permanent link">&para;</a></h2>
@@ -4058,11 +4058,11 @@
 </code></pre></div></p>
 <h3 id="3-run-an-evaluation">3. Run an Evaluation<a class="headerlink" href="#3-run-an-evaluation" title="Permanent link">&para;</a></h3>
 <p>Access the global library of <strong>5,000+ industry-grade scenarios</strong>.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="4-validate-benchmarks">4. Validate Benchmarks<a class="headerlink" href="#4-validate-benchmarks" title="Permanent link">&para;</a></h3>
 <p>Ensure your custom benchmarks are AES v1.3 compliant.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>multiagent-eval<span class="w"> </span>aes<span class="w"> </span>validate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>agentv<span class="w"> </span>aes<span class="w"> </span>validate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <hr />
 <h2 id="viewing-results">📊 Viewing Results<a class="headerlink" href="#viewing-results" title="Permanent link">&para;</a></h2>
@@ -4070,11 +4070,11 @@
 - <code>reports/latest_results.json</code>
 - <code>runs/run.jsonl</code> (Flight Recorder)
 - <code>reports/report_&lt;id&gt;.html</code> (<strong>Premium HTML Report</strong> with trace reconstruction)
-- <strong>Interactive Dashboard:</strong> Run <code>multiagent-eval console</code> for visual background evaluation and live DNA debugging.</p>
+- <strong>Interactive Dashboard:</strong> Run <code>agentv console</code> for visual background evaluation and live DNA debugging.</p>
 <hr />
 <h2 id="replay-a-run-trace">🔍 Replay a Run Trace<a class="headerlink" href="#replay-a-run-trace" title="Permanent link">&para;</a></h2>
 <p>Inspect exactly what happened during an evaluation (agent prompts, tool calls, metrics):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>agentv<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <hr />
 <h2 id="useful-environment-variables">⚙️ Useful Environment Variables<a class="headerlink" href="#useful-environment-variables" title="Permanent link">&para;</a></h2>

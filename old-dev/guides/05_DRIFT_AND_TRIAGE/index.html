@@ -29,7 +29,7 @@
     
     
       
-        <title>Triage & Drift - MultiAgentEval</title>
+        <title>Triage & Drift - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -3906,7 +3906,7 @@
 <h2 id="1-drift-importer-import-drift">1. Drift Importer (<code>import-drift</code>)<a class="headerlink" href="#1-drift-importer-import-drift" title="Permanent link">&para;</a></h2>
 <p>The Drift Importer allows you to convert production traces (agent/user interaction logs) into reusable evaluation scenarios. This is critical for building regression suites from real-world "drift."</p>
 <h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>import-drift<span class="w"> </span>--input<span class="w"> </span>path/to/trace.json<span class="w"> </span>--industry<span class="w"> </span>telecom
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>import-drift<span class="w"> </span>--input<span class="w"> </span>path/to/trace.json<span class="w"> </span>--industry<span class="w"> </span>telecom
 </code></pre></div>
 <h3 id="trace-format">Trace Format<a class="headerlink" href="#trace-format" title="Permanent link">&para;</a></h3>
 <p>The importer expects a list of interaction objects:
@@ -3957,7 +3957,7 @@
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>### Usage
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>```bash
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>multiagent-eval explain --run-id &lt;id&gt;
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>agentv explain --run-id &lt;id&gt;
 </code></pre></div></p>
 <h3 id="forensic-features">Forensic Features<a class="headerlink" href="#forensic-features" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3967,7 +3967,7 @@
 </ul>
 <blockquote>
 <p>[!TIP]
-<strong>Visual Triage</strong>: Use <code>multiagent-eval console</code> to view these failure tags interactively. The dashboard highlights <code>POLICY_VIOLATION</code> and <code>STALL</code> events with visual cues in the trajectory timeline.</p>
+<strong>Visual Triage</strong>: Use <code>agentv console</code> to view these failure tags interactively. The dashboard highlights <code>POLICY_VIOLATION</code> and <code>STALL</code> events with visual cues in the trajectory timeline.</p>
 </blockquote>
 
 

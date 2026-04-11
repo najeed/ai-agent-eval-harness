@@ -29,7 +29,7 @@
     
     
       
-        <title>Plugins & Hooks - MultiAgentEval</title>
+        <title>Plugins & Hooks - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href=".." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href=".." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4168,7 +4168,7 @@
 
 
 <h1 id="plugin-development-guide">Plugin Development Guide<a class="headerlink" href="#plugin-development-guide" title="Permanent link">&para;</a></h1>
-<p>The MultiAgentEval is built on a strict "Zero-Touch Core" philosophy. This means that you should rarely, if ever, modify the <code>eval_runner</code> core engine directly. Instead, almost all custom business logic, API integrations, and new CLI commands should be injected via plugins.</p>
+<p>The AgentV is built on a strict "Zero-Touch Core" philosophy. This means that you should rarely, if ever, modify the <code>eval_runner</code> core engine directly. Instead, almost all custom business logic, API integrations, and new CLI commands should be injected via plugins.</p>
 <h2 id="developer-quick-setup">Developer Quick Setup<a class="headerlink" href="#developer-quick-setup" title="Permanent link">&para;</a></h2>
 <p>Before building a plugin, set up your local development environment:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># 1. Clone &amp; activate virtual environment</span>
@@ -4248,7 +4248,7 @@
 </tbody>
 </table>
 <blockquote>
-<p><strong>⚠️ Security Note:</strong> All plugins must use <code>on_register_commands</code> which isolates commands under <code>multiagent-eval plugin &lt;plugin_name&gt;</code>.</p>
+<p><strong>⚠️ Security Note:</strong> All plugins must use <code>on_register_commands</code> which isolates commands under <code>agentv plugin &lt;plugin_name&gt;</code>.</p>
 </blockquote>
 <h2 id="typed-context-objects">Typed Context Objects<a class="headerlink" href="#typed-context-objects" title="Permanent link">&para;</a></h2>
 <p>To ensure security and prevent Prototype Pollution (Audit Point #8), all hooks receive <strong>Frozen Dataclasses</strong>. These objects use <code>types.MappingProxyType</code> and deep-copying to ensure that internal engine state cannot be modified by a plugin. Plugins must use the <code>plugin_data</code> bucket for state sharing across tasks.</p>
@@ -4348,10 +4348,10 @@
 <p>All plugin hooks are subject to a <strong>5-second timeout</strong> (<code>PLUGIN_TIMEOUT = 5.0</code>). If a plugin hook hangs (e.g., waiting for an unresponsive external API), the engine will log a <code>PluginTimeoutError</code>, terminate the specific hook execution, and proceed. This ensures the evaluation loop remains resilient to misbehaving or slow extensions.</p>
 <hr />
 <h2 id="registering-commands-secure-namespace">Registering Commands (Secure Namespace)<a class="headerlink" href="#registering-commands-secure-namespace" title="Permanent link">&para;</a></h2>
-<p>Plugins register CLI subcommands via the <code>on_register_commands</code> hook. Commands are automatically scoped under <code>multiagent-eval plugin &lt;plugin_name&gt;</code> to prevent core command hijacking.</p>
+<p>Plugins register CLI subcommands via the <code>on_register_commands</code> hook. Commands are automatically scoped under <code>agentv plugin &lt;plugin_name&gt;</code> to prevent core command hijacking.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyReportPlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_register_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="c1"># Registers: multiagent-eval plugin myreport generate</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="c1"># Registers: agentv plugin myreport generate</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="n">sub</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="s2">&quot;generate&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_generate</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Generate a report&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="n">sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--format&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
@@ -4368,7 +4368,7 @@
 <p>Once registered, any scenario mentioning <code>s3_bucket</code> in its <code>tasks</code> will automatically use your simulator logic during evaluation.</p>
 <hr />
 <h2 id="extending-the-visual-suite-integrated-console">Extending the Visual Suite (Integrated Console)<a class="headerlink" href="#extending-the-visual-suite-integrated-console" title="Permanent link">&para;</a></h2>
-<p>Plugins can inject custom views and API endpoints into the <code>multiagent-eval console</code>.</p>
+<p>Plugins can inject custom views and API endpoints into the <code>agentv console</code>.</p>
 <h3 id="1-secure-route-registration">1. Secure Route Registration<a class="headerlink" href="#1-secure-route-registration" title="Permanent link">&para;</a></h3>
 <p>The <code>on_register_console_routes</code> hook provides access to the Flask <code>app</code> and a <code>nav_registry</code> list for the sidebar.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">jsonify</span>

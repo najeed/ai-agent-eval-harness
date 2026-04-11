@@ -29,7 +29,7 @@
     
     
       
-        <title>User Manual - MultiAgentEval</title>
+        <title>User Manual - AgentV</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#user-manual-multiagenteval" class="md-skip">
+        <a href="#user-manual-agentv" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -5180,7 +5180,7 @@
 
 
 
-<h1 id="user-manual-multiagenteval">🧠 User Manual — MultiAgentEval<a class="headerlink" href="#user-manual-multiagenteval" title="Permanent link">&para;</a></h1>
+<h1 id="user-manual-agentv">🧠 User Manual — AgentV<a class="headerlink" href="#user-manual-agentv" title="Permanent link">&para;</a></h1>
 <p>This guide is for users who want to run and understand evaluations without diving into internal implementation details.</p>
 <hr />
 <h2 id="table-of-contents">📌 Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
@@ -5236,7 +5236,7 @@
 <hr />
 <h2 id="running-evaluations-cli">▶️ Running Evaluations (CLI)<a class="headerlink" href="#running-evaluations-cli" title="Permanent link">&para;</a></h2>
 <h3 id="evaluate-batch-evaluation">🧪 <code>evaluate</code> — batch evaluation<a class="headerlink" href="#evaluate-batch-evaluation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--format<span class="w"> </span>jsonl<span class="w"> </span>--output<span class="w"> </span>reports/latest_results.json<span class="w"> </span>--attempts<span class="w"> </span><span class="m">3</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--format<span class="w"> </span>jsonl<span class="w"> </span>--output<span class="w"> </span>reports/latest_results.json<span class="w"> </span>--attempts<span class="w"> </span><span class="m">3</span>
 </code></pre></div>
 <p><strong>Key options:</strong>
 - <code>--path</code> (required): Path to scenario file, directory, or remote URI
@@ -5461,7 +5461,7 @@
 </tbody>
 </table>
 <h3 id="run-single-scenario">🧩 <code>run</code> — single scenario<a class="headerlink" href="#run-single-scenario" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/your_scenario.json<span class="w"> </span>-k<span class="w"> </span><span class="m">2</span><span class="w"> </span>-f<span class="w"> </span>-v
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/your_scenario.json<span class="w"> </span>-k<span class="w"> </span><span class="m">2</span><span class="w"> </span>-f<span class="w"> </span>-v
 </code></pre></div>
 <p>Use this for rapid iteration and debugging. It supports the same core execution flags as <code>evaluate</code> (e.g., <code>--agent</code>, <code>--protocol</code>, <code>--seed</code>).</p>
 <h4 id="run-trace-management">📽️ Run Trace Management<a class="headerlink" href="#run-trace-management" title="Permanent link">&para;</a></h4>
@@ -5482,13 +5482,13 @@
 <p>These utilities are designed to get you from "installation" to "first eval" in seconds.</p>
 <h3 id="quickstart-the-60-second-demo">🏃 <code>quickstart</code> — The 60-Second Demo<a class="headerlink" href="#quickstart-the-60-second-demo" title="Permanent link">&para;</a></h3>
 <p>Runs a complete evaluation loop using the built-in sample agent in your terminal.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>quickstart
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>quickstart
 </code></pre></div>
 *   Spawns the sample agent server process.
 *   Runs a telecom troubleshooting scenario.
 *   Generates a <strong>Premium HTML report</strong> (Mermaid trajectories enabled) in <code>reports/</code>.
-*   <strong>Note:</strong> This command is designed for CLI-only instant feedback; use <code>multiagent-eval console</code> for the visual experience.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>console<span class="w"> </span>--port<span class="w"> </span><span class="m">5000</span>
+*   <strong>Note:</strong> This command is designed for CLI-only instant feedback; use <code>agentv console</code> for the visual experience.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>console<span class="w"> </span>--port<span class="w"> </span><span class="m">5000</span>
 </code></pre></div>
 <hr />
 <h2 id="integrated-visual-suite">🖥️ Integrated Visual Suite<a class="headerlink" href="#integrated-visual-suite" title="Permanent link">&para;</a></h2>
@@ -5511,31 +5511,31 @@
 <hr />
 <h3 id="doctor-environment-validator">🔍 <code>doctor</code> — Environment Validator<a class="headerlink" href="#doctor-environment-validator" title="Permanent link">&para;</a></h3>
 <p>Troubleshoot your installation and connectivity.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>multiagent-eval<span class="w"> </span>doctor
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>agentv<span class="w"> </span>doctor
 </code></pre></div></p>
 <h3 id="report-premium-visual-reporting">🎨 <code>report</code> — Premium Visual Reporting<a class="headerlink" href="#report-premium-visual-reporting" title="Permanent link">&para;</a></h3>
 <p>Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>agentv<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="scenario-generate-interactive-scaffolding">✨ <code>scenario generate</code> — Interactive Scaffolding<a class="headerlink" href="#scenario-generate-interactive-scaffolding" title="Permanent link">&para;</a></h3>
 <p>Bootstrap new test cases without writing JSON by hand.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>multiagent-eval<span class="w"> </span>scenario<span class="w"> </span>generate
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>agentv<span class="w"> </span>scenario<span class="w"> </span>generate
 </code></pre></div></p>
 <h3 id="record-trace-capture">⏺ <code>record</code> — Trace Capture<a class="headerlink" href="#record-trace-capture" title="Permanent link">&para;</a></h3>
 <p>Capture real interactions with your agent to create new eval scenarios.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>multiagent-eval<span class="w"> </span>record<span class="w"> </span>--agent<span class="w"> </span>http://localhost:5001/execute_task
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>agentv<span class="w"> </span>record<span class="w"> </span>--agent<span class="w"> </span>http://localhost:5001/execute_task
 </code></pre></div></p>
 <h3 id="playground-interactive-experimentation">🎮 <code>playground</code> — Interactive Experimentation<a class="headerlink" href="#playground-interactive-experimentation" title="Permanent link">&para;</a></h3>
 <p>Talk to your agent directly in the CLI and see how it performs.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>multiagent-eval<span class="w"> </span>playground<span class="w"> </span>--agent<span class="w"> </span>http://localhost:5001/execute_task
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>agentv<span class="w"> </span>playground<span class="w"> </span>--agent<span class="w"> </span>http://localhost:5001/execute_task
 </code></pre></div></p>
 <h3 id="list-scenario-catalog-search">🔍 <code>list</code> — Scenario Catalog Search<a class="headerlink" href="#list-scenario-catalog-search" title="Permanent link">&para;</a></h3>
 <p>Discover scenarios across the built-in and downloaded libraries.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>multiagent-eval<span class="w"> </span>list<span class="w"> </span>--search<span class="w"> </span><span class="s2">&quot;telecom&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>agentv<span class="w"> </span>list<span class="w"> </span>--search<span class="w"> </span><span class="s2">&quot;telecom&quot;</span>
 </code></pre></div></p>
 <h3 id="lint-quality-scoring">🧹 <code>lint</code> — Quality Scoring<a class="headerlink" href="#lint-quality-scoring" title="Permanent link">&para;</a></h3>
 <p>Check your scenarios for AES compliance and technical quality.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>multiagent-eval<span class="w"> </span>lint<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>agentv<span class="w"> </span>lint<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 - <strong>90-100</strong>: High quality, CI-ready.
 - <strong>70-89</strong>: Warning (Missing metadata or low complexity).
@@ -5544,18 +5544,18 @@
 <h2 id="advanced-cli-utilities-ux">🚀 Advanced CLI Utilities &amp; UX<a class="headerlink" href="#advanced-cli-utilities-ux" title="Permanent link">&para;</a></h2>
 <h3 id="install-scenario-packs">📦 <code>install</code> — Scenario Packs<a class="headerlink" href="#install-scenario-packs" title="Permanent link">&para;</a></h3>
 <p>Rapidly deploy industry-specific scenario bundles (e.g., <code>telecom-pack</code>, <code>rag-agent-pack</code>).
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>multiagent-eval<span class="w"> </span>install<span class="w"> </span>telecom-pack
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>agentv<span class="w"> </span>install<span class="w"> </span>telecom-pack
 </code></pre></div></p>
 <h3 id="analyze-repo-scanning">🔬 <code>analyze</code> — Repo Scanning<a class="headerlink" href="#analyze-repo-scanning" title="Permanent link">&para;</a></h3>
 <p>Scan agent repositories to identify tool patterns and auto-generate matching AES scenarios.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>multiagent-eval<span class="w"> </span>analyze<span class="w"> </span>https://github.com/example/agent
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>agentv<span class="w"> </span>analyze<span class="w"> </span>https://github.com/example/agent
 </code></pre></div></p>
 <h3 id="explain-trace-analysis">🤖 <code>explain</code> — Trace Analysis<a class="headerlink" href="#explain-trace-analysis" title="Permanent link">&para;</a></h3>
 <p>Automated diagnostic analysis of <code>run.jsonl</code> traces to identify root causes of agent failures.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>multiagent-eval<span class="w"> </span>explain<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>agentv<span class="w"> </span>explain<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="visual-scenario-editor">🛠️ Visual Scenario Editor<a class="headerlink" href="#visual-scenario-editor" title="Permanent link">&para;</a></h3>
-<p>Built into the Visual Debugger (<code>multiagent-eval console</code>), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.</p>
+<p>Built into the Visual Debugger (<code>agentv console</code>), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.</p>
 <hr />
 <h2 id="scenario-structure-example">🧩 Scenario Structure (Example)<a class="headerlink" href="#scenario-structure-example" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
@@ -5576,7 +5576,7 @@
 </code></pre></div>
 <h2 id="adding-industries-scenarios">🧱 Adding Industries &amp; Scenarios<a class="headerlink" href="#adding-industries-scenarios" title="Permanent link">&para;</a></h2>
 <p>The simplest way to add a completely new industry is to generate a bootstrapped setup using <code>init</code>, which automatically creates a starter scenario and linked synthetic datasets.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>multiagent-eval<span class="w"> </span>init<span class="w"> </span>--dir<span class="w"> </span>industries/my_industry<span class="w"> </span>--industry<span class="w"> </span>my_industry
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>agentv<span class="w"> </span>init<span class="w"> </span>--dir<span class="w"> </span>industries/my_industry<span class="w"> </span>--industry<span class="w"> </span>my_industry
 </code></pre></div>
 <p>If you prefer to add them manually:
 The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</code>.</p>
@@ -5598,12 +5598,12 @@ The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</c
 <ol>
 <li>Run it via CLI:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>industries/&lt;your_industry&gt;/scenarios/&lt;file&gt;.json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>industries/&lt;your_industry&gt;/scenarios/&lt;file&gt;.json
 </code></pre></div>
 <ol>
 <li>(Optional) Run an industry batch:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;&lt;your_industry&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;&lt;your_industry&gt;
 </code></pre></div>
 <h2 id="cumulative-industrial-registry-v130">Cumulative Industrial Registry (v1.3.0)<a class="headerlink" href="#cumulative-industrial-registry-v130" title="Permanent link">&para;</a></h2>
 <p>For high-stakes evaluations, the harness separates core infrastructure definitions from environment-specific overrides using a <strong>Cumulative Layered Model</strong>.</p>
@@ -5645,7 +5645,7 @@ The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</c
 </table>
 <h3 id="auditing-your-registry">🔍 Auditing Your Registry<a class="headerlink" href="#auditing-your-registry" title="Permanent link">&para;</a></h3>
 <p>To see exactly how your registry is merged and which sources are contributing to your environment, use the doctor utility:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>multiagent-eval<span class="w"> </span>doctor<span class="w"> </span>--registry
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>agentv<span class="w"> </span>doctor<span class="w"> </span>--registry
 </code></pre></div></p>
 <blockquote>
 <p>[!NOTE]
@@ -5712,7 +5712,7 @@ This prevents agents from unintentionally interfering with each other and enable
 <h2 id="drift-triage-advanced">🧠 Drift &amp; Triage (Advanced)<a class="headerlink" href="#drift-triage-advanced" title="Permanent link">&para;</a></h2>
 <h3 id="51-importing-drift">🌪️ 5.1 Importing Drift<a class="headerlink" href="#51-importing-drift" title="Permanent link">&para;</a></h3>
 <p>Convert production traces into evaluation scenarios:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>multiagent-eval<span class="w"> </span>import-drift<span class="w"> </span>--input<span class="w"> </span>production_trace.jsonl<span class="w"> </span>--industry<span class="w"> </span>telecom<span class="w"> </span>--output-dir<span class="w"> </span>industries/telecom/scenarios
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>agentv<span class="w"> </span>import-drift<span class="w"> </span>--input<span class="w"> </span>production_trace.jsonl<span class="w"> </span>--industry<span class="w"> </span>telecom<span class="w"> </span>--output-dir<span class="w"> </span>industries/telecom/scenarios
 </code></pre></div>
 <h3 id="52-state-level-trajectory-triage-how-root-cause-isolation-works">🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)<a class="headerlink" href="#52-state-level-trajectory-triage-how-root-cause-isolation-works" title="Permanent link">&para;</a></h3>
 <p>AgentEval isolates the root cause of a failure by combining three layers of analysis — not just scanning logs.</p>
@@ -5821,7 +5821,7 @@ The Visual Debugger's <strong>"Isolate Root Cause"</strong> automatically scroll
 </table>
 <h3 id="62-searching-the-failure-corpus">6.2 Searching the Failure Corpus<a class="headerlink" href="#62-searching-the-failure-corpus" title="Permanent link">&para;</a></h3>
 <p>Use the <code>failures search</code> command to find similar patterns across your historical runs using freeform search terms.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>multiagent-eval<span class="w"> </span>failures<span class="w"> </span>search<span class="w"> </span><span class="s2">&quot;PII leak&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>agentv<span class="w"> </span>failures<span class="w"> </span>search<span class="w"> </span><span class="s2">&quot;PII leak&quot;</span>
 </code></pre></div>
 <h4 id="searchable-examples">Searchable Examples<a class="headerlink" href="#searchable-examples" title="Permanent link">&para;</a></h4>
 <table>
@@ -5859,7 +5859,7 @@ The Visual Debugger's <strong>"Isolate Root Cause"</strong> automatically scroll
 - <strong>Regular Expressions</strong>: If your query contains regex characters (like <code>|</code>, <code>.*</code>, <code>^</code>, <code>$</code>), the engine automatically switches to Regex Mode for high-fidelity pattern matching. It falls back to standard literal search if an invalid regex was entered.</p>
 <hr />
 <h2 id="advanced-setup-docker">🚀 Advanced Setup (Docker)<a class="headerlink" href="#advanced-setup-docker" title="Permanent link">&para;</a></h2>
-<p>For environments requiring full process isolation or a localized enterprise stack, MultiAgentEval supports deployment via Docker Compose.</p>
+<p>For environments requiring full process isolation or a localized enterprise stack, AgentV supports deployment via Docker Compose.</p>
 <h3 id="launching-the-lab-mode-stack">Launching the Lab Mode Stack<a class="headerlink" href="#launching-the-lab-mode-stack" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>--build
 </code></pre></div>

@@ -29,7 +29,7 @@
     
     
       
-        <title>Architecture & Plugins - MultiAgentEval</title>
+        <title>Architecture & Plugins - AgentV</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#developer-guide-multiagenteval" class="md-skip">
+        <a href="#developer-guide-agentv" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4828,7 +4828,7 @@
 
 
 
-<h1 id="developer-guide-multiagenteval">🛠 Developer Guide — MultiAgentEval<a class="headerlink" href="#developer-guide-multiagenteval" title="Permanent link">&para;</a></h1>
+<h1 id="developer-guide-agentv">🛠 Developer Guide — AgentV<a class="headerlink" href="#developer-guide-agentv" title="Permanent link">&para;</a></h1>
 <p>This guide is for engineers building on or extending the harness.</p>
 <hr />
 <h2 id="1-repository-overview">📂 1 Repository Overview<a class="headerlink" href="#1-repository-overview" title="Permanent link">&para;</a></h2>
@@ -5099,7 +5099,7 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 <h2 id="10-contribution-verification-flow">🤝 10 Contribution &amp; Verification Flow<a class="headerlink" href="#10-contribution-verification-flow" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Add scenario JSON in <code>industries/&lt;industry&gt;/scenarios/</code>.</li>
-<li>Run with <code>multiagent-eval run --scenario &lt;path&gt;</code>.</li>
+<li>Run with <code>agentv run --scenario &lt;path&gt;</code>.</li>
 <li>Add specialized metrics or plugins as needed.</li>
 <li>Coverage Standard: All new core utilities must target 90%+ coverage.</li>
 <li>Verification: Run the full suite with <code>pytest tests/</code>.</li>
@@ -5107,7 +5107,7 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 </ol>
 <hr />
 <h2 id="11-extending-authentication-pbac">🔐 11 Extending Authentication &amp; PBAC<a class="headerlink" href="#11-extending-authentication-pbac" title="Permanent link">&para;</a></h2>
-<p>The MultiAgentEval console uses an extensible <strong>Auth Provider Pattern</strong>. This allows the harness to stay "Zero-Touch" for local development while providing a clean hook for Enterprise SSO and PBAC integration.</p>
+<p>The AgentV console uses an extensible <strong>Auth Provider Pattern</strong>. This allows the harness to stay "Zero-Touch" for local development while providing a clean hook for Enterprise SSO and PBAC integration.</p>
 <h3 id="111-authmanager-abstraction">11.1 AuthManager Abstraction<a class="headerlink" href="#111-authmanager-abstraction" title="Permanent link">&para;</a></h3>
 <p>The core auth logic is defined in <code>eval_runner/console/auth_manager.py</code>.</p>
 <ul>
@@ -5153,7 +5153,7 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 <ul>
 <li><strong>Key Generation</strong>: If <code>AES_PRIVATE_KEY</code> is missing from <code>.env</code>, the engine auto-generates a key in <code>.aes/keys/</code>.</li>
 <li><strong>Manifest Signing</strong>: The <code>ArtifactPlugin</code> generates an <code>audit_manifest.json</code> for every run, containing hashes of all traces and reports, signed by the system's private key.</li>
-<li><strong>Verification</strong>: Use <code>multiagent-eval verify --run-id &lt;id&gt;</code> to validate the signature against the public key.</li>
+<li><strong>Verification</strong>: Use <code>agentv verify --run-id &lt;id&gt;</code> to validate the signature against the public key.</li>
 </ul>
 <h3 id="122-cicd-hard-gates">12.2 CI/CD Hard Gates<a class="headerlink" href="#122-cicd-hard-gates" title="Permanent link">&para;</a></h3>
 <p>The <code>gate</code> command enforces these signatures in pipeline environments, preventing unverified or tampered results from passing the build.</p>
@@ -5207,7 +5207,7 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 - <strong>Preservation</strong>: All other sibling keys in the dictionary are <strong>preserved</strong>. This ensures that adding an API key in an extension does not accidentally "handicap" the shim by removing its core timeout or agent headers.</p>
 <h3 id="152-forensic-auditing">15.2 Forensic Auditing<a class="headerlink" href="#152-forensic-auditing" title="Permanent link">&para;</a></h3>
 <p>Use the environment doctor to inspect the final resolved state of the world:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>multiagent-eval<span class="w"> </span>doctor<span class="w"> </span>--registry
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>agentv<span class="w"> </span>doctor<span class="w"> </span>--registry
 </code></pre></div></p>
 <blockquote>
 <p>[!CAUTION]

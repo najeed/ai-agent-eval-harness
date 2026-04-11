@@ -29,7 +29,7 @@
     
     
       
-        <title>Developer CLI & API - MultiAgentEval</title>
+        <title>Developer CLI & API - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4124,13 +4124,13 @@
 
 
 <h1 id="developer-api-cli-reference">Developer API &amp; CLI Reference<a class="headerlink" href="#developer-api-cli-reference" title="Permanent link">&para;</a></h1>
-<p>This document is the authoritative reference for AI engineers using the MultiAgentEval harness. It covers the CLI interface, environment configuration, and public Trust Protocol endpoints.</p>
+<p>This document is the authoritative reference for AI engineers using the AgentV harness. It covers the CLI interface, environment configuration, and public Trust Protocol endpoints.</p>
 <h2 id="cli-core-interface">CLI Core Interface<a class="headerlink" href="#cli-core-interface" title="Permanent link">&para;</a></h2>
-<p>The <code>multiagent-eval</code> command-line interface is the primary entry point for all evaluation workflows.</p>
+<p>The <code>agentv</code> command-line interface is the primary entry point for all evaluation workflows.</p>
 <h3 id="execution-commands">🚀 Execution Commands<a class="headerlink" href="#execution-commands" title="Permanent link">&para;</a></h3>
 <h4 id="evaluate-batch-processing"><code>evaluate</code> — Batch Processing<a class="headerlink" href="#evaluate-batch-processing" title="Permanent link">&para;</a></h4>
 <p>Run evaluations on one or more scenarios.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;&lt;path&gt;<span class="w"> </span><span class="o">[</span>--agent<span class="w"> </span>&lt;url&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--protocol<span class="w"> </span>&lt;p&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--attempts<span class="w"> </span>K<span class="o">]</span><span class="w"> </span><span class="o">[</span>--limit<span class="w"> </span>N<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;&lt;path&gt;<span class="w"> </span><span class="o">[</span>--agent<span class="w"> </span>&lt;url&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--protocol<span class="w"> </span>&lt;p&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--attempts<span class="w"> </span>K<span class="o">]</span><span class="w"> </span><span class="o">[</span>--limit<span class="w"> </span>N<span class="o">]</span>
 </code></pre></div>
 - <code>--path</code>: (Required) Path to scenario file, directory, or <code>.jsonl</code> dataset.
 - <code>--agent</code>: Unified target. Can be a URL (HTTP), a shell command (local), or an address (socket).
@@ -4143,7 +4143,7 @@
 - <code>--master-log</code>: Append all results to a master <code>run.jsonl</code> log.</p>
 <h4 id="run-single-scenario"><code>run</code> — Single Scenario<a class="headerlink" href="#run-single-scenario" title="Permanent link">&para;</a></h4>
 <p>Execute a specific scenario or a Benchmark URI (e.g., <code>gaia://</code>).
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>&lt;path_or_uri&gt;<span class="w"> </span><span class="o">[</span>--attempts<span class="w"> </span>K<span class="o">]</span><span class="w"> </span><span class="o">[</span>--agent-name<span class="w"> </span>&lt;name&gt;<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>&lt;path_or_uri&gt;<span class="w"> </span><span class="o">[</span>--attempts<span class="w"> </span>K<span class="o">]</span><span class="w"> </span><span class="o">[</span>--agent-name<span class="w"> </span>&lt;name&gt;<span class="o">]</span>
 </code></pre></div></p>
 <h4 id="record-playground-interactive-prototyping"><code>record</code> &amp; <code>playground</code> — Interactive Prototyping<a class="headerlink" href="#record-playground-interactive-prototyping" title="Permanent link">&para;</a></h4>
 <ul>
@@ -4152,14 +4152,14 @@
 </ul>
 <h4 id="replay-trace-debugging"><code>replay</code> — Trace Debugging<a class="headerlink" href="#replay-trace-debugging" title="Permanent link">&para;</a></h4>
 <p>Replay a run interaction history using the Flight Recorder.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <hr />
 <h3 id="trust-protocol-certification-gating">🛡️ Trust Protocol (Certification &amp; Gating)<a class="headerlink" href="#trust-protocol-certification-gating" title="Permanent link">&para;</a></h3>
 <p>The Trust Protocol ensures that evaluations are authentic and tamper-proof.</p>
 <h4 id="certify-generate-manifest"><code>certify</code> — Generate Manifest<a class="headerlink" href="#certify-generate-manifest" title="Permanent link">&para;</a></h4>
 <p>Signed integrity anchoring for a run.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--identity<span class="w"> </span>&lt;id&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--status<span class="w"> </span>&lt;s&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--score<span class="w"> </span>&lt;n&gt;<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--identity<span class="w"> </span>&lt;id&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--status<span class="w"> </span>&lt;s&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--score<span class="w"> </span>&lt;n&gt;<span class="o">]</span>
 </code></pre></div>
 - <code>--run-id</code>: [SSOT] Standard Run ID for autonomous artifact discovery (Recommended).
 - <code>--identity</code>: Identity ID to use for signing (default: <code>system_id</code>).
@@ -4170,11 +4170,11 @@
 - Generates a <code>Verification Certificate (VC)</code> with SHA-256 and Identity-based signing.</p>
 <h4 id="verify-integrity-check"><code>verify</code> — Integrity Check<a class="headerlink" href="#verify-integrity-check" title="Permanent link">&para;</a></h4>
 <p>Cryptographic validation of a trace using autonomous artifact resolution.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>multiagent-eval<span class="w"> </span>verify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>agentv<span class="w"> </span>verify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h4 id="gate-cicd-enforcement"><code>gate</code> — CI/CD Enforcement<a class="headerlink" href="#gate-cicd-enforcement" title="Permanent link">&para;</a></h4>
 <p>The gatekeeper for production deployments. Exits with code <code>1</code> on verification failure.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--hash<span class="w"> </span>&lt;commit_hash&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verify-ledger<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>agentv<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--hash<span class="w"> </span>&lt;commit_hash&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verify-ledger<span class="o">]</span>
 </code></pre></div>
 - <code>--run-id</code>: [SSOT] Standard Run ID for autonomous artifact discovery.
 - <code>--verify-ledger</code>: Perform full forensic hash check of all sidecar artifacts.

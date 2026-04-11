@@ -29,7 +29,7 @@
     
     
       
-        <title>Contributing - MultiAgentEval</title>
+        <title>Contributing - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href=".." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href=".." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -3940,10 +3940,10 @@
 <h2 id="how-to-contribute">🏗️ How to Contribute<a class="headerlink" href="#how-to-contribute" title="Permanent link">&para;</a></h2>
 <h3 id="1-adding-new-industries-scenarios">1. Adding New Industries &amp; Scenarios<a class="headerlink" href="#1-adding-new-industries-scenarios" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Schema Compliance</strong>: All JSON files must pass the validation checks via <code>multiagent-eval aes validate --run-id &lt;id&gt;&lt;path&gt;</code>.</li>
-<li><strong>Scaffolding</strong>: Use <code>multiagent-eval init --dir &lt;name&gt; --industry &lt;ind&gt;</code> to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.</li>
-<li><strong>Quality Verification</strong>: All scenarios must pass the quality linter (<code>multiagent-eval lint --run-id &lt;id&gt;&lt;path&gt;</code>). We target a score of <strong>90+</strong> for all official industry libraries.</li>
-<li><strong>Execution</strong>: Ensure your scenario runs correctly with <code>multiagent-eval evaluate --run-id &lt;id&gt;&lt;your_path&gt;</code>. The harness now supports <strong>Path Decoupling</strong>, allowing you to host and run benchmarks from any directory without repository-internal dependencies.</li>
+<li><strong>Schema Compliance</strong>: All JSON files must pass the validation checks via <code>agentv aes validate --run-id &lt;id&gt;&lt;path&gt;</code>.</li>
+<li><strong>Scaffolding</strong>: Use <code>agentv init --dir &lt;name&gt; --industry &lt;ind&gt;</code> to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.</li>
+<li><strong>Quality Verification</strong>: All scenarios must pass the quality linter (<code>agentv lint --run-id &lt;id&gt;&lt;path&gt;</code>). We target a score of <strong>90+</strong> for all official industry libraries.</li>
+<li><strong>Execution</strong>: Ensure your scenario runs correctly with <code>agentv evaluate --run-id &lt;id&gt;&lt;your_path&gt;</code>. The harness now supports <strong>Path Decoupling</strong>, allowing you to host and run benchmarks from any directory without repository-internal dependencies.</li>
 </ul>
 <h3 id="2-the-zero-touch-core-philosophy">2. The Zero-Touch Core Philosophy<a class="headerlink" href="#2-the-zero-touch-core-philosophy" title="Permanent link">&para;</a></h3>
 <p>We strictly adhere to a <strong>Zero-Touch Core</strong> architectural mandate. Pull Requests that modify the core orchestration (<code>eval_runner/runner.py</code>, <code>eval_runner/metrics.py</code>) to handle edge cases or custom platforms will generally be rejected.
@@ -3956,7 +3956,7 @@
 <p>The Zero-Touch Core is designed to be extended without core PRs.
 - <strong>Lifecycle Hooks</strong>: Subscribe to <code>before_evaluation</code>, <code>on_agent_turn_start</code>, <code>on_turn_end</code>, <code>on_metrics_calculated</code>, and <code>after_evaluation</code>.
 - <strong>Interception</strong>: Use <code>on_tool_request</code> to enforce safety or HITL proxies. Return <code>False</code> to block a tool call.
-- <strong>CLI Commands</strong>: Use <code>on_register_commands</code> to register namespaced CLI subcommands (under <code>multiagent-eval plugin &lt;name&gt;</code>).
+- <strong>CLI Commands</strong>: Use <code>on_register_commands</code> to register namespaced CLI subcommands (under <code>agentv plugin &lt;name&gt;</code>).
 - <strong>Event Bus</strong>: Use <code>EventEmitter.subscribe(callback)</code> for passive monitoring.
 - <strong>Entry Points</strong>: Register your plugins in your <code>pyproject.toml</code> under <code>eval_runner.plugins</code>.
 - <strong>Timeouts</strong>: All plugin hooks are subject to a 5-second timeout to prevent hang conditions.</p>

@@ -29,7 +29,7 @@
     
     
       
-        <title>Onboarding - MultiAgentEval</title>
+        <title>Onboarding - AgentV</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#onboarding-tutorial-multiagenteval" class="md-skip">
+        <a href="#onboarding-tutorial-agentv" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4048,7 +4048,7 @@
 
 
 
-<h1 id="onboarding-tutorial-multiagenteval">Onboarding Tutorial — MultiAgentEval<a class="headerlink" href="#onboarding-tutorial-multiagenteval" title="Permanent link">&para;</a></h1>
+<h1 id="onboarding-tutorial-agentv">Onboarding Tutorial — AgentV<a class="headerlink" href="#onboarding-tutorial-agentv" title="Permanent link">&para;</a></h1>
 <p>Welcome to the harness! This tutorial walks a first-time user (e.g., a Product Manager or Engineering first-timer) through a complete evaluation workflow with real commands and expected outputs.</p>
 <blockquote>
 <p>🎯 Goal: Get from zero to a full evaluation run, inspect the results, and understand where to look next.</p>
@@ -4082,19 +4082,19 @@
 </blockquote>
 <h3 id="step-2-verify-the-cli-is-available">✅ Step 2: Verify the CLI is available<a class="headerlink" href="#step-2-verify-the-cli-is-available" title="Permanent link">&para;</a></h3>
 <p>Run:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>--help
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>--help
 </code></pre></div>
 <blockquote>
 <p>✅ Expected output snippet:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>usage: multiagent-eval [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>usage: agentv [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>MultiAgentEval (OpenCore)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>AgentV (OpenCore)
 </code></pre></div>
 </blockquote>
 <h3 id="step-3-explore-the-scenario-catalog">✅ Step 3: Explore the Scenario Catalog<a class="headerlink" href="#step-3-explore-the-scenario-catalog" title="Permanent link">&para;</a></h3>
 <p>Before running an evaluation, discover what's available:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># List all telecom scenarios</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>multiagent-eval<span class="w"> </span>list<span class="w"> </span>--search<span class="w"> </span><span class="s2">&quot;telecom&quot;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>agentv<span class="w"> </span>list<span class="w"> </span>--search<span class="w"> </span><span class="s2">&quot;telecom&quot;</span>
 </code></pre></div>
 <blockquote>
 <p>✅ Expected output: A table of matching scenarios with IDs and titles.</p>
@@ -4104,7 +4104,7 @@
 <h3 id="step-1-pick-a-built-in-industry-scenario">✅ Step 1: Pick a built-in industry scenario<a class="headerlink" href="#step-1-pick-a-built-in-industry-scenario" title="Permanent link">&para;</a></h3>
 <p>The harness includes industry scenarios under <code>industries/</code>. You can use the <code>list</code> command above or browse the file system.</p>
 <h3 id="step-2-run-the-evaluation">✅ Step 2: Run the evaluation<a class="headerlink" href="#step-2-run-the-evaluation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--export
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--export
 </code></pre></div>
 <hr />
 <h2 id="3-add-your-own-industry-scenario">3 Add your own industry / scenario<a class="headerlink" href="#3-add-your-own-industry-scenario" title="Permanent link">&para;</a></h2>
@@ -4112,25 +4112,25 @@
 <ol>
 <li>Scaffold the environment:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>multiagent-eval<span class="w"> </span>init<span class="w"> </span>--dir<span class="w"> </span>industries/retail<span class="w"> </span>--industry<span class="w"> </span>retail
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>agentv<span class="w"> </span>init<span class="w"> </span>--dir<span class="w"> </span>industries/retail<span class="w"> </span>--industry<span class="w"> </span>retail
 </code></pre></div>
 <ol>
 <li>Run the newly generated scenario:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>industries/retail/scenarios/starter_scenario.json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>industries/retail/scenarios/starter_scenario.json
 </code></pre></div>
 <hr />
 <h2 id="4-validate-scenario-quality">4 Validate Scenario Quality<a class="headerlink" href="#4-validate-scenario-quality" title="Permanent link">&para;</a></h2>
 <p>Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>multiagent-eval<span class="w"> </span>lint<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>agentv<span class="w"> </span>lint<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <hr />
 <h2 id="5-inspect-the-output">5 Inspect the Output<a class="headerlink" href="#5-inspect-the-output" title="Permanent link">&para;</a></h2>
 <h3 id="replay-the-run-trace">✅ Replay the run trace<a class="headerlink" href="#replay-the-run-trace" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>agentv<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <h3 id="view-in-the-visual-dashboard">✅ View in the Visual Dashboard<a class="headerlink" href="#view-in-the-visual-dashboard" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>multiagent-eval<span class="w"> </span>console
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>agentv<span class="w"> </span>console
 </code></pre></div>
 <p>Inspect results natively using the <strong>Visual Debugger</strong>. The suite provides a unified hub for the entire lifecycle:
 - <strong>Scenario Editor</strong>: Design and save scenarios directly to the industry libraries.
@@ -4144,7 +4144,7 @@
 <ul>
 <li>✅ Read the <strong>User Manual</strong> (<code>docs/guides/help/02_USER_MANUAL.md</code>).</li>
 <li>🧠 Read the <strong>Developer Guide</strong> (<code>docs/guides/help/03_DEVELOPER_GUIDE.md</code>) for adapters and plugins.</li>
-<li>📂 <strong>Path Decoupling (v1.1+)</strong>: You don't have to keep scenarios in <code>industries/</code>. You can now run <code>multiagent-eval evaluate --run-id &lt;id&gt;&lt;any_folder&gt;</code> and it will work out of the box!</li>
+<li>📂 <strong>Path Decoupling (v1.1+)</strong>: You don't have to keep scenarios in <code>industries/</code>. You can now run <code>agentv evaluate --run-id &lt;id&gt;&lt;any_folder&gt;</code> and it will work out of the box!</li>
 </ul>
 <p>Happy evaluating!</p>
 

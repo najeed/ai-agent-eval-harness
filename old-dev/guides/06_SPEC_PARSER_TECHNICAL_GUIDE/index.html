@@ -25,7 +25,7 @@
     
     
       
-        <title>Technical Guide: Spec-to-Eval Hybrid Parsing Strategy - MultiAgentEval</title>
+        <title>Technical Guide: Spec-to-Eval Hybrid Parsing Strategy - AgentV</title>
       
     
     
@@ -90,7 +90,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -104,7 +104,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -425,13 +425,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -3735,7 +3735,7 @@
 
 
 <h1 id="technical-guide-spec-to-eval-hybrid-parsing-strategy">Technical Guide: Spec-to-Eval Hybrid Parsing Strategy<a class="headerlink" href="#technical-guide-spec-to-eval-hybrid-parsing-strategy" title="Permanent link">&para;</a></h1>
-<p>The <code>multiagent-eval spec-to-eval</code> command transforms raw Markdown PRDs (Product Requirement Documents) into executable JSON/AES scenarios. It employs a <strong>Hybrid Parsing Strategy</strong> to balance deterministic precision with LLM flexibility.</p>
+<p>The <code>agentv spec-to-eval</code> command transforms raw Markdown PRDs (Product Requirement Documents) into executable JSON/AES scenarios. It employs a <strong>Hybrid Parsing Strategy</strong> to balance deterministic precision with LLM flexibility.</p>
 <hr />
 <h2 id="1-the-gold-standard-structural-parser">🏗️ 1. The "Gold Standard" Structural Parser<a class="headerlink" href="#1-the-gold-standard-structural-parser" title="Permanent link">&para;</a></h2>
 <p>This is a high-speed, zero-cost deterministic parser that uses regular expressions to extract structured data. It recognizes a specific Markdown pattern designed for enterprise-grade benchmarks.</p>
@@ -3782,7 +3782,7 @@
 <hr />
 <h2 id="4-workflow-example">📖 4. Workflow Example<a class="headerlink" href="#4-workflow-example" title="Permanent link">&para;</a></h2>
 <p>To convert a PRD and fill in missing schema defaults in one go:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multiagent-eval<span class="w"> </span>spec-to-eval<span class="w"> </span>--input<span class="w"> </span>docs/specs/my_prd.md<span class="w"> </span>--output<span class="w"> </span>scenarios/my_scenario.json<span class="w"> </span>--fill-defaults<span class="w"> </span>--force
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>spec-to-eval<span class="w"> </span>--input<span class="w"> </span>docs/specs/my_prd.md<span class="w"> </span>--output<span class="w"> </span>scenarios/my_scenario.json<span class="w"> </span>--fill-defaults<span class="w"> </span>--force
 </code></pre></div></p>
 
 

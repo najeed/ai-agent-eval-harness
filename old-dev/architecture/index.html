@@ -29,7 +29,7 @@
     
     
       
-        <title>Architecture - MultiAgentEval</title>
+        <title>Architecture - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href=".." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href=".." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4737,7 +4737,7 @@
 <h2 id="ecosystem-benchmarks-distribution">Ecosystem, Benchmarks &amp; Distribution<a class="headerlink" href="#ecosystem-benchmarks-distribution" title="Permanent link">&para;</a></h2>
 <p>Phase 4 elevates the Harness from an isolated tool to an integrated participant in the open AI evaluation ecosystem:
 - <strong>Community Benchmark Integration</strong>: The harness natively supports downloading and structuring data from major AI benchmarks. Passing URIs like <code>gaia://...</code> to the loader transparently fetches and wraps the datasets into executable <code>Scenario</code> objects with compatible metrics.
-- <strong>HuggingFace Distribution</strong>: The <code>HFExporter</code> enables a one-click CLI flow (<code>multiagent-eval export --format hf</code>) to transform deterministic internal <code>run.jsonl</code> flight logs into normalized datasets ready for HuggingFace publication and leaderboards.
+- <strong>HuggingFace Distribution</strong>: The <code>HFExporter</code> enables a one-click CLI flow (<code>agentv export --format hf</code>) to transform deterministic internal <code>run.jsonl</code> flight logs into normalized datasets ready for HuggingFace publication and leaderboards.
 - <strong>Framework Adapters via Plugins</strong>: Supporting frameworks like <code>LangGraph</code>, <code>CrewAI</code>, and <strong>Microsoft AutoGen</strong> (via <code>autogen://</code>) without "polluting" the core engine. These are implemented as modular <code>BaseEvalPlugin</code> classes that hook into the <code>on_discover_adapters</code> lifecycle to register their custom execution protocols.
 - <strong>Ecosystem Hub</strong>: A unified registry for LLM providers (<strong>OpenAI</strong>, <strong>Gemini</strong>, <strong>Claude</strong>, <strong>Ollama</strong>, <strong>xAI Grok</strong>) and orchestration frameworks. The Ecosystem Hub ensures the core evaluator remains "Zero-Touch"—swapping a provider requires zero core code changes. The LLM judge is now configurable via the <code>JUDGE_PROVIDER</code> environment variable, with support for per-scenario <code>judge_config</code> overrides.
 - <strong>Industry-Standard Rubrics</strong>: The <code>rubrics.py</code> module provides a hot-swappable registry for clinical, fiduciary, and legal scoring logic, enabling precise evaluation without modifying engine code.
@@ -4815,7 +4815,7 @@
 <tr>
 <td>3</td>
 <td>CLI Command Hijacking</td>
-<td><code>extend_cli</code> removed; plugins use namespaced <code>on_register_commands</code> under <code>multiagent-eval plugin &lt;name&gt;</code></td>
+<td><code>extend_cli</code> removed; plugins use namespaced <code>on_register_commands</code> under <code>agentv plugin &lt;name&gt;</code></td>
 <td><code>cli.py</code>, <code>plugins.py</code></td>
 </tr>
 <tr>

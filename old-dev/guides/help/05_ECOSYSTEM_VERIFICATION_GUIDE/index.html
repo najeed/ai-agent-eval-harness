@@ -29,7 +29,7 @@
     
     
       
-        <title>Verification - MultiAgentEval</title>
+        <title>Verification - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4152,11 +4152,11 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
    <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ollama<span class="w"> </span>pull<span class="w"> </span>llama3
 </code></pre></div></li>
 <li><strong>Verify Adapter</strong>:
-   <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/luna_demo.json<span class="w"> </span>--protocol<span class="w"> </span>ollama<span class="w"> </span>--agent<span class="w"> </span>ollama://llama3
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/luna_demo.json<span class="w"> </span>--protocol<span class="w"> </span>ollama<span class="w"> </span>--agent<span class="w"> </span>ollama://llama3
 </code></pre></div></li>
 <li><strong>Verify Luna-Judge (Ollama fallback)</strong>:</li>
 <li>Ensure <code>JUDGE_PROVIDER=ollama</code> in <code>.env</code>.</li>
-<li>Run: <code>multiagent-eval evaluate --run-id &lt;id&gt;</code></li>
+<li>Run: <code>agentv evaluate --run-id &lt;id&gt;</code></li>
 </ol>
 <hr />
 <h2 id="3-framework-integrations-adapters">🛠 3. Framework Integrations (Adapters)<a class="headerlink" href="#3-framework-integrations-adapters" title="Permanent link">&para;</a></h2>
@@ -4168,7 +4168,7 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 </code></pre></div></li>
 <li><strong>Run Sample AutoGen Agent</strong>: (Requires a separate server script or the <code>quickstart</code> mock).</li>
 <li><strong>Run Evaluation</strong>:
-   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--protocol<span class="w"> </span>autogen<span class="w"> </span>--agent<span class="w"> </span>autogen://localhost:5002
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--protocol<span class="w"> </span>autogen<span class="w"> </span>--agent<span class="w"> </span>autogen://localhost:5002
 </code></pre></div></li>
 </ol>
 <h3 id="b-langchain-langgraph">B. LangChain / LangGraph<a class="headerlink" href="#b-langchain-langgraph" title="Permanent link">&para;</a></h3>
@@ -4178,11 +4178,11 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
    <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>langchain<span class="w"> </span>langchain-openai<span class="w"> </span>langgraph
 </code></pre></div></li>
 <li><strong>Verify LangChain Adapter</strong>:
-   <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--protocol<span class="w"> </span>langchain<span class="w"> </span>--agent<span class="w"> </span>langchain://localhost:8000/my-agent
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--protocol<span class="w"> </span>langchain<span class="w"> </span>--agent<span class="w"> </span>langchain://localhost:8000/my-agent
 </code></pre></div></li>
 <li><strong>Verify LangGraph (Structural)</strong>:</li>
 <li>Since the LangGraph adapter is currently an <strong>Architectural Mock</strong>, verification confirms the engine's ability to route requests through the plugin hook without hardcoding.</li>
-<li>Run: <code>multiagent-eval evaluate --run-id &lt;id&gt; --protocol langgraph</code></li>
+<li>Run: <code>agentv evaluate --run-id &lt;id&gt; --protocol langgraph</code></li>
 </ol>
 <h3 id="c-crewai">C. CrewAI<a class="headerlink" href="#c-crewai" title="Permanent link">&para;</a></h3>
 <p><strong>Goal</strong>: Verify task-based multi-agent orchestration.</p>
@@ -4192,7 +4192,7 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 </code></pre></div></li>
 <li><strong>Verify Adapter (Structural Mock)</strong>:</li>
 <li>Verification confirms the lifecycle hook <code>on_discover_adapters</code> correctly registers the <code>crewai://</code> protocol.</li>
-<li>Run: <code>multiagent-eval evaluate --run-id &lt;id&gt; --protocol crewai</code></li>
+<li>Run: <code>agentv evaluate --run-id &lt;id&gt; --protocol crewai</code></li>
 </ol>
 <hr />
 <h2 id="4-proprietary-models-production-verification">💎 4. Proprietary Models (Production Verification)<a class="headerlink" href="#4-proprietary-models-production-verification" title="Permanent link">&para;</a></h2>
@@ -4209,22 +4209,22 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 <tr>
 <td style="text-align: left;"><strong>OpenAI</strong></td>
 <td style="text-align: left;"><code>openai://</code></td>
-<td style="text-align: left;"><code>multiagent-eval run --protocol openai --agent openai://gpt-5.4-mini</code></td>
+<td style="text-align: left;"><code>agentv run --protocol openai --agent openai://gpt-5.4-mini</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Anthropic</strong></td>
 <td style="text-align: left;"><code>claude://</code></td>
-<td style="text-align: left;"><code>multiagent-eval run --protocol claude --agent claude://claude-4-6-sonnet</code></td>
+<td style="text-align: left;"><code>agentv run --protocol claude --agent claude://claude-4-6-sonnet</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Google</strong></td>
 <td style="text-align: left;"><code>gemini://</code></td>
-<td style="text-align: left;"><code>multiagent-eval run --protocol gemini --agent gemini://gemini-2.5-flash</code></td>
+<td style="text-align: left;"><code>agentv run --protocol gemini --agent gemini://gemini-2.5-flash</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>xAI</strong></td>
 <td style="text-align: left;"><code>grok://</code></td>
-<td style="text-align: left;"><code>multiagent-eval run --protocol grok --agent grok://grok-4.20-multi-agent</code></td>
+<td style="text-align: left;"><code>agentv run --protocol grok --agent grok://grok-4.20-multi-agent</code></td>
 </tr>
 </tbody>
 </table>
@@ -4232,13 +4232,13 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 <h2 id="5-plugin-verification">🔌 5. Plugin Verification<a class="headerlink" href="#5-plugin-verification" title="Permanent link">&para;</a></h2>
 <h3 id="a-remotebridgeplugin-live-debugger">A. RemoteBridgePlugin (Live Debugger)<a class="headerlink" href="#a-remotebridgeplugin-live-debugger" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Launch the console: <code>multiagent-eval console</code>.</li>
+<li>Launch the console: <code>agentv console</code>.</li>
 <li>Run an evaluation.</li>
 <li>Observe real-time state updates in the <strong>Visual Debugger</strong> tab. This verifies the <code>on_agent_turn_start</code> and <code>on_turn_end</code> hooks.</li>
 </ol>
 <h3 id="c-coverageplugin-grounding-heatmaps">C. CoveragePlugin (Grounding Heatmaps)<a class="headerlink" href="#c-coverageplugin-grounding-heatmaps" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Run: <code>multiagent-eval evaluate --run-id &lt;id&gt;</code>.</li>
+<li>Run: <code>agentv evaluate --run-id &lt;id&gt;</code>.</li>
 <li>Check <code>reports/coverage/</code>: Verify that <code>telecom_coverage.html</code> is generated. This ensures the <code>on_tool_result</code> hook is correctly capturing grounding events.</li>
 </ol>
 <hr />
@@ -4247,7 +4247,7 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 <ol>
 <li><strong>Verify Rubric Selection</strong>:</li>
 <li>Run a scenario with a specialized rubric:
-     <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+     <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></li>
 <li>
 <p>Check the <code>run.jsonl</code> trace to ensure the correct rubric prompt was injected (requires inspecting the event payload).</p>
@@ -4257,14 +4257,14 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 </li>
 <li>Ensure you have a <code>run.jsonl</code> with both <code>luna_judge_score</code> and <code>human_score</code> field.</li>
 <li>Run:
-     <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>multiagent-eval<span class="w"> </span>calibrate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+     <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>agentv<span class="w"> </span>calibrate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></li>
 <li>Verify the ASCII "JUDGE CALIBRATION REPORT" is displayed with MAE and Pearson Correlation.</li>
 </ol>
 <hr />
 <h2 id="7-final-production-ready-checklist">✅ 7. Final "Production-Ready" Checklist<a class="headerlink" href="#7-final-production-ready-checklist" title="Permanent link">&para;</a></h2>
 <ul>
-<li>[ ] <code>multiagent-eval doctor</code> returns all GREEN status.</li>
+<li>[ ] <code>agentv doctor</code> returns all GREEN status.</li>
 <li>[ ] No <code>ImportError</code> when running any ecosystem adapter.</li>
 <li>[ ] API keys are correctly masked in log outputs.</li>
 <li>[ ] Timeouts are respected (verified by setting <code>DEFAULT_ADAPTER_TIMEOUT=1</code>).</li>

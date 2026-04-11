@@ -25,7 +25,7 @@
     
     
       
-        <title>MultiAgentEval Diagnostics & Log Locations (v1.2.3) - MultiAgentEval</title>
+        <title>AgentV Diagnostics & Log Locations (v1.2.3) - AgentV</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#multiagenteval-diagnostics-log-locations-v123" class="md-skip">
+        <a href="#agentv-diagnostics-log-locations-v123" class="md-skip">
           Skip to content
         </a>
       
@@ -90,7 +90,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -104,13 +104,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MultiAgentEval Diagnostics &amp; Log Locations (v1.2.3)
+              AgentV Diagnostics &amp; Log Locations (v1.2.3)
             
           </span>
         </div>
@@ -425,13 +425,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -3689,13 +3689,13 @@
 
 
 
-<h1 id="multiagenteval-diagnostics-log-locations-v123">MultiAgentEval Diagnostics &amp; Log Locations (v1.2.3)<a class="headerlink" href="#multiagenteval-diagnostics-log-locations-v123" title="Permanent link">&para;</a></h1>
+<h1 id="agentv-diagnostics-log-locations-v123">AgentV Diagnostics &amp; Log Locations (v1.2.3)<a class="headerlink" href="#agentv-diagnostics-log-locations-v123" title="Permanent link">&para;</a></h1>
 <p>This document provides an authoritative guide for locating system logs, execution traces, and evaluation reports.</p>
 <h2 id="execution-trace-logs-jsonl">Execution Trace Logs (.jsonl)<a class="headerlink" href="#execution-trace-logs-jsonl" title="Permanent link">&para;</a></h2>
 <p>Detailed step-by-step agent interactions are recorded as <code>.jsonl</code> files.
 - <strong>Location</strong>: <code>runs/</code> (Project Root)
 - <strong>Format</strong>: Each line is a JSON event containing timestamps, event types (prompt, agent_response, tool_call), and status.
-- <strong>Verification</strong>: Use <code>multiagent-eval verify --run-id &lt;id&gt;</code> to check integrity.</p>
+- <strong>Verification</strong>: Use <code>agentv verify --run-id &lt;id&gt;</code> to check integrity.</p>
 <h2 id="visual-trajectories-htmljson-reports">Visual Trajectories (HTML/JSON Reports)<a class="headerlink" href="#visual-trajectories-htmljson-reports" title="Permanent link">&para;</a></h2>
 <p>Formatted reports and visual trace exports.
 - <strong>Location</strong>: <code>reports/trajectories/</code>
@@ -3703,7 +3703,7 @@
 <h2 id="scenario-index-cache">Scenario Index Cache<a class="headerlink" href="#scenario-index-cache" title="Permanent link">&para;</a></h2>
 <p>The system maintains a fast-lookup index of all discoverable scenarios.
 - <strong>Location</strong>: <code>scenarios/index.json</code>
-- <strong>Sync</strong>: Automatically managed, but can be forced via the Dashboard or <code>multiagent-eval catalog-refresh</code>.</p>
+- <strong>Sync</strong>: Automatically managed, but can be forced via the Dashboard or <code>agentv catalog-refresh</code>.</p>
 <h2 id="system-metadata">System Metadata<a class="headerlink" href="#system-metadata" title="Permanent link">&para;</a></h2>
 <p>Configuration and environment status can be viewed via the Visual Suite Dashboard under the <strong>Industrial System Paths</strong> section.</p>
 <hr />

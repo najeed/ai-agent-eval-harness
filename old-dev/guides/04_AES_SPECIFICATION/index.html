@@ -29,7 +29,7 @@
     
     
       
-        <title>AES Specification - MultiAgentEval</title>
+        <title>AES Specification - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4165,7 +4165,7 @@
 <hr />
 <h2 id="6-replaying-execution-runjsonl">6. Replaying Execution (<code>run.jsonl</code>)<a class="headerlink" href="#6-replaying-execution-runjsonl" title="Permanent link">&para;</a></h2>
 <p>Every AES evaluation produces a <code>run.jsonl</code> flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <hr />
 <h2 id="7-complete-example-loan-approval">7. Complete Example (Loan Approval)<a class="headerlink" href="#7-complete-example-loan-approval" title="Permanent link">&para;</a></h2>
@@ -4229,7 +4229,7 @@
 </tr>
 <tr>
 <td style="text-align: left;"><code>engine</code></td>
-<td style="text-align: left;">The version of the <code>multiagent-eval</code> engine used.</td>
+<td style="text-align: left;">The version of the <code>agentv</code> engine used.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>timestamp</code></td>
@@ -4273,7 +4273,7 @@
 <p>## 10. Industrial Standards Registry</p>
 <p>To support high-stakes AI evaluations, the harness includes a centralized <strong>Standards Registry</strong>. This system allows practitioners to bootstrap evaluation environments that are pre-aligned with recognized global standards.</p>
 <p>### Scaffold Environments
- <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>init<span class="w"> </span>--standard<span class="w"> </span>ISO_20022
+ <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>init<span class="w"> </span>--standard<span class="w"> </span>ISO_20022
 </code></pre></div></p>
 <ul>
 <li><strong>Standards Coverage</strong>: Finance (ISO 20022), Healthcare (HL7 FHIR), Manufacturing (Digital Twins), Logistics (JSON-LD Traceability).</li>
@@ -4289,7 +4289,7 @@
 - <strong>v1.3</strong>: Maintenance. Supports <strong>Forensic DNA</strong> and <strong>PBAC</strong>.
 - <strong>v1.4</strong>: Current-Stable. Supports <strong>VC v3</strong>, <strong>Capabilities</strong>, and <strong>Identity Registry</strong>.</p>
 <h3 id="harness_version-the-engine"><code>harness_version</code> (The Engine)<a class="headerlink" href="#harness_version-the-engine" title="Permanent link">&para;</a></h3>
-<p>Refers to the <strong>MultiAgent-Eval Engine</strong> build (e.g., <code>1.3.0</code>). This is automatically injected into the <a href="/eval_runner/verifier.py">run.jsonl</a> and manifest by the "Referee."</p>
+<p>Refers to the <strong>AgentV Engine</strong> build (e.g., <code>1.3.0</code>). This is automatically injected into the <a href="/eval_runner/verifier.py">run.jsonl</a> and manifest by the "Referee."</p>
 <blockquote>
 <p>[!IMPORTANT]
 <strong>Industrial Rule</strong>: A single <code>aes_version</code> standard can be satisfied by multiple <code>harness_version</code> engine builds (bugfixes, optimizations), but a trace is only <strong>Forensically Valid</strong> if the <code>harness_version</code> supports the requested <code>aes_version</code>.</p>

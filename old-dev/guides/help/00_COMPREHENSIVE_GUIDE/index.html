@@ -29,7 +29,7 @@
     
     
       
-        <title>Comprehensive Guide - MultiAgentEval</title>
+        <title>Comprehensive Guide - AgentV</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#multiagenteval-guide" class="md-skip">
+        <a href="#agentv-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -3957,9 +3957,9 @@
 
 
 
-<h1 id="multiagenteval-guide">MultiAgentEval Guide<a class="headerlink" href="#multiagenteval-guide" title="Permanent link">&para;</a></h1>
+<h1 id="agentv-guide">AgentV Guide<a class="headerlink" href="#agentv-guide" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p>This document is the single authoritative reference for using, extending, and developing the MultiAgentEval framework.
+<p>This document is the single authoritative reference for using, extending, and developing the AgentV framework.
 It is organized into three levels: <strong>Quick Start</strong>, <strong>User Manual</strong>, and <strong>Developer Guide</strong>.</p>
 </blockquote>
 <hr />
@@ -3967,7 +3967,7 @@ It is organized into three levels: <strong>Quick Start</strong>, <strong>User Ma
 <h3 id="11-install-and-run">1.1 Install and Run<a class="headerlink" href="#11-install-and-run" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
-<p>Clone and install MultiAgentEval:
+<p>Clone and install AgentV:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/najeed/ai-agent-eval-harness.git
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>ai-agent-eval-harness
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
@@ -3975,27 +3975,27 @@ It is organized into three levels: <strong>Quick Start</strong>, <strong>User Ma
 </li>
 <li>
 <p>Run the Quickstart Demo:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>quickstart
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>quickstart
 </code></pre></div></p>
 </li>
 </ol>
 <p><strong>What it does:</strong> Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a <strong>Premium HTML report</strong> in <code>reports/</code>. </p>
 <blockquote>
 <p>[!TIP]
-<strong>Integrated Visual Suite</strong>: Launch the premium web dashboard via <code>multiagent-eval console</code>. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch <code>RemoteBridgePlugin</code>.</p>
+<strong>Integrated Visual Suite</strong>: Launch the premium web dashboard via <code>agentv console</code>. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch <code>RemoteBridgePlugin</code>.</p>
 </blockquote>
 <h3 id="12-useful-cli-commands">1.2 Useful CLI Commands<a class="headerlink" href="#12-useful-cli-commands" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>multiagent-eval console</code>: Launch the React Visual Debugger GUI for visual management.</li>
-<li><code>multiagent-eval doctor</code>: Check your environment health.</li>
-<li><code>multiagent-eval list --search &lt;query&gt;</code>: Search the scenario catalog (supports faceted filtering).</li>
-<li><code>multiagent-eval lint --run-id &lt;id&gt;&lt;path&gt;</code>: Verify scenario quality and AES specification compliance.</li>
-<li><code>multiagent-eval spec-to-eval --fill-defaults</code>: Convert rough specs into valid, lint-passable scenarios.</li>
-<li><code>multiagent-eval auto-translate --input &lt;doc&gt;</code>: Convert PDFs/Docs into JSON scenarios using Ollama.</li>
-<li><code>multiagent-eval run --scenario &lt;benchmark-uri&gt;</code>: Zero-config execution for community benchmarks (GAIA, AssistantBench).</li>
-<li><code>multiagent-eval report --run-id &lt;id&gt;</code>: Generate a standalone Premium HTML report (reconstructed from any <code>.jsonl</code> trace).</li>
-<li><code>multiagent-eval gate --run-id &lt;id&gt;</code>: Enforce cryptographic integrity in a CI/CD pipeline using the <strong>Trust Protocol</strong>.</li>
-<li><code>multiagent-eval replay --run-id &lt;id&gt;</code>: View the step-by-step history of a run in terminal.</li>
+<li><code>agentv console</code>: Launch the React Visual Debugger GUI for visual management.</li>
+<li><code>agentv doctor</code>: Check your environment health.</li>
+<li><code>agentv list --search &lt;query&gt;</code>: Search the scenario catalog (supports faceted filtering).</li>
+<li><code>agentv lint --run-id &lt;id&gt;&lt;path&gt;</code>: Verify scenario quality and AES specification compliance.</li>
+<li><code>agentv spec-to-eval --fill-defaults</code>: Convert rough specs into valid, lint-passable scenarios.</li>
+<li><code>agentv auto-translate --input &lt;doc&gt;</code>: Convert PDFs/Docs into JSON scenarios using Ollama.</li>
+<li><code>agentv run --scenario &lt;benchmark-uri&gt;</code>: Zero-config execution for community benchmarks (GAIA, AssistantBench).</li>
+<li><code>agentv report --run-id &lt;id&gt;</code>: Generate a standalone Premium HTML report (reconstructed from any <code>.jsonl</code> trace).</li>
+<li><code>agentv gate --run-id &lt;id&gt;</code>: Enforce cryptographic integrity in a CI/CD pipeline using the <strong>Trust Protocol</strong>.</li>
+<li><code>agentv replay --run-id &lt;id&gt;</code>: View the step-by-step history of a run in terminal.</li>
 <li>Advanced Utilities: <code>install</code>, <code>analyze</code>, <code>ci generate</code>, <code>failures search</code>, and <code>explain</code>.</li>
 </ul>
 <blockquote>
@@ -4037,7 +4037,7 @@ It is organized into three levels: <strong>Quick Start</strong>, <strong>User Ma
 <li><strong>Interception</strong>: Use <code>on_tool_request</code> to block or proxy tool calls.</li>
 <li><strong>Observability</strong>: Subscribe to <code>CoreEvents</code> via the <code>EventEmitter</code> for non-blocking logging.</li>
 <li><strong>Advanced Evaluation</strong>: Standard support for dot-notation in state verification, High-Fidelity Calculation Accuracy, and Judge Guarding (strict failure for required metrics).</li>
-<li><strong>Secure Namespaces</strong>: Legacy <code>extend_cli</code> is removed. Use <code>on_register_commands</code> to register commands under the <code>multiagent-eval plugin &lt;name&gt;</code> sub-command.</li>
+<li><strong>Secure Namespaces</strong>: Legacy <code>extend_cli</code> is removed. Use <code>on_register_commands</code> to register commands under the <code>agentv plugin &lt;name&gt;</code> sub-command.</li>
 <li><strong>Ecosystem Adapters</strong>: Official, zero-touch support for <strong>LangChain</strong>, <strong>Ollama</strong>, <strong>OpenAI</strong>, <strong>Gemini</strong>, <strong>Claude</strong>, <strong>AutoGen</strong>, and <strong>xAI Grok</strong>.</li>
 <li><strong>Immutability</strong>: TurnContext and EvaluationContext are frozen to prevent accidental side-effects.</li>
 </ul>
@@ -4047,7 +4047,7 @@ It is organized into three levels: <strong>Quick Start</strong>, <strong>User Ma
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pytest<span class="w"> </span>tests/
 </code></pre></div></p>
 <p>For industry-specific scenarios:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>multiagent-eval<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>industries/&lt;ind&gt;/scenarios/&lt;file&gt;.json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>industries/&lt;ind&gt;/scenarios/&lt;file&gt;.json
 </code></pre></div></p>
 <hr />
 <p>For deep-dives into specific topics, see the specialized guides in <code>docs/guides/help/</code>:

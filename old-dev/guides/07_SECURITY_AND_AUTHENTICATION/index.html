@@ -29,7 +29,7 @@
     
     
       
-        <title>Security & Auth - MultiAgentEval</title>
+        <title>Security & Auth - AgentV</title>
       
     
     
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -4392,7 +4392,7 @@
 
 
 <h1 id="guide-security-and-authentication">Guide: Security and Authentication<a class="headerlink" href="#guide-security-and-authentication" title="Permanent link">&para;</a></h1>
-<p>The MultiAgentEval harness is designed with a <strong>Secure-by-Design</strong> philosophy to protect your infrastructure and data during industrial-scale agent evaluations. A central component of this security is the <code>DASHBOARD_API_KEY</code>.</p>
+<p>The AgentV harness is designed with a <strong>Secure-by-Design</strong> philosophy to protect your infrastructure and data during industrial-scale agent evaluations. A central component of this security is the <code>DASHBOARD_API_KEY</code>.</p>
 <h2 id="the-dashboard_api_key">The <code>DASHBOARD_API_KEY</code><a class="headerlink" href="#the-dashboard_api_key" title="Permanent link">&para;</a></h2>
 <p>The <code>DASHBOARD_API_KEY</code> is a mandatory security credential required to access protected REST API routes and the Visual Debugger bridge. It prevents unauthorized agents or external entities from triggering evaluations, modifying scenarios, or intercepting live traces.</p>
 <h3 id="1-generating-a-secure-key">🔐 1. Generating a Secure Key<a class="headerlink" href="#1-generating-a-secure-key" title="Permanent link">&para;</a></h3>
@@ -4567,7 +4567,7 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 </ul>
 <h3 id="3-server-configuration">3. Server Configuration<a class="headerlink" href="#3-server-configuration" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Environment Variable</strong>: Run <code>multiagent-eval doctor</code> to verify that the <code>DASHBOARD_API_KEY</code> is correctly detected by the harness.</li>
+<li><strong>Environment Variable</strong>: Run <code>agentv doctor</code> to verify that the <code>DASHBOARD_API_KEY</code> is correctly detected by the harness.</li>
 <li><strong>501 Not Implemented</strong>: If you see this error, it means <strong>no key</strong> is configured. The harness will block all sensitive routes until a key is provided.</li>
 </ul>
 <p>For further assistance, contact <code>ai.eval.harness.contact+security@gmail.com</code>.</p>

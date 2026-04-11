@@ -29,7 +29,7 @@
     
     
       
-        <title>Gemini MultiModal - MultiAgentEval</title>
+        <title>Gemini MultiModal - AgentV</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quickstart-gemini-multimodal-live-multiagenteval" class="md-skip">
+        <a href="#quickstart-gemini-multimodal-live-agentv" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="MultiAgentEval" class="md-header__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            MultiAgentEval
+            AgentV
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -431,13 +431,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="MultiAgentEval" class="md-nav__button md-logo" aria-label="MultiAgentEval" data-md-component="logo">
+    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    MultiAgentEval
+    AgentV
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -3770,7 +3770,7 @@
 
 
 
-<h1 id="quickstart-gemini-multimodal-live-multiagenteval">Quickstart: Gemini Multimodal Live + MultiAgentEval<a class="headerlink" href="#quickstart-gemini-multimodal-live-multiagenteval" title="Permanent link">&para;</a></h1>
+<h1 id="quickstart-gemini-multimodal-live-agentv">Quickstart: Gemini Multimodal Live + AgentV<a class="headerlink" href="#quickstart-gemini-multimodal-live-agentv" title="Permanent link">&para;</a></h1>
 <p>Evaluate the latest Gemini agents using the harness for multimodal and reasoning benchmarks.</p>
 <h2 id="1-setup-your-agent-api">1. Setup Your Agent API<a class="headerlink" href="#1-setup-your-agent-api" title="Permanent link">&para;</a></h2>
 <p>Expose your Gemini agent via an API that standardizes the input and output.</p>
@@ -3789,10 +3789,10 @@
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="2-register-the-agent">2. Register the Agent<a class="headerlink" href="#2-register-the-agent" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>multiagent-eval<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Gemini-1.5-Pro-Live&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Gemini-1.5-Pro-Live&quot;</span>
 </code></pre></div>
 <h2 id="3-generate-verified-report">3. Generate Verified Report<a class="headerlink" href="#3-generate-verified-report" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>multiagent-eval<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--share
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--share
 </code></pre></div>
 
 
