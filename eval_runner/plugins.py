@@ -9,8 +9,12 @@ Updated to respect Zero-Touch architecture and immutable core.
 from abc import ABC  # noqa: I001
 import concurrent.futures
 import importlib.metadata
+import importlib.util
+import inspect
 import json
+import os
 import time  # noqa: F401
+from pathlib import Path
 from typing import Any
 
 from . import config, discovery
@@ -130,19 +134,24 @@ class PluginManager:
                     if not plugin_def.get("enabled", True):
                         continue
 
-                    module_path = plugin_def.get("module")
-                    if not module_path:
+                    module_name = plugin_def.get("module")
+                    class_name = plugin_def.get("class")
+                    if not module_name or not class_name:
+                        print(
+                            f"   [PluginManager] Skipping malformed plugin definition: {plugin_def}"
+                        )
                         continue
 
                     try:
-                        # Standard format "module.ClassName"
-                        module_name, class_name = module_path.rsplit(".", 1)
                         module = importlib.import_module(module_name)
                         plugin_cls = getattr(module, class_name)
                         if not any(isinstance(p, plugin_cls) for p in self.plugins):
                             self.plugins.append(plugin_cls())
                     except Exception as e:
-                        print(f"   [PluginManager] Failed to load plugin {module_path}: {e}")
+                        print(
+                            f"   [PluginManager] Failed to load plugin "
+                            f"{module_name}.{class_name}: {e}"
+                        )
             except Exception as e:
                 # Fail Fast: Registry corruption is a forensic blocker
                 msg = f"CRITICAL: Failed to read forensic registry {PERSISTENT_PLUGINS_PATH}: {e}"
@@ -304,30 +313,111 @@ class PluginManager:
                     )
         return True
 
-    def register_persistent(self, plugin_path: str, plugin_id: str | None = None):
-        """Register a plugin persistently using the modern dictionary schema."""
+    def register_persistent(
+        self,
+        module_path: str,
+        class_name: str | None = None,
+        name: str | None = None,
+        plugin_id: str | None = None,
+    ):
+        """Register a plugin persistently using the split module/class dictionary schema."""
         PERSISTENT_PLUGINS_PATH.parent.mkdir(parents=True, exist_ok=True)
         registry = {"plugins": []}
         if PERSISTENT_PLUGINS_PATH.exists():
             with open(PERSISTENT_PLUGINS_PATH, encoding="utf-8") as f:
                 registry = json.load(f)
 
-        # Extraction and collision check
-        existing_paths = [p.get("module") for p in registry["plugins"]]
+        # Forensic Normalization: Robust Discovery logic
+        if not class_name:
+            if module_path.endswith(".py") or os.path.isfile(module_path):
+                # 1. It's a file. Normalize to stem and try to find the class.
+                path_obj = Path(module_path)
+                module_name = path_obj.stem
 
-        if plugin_path not in existing_paths:
-            # Auto-generate ID if missing
-            pid = plugin_id or plugin_path.split(".")[-1].lower()
+                # Heuristic 1: CamelCase candidate generation
+                heuristic_base = "".join(x.capitalize() for x in module_name.split("_"))
+                heuristic_candidates = {heuristic_base, f"{heuristic_base}Plugin"}
+
+                # Heuristic 2: Introspection (Advanced Discovery)
+                try:
+                    spec = importlib.util.spec_from_file_location(module_name, module_path)
+                    if spec and spec.loader:
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+
+                        # Find all classes inheriting from BaseEvalPlugin
+                        # (Avoiding circular import by comparing class name/base)
+                        candidates = []
+                        for name_attr, obj in inspect.getmembers(module, inspect.isclass):
+                            if obj.__module__ != module.__name__:
+                                continue
+                            if any(
+                                base.__name__ == "BaseEvalPlugin" or base.__name__ == "ABC"
+                                for base in obj.__mro__
+                            ):
+                                candidates.append(name_attr)
+
+                        if len(candidates) == 1:
+                            class_name = candidates[0]
+                        elif len(candidates) > 1:
+                            # Intersection of candidates and heuristics
+                            matches = heuristic_candidates.intersection(set(candidates))
+                            if len(matches) == 1:
+                                class_name = list(matches)[0]
+                            else:
+                                raise ValueError(
+                                    f"Ambiguous plugin file: {len(candidates)} candidates found. "
+                                    f"Please specify --class explicitly."
+                                )
+
+                        if not class_name:
+                            class_name = heuristic_base
+                except Exception as e:
+                    if "Ambiguous" in str(e):
+                        raise
+                    # Fallback to the first heuristic if introspection is inconclusive
+                    class_name = heuristic_base
+
+                # Use the stem as the module path for registration to keep it portable
+                module_path = module_name
+            elif "." in module_path:
+                # Assume legacy format module.Class
+                module_path, class_name = module_path.rsplit(".", 1)
+
+        if not class_name:
+            raise ValueError(f"CRITICAL: Failed to resolve class_name for {module_path}")
+
+        # Schema Alignment: Determine authoritative name and ID
+        pid = plugin_id or class_name.lower()
+        pname = name or pid
+
+        # Collision check
+        existing = [
+            p
+            for p in registry["plugins"]
+            if p.get("module") == module_path and p.get("class") == class_name
+        ]
+
+        if not existing:
             registry["plugins"].append(
-                {"id": pid, "module": plugin_path, "enabled": True, "config": {}}
+                {
+                    "id": pid,
+                    "name": pname,
+                    "module": module_path,
+                    "class": class_name,
+                    "enabled": True,
+                    "config": {},
+                }
             )
             with open(PERSISTENT_PLUGINS_PATH, "w", encoding="utf-8") as f:
                 json.dump(registry, f, indent=4)
-            print(f"   [Plugins] Persistent registration saved: {pid} ({plugin_path})")
+            print(
+                f"   [Plugins] Persistent registration saved: {pname} ({module_path}.{class_name})"
+            )
         else:
-            print(f"   [Plugins] Plugin path already exists in registry: {plugin_path}")
+            print(f"   [Plugins] Plugin already exists in registry: {module_path}.{class_name}")
 
-    def unregister_persistent(self, plugin_path: str):
+    def unregister_persistent(self, module_path: str, class_name: str | None = None):
         """Unregister a plugin persistently by removing it from the dictionary-based registry."""
         if not PERSISTENT_PLUGINS_PATH.exists():
             return
@@ -336,14 +426,39 @@ class PluginManager:
             registry = json.load(f)
 
         initial_count = len(registry["plugins"])
-        registry["plugins"] = [p for p in registry["plugins"] if p.get("module") != plugin_path]
+
+        # Forensic Normalization: Consistent discovery for unregistration
+        if not class_name:
+            if module_path.endswith(".py") or os.path.isfile(module_path):
+                module_path = Path(module_path).stem
+            elif "." in module_path:
+                module_path, class_name = module_path.rsplit(".", 1)
+
+        if class_name:
+            registry["plugins"] = [
+                p
+                for p in registry["plugins"]
+                if not (p.get("module") == module_path and p.get("class") == class_name)
+            ]
+        else:
+            # Fallback for name/id based removal if only one arg provided and no dots
+            registry["plugins"] = [
+                p
+                for p in registry["plugins"]
+                if p.get("module") != module_path
+                and p.get("id") != module_path
+                and p.get("name") != module_path
+            ]
 
         if len(registry["plugins"]) < initial_count:
             with open(PERSISTENT_PLUGINS_PATH, "w", encoding="utf-8") as f:
                 json.dump(registry, f, indent=4)
-            print(f"   [Plugins] Persistent registration removed for path: {plugin_path}")
+            print(
+                f"   [Plugins] Persistent registration removed for: "
+                f"{module_path}.{class_name or ''}"
+            )
         else:
-            print(f"   [Plugins] No plugin found with path: {plugin_path}")
+            print(f"   [Plugins] No plugin found matching: {module_path}.{class_name or ''}")
 
 
 manager = PluginManager()

@@ -197,6 +197,12 @@ agentv failures search <query>
 ```
 **Example:** `agentv failures search "pii leaks"` discovers and imports realistic failing scenarios from the corpus.
 
+### `list-metrics`
+Display descriptions for all registered evaluation metrics.
+
+### `list-plugins`
+Display all active and persistently registered plugins (Alias for `agentv plugin list`).
+
 ## Debugging & Exploration
 
 ### `replay`
@@ -275,7 +281,29 @@ Interactively workspace to generate new test scenarios via a terminal wizard.
 agentv scenario generate
 ```
 
-## Plugin Commands
+## Plugin Management
+
+### `plugin register`
+Register an external plugin persistently in the local registry.
+```bash
+agentv plugin register <path_to_plugin>
+```
+- `<path_to_plugin>`: File system path or Python module path to register.
+- Automatically normalizes the registration into the required split `module`/`class` schema.
+
+### `plugin unregister`
+Remove a plugin from the persistent registry.
+```bash
+agentv plugin unregister <plugin_name_or_id>
+```
+
+### `plugin list` (Alias: `list-plugins`)
+List all active and persistently registered plugins.
+```bash
+agentv plugin list
+# OR
+agentv list-plugins
+```
 
 ### `plugin <name> <command>`
 Execute plugin-specific subcommands. Plugins register their own commands under a secure namespace to prevent command hijacking.

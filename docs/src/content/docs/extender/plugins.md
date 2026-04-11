@@ -41,13 +41,57 @@ class MyCustomPlugin(BaseEvalPlugin):
         return True
 ```
 
-### Registration
-Register your plugin via `entry-points` in your `pyproject.toml`:
+### Registration & Discovery
+
+Plugins can be registered and discovered in two primary ways:
+
+#### 1. Python Entry-Points (Dynamic)
+Define your plugins in `pyproject.toml` for automatic discovery when your package is installed:
 
 ```toml
 [project.entry-points."eval_runner.plugins"]
 my_analysis = "my_package.plugin:MyAnalysisPlugin"
 ```
+
+#### 2. Persistent Registry (Enterprise/External)
+For plugins that are not installed as packages, use the `agentv plugin register` CLI command. This saves the registration to the local `.aes/config/plugins/registry.json` file.
+
+```bash
+agentv plugin register /path/to/my_plugin_dir/
+```
+
+### 🔍 Listing Plugins
+You can list all active and persistently registered plugins using either the namespaced command or the shorthand alias:
+
+```bash
+agentv plugin list
+# OR
+agentv list-plugins
+```
+
+### 🧬 Forensic Registry Schema
+When registering plugins persistently, AgentV enforces a strict **Split Schema** to ensure industrial-grade clarity and prevent package resolution ambiguity.
+
+**Registry Location**: `.aes/config/plugins/registry.json`
+
+**Correct Schema Example**:
+```json
+{
+  "plugins": [
+    {
+      "id": "enterprise-adapter",
+      "name": "enterprise-adapter",
+      "module": "enterprise.adapter.plugin",
+      "class": "AdapterPlugin",
+      "enabled": true,
+      "config": {}
+    }
+  ]
+}
+```
+
+> [!IMPORTANT]
+> The harness no longer supports the combined `"module": "path.Class"` string format for persistent registration. You **must** provide the `module` and `class` fields as separate entities in the registry.
 
 ---
 

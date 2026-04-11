@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Plugin Configuration Schema",
-  "description": "Schema for the plugins.json configuration file",
+  "title": "Plugin Forensic Registry Schema",
+  "description": "Schema for the AgentV registry.json configuration file",
   "type": "object",
   "required": [
     "plugins"
@@ -12,21 +12,27 @@
       "items": {
         "type": "object",
         "required": [
+          "id",
           "name",
           "module",
           "class"
         ],
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique forensic identifier for the plugin (usually lowercase class name)"
+          },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Human-readable name of the plugin"
           },
           "module": {
             "type": "string",
-            "description": "Python module path (e.g. eval_runner.plugins.my_plugin)"
+            "description": "Python module name or stem (e.g., flight_recorder)"
           },
           "class": {
             "type": "string",
-            "description": "Class name within the module"
+            "description": "Authoritative class name within the module (e.g., FlightRecorderPlugin)"
           },
           "config": {
             "type": "object",

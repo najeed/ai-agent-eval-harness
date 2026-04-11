@@ -4,7 +4,6 @@ handlers/environment.py
 Environment, utilities, and setup handlers.
 """
 
-import json
 from pathlib import Path
 
 from .. import (
@@ -81,56 +80,24 @@ async def handle_plugin_list(args):
 
 async def handle_plugin_register(args):
     """Handler for 'plugin register' command."""
-    plugin_path = Path(args.path).resolve()
-    if not plugin_path.exists():
-        print(f"❌ Error: Plugin path '{plugin_path}' does not exist.")
-        return
-
-    # In Zero-Touch core, we manage a local manifest in .aes/config/plugins.json
-    from .. import config
-
-    manifest_path = config.PLUGINS_CONFIG_PATH
-    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    from ..plugins import manager
 
     try:
-        if manifest_path.exists():
-            with open(manifest_path, encoding="utf-8") as f:
-                manifest = json.load(f)
-        else:
-            manifest = {"plugins": []}
-
-        if str(plugin_path) not in manifest["plugins"]:
-            manifest["plugins"].append(str(plugin_path))
-            with open(manifest_path, "w", encoding="utf-8") as f:
-                json.dump(manifest, f, indent=4)
-            print(f"✅ Registered plugin: {plugin_path}")
-        else:
-            print(f"ℹ️  Plugin already registered: {plugin_path}")
+        # Standardize registration using the Authoritative PluginManager
+        # This ensures schema compliance (module/class split)
+        manager.register_persistent(args.path)
+        print(f"✅ Registered plugin: {args.path}")
     except Exception as e:
         print(f"❌ Error during registration: {e}")
 
 
 async def handle_plugin_unregister(args):
     """Handler for 'plugin unregister' command."""
-    from .. import config
-
-    manifest_path = config.PLUGINS_CONFIG_PATH
-    if not manifest_path.exists():
-        print(f"ℹ️  No plugin manifest found ({manifest_path}).")
-        return
+    from ..plugins import manager
 
     try:
-        with open(manifest_path, encoding="utf-8") as f:
-            manifest = json.load(f)
-
-        target = str(Path(args.path).resolve())
-        if target in manifest.get("plugins", []):
-            manifest["plugins"].remove(target)
-            with open(manifest_path, "w", encoding="utf-8") as f:
-                json.dump(manifest, f, indent=4)
-            print(f"✅ Unregistered plugin: {target}")
-        else:
-            print(f"❌ Error: Plugin '{target}' not found in manifest.")
+        manager.unregister_persistent(args.name)
+        print(f"✅ Unregistered plugin: {args.name}")
     except Exception as e:
         print(f"❌ Error during unregistration: {e}")
 

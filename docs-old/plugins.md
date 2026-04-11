@@ -202,14 +202,52 @@ class RemoteBridgePlugin(BaseEvalPlugin):
 
 ---
 
-## Registering Plugins
+## 🔌 Registration & Discovery
 
-Plugins are discovered via `entry-points` in `pyproject.toml`:
+Plugins are discovered by the AgentV engine using two complementary mechanisms:
+
+### 1. Dynamic Entry-Points
+For plugins distributed as pip packages, use the `project.entry-points` section in your `pyproject.toml`:
 
 ```toml
 [project.entry-points."eval_runner.plugins"]
 my_analysis = "my_package.plugin:MyAnalysisPlugin"
 ```
+
+### 2. Persistent Registration (Local Registry)
+For plugins specific to a benchmark environment or external modules, use the CLI registration tool:
+
+```bash
+agentv plugin register /path/to/plugin/
+```
+
+This persistent registration is stored in `.aes/config/plugins/registry.json`.
+
+---
+
+## 🧬 Forensic Registry Schema (Strict)
+
+To maintain industrial-grade clarity and prevent package resolution ambiguity, the persistent registry enforces a **Split Schema**. You must specify the `module` path and the `class` name as distinct fields.
+
+**Location**: `.aes/config/plugins/registry.json`
+
+```json
+{
+  "plugins": [
+    {
+      "id": "my-recorder",
+      "name": "my-recorder",
+      "module": "eval_runner.plugins.flight_recorder",
+      "class": "FlightRecorderPlugin",
+      "enabled": true,
+      "config": {}
+    }
+  ]
+}
+```
+
+> [!WARNING]
+> Support for the combined `"module": "path.Class"` format has been deprecated and removed to prevent Core ambiguity. Manual edits to `registry.json` must follow the split format above.
 
 ## Framework Adapters (Advanced)
 

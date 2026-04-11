@@ -29,7 +29,9 @@ def test_plugin_registration_modern_schema(tmp_path, monkeypatch):
     assert len(data["plugins"]) == 1
     p = data["plugins"][0]
     assert p["id"] == "recorder"
-    assert p["module"] == plugin_path
+    assert p["name"] == "recorder"
+    assert p["module"] == "eval_runner.plugins.flight_recorder"
+    assert p["class"] == "FlightRecorderPlugin"
     assert p["enabled"] is True
     assert p["config"] == {}
 
@@ -46,8 +48,22 @@ def test_plugin_unregistration(tmp_path, monkeypatch):
     registry_file.parent.mkdir(parents=True, exist_ok=True)
     initial_data = {
         "plugins": [
-            {"id": "p1", "module": "mod.P1", "enabled": True, "config": {}},
-            {"id": "p2", "module": "mod.P2", "enabled": True, "config": {}},
+            {
+                "id": "p1",
+                "name": "p1",
+                "module": "mod",
+                "class": "P1",
+                "enabled": True,
+                "config": {},
+            },
+            {
+                "id": "p2",
+                "name": "p2",
+                "module": "mod",
+                "class": "P2",
+                "enabled": True,
+                "config": {},
+            },
         ]
     }
     with open(registry_file, "w", encoding="utf-8") as f:
@@ -88,10 +104,18 @@ def test_loading_ignoring_disabled_plugins(tmp_path, monkeypatch):
     monkeypatch.setattr(plugins, "PERSISTENT_PLUGINS_PATH", registry_file)
 
     # Using a dummy path that IS NOT in the internal manifest
-    plugin_path = "test_mod.DummyPlugin"
 
     initial_data = {
-        "plugins": [{"id": "dummy", "module": plugin_path, "enabled": False, "config": {}}]
+        "plugins": [
+            {
+                "id": "dummy",
+                "name": "dummy",
+                "module": "test_mod",
+                "class": "DummyPlugin",
+                "enabled": False,
+                "config": {},
+            }
+        ]
     }
     with open(registry_file, "w", encoding="utf-8") as f:
         json.dump(initial_data, f)

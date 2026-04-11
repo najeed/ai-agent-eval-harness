@@ -115,7 +115,8 @@ agentv gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 | `analyze` | Scan a GitHub repository to auto-generate scenarios. |
 | `auto-translate`| Use local LLMs (Ollama) to translate technical docs to AES JSON. |
 | `doctor` | Audit local dependencies and configuration markers. |
-| `plugin` | Register and manage external or built-in plugins. |
+| `plugin` | List, register, or unregister external evaluation plugins persistently. |
+| `list-plugins` | Shorthand alias for `agentv plugin list`. |
 | `registry sync` | Synchronize your local library with remote industry standards. |
 | `cleanup-runs` | Housekeeping: Prune old traces and log artifacts. |
 

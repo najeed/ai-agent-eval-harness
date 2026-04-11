@@ -397,6 +397,9 @@ Utilities & Environment:
     subparsers.add_parser(
         "list-metrics", help="Display descriptions for all registered evaluation metrics"
     )
+    subparsers.add_parser(
+        "list-plugins", help="Display all active and persistently registered plugins"
+    )
 
     report_parser = subparsers.add_parser(
         "report", help="Generate a stylized HTML report from a specific evaluation run"
@@ -658,11 +661,14 @@ def main():
             "install",
             "registry",
             "plugin",
+            "list-plugins",
         ]:
             from .handlers import environment as h
 
             if args.command == "analyze":
                 safe_run_async(h.handle_analyze(args))
+            elif args.command == "list-plugins":
+                safe_run_async(h.handle_plugin_list(args))
             elif args.command == "auto-translate":
                 safe_run_async(h.handle_auto_translate(args))
             elif args.command == "ci" and args.ci_command == "generate":
