@@ -93,11 +93,11 @@ jobs:
           publish_branch: gh-pages
           keep_files: false # final-site already contains the merged state
 
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./final-site
+      #- name: Upload Pages Artifact
+      #  uses: actions/upload-pages-artifact@v3
+      #  with:
+      #    path: ./final-site
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      #- name: Deploy to GitHub Pages
+      #  id: deployment
+      #  uses: actions/deploy-pages@v4
