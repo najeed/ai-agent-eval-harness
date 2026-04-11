@@ -12,7 +12,7 @@ class AESJsonEncoder(json.JSONEncoder):
     def default(self, obj: Any) -> Any:
         if isinstance(obj, Path):
             return str(obj)
-        if isinstance(obj, (datetime.datetime, datetime.date)):
+        if isinstance(obj, datetime.datetime | datetime.date):
             return obj.isoformat()
         # Handle Mock objects (specifically for testing environments)
         if hasattr(obj, "__class__") and "Mock" in obj.__class__.__name__:

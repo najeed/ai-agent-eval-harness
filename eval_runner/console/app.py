@@ -98,7 +98,7 @@ def create_app():
     core_overrides = {
         "community": {"path": "https://github.com/najeed/ai-agent-eval-harness"},
         "demo": {"path": "/demo"},
-        "loan_demo": {"path": "/demo/loan"}
+        "loan_demo": {"path": "/demo/loan"},
     }
     for item in nav_registry:
         if item.get("id") in core_overrides:
@@ -118,7 +118,6 @@ def create_app():
     for rule in app.url_map.iter_rules():
         print(f"   [Route] {rule.rule} ({rule.endpoint})", flush=True)
     print("--- Audit Complete ---\n", flush=True)
-
 
     # Frontend Catch-all Routes (Define LAST to prevent API masking)
     @app.route("/", defaults={"path": ""})

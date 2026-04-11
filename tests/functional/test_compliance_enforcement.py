@@ -58,7 +58,7 @@ def test_enforce_min_judges_and_compliance(scenario_schema):
     invalid_meta["metadata"] = {
         "name": "Fail Scenario",
         "scenario_id": "test_fail",
-        "industry": "finance"
+        "industry": "finance",
     }
     with pytest.raises(jsonschema.ValidationError) as excinfo:
         validate(instance=invalid_meta, schema=schema, resolver=resolver)

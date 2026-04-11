@@ -170,4 +170,3 @@ class DemographicsProvider(BaseProvider):
 
     def validate(self, normalized_data: list[StandardSchema]) -> bool:
         return all(r.data.get("population", 0) >= 0 for r in normalized_data)
-

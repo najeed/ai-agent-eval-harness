@@ -25,7 +25,7 @@ def gate_env(tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", root)
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", runs_dir)
     monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
-    
+
     trust_root = root / "trust"
     trust_root.mkdir()
     monkeypatch.setattr("eval_runner.config.TRUST_ROOT", trust_root)
@@ -89,16 +89,16 @@ async def test_handle_gate_hash_mismatch(gate_env, capsys):
 @pytest.mark.asyncio
 async def test_handle_gate_asymmetric_success(gate_env, capsys, monkeypatch):
     """Test gate succeeds with ED25519 signature via IdentityService."""
-    from eval_runner.identity import IdentityService
     from eval_runner import config
-    
+    from eval_runner.identity import IdentityService
+
     # 1. Setup physical trust root
     trust_root = gate_env["root"] / "trust"
     trust_root.mkdir(exist_ok=True)
     monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
-    
+
     identity_id = "test_tester"
-    
+
     # 2. Provision identity and resign trace
     # IdentityService auto-provisions if private_key.pem is missing
     IdentityService.get_private_key(identity_id)

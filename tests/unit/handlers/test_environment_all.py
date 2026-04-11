@@ -86,7 +86,6 @@ class TestEnvironmentHandlers:
 
     @pytest.mark.asyncio
     async def test_handle_plugin_register_success(self, clean_args, tmp_dir):
-        from eval_runner import config
         plugin_file = Path(tmp_dir) / "my_plugin.py"
         plugin_file.write_text("class MyPlugin: pass")
         clean_args.path = str(plugin_file)
@@ -103,10 +102,9 @@ class TestEnvironmentHandlers:
 
     @pytest.mark.asyncio
     async def test_handle_plugin_unregister(self, clean_args, tmp_dir):
-        from eval_runner import config
         manifest_path = Path(tmp_dir) / ".aes" / "config" / "plugins.json"
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         target = str(Path(tmp_dir).resolve() / "p.py")
         with open(manifest_path, "w") as f:
             json.dump({"plugins": [target]}, f)
@@ -221,10 +219,9 @@ class TestEnvironmentHandlers:
             last_call = mock_print.call_args_list[-1][0][0]
             assert "does not exist" in last_call
 
-        from eval_runner import config
         manifest_path = Path(tmp_dir) / ".aes" / "config" / "plugins.json"
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         p_path = Path(tmp_dir).resolve() / "p.py"
         p_path.touch()
         with open(manifest_path, "w") as f:
@@ -238,7 +235,6 @@ class TestEnvironmentHandlers:
 
     @pytest.mark.asyncio
     async def test_handle_plugin_unregister_missing(self, clean_args, tmp_dir):
-        from eval_runner import config
         manifest_path = Path(tmp_dir) / ".aes" / "config" / "plugins.json"
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
 

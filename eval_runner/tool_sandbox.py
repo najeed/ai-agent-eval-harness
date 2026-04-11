@@ -9,6 +9,7 @@ Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 
 import os  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
+from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
 from . import config  # noqa: E402
@@ -18,13 +19,10 @@ class ResourceRegistry:
     """Centralized tracking for physical files and directories created during a session."""
 
     def __init__(self):
-        from pathlib import Path
-
         self._tracked_paths: set[Path] = set()
 
     def register(self, path: str | Path):
         """Registers a path for mandatory physical cleanup."""
-        from pathlib import Path
 
         p = Path(path).absolute()
         self._tracked_paths.add(p)
@@ -44,7 +42,9 @@ class ResourceRegistry:
                 # In a real system, we'd emit an event here
                 import sys
 
-                sys.stderr.write(f"      [ResourceRegistry] [WARN] Cleanup failed for {path}: {e}\n")
+                sys.stderr.write(
+                    f"      [ResourceRegistry] [WARN] Cleanup failed for {path}: {e}\n"
+                )
 
 
 class SharedStateRegistry:

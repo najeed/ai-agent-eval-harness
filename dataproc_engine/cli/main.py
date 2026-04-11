@@ -40,7 +40,7 @@ def run_rotational_backup(output_file: str, max_backups: int):
             try:
                 os.remove(backups[i])
             except OSError:
-                # Silently fail if file is locked or missing, satisfying Bandit B110 
+                # Silently fail if file is locked or missing, satisfying Bandit B110
                 # but providing a hook for future diagnostic logging if needed.
                 pass
     return archive_name

@@ -88,6 +88,7 @@ async def handle_plugin_register(args):
 
     # In Zero-Touch core, we manage a local manifest in .aes/config/plugins.json
     from .. import config
+
     manifest_path = config.PLUGINS_CONFIG_PATH
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -112,6 +113,7 @@ async def handle_plugin_register(args):
 async def handle_plugin_unregister(args):
     """Handler for 'plugin unregister' command."""
     from .. import config
+
     manifest_path = config.PLUGINS_CONFIG_PATH
     if not manifest_path.exists():
         print(f"ℹ️  No plugin manifest found ({manifest_path}).")

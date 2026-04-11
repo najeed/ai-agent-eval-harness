@@ -1,20 +1,24 @@
 import json
-import yaml
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+import yaml
+
 from . import config
 
 logger = logging.getLogger(__name__)
+
 
 class RoutingRegistry:
     """
     Manages the Capability-Based Routing manifest.
     Decouples scenario 'requires' from physical infrastructure endpoints.
     """
-    _cache: Optional[Dict[str, Any]] = None
+
+    _cache: dict[str, Any] | None = None
 
     @classmethod
-    def resolve(cls, capabilities: List[str]) -> Dict[str, Any]:
+    def resolve(cls, capabilities: list[str]) -> dict[str, Any]:
         """
         Resolves the best matching infrastructure for a list of capabilities.
         Returns a dict with 'protocol', 'endpoint', and optional 'metadata'.
@@ -37,7 +41,7 @@ class RoutingRegistry:
         return {}
 
     @classmethod
-    def get_resolved_registry(cls) -> Dict[str, Any]:
+    def get_resolved_registry(cls) -> dict[str, Any]:
         """
         Loads and merges all routing sources deterministically.
         Priority: manifest.json (default 0) < routing.d/*.json (explicit priority field).
@@ -51,16 +55,20 @@ class RoutingRegistry:
         # 1. Main Manifest baseline
         if config.ROUTING_CONFIG_PATH.exists():
             try:
-                with open(config.ROUTING_CONFIG_PATH, "r", encoding="utf-8") as f:
+                with open(config.ROUTING_CONFIG_PATH, encoding="utf-8") as f:
                     content = json.load(f)
                     if content:
-                        fragments.append((
-                            content.get("priority", 0), 
-                            "manifest.json", 
-                            content.get("mappings", {})
-                        ))
+                        fragments.append(
+                            (
+                                content.get("priority", 0),
+                                "manifest.json",
+                                content.get("mappings", {}),
+                            )
+                        )
             except Exception as e:
-                logger.error(f"Failed to load routing manifest from {config.ROUTING_CONFIG_PATH}: {e}")
+                logger.error(
+                    f"Failed to load routing manifest from {config.ROUTING_CONFIG_PATH}: {e}"
+                )
 
         # 2. Extension Directory (.aes/config/routing.d/)
         d_dir = config.ROUTING_D_DIR
@@ -68,27 +76,43 @@ class RoutingRegistry:
             paths = sorted(list(d_dir.glob("*.json")) + list(d_dir.glob("*.yaml")))
             for path in paths:
                 try:
-                    with open(path, "r", encoding="utf-8") as f:
-                        ext = yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                    with open(path, encoding="utf-8") as f:
+                        ext = (
+                            yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
+                        )
                         if ext and "mappings" in ext:
-                            fragments.append((
-                                ext.get("priority", 10), # Extensions default to higher priority than manifest
-                                path.name,
-                                ext["mappings"]
-                            ))
+                            fragments.append(
+                                (
+                                    ext.get(
+                                        "priority", 10
+                                    ),  # Extensions default to higher priority than manifest
+                                    path.name,
+                                    ext["mappings"],
+                                )
+                            )
                 except Exception as e:
                     logger.warning(f"Failed to load routing extension from {path.name}: {e}")
 
         # 3. Deterministic Merge: Sort by Priority (Ascending), then Name
         # Later (higher priority) fragments will overwrite earlier ones in dict.update()
         fragments.sort(key=lambda x: (x[0], x[1]))
-        
+
         resolved_mappings = {}
         for prio, name, mappings in fragments:
             for cap, route in mappings.items():
                 if cap in resolved_mappings:
-                    logger.info(f"      [Routing] Overwriting capability '{cap}' with higher priority source: {name} (Prio: {prio})")
+                    logger.info(
+                        f"      [Routing] Overwriting capability '{cap}' "
+                        f"with higher priority source: {name} (Prio: {prio})"
+                    )
                 resolved_mappings[cap] = route
+
+        # RegistryManager: Global reload (v1.2.3 Dynamic Policy Sync)
+        config.RegistryManager.reload()
+        logger.debug(
+            f"   [Routing] Standard resolution complete for {len(fragments)} fragments. "
+            f"Strategy: {config.get_routing_strategy()}"
+        )
 
         cls._cache = {"mappings": resolved_mappings}
         return resolved_mappings

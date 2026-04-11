@@ -98,7 +98,7 @@ class EventEmitter:
     def emit(self, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
         """Emit an event to all subscribers with optional tracing context."""
         sanitized_data = sanitize_payload(data)
-        
+
         # Inversion of Control: Auto-inject run_id if available in the bus
         if self.run_id and "run_id" not in sanitized_data:
             sanitized_data["run_id"] = self.run_id

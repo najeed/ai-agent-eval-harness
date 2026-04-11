@@ -9,14 +9,14 @@ from flask import Blueprint, jsonify, request
 
 from eval_runner import config
 from eval_runner.catalog import ScenarioCatalog
-from eval_runner.events import CoreEvents, emit, subscribe
+from eval_runner.events import CoreEvents, subscribe
 from eval_runner.plugins import manager
 from eval_runner.simulators import get_simulator_registry
 
 from .auth_manager import Permission, require_permission
 
 core_bp = Blueprint("core", __name__, url_prefix="/api")
-trust_bp = Blueprint("trust", __name__) # Top-level v1/ namespace
+trust_bp = Blueprint("trust", __name__)  # Top-level v1/ namespace
 
 
 def get_catalog():
@@ -188,9 +188,7 @@ def get_verification_certificate(run_id):
             return jsonify({"error": f"Failed to retrieve vault manifest: {str(e)}"}), 500
 
     # 3. Fallback to legacy sidecar patterns (Standard Reproducibility)
-    sidecar_manifest = (
-        config.RUN_LOG_DIR / f"run_{run_id}_manifest.json"
-    )
+    sidecar_manifest = config.RUN_LOG_DIR / f"run_{run_id}_manifest.json"
     if not sidecar_manifest.exists():
         sidecar_manifest = config.RUN_LOG_DIR / f"{run_id}_manifest.json"
 
@@ -230,15 +228,20 @@ def verify_run_public(run_id):
     if not manifest_path.exists():
         # Fallback for runs certified before normalization or via legacy reporting
         sidecar = (config.RUN_LOG_DIR / f"{run_id}_manifest.json").resolve()
-        if sidecar.exists(): 
+        if sidecar.exists():
             manifest_path = sidecar
             print(f"   [Gating] Manifest found at sidecar: {manifest_path}", flush=True)
         else:
-            print(f"   [Gating] 404 FAIL: Manifest not found at {manifest_path} or {sidecar}", flush=True)
-            return jsonify({
-                "error": "Verification Failed: Trace or Certificate not found.",
-                "message": f"Run {run_id} has not been standardized for production gating."
-            }), 404
+            print(
+                f"   [Gating] 404 FAIL: Manifest not found at {manifest_path} or {sidecar}",
+                flush=True,
+            )
+            return jsonify(
+                {
+                    "error": "Verification Failed: Trace or Certificate not found.",
+                    "message": f"Run {run_id} has not been standardized for production gating.",
+                }
+            ), 404
 
     if not trace_path.exists():
         # Resilient fallback for flat traces that haven't been migrated yet
@@ -247,7 +250,9 @@ def verify_run_public(run_id):
             trace_path = flat_trace
             print(f"   [Gating] Trace found at flat fallback: {trace_path}", flush=True)
         else:
-            print(f"   [Gating] 404 FAIL: Trace not found at {trace_path} or {flat_trace}", flush=True)
+            print(
+                f"   [Gating] 404 FAIL: Trace not found at {trace_path} or {flat_trace}", flush=True
+            )
             return jsonify({"error": f"Evaluation trace for {run_id} missing."}), 404
 
     # 2. Execute Verification logic (unprotected bridge)
@@ -455,20 +460,22 @@ def execute_demo_command():
         if cmd_args[0] in ["multiagent-eval"]:
             import shutil as _shutil
             import sys
-            
+
             # 1. Try to find the binary in PATH
             exe = (
                 _shutil.which(cmd_args[0])
                 or _shutil.which(f"{cmd_args[0]}.exe")
                 or _shutil.which(f"{cmd_args[0]}.bat")
             )
-            
+
             if exe:
                 cmd_args[0] = exe
             else:
                 # 2. Fallback to Module Invocation (Deterministic & Robust)
-                # Replaces ['multiagent-eval', 'subcommand', ...] with [sys.executable, '-m', 'eval_runner.cli', 'subcommand', ...]
-                # Or ['spec-to-eval', ...] with [sys.executable, '-m', 'eval_runner.cli', 'spec-to-eval', ...]
+                # Replaces ['multiagent-eval', 'subcommand', ...] with
+                # [sys.executable, '-m', 'eval_runner.cli', 'subcommand', ...]
+                # Or ['spec-to-eval', ...] with
+                # [sys.executable, '-m', 'eval_runner.cli', 'spec-to-eval', ...]
                 new_args = [sys.executable, "-m", "eval_runner.cli"]
                 if cmd_args[0] == "multiagent-eval":
                     new_args.extend(cmd_args[1:])
@@ -598,7 +605,8 @@ def list_scenarios():
         catalog.load_index()
 
     print(
-        f"DEBUG: /api/scenarios - Query: '{query}', Industry: '{industry}', Page: {page}, Limit: {limit}",  # noqa: E501
+        f"DEBUG: /api/scenarios - Query: '{query}', Industry: '{industry}', "
+        f"Page: {page}, Limit: {limit}",
         flush=True,
     )
     results = catalog.search(
@@ -706,8 +714,8 @@ def list_runs():
     runs.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
 
     return jsonify({"runs": runs[:200]})
-                                                                    
-                                                                    
+
+
 @core_bp.route("/v1/runs/<path:run_id>", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def get_run_status(run_id):
@@ -716,31 +724,34 @@ def get_run_status(run_id):
     Returns the existence and basic metadata of a specific run.
     """
     runs_dir = config.RUN_LOG_DIR
-    
+
     # 1. Authoritative Disk Scan (Nested and Flat support)
     paths_to_check = [
         runs_dir / f"{run_id}.jsonl",
         runs_dir / run_id / "run.jsonl",
-        runs_dir / "demo" / f"{run_id}.jsonl"
+        runs_dir / "demo" / f"{run_id}.jsonl",
     ]
-    
-    trace_file = next((p for p in paths_to_check if p.exists()), None)
-    
-    if not trace_file:
-        return jsonify({
-            "run_id": run_id,
-            "status": "NOT_FOUND",
-            "message": "Trace not yet persisted or invalid ID."
-        }), 404
-        
-    return jsonify({
-        "run_id": run_id,
-        "status": "COMPLETED",
-        "path": str(trace_file.relative_to(runs_dir)),
-        "size": os.path.getsize(trace_file),
-        "mtime": os.path.getmtime(trace_file)
-    })
 
+    trace_file = next((p for p in paths_to_check if p.exists()), None)
+
+    if not trace_file:
+        return jsonify(
+            {
+                "run_id": run_id,
+                "status": "NOT_FOUND",
+                "message": "Trace not yet persisted or invalid ID.",
+            }
+        ), 404
+
+    return jsonify(
+        {
+            "run_id": run_id,
+            "status": "COMPLETED",
+            "path": str(trace_file.relative_to(runs_dir)),
+            "size": os.path.getsize(trace_file),
+            "mtime": os.path.getmtime(trace_file),
+        }
+    )
 
 
 @core_bp.route("/evaluate", methods=["POST"])
@@ -750,14 +761,18 @@ def evaluate_scenario():
     # [INDUSTRIAL DIAGNOSTIC]: Log the incoming request body for forensic auditing
     data = request.json or {}
     print(f"   [API] /api/evaluate - Request Body: {json.dumps(data)}", flush=True)
-    
+
     path_str = data.get("path")
     if not path_str:
         # Check for 'scenario' as a fallback for legacy v1.3.x plugins
         path_str = data.get("scenario")
-        
+
     if not path_str:
-        print(f"   [API] 400 Bad Request - Missing 'path' parameter. Full Content: {request.get_data().decode()}", flush=True)
+        print(
+            "   [API] 400 Bad Request - Missing 'path' parameter. "
+            f"Full Content: {request.get_data().decode()}",
+            flush=True,
+        )
         return jsonify({"error": "Missing 'path' parameter", "status": 400}), 400
 
     # Authoritative Path Resolution (v1.2.3 Hardening)
@@ -915,7 +930,6 @@ class DebuggerStateStore:
 
     @classmethod
     def handle_event(cls, event):
-
         name = event.name
         data = event.data
 
@@ -1000,31 +1014,37 @@ def certify_run():
 
     # Universal Trace Resolver: Finding the Source Telemetry
     candidates = [
-        (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve(),      # Standard Nested
-        (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve(),         # Standard Flat
-        (config.RUN_LOG_DIR / "demo" / f"{run_id}.jsonl").resolve() # Demo Mode
+        (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve(),  # Standard Nested
+        (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve(),  # Standard Flat
+        (config.RUN_LOG_DIR / "demo" / f"{run_id}.jsonl").resolve(),  # Demo Mode
     ]
-    
+
     source_trace = None
     for cand in candidates:
         if cand.exists():
             source_trace = cand
             break
-            
+
     if not source_trace:
-        print(f"   [Certification] 404 FAIL: Source trace for {run_id} not found in candidates: {[str(c) for c in candidates]}", flush=True)
-        return jsonify({"error": f"Trace file for run_id '{run_id}' not found in audit registry."}), 404
+        print(
+            f"   [Certification] 404 FAIL: Source trace for {run_id} not found in candidates: "
+            f"{[str(c) for c in candidates]}",
+            flush=True,
+        )
+        return jsonify(
+            {"error": f"Trace file for run_id '{run_id}' not found in audit registry."}
+        ), 404
 
     # [STRUCTURAL NORMALIZATION]: Migrate to standard runs/<run_id>/run.jsonl
     target_dir = (config.RUN_LOG_DIR / run_id).resolve()
     target_dir.mkdir(parents=True, exist_ok=True)
     target_trace = (target_dir / "run.jsonl").resolve()
-    
+
     try:
         # Atomic Copy-and-Read (ACR): Resilience for Windows File Locks (WinError 32)
         import shutil
         import tempfile
-        
+
         # We always copy to the target location if it doesn't match the source
         if source_trace.resolve() != target_trace.resolve():
             shutil.copy2(source_trace, target_trace)
@@ -1033,7 +1053,7 @@ def certify_run():
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl") as tmp:
             tmp_path = Path(tmp.name)
             shutil.copy2(target_trace, tmp_path)
-            
+
         try:
             # [VC v3] Sign with provided compliance metadata
             manifest = TraceVerifier.sign_trace(
@@ -1060,8 +1080,8 @@ def certify_run():
                 "manifest": {
                     "sha256": manifest.get("sha256"),
                     "manifest_path": str(manifest_path),
-                    "certified_at": datetime.now().isoformat()
-                }
+                    "certified_at": datetime.now().isoformat(),
+                },
             }
         )
     except Exception as e:

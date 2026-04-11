@@ -65,7 +65,9 @@ class DecisionSupportProvider(BaseProvider):
                 if verified:
                     results.append(
                         StandardSchema(
-                            id=hashlib.sha256(f"RISK-{raw_data['region']}".encode()).hexdigest()[:16],
+                            id=hashlib.sha256(f"RISK-{raw_data['region']}".encode()).hexdigest()[
+                                :16
+                            ],
                             industry="decision_support",
                             data=verified,
                             provenance={
@@ -92,4 +94,3 @@ class DecisionSupportProvider(BaseProvider):
         return [
             {"correlation_vibe": "Strong correlation between heatwaves and crop failures detected."}
         ]
-

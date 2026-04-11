@@ -77,19 +77,20 @@ async def test_engine_captures_state_transitions():
 
         # O(N) Forensics Sync: Verify state is captured in forensics sidecars, not history
         results = await engine.run_evaluation(scenario, run_id="test_trajectory_core")
-        
+
         from eval_runner import config
+
         forensics_dir = config.RUN_LOG_DIR / "test_trajectory_core" / "forensics"
-        
+
         # Turn 1 tool call produces two snapshots (before/after) in this implementation
         state_before_path = forensics_dir / "state_turn_001.json"
         # Turn + 1000 offset is used for the "after" snapshot in the refined session logic
         state_after_path = forensics_dir / "state_turn_1001.json"
-        
+
         assert state_before_path.exists()
         with open(state_before_path) as f:
             assert json.load(f) == {"status": "idle"}
-            
+
         assert state_after_path.exists()
         with open(state_after_path) as f:
             assert json.load(f) == {"status": "active"}

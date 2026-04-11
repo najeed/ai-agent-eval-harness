@@ -181,4 +181,3 @@ class ManufacturingProvider(BaseProvider):
             r.data.get("employees", 0) >= 0 and r.data.get("mva_value", 0) >= 0
             for r in [r for r in normalized_data if "employees" in r.data or "mva_value" in r.data]
         )
-

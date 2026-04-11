@@ -14,6 +14,7 @@ from typing import Any  # noqa: E402
 
 from . import events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
+
 # from .events import CoreEvents, EventEmitter # Removed to avoid confusion
 
 
@@ -86,7 +87,9 @@ class DefaultRunner(BaseRunner):
             attempt_results = await session.execute_tasks(k)
             all_attempt_results.append(attempt_results)
         events.emit(
-            events.CoreEvents.PHASE_END, {"phase": "pass_at_k_execution"}, span_context=ctx.scenario_id
+            events.CoreEvents.PHASE_END,
+            {"phase": "pass_at_k_execution"},
+            span_context=getattr(ctx, "scenario_id", None),
         )
 
         # Cross-attempt aggregation (e.g. consistency)

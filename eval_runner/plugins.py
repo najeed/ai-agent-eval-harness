@@ -241,7 +241,9 @@ class PluginManager:
                 try:
                     plugin.finalize_run()
                 except Exception as e:
-                    print(f"   [PluginManager] Finalization Error ({plugin.__class__.__name__}): {e}")
+                    print(
+                        f"   [PluginManager] Finalization Error ({plugin.__class__.__name__}): {e}"
+                    )
             # 2. Check for general cleanup hook
             elif hasattr(plugin, "cleanup"):
                 try:

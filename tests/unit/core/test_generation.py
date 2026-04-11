@@ -23,6 +23,7 @@ def test_generated_scenario_compliance(tmp_path, scenario_schema, monkeypatch):
     We mock the inputs to 'generate_interactive' and check the output.
     """
     from jsonschema import RefResolver
+
     resolver = RefResolver(f"file:///{SCHEMA_PATH.parent.as_posix()}/", scenario_schema)
 
     # Mock inputs: Industry=fintech, Capability=credit_score, Count=1

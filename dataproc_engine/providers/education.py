@@ -251,4 +251,3 @@ class EducationProvider(BaseProvider):
                 if record.data.get("enrollment_count", 0) < 0:
                     return False
         return True
-

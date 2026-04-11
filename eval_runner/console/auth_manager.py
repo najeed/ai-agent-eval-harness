@@ -124,7 +124,7 @@ def require_permission(permission_node: str):
 
             # 2. Check Header or Query (CLI / Debug Support)
             api_key = (
-                request.headers.get("X-AES-API-KEY") 
+                request.headers.get("X-AES-API-KEY")
                 or request.headers.get("X-API-Key")
                 or request.args.get("apiKey")
             )

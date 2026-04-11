@@ -423,4 +423,3 @@ class FinanceProvider(BaseProvider):
                 if record.data.get("total_assets", 0) <= 0:
                     return False
         return True
-

@@ -281,4 +281,3 @@ class AgricultureProvider(BaseProvider):
             if val is not None and val < 0:
                 return False
         return True
-

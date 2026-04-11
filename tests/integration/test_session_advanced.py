@@ -1,7 +1,7 @@
 import pytest
 
 from eval_runner.engine import AgentAdapterRegistry
-from eval_runner.events import CoreEvents, EventEmitter
+from eval_runner.events import CoreEvents
 from eval_runner.plugins import BaseEvalPlugin, manager
 from eval_runner.session import SessionManager
 
@@ -64,6 +64,7 @@ async def test_hitl_pause_resume(monkeypatch):
     AgentAdapterRegistry.reset()
     # Throttle Control: Disable delays for test performance and reliability
     from eval_runner import config as eval_config
+
     monkeypatch.setattr(eval_config, "EVAL_TURN_THROTTLE", 0)
 
     # Mock call_agent to return hitl_pause then final_answer
@@ -88,7 +89,7 @@ async def test_hitl_pause_resume(monkeypatch):
     # Note: SessionManager uses an isolated bus; tests must subscribe to the instance
     session = SessionManager("hitl_test_run", scenario)
     session.event_bus.subscribe(event_listener)
-    
+
     results = await session.execute_tasks(1)
 
     assert CoreEvents.HITL_PAUSE in events

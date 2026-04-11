@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from .events import CoreEvents, Event, EventEmitter
+from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
 
 
@@ -39,6 +39,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
 
         from . import events
+
         # Subscribe to the event bus
         events.subscribe(self.handle_event)
 
@@ -55,7 +56,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         # Special handling for RUN_START to set paths
         if event.name == CoreEvents.RUN_START:
-
             # [Refresher] Re-read environment variables for dynamic runtime configuration
             import eval_runner.config as config
 
@@ -98,7 +98,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             if self.master:
                 _write_buffered(self.master_log_path, content)
         except Exception as e:
-
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
 
     def finalize_run(self):

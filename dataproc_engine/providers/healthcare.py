@@ -395,4 +395,3 @@ class HealthcareProvider(BaseProvider):
                     )
                     return False
         return True
-

@@ -247,4 +247,3 @@ class TransportationProvider(BaseProvider):
                 if not (0 <= val <= 100):
                     return False
         return True
-

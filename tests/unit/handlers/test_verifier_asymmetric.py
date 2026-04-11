@@ -1,7 +1,4 @@
 import json
-from pathlib import Path
-
-import pytest
 
 from eval_runner import config
 from eval_runner.verifier import TraceVerifier
@@ -33,7 +30,7 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     run_dir = tmp_path / "runs" / run_id
     run_dir.mkdir(parents=True)
     trace_path = run_dir / "run.jsonl"
-    trace_content = b"{\"event\":\"test\"}"
+    trace_content = b'{"event":"test"}'
     trace_path.write_bytes(trace_content)
 
     # 2. Setup Identities
@@ -47,11 +44,7 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
 
     # 3. Sign Trace
-    manifest = TraceVerifier.sign_trace(
-        str(trace_path),
-        identity_id=identity_id,
-        run_id=run_id
-    )
+    manifest = TraceVerifier.sign_trace(str(trace_path), identity_id=identity_id, run_id=run_id)
 
     assert manifest["vc_version"] == "3.0.0"
     assert manifest["run_id"] == run_id
@@ -62,7 +55,7 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     # 4. Success Verification
     manifest_path = run_dir / "run_manifest.json"
     assert manifest_path.exists()
-    
+
     assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
 
     # 5. Tamper Verification (Data mismatch)
@@ -70,12 +63,12 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
     # 6. Corruption Verification (Manifest mismatch)
-    trace_path.write_bytes(trace_content) # Restore
-    with open(manifest_path, "r") as f:
+    trace_path.write_bytes(trace_content)  # Restore
+    with open(manifest_path) as f:
         bad_manifest = json.load(f)
     bad_manifest["sha256"] = "wrong-hash"
     bad_manifest_path = run_dir / "bad_manifest.json"
     with open(bad_manifest_path, "w") as f:
         json.dump(bad_manifest, f)
-    
+
     assert TraceVerifier.verify_trace(str(trace_path), str(bad_manifest_path)) is False

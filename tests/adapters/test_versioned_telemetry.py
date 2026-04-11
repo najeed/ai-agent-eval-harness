@@ -6,7 +6,7 @@ from eval_runner.adapters.autogen import AutoGenAdapterPlugin
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
 from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
-from eval_runner.events import CoreEvents, EventEmitter, reset, subscribe
+from eval_runner.events import CoreEvents, reset, subscribe
 
 
 @pytest.fixture

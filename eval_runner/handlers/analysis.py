@@ -4,7 +4,6 @@ handlers/analysis.py
 Post-run utility handlers (reports, explainers, etc.)
 """
 
-from pathlib import Path
 
 from .. import calibrator, explainer, leaderboard_generator, reporter, taxonomy, trace_utils
 from ..trace_utils import reconstruct_results_from_events
@@ -26,7 +25,7 @@ def handle_report(args):
     # Resolve from authoritative vault
     run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
     path = run_log_dir / "run.jsonl"
-    
+
     if not path.exists():
         # Fallback for flat traces
         flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
@@ -37,7 +36,7 @@ def handle_report(args):
             return
 
     print(f"\n[Report] Generating HTML report from Run ID: {run_id}")
-    
+
     events = trace_utils.load_events(path)
     run_start = next((e for e in events if e.get("event") == "run_start"), {})
     metadata = run_start.get("metadata", {})
@@ -66,12 +65,13 @@ def handle_report(args):
 def handle_explain(args):
     """Handler for 'explain' command."""
     from .. import config
+
     run_id = args.run_id
-    
+
     # Resolve from authoritative vault
     run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
     trace_path = run_log_dir / "run.jsonl"
-    
+
     if not trace_path.exists():
         flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
         if flat_trace.exists():
@@ -86,12 +86,13 @@ def handle_explain(args):
 def handle_calibrate(args):
     """Handler for 'calibrate' command."""
     from .. import config
+
     run_id = args.run_id
-    
+
     # Resolve from authoritative vault
     run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
     trace_path = run_log_dir / "run.jsonl"
-    
+
     if not trace_path.exists():
         flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
         if flat_trace.exists():
@@ -101,7 +102,9 @@ def handle_calibrate(args):
             return
 
     calibrator.run_calibration(
-        str(trace_path), golden_path=getattr(args, "golden", None), plot=getattr(args, "plot", False)
+        str(trace_path),
+        golden_path=getattr(args, "golden", None),
+        plot=getattr(args, "plot", False),
     )
 
 

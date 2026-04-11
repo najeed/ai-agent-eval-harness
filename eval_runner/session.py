@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 session.py
 
@@ -7,21 +5,23 @@ Manages the state and trajectory of an evaluation session.
 Handles conversation history, tool results, and plugin interception.
 """
 
-import asyncio  # noqa: E402
-import copy  # noqa: E402
-import json  # noqa: E402
-import os  # noqa: E402
+from __future__ import annotations
+
+import asyncio
+import copy
+import json
 import logging
-from pathlib import Path # noqa: E402
+import os
 from dataclasses import replace  # noqa: E402
+from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
-from . import config, metrics, plugins  # noqa: E402
+from . import config, metrics  # noqa: E402
 from .context import TurnContext  # noqa: E402
-from .events import CoreEvents, EventEmitter, Event  # noqa: E402
-from .forensics import ForensicCollector # noqa: E402
+from .events import CoreEvents, Event, EventEmitter  # noqa: E402
+from .forensics import ForensicCollector  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
@@ -36,7 +36,6 @@ class SessionManager:
 
     def __init__(self, run_id: str, scenario: dict, metadata: dict | None = None):
         from .engine import MAX_TURNS
-        from .events import EventEmitter
         from .plugins import PluginManager
 
         self.run_id = run_id
@@ -54,10 +53,10 @@ class SessionManager:
         self.event_bus = EventEmitter(run_id=run_id)
         self.plugin_manager = PluginManager()
         self.forensics = ForensicCollector(run_id, config.RUN_LOG_DIR / run_id)
-        
+
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
-        
+
         # Auto-subscribe plugins to the session bus (Bridge to legacy Hooks)
         def _bridge_event_internal(event: Event):
             # Map events to legacy hook names
@@ -70,7 +69,10 @@ class SessionManager:
 
         # 🚀 Capability-Based Routing (Infrastructure Isolation)
         from .routing import RoutingRegistry
-        capabilities = scenario.get("capabilities", scenario.get("metadata", {}).get("capabilities", []))
+
+        capabilities = scenario.get(
+            "capabilities", scenario.get("metadata", {}).get("capabilities", [])
+        )
         if capabilities:
             resolved = RoutingRegistry.resolve(capabilities)
             if resolved:
@@ -80,18 +82,22 @@ class SessionManager:
                     self.session_metadata["protocol"] = resolved.get("protocol")
                 if "agent" not in self.session_metadata:
                     self.session_metadata["agent"] = resolved.get("endpoint")
-                
+
                 # Emit resolved routing for audit forensics
                 self.event_bus.emit(
-                    CoreEvents.ROUTING_RESOLVED if hasattr(CoreEvents, "ROUTING_RESOLVED") else "ROUTING_RESOLVED",
+                    CoreEvents.ROUTING_RESOLVED
+                    if hasattr(CoreEvents, "ROUTING_RESOLVED")
+                    else "ROUTING_RESOLVED",
                     {
                         "capabilities": capabilities,
                         "resolved_protocol": resolved.get("protocol"),
                         "resolved_endpoint": resolved.get("endpoint"),
-                        "source": "capability_registry"
-                    }
+                        "source": "capability_registry",
+                    },
                 )
-                logger.info(f"      [Routing] Infrastructure resolved via capabilities: {capabilities}")
+                logger.info(
+                    "      [Routing] Infrastructure resolved " f"via capabilities: {capabilities}"
+                )
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
@@ -101,9 +107,7 @@ class SessionManager:
 
         all_task_results = []
         executed_nodes = set()
-        sandbox = ToolSandbox(
-            self.scenario, event_bus=self.event_bus, forensics=self.forensics
-        )
+        sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
         sandbox.setup()
 
         try:
@@ -192,7 +196,9 @@ class SessionManager:
                         task_id=node_id,
                         turn_number=turn,
                         current_message=current_message,
-                        history=list(conversation_history), # O(N) Shallow copy instead of O(N^2) deepcopy
+                        history=list(
+                            conversation_history
+                        ),  # O(N) Shallow copy instead of O(N^2) deepcopy
                         span_context=self.session_metadata.get("span_context"),
                     )
 
@@ -306,7 +312,7 @@ class SessionManager:
                     sandbox,
                     agent_actions,
                 )
-                
+
                 # Final Forensic collection for the VC v3 Ledger
                 task_results["forensic_ledger"] = self.forensics.collect()
                 all_task_results.append(task_results)
@@ -334,14 +340,14 @@ class SessionManager:
         """
         # 1. Physical Cleanup
         await sandbox.teardown()
-        
+
         # 2. Forensic Collection
         # Gather jail logs (Iteration 2 Physical Isolation)
         if hasattr(sandbox, "terminal_jail"):
             jail_log = Path(sandbox.terminal_jail) / "terminal.log"
             if jail_log.exists():
                 self.forensics.register_artifact(jail_log, "terminal.log")
-        
+
         self.forensics.collect()
 
         # 3. Lifecycle Defense: Detach Bridge & Reset Bus (Ghost Listener Prevention)
@@ -380,11 +386,11 @@ class SessionManager:
         state_before = sandbox.state.copy()
         result = await sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
-        
+
         # O(N) Forensics: Offload state to disk snapshots
         self.forensics.snapshot_state(state_before, turn)
         self.forensics.snapshot_state(state_after, turn + 1000)
-        
+
         self.event_bus.emit(
             CoreEvents.ACTION_END,
             {"action_type": "tool_execution", "tool": tool_name},
@@ -401,7 +407,6 @@ class SessionManager:
             {
                 "role": "environment",
                 "content": self._sanitize_for_history(result),
-                # state_before/after removed for memory efficiency; stored in state_turn_XXX.json sidecars
             }
         )
         self.plugin_manager.trigger("on_tool_result", turn_ctx, tool_name, result)
@@ -423,16 +428,21 @@ class SessionManager:
             if allowed:
                 res = await sandbox.execute(tn, {})
                 all_tool_results.append(res)
-                self.event_bus.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tn, "result": res})
+                self.event_bus.emit(
+                    CoreEvents.TOOL_RESULT,
+                    {"step": turn, "tool": tn, "result": res},
+                )
             else:
                 all_tool_results.append(
                     {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
                 )
         state_after = sandbox.state.copy()
-        
+
         # O(N) Forensics: Offload state to disk snapshots
         self.forensics.snapshot_state(state_before, turn)
-        self.forensics.snapshot_state(state_after, turn + 1000) # Offset for after-state transparency
+        self.forensics.snapshot_state(
+            state_after, turn + 1000
+        )  # Offset for after-state transparency
 
         history.append(
             {
@@ -622,7 +632,7 @@ class SessionManager:
             return {str(k): self._sanitize_for_history(v) for k, v in obj.items()}
         elif isinstance(obj, list):
             return [self._sanitize_for_history(i) for i in obj]
-        elif isinstance(obj, (str, int, float, bool, type(None))):
+        elif isinstance(obj, str | int | float | bool | None):
             return obj
 
         try:

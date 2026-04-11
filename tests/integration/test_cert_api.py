@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 import pytest
 
@@ -32,7 +31,7 @@ def test_public_certificate_endpoint_v3(client, tmp_path, monkeypatch):
     identity_id = "it_identity"
     keys_dir = tmp_path / "keys" / identity_id
     TraceVerifier.generate_key_pair(output_dir=str(keys_dir))
-    
+
     # Configure Environment
     monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "keys")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
@@ -40,11 +39,7 @@ def test_public_certificate_endpoint_v3(client, tmp_path, monkeypatch):
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
 
     # 2. Sign the trace
-    TraceVerifier.sign_trace(
-        trace_path=str(trace_path),
-        identity_id=identity_id,
-        run_id=run_id
-    )
+    TraceVerifier.sign_trace(trace_path=str(trace_path), identity_id=identity_id, run_id=run_id)
 
     # 3. Test API Retrieval (New /v1/ Path)
     response = client.get(f"/v1/certificates/{run_id}")
@@ -67,13 +62,13 @@ def test_certificate_vault_resolution(client, tmp_path, monkeypatch):
     run_id = "vault-resolved"
     run_dir = tmp_path / "runs" / run_id
     run_dir.mkdir(parents=True)
-    
+
     # Create manifest directly in vault
     manifest_data = {
         "vc_version": "3.0.0",
         "run_id": run_id,
         "status": "success",
-        "provenance_chain": [] # Minimal for retrieval test
+        "provenance_chain": [],  # Minimal for retrieval test
     }
     manifest_path = run_dir / "run_manifest.json"
     with open(manifest_path, "w") as f:

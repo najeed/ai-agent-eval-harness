@@ -131,7 +131,9 @@ async def test_handle_verify_missing(capsys, tmp_path, monkeypatch):
         await evaluation.handle_verify(args)
     assert e.value.code == 1
     captured = capsys.readouterr()
-    assert "[CRITICAL] FAILED: Trace file for missing_coverage missing after vault lookup." in captured.out
+    assert (
+        "[CRITICAL] FAILED: Trace file for missing_coverage missing after vault lookup."
+    ) in captured.out
 
 
 def test_main_generic_exception():

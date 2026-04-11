@@ -1,4 +1,3 @@
-import hashlib
 import json
 import logging
 import os
@@ -125,7 +124,7 @@ class TraceVerifier:
         p = Path(output_dir)
         if not p.is_absolute():
             p = config.PROJECT_ROOT / p
-            
+
         p.mkdir(parents=True, exist_ok=True)
 
         private_key = ed25519.Ed25519PrivateKey.generate()
@@ -168,17 +167,19 @@ class TraceVerifier:
 
         p = Path(trace_path)
         if not utils.is_path_safe(p, config.PROJECT_ROOT):
-            raise PermissionError(f"Security violation: Trace file outside project jail: {trace_path}")
+            raise PermissionError(
+                f"Security violation: Trace file outside project jail: {trace_path}"
+            )
 
         if not p.exists():
             raise FileNotFoundError(f"Trace file not found: {trace_path}")
 
         sha256_hash = cls.compute_signature(p)
-        
+
         # Identity Normalization (Hardening against brittle ID fragmentation)
         if not run_id:
             run_id = p.parent.name if p.name == "run.jsonl" else p.stem
-            
+
         # Ensure trace filename aligns with the vault standard if name is generic/temp
         if p.name != "run.jsonl" and p.parent.name == run_id:
             try:
@@ -191,10 +192,14 @@ class TraceVerifier:
                 pass
 
         now = datetime.now().astimezone()
-        timestamp = now.strftime("%Y-%m-%dT%H:%M:%S") + f".{now.microsecond // 1000:03d}" + now.strftime("%z")
+        ts_base = now.strftime("%Y-%m-%dT%H:%M:%S")
+        ms = f".{now.microsecond // 1000:03d}"
+        timestamp = ts_base + ms + now.strftime("%z")
 
         # 1. Forensic Evidence Ledger (Hashing sidecar artifacts)
-        evidence_ledger = cls._compute_evidence_ledger(p.parent, run_id=run_id, exclude_files=[p.name])
+        evidence_ledger = cls._compute_evidence_ledger(
+            p.parent, run_id=run_id, exclude_files=[p.name]
+        )
 
         # 2. Build Manifest v3.0.0
         manifest = {
@@ -224,14 +229,16 @@ class TraceVerifier:
             manifest_to_sign.pop("provenance_chain", None)
             manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
             signature = private_key.sign(manifest_bytes).hex()
-            
-            manifest["provenance_chain"].append({
-                "identity": identity_id,
-                "role": "Evaluator",
-                "timestamp": timestamp,
-                "signature": signature,
-                "algorithm": "ED25519"
-            })
+
+            manifest["provenance_chain"].append(
+                {
+                    "identity": identity_id,
+                    "role": "Evaluator",
+                    "timestamp": timestamp,
+                    "signature": signature,
+                    "algorithm": "ED25519",
+                }
+            )
         except Exception as e:
             logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
 
@@ -253,7 +260,9 @@ class TraceVerifier:
         return manifest
 
     @staticmethod
-    def _compute_evidence_ledger(directory: Path, run_id: str | None = None, exclude_files: list[str] | None = None) -> dict[str, str]:
+    def _compute_evidence_ledger(
+        directory: Path, run_id: str | None = None, exclude_files: list[str] | None = None
+    ) -> dict[str, str]:
         """
         Computes a filtered forensic ledger for a directory.
         Delegates to the ForensicRelevanceEngine with Namespace Affinity Enforcement.
@@ -263,9 +272,7 @@ class TraceVerifier:
         return engine.compute_filtered_ledger(directory, exclude_files=exclude_files, run_id=run_id)
 
     @classmethod
-    def get_certificate(
-        cls, trace_path: str, identity_id: str = "system_id"
-    ) -> dict[str, Any]:
+    def get_certificate(cls, trace_path: str, identity_id: str = "system_id") -> dict[str, Any]:
         """
         Signs a trace and returns the certificate DICT directly (API Helper).
         """
@@ -281,9 +288,7 @@ class TraceVerifier:
         return cls.verify_trace(trace_path, manifest_path, verify_ledger=verify_ledger)
 
     @classmethod
-    def verify_trace(
-        cls, trace_path: str, manifest_path: str, verify_ledger: bool = False
-    ) -> bool:
+    def verify_trace(cls, trace_path: str, manifest_path: str, verify_ledger: bool = False) -> bool:
         """
         Verifies a trace file against its manifest (VC). Strictly enforces VC v3.0.0+.
         """
@@ -292,7 +297,9 @@ class TraceVerifier:
         tp = Path(trace_path)
         mp = Path(manifest_path)
 
-        if not utils.is_path_safe(tp, config.PROJECT_ROOT) or not utils.is_path_safe(mp, config.PROJECT_ROOT):
+        if not utils.is_path_safe(tp, config.PROJECT_ROOT) or not utils.is_path_safe(
+            mp, config.PROJECT_ROOT
+        ):
             logger.error("Security violation: Verification paths outside project jail.")
             return False
 
@@ -305,7 +312,9 @@ class TraceVerifier:
 
             vc_version = manifest.get("vc_version", "1.0.0")
             if vc_version < "3.0.0":
-                logger.error(f"Legacy VC Version {vc_version} is no longer supported. (Standard: 3.0.0+)")
+                logger.error(
+                    f"Legacy VC Version {vc_version} is no longer supported. (Standard: 3.0.0+)"
+                )
                 return False
 
             # 1. Base Integrity Check
@@ -334,7 +343,9 @@ class TraceVerifier:
                 created_at = datetime.fromisoformat(ts_str)
                 age = datetime.now().astimezone() - created_at
                 if age.days > ttl_days:
-                    logger.warning(f"Verification Certificate expired ({age.days} > {ttl_days} days)")
+                    logger.warning(
+                        f"Verification Certificate expired ({age.days} > {ttl_days} days)"
+                    )
                     return False
             except Exception as e:
                 logger.warning(f"Failed to verify governance TTL: {e}")
@@ -344,21 +355,22 @@ class TraceVerifier:
             if not chain:
                 logger.warning("No provenance chain found in v3 manifest.")
                 return False
-            
+
             # Check the first signature in the chain (Evaluator)
             last_node = chain[0]
             identity_id = last_node.get("identity")
             sig_hex = last_node.get("signature")
-            
+
             manifest_to_verify = manifest.copy()
             manifest_to_verify.pop("provenance_chain", None)
             manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
-            
+
             public_key = IdentityService.get_public_key(identity_id)
             public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
 
             return True
         except Exception:
             import traceback
+
             logger.error(f"Verification Failure:\n{traceback.format_exc()}")
             return False

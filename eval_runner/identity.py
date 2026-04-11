@@ -7,8 +7,7 @@ Supports Local PEM files by default, extensible to Vault or AWS KMS.
 """
 
 import logging
-from pathlib import Path
-from typing import Any
+import os
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
@@ -28,13 +27,13 @@ class IdentityService:
     def get_private_key(identity_id: str = "system_id") -> ed25519.Ed25519PrivateKey:
         """
         Resolves a private key by ID.
-        Priority: 
+        Priority:
         1. Environment Variable (AES_PRIVATE_KEY_{ID})
         2. Configured TRUST_ROOT
         """
         env_var = f"AES_PRIVATE_KEY_{identity_id.upper()}"
         env_key = os.getenv(env_var)
-        
+
         if env_key:
             try:
                 return serialization.load_pem_private_key(env_key.encode(), password=None)
@@ -44,14 +43,18 @@ class IdentityService:
         # Security Check: Prevent path traversal in identity_id
         target_path = (config.TRUST_ROOT / identity_id).resolve()
         base_path = config.TRUST_ROOT.resolve()
-        
+
         # Strict Trust Jail: Identity MUST be within TRUST_ROOT, no exceptions (e.g. Temp Zone)
         try:
             if not target_path.is_relative_to(base_path):
-                raise PermissionError(f"Security violation: Identity ID '{identity_id}' is outside trust root.")
-        except (ValueError, AttributeError):
+                raise PermissionError(
+                    f"Security violation: Identity ID '{identity_id}' is outside trust root."
+                )
+        except (ValueError, AttributeError) as e:
             # Happens if paths are on different drives or incompatible types
-            raise PermissionError(f"Security violation: Identity ID '{identity_id}' is outside trust root.")
+            raise PermissionError(
+                f"Security violation: Identity ID '{identity_id}' is outside trust root."
+            ) from e
 
         # Local File Fallback (TRUST_ROOT/{identity_id}/private_key.pem)
         id_dir = config.TRUST_ROOT / identity_id
@@ -80,12 +83,16 @@ class IdentityService:
         base_path = config.TRUST_ROOT.resolve()
         try:
             if not target_path.is_relative_to(base_path):
-                raise PermissionError(f"Security violation: Identity ID '{identity_id}' is outside trust root.")
-        except (ValueError, AttributeError):
-            raise PermissionError(f"Security violation: Identity ID '{identity_id}' is outside trust root.")
+                raise PermissionError(
+                    f"Security violation: Identity ID '{identity_id}' is outside trust root."
+                )
+        except (ValueError, AttributeError) as e:
+            raise PermissionError(
+                f"Security violation: Identity ID '{identity_id}' is outside trust root."
+            ) from e
 
         key_path = config.TRUST_ROOT / identity_id / "public_key.pem"
-        
+
         # Fallback to derivation from private key if public is missing
         if not key_path.exists():
             try:
@@ -93,7 +100,6 @@ class IdentityService:
                 return priv.public_key()
             except Exception:
                 pass
-
 
         if key_path.exists():
             try:
@@ -111,7 +117,7 @@ class IdentityService:
         """Generates and saves a new identity if allowed by config."""
         logger.info(f"Generating new local identity: {identity_id}")
         private_key = ed25519.Ed25519PrivateKey.generate()
-        
+
         id_dir = config.TRUST_ROOT / identity_id
         id_dir.mkdir(parents=True, exist_ok=True)
         priv_path = id_dir / "private_key.pem"
@@ -135,6 +141,3 @@ class IdentityService:
             )
 
         return private_key
-
-
-import os  # To ensure os.getenv works in the static methods

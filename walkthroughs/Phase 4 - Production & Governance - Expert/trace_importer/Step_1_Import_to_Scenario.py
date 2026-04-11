@@ -49,7 +49,7 @@ def main():
 
     try:
         # We'll use the CLI module directly for the walkthrough
-        subprocess.run(
+        subprocess.run(  # nosec B603
             [
                 sys.executable,
                 "-m",

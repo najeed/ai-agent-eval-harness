@@ -129,4 +129,3 @@ class EnvironmentProvider(BaseProvider):
                 if not (-100 < val < 60):
                     return False
         return True
-

@@ -123,4 +123,3 @@ class HousingProvider(BaseProvider):
             r.data.get("rent_2br", 0) >= 0 and r.data.get("access_rate", 0) >= 0
             for r in [r for r in normalized_data if "rent_2br" in r.data or "access_rate" in r.data]
         )
-

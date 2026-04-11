@@ -21,10 +21,13 @@ async def test_education_hegemony():
         config.update(mode)
         provider = EducationProvider(config, llm_manager=llm)
         raw = await provider.extract()
-        assert len(raw) > 0
+        if not len(raw) > 0:
+            raise ValueError(f"Extracted data is empty for {mode}")
         transformed = await provider.transform(raw)
-        assert len(transformed) > 0
-        assert provider.validate(transformed) is True
+        if not len(transformed) > 0:
+            raise ValueError(f"Transformed data is empty for {mode}")
+        if provider.validate(transformed) is not True:
+            raise ValueError(f"Validation failed for {mode}")
 
 
 @pytest.mark.asyncio
@@ -42,9 +45,11 @@ async def test_energy_hegemony():
         config.update(mode)
         provider = EnergyProvider(config, llm_manager=llm)
         raw = await provider.extract()
-        assert len(raw) > 0
+        if not len(raw) > 0:
+            raise ValueError(f"Extracted data is empty for {mode}")
         transformed = await provider.transform(raw)
-        assert len(transformed) > 0
+        if not len(transformed) > 0:
+            raise ValueError(f"Transformed data is empty for {mode}")
 
 
 @pytest.mark.asyncio
@@ -62,6 +67,8 @@ async def test_transportation_hegemony():
         config.update(mode)
         provider = TransportationProvider(config, llm_manager=llm)
         raw = await provider.extract()
-        assert len(raw) > 0
+        if not len(raw) > 0:
+            raise ValueError(f"Extracted data is empty for {mode}")
         transformed = await provider.transform(raw)
-        assert len(transformed) > 0
+        if not len(transformed) > 0:
+            raise ValueError(f"Transformed data is empty for {mode}")

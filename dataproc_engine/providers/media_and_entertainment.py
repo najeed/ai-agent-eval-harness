@@ -92,9 +92,9 @@ class MediaProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"IMDB-{row['tconst']}".encode()
-                        ).hexdigest()[:16]
+                        record_id = hashlib.sha256(f"IMDB-{row['tconst']}".encode()).hexdigest()[
+                            :16
+                        ]
                         results.append(
                             StandardSchema(
                                 id=record_id,
@@ -142,4 +142,3 @@ class MediaProvider(BaseProvider):
                 r for r in normalized_data if "rating" in r.data or "popularity_score" in r.data
             ]
         )
-

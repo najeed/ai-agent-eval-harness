@@ -390,6 +390,7 @@ def _archive_existing_pack(target_dir: Path):
 def _download_simulated(pack: str, flavor: str, version: str) -> bytes:
     """Generates a simulated scenario pack ZIP for industrial benchmarks (v1.2.3)."""
     buf = io.BytesIO()
+    scenario_id = f"{pack}-{flavor}".lower()
     with zipfile.ZipFile(buf, "w") as z:
         # Create a sample scenario for the pack
         scenario_data = {

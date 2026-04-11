@@ -35,7 +35,9 @@ async def test_handle_evaluate_exit_on_exception(tmp_path):
 async def test_handle_certify_exit_on_exception(tmp_path):
     """Verify BUG-01: handle_certify must exit with code 1 on exception."""
     # Passing a non-existent file path
-    args = Namespace(path="non_existent.jsonl", run_id="test_certify_fail", metadata=None, private_key=None)
+    args = Namespace(
+        path="non_existent.jsonl", run_id="test_certify_fail", metadata=None, private_key=None
+    )
 
     with patch("eval_runner.handlers.evaluation.sys.exit") as mock_exit:
         await handle_certify(args)

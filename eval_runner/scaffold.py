@@ -1,5 +1,4 @@
 import json
-import os
 import uuid
 from pathlib import Path
 
@@ -90,11 +89,12 @@ def generate_interactive():
         # Internal Schema Validation (Fail-Fast v1.4.0)
         try:
             from jsonschema import RefResolver, validate
+
             schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
             if schema_path.exists():
                 with open(schema_path, encoding="utf-8") as sf:
                     schema = json.load(sf)
-                
+
                 resolver = RefResolver(f"file:///{schema_path.parent.as_posix()}/", schema)
                 validate(instance=scenario, schema=schema, resolver=resolver)
         except jsonschema.exceptions.ValidationError as ve:

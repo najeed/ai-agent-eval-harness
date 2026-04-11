@@ -12,21 +12,26 @@ def test_event_subscription():
     """Verify that subscribers receive emitted events through a scoped bus."""
     bus = EventEmitter(run_id="test-123")
     events_received = []
+
     def subscriber(event):
         events_received.append(event)
+
     bus.subscribe(subscriber)
     bus.emit(CoreEvents.RUN_START, {"run_id": "test-123"})
     assert len(events_received) == 1
     assert events_received[0].name == CoreEvents.RUN_START
     assert events_received[0].data["run_id"] == "test-123"
 
+
 def test_global_event_bus():
     """Verify that the module-level aliases work correctly for the global bus."""
     from eval_runner import events
+
     events_received = []
     events.subscribe(lambda e: events_received.append(e))
     events.emit(CoreEvents.PHASE_START, {"phase": "testing"})
     assert any(e.name == CoreEvents.PHASE_START for e in events_received)
+
 
 def test_event_multiple_subscribers():
     """Verify that multiple subscribers all receive the events on an instance."""

@@ -11,7 +11,6 @@ import traceback
 from pathlib import Path
 
 from .. import config, engine, loader, trace_utils, utils
-from ..events import emit
 
 
 def _ensure_path_safe(path: str | Path, description: str = "Path"):
@@ -78,7 +77,7 @@ async def handle_evaluate(args):
         os.environ["RUN_LOG_MASTER"] = "true" if master_log else "false"
 
     seed = getattr(args, "seed", None)
-    if seed is not None and isinstance(seed, (int, str)):
+    if seed is not None and isinstance(seed, int | str):
         import random
 
         random.seed(seed)
@@ -155,7 +154,7 @@ async def handle_run(args):
         os.environ["RUN_LOG_MASTER"] = "true" if master_log else "false"
 
     seed = getattr(args, "seed", None)
-    if seed is not None and isinstance(seed, (int, str)):
+    if seed is not None and isinstance(seed, int | str):
         import random
 
         random.seed(seed)
@@ -218,10 +217,9 @@ async def handle_playground(args):
 
 async def handle_replay(args):
     """
-    Handler for 'replay' command. 
+    Handler for 'replay' command.
     Reconstructs the interaction history from a run trace.
     """
-    from .. import trace_utils
 
     # --- [SSOT] Mandatory Run ID Resolution ---
     run_id = args.run_id
@@ -233,14 +231,14 @@ async def handle_replay(args):
     # Resolve from authoritative vault
     run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
     path = run_log_dir / "run.jsonl"
-    
+
     # [INDUSTRIAL HARDENING] Absolute Security Cage Check
     if not _ensure_path_safe(path, "Replay file"):
         sys.exit(1)
         return
 
     print(f"\n[Replay] Reconstructing from Run ID: {run_id}")
-    
+
     if not path.exists():
         # Fallback for flat traces
         flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
@@ -271,13 +269,12 @@ async def handle_verify(args):
     Handles the cryptographic integrity check of a run trace.
     Standard Pillar 1 of the industrial Trust Protocol.
     """
-    from pathlib import Path
 
     from eval_runner.verifier import TraceVerifier
 
     # --- [SSOT] Mandatory Run ID Resolution ---
-    run_id = args.run_id # Verified mandatory by CLI parser
-    
+    run_id = args.run_id  # Verified mandatory by CLI parser
+
     if not run_id:
         print("      [CRITICAL] FAILED: Run ID is mandatory for verification.")
         sys.exit(1)
@@ -286,7 +283,7 @@ async def handle_verify(args):
     run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
     trace_path = run_log_dir / "run.jsonl"
     manifest_path = run_log_dir / "run_manifest.json"
-    
+
     # [INDUSTRIAL HARDENING] Check security cage BEFORE existence to catch traversals early
     if not _ensure_path_safe(trace_path, "Trace file"):
         sys.exit(1)
@@ -310,7 +307,9 @@ async def handle_verify(args):
         if sidecar.exists():
             manifest_path = sidecar
         else:
-            print(f"      [CRITICAL] FAILED: Manifest for {run_id} missing (Certification required).")
+            print(
+                f"      [CRITICAL] FAILED: Manifest for {run_id} missing (Certification required)."
+            )
             sys.exit(1)
 
     # Canonical Verification Call (Pillar 1)
@@ -378,14 +377,16 @@ async def handle_gate(args):
 
         # Identity-Aware Trace Resolution
         trace_path = (config.RUN_LOG_DIR / run_id / trace_name).resolve()
-        
+
         if not trace_path.exists():
             # Fallback for flat traces
             flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
             if flat_trace.exists():
                 trace_path = flat_trace
             else:
-                print(f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}")
+                print(
+                    f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}"
+                )
                 sys.exit(1)
                 return
 
@@ -397,13 +398,14 @@ async def handle_gate(args):
         # Canonical Verification Call (Pillars 1 & 2)
         # We now pass verify_ledger=True to ensure sidecar artifact integrity
         is_valid = await verifier.TraceVerifier.verify_trace_async(
-            str(trace_path), 
-            str(vc_path), 
-            verify_ledger=getattr(args, "verify_ledger", False)
+            str(trace_path), str(vc_path), verify_ledger=getattr(args, "verify_ledger", False)
         )
 
         if not is_valid:
-            print("[GATE] FAILURE: Industrial Trust Verification failed (Integrity, Ledger, or Signature).")
+            print(
+                "[GATE] FAILURE: Industrial Trust Verification failed "
+                "(Integrity, Ledger, or Signature)."
+            )
             sys.exit(1)
             return
 
@@ -442,7 +444,7 @@ async def handle_certify(args):
         print("❌ Error: Run ID is mandatory for certification.")
         sys.exit(1)
         return
-    
+
     # Resolve from mandatory industrial run log directory
     trace_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
 
@@ -477,7 +479,11 @@ async def handle_certify(args):
         status = args.status if hasattr(args, "status") and args.status else "pass"
         score = float(args.score) if hasattr(args, "score") and args.score is not None else 1.0
         policy_ref = args.policy_ref if hasattr(args, "policy_ref") else None
-        ttl_days = int(args.ttl) if hasattr(args, "ttl") and args.ttl is not None else config.GOVERNANCE_TTL_DAYS
+        ttl_days = (
+            int(args.ttl)
+            if hasattr(args, "ttl") and args.ttl is not None
+            else config.GOVERNANCE_TTL_DAYS
+        )
         behavioral_fingerprint_id = args.fingerprint if hasattr(args, "fingerprint") else None
 
         manifest = verifier.TraceVerifier.sign_trace(
@@ -496,7 +502,7 @@ async def handle_certify(args):
         print(f"    - Run ID: {manifest.get('run_id')}")
         print(f"    - SHA-256: {manifest.get('sha256')}")
         print(f"    - VC Version: {manifest.get('vc_version')}")
-        
+
         chain = manifest.get("provenance_chain", [])
         if chain:
             print(f"    - Signed By: {', '.join([c['identity'] for c in chain])}")

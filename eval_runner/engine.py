@@ -33,6 +33,7 @@ class AgentAdapterRegistry:
     def reset(cls):
         """Resets the registry state for tests."""
         cls._discovered = False
+        cls._plugins_discovered = False
         cls._adapters = {}
 
     @classmethod
@@ -140,7 +141,9 @@ async def run_evaluation(
         plugins.manager.plugins.append(ReportingPlugin())
 
     runner = DefaultRunner()
-    results = await runner.run(scenario, attempts, run_id=run_id, metadata=metadata, max_turns=max_turns)
+    results = await runner.run(
+        scenario, attempts, run_id=run_id, metadata=metadata, max_turns=max_turns
+    )
 
     # Backward compatibility: return first attempt if k=1
     if attempts == 1:

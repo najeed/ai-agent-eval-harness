@@ -44,7 +44,6 @@ class BaseSimulator:
         return {"status": "success"}
 
 
-
 class GitSimulator(BaseSimulator):
     """Simulates a dynamic Git repository state."""
 

@@ -100,4 +100,3 @@ class LaborProvider(BaseProvider):
 
     def validate(self, normalized_data: list[StandardSchema]) -> bool:
         return all(0 <= r.data.get("unemployment_rate", 0) <= 100 for r in normalized_data)
-

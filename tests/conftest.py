@@ -47,13 +47,16 @@ def reset_plugins():
 
 @pytest.fixture(autouse=True)
 def reset_environ():
-    """Resets os.environ after each test."""
+    """Resets os.environ and triggers GC after each test for industrial isolation."""
+    import gc
     import os
 
     orig = dict(os.environ)
     yield
     os.environ.clear()
     os.environ.update(orig)
+    # Physically purge stale references and close pending file handles (Windows Hardening)
+    gc.collect()
 
 
 @pytest.fixture(autouse=True)
@@ -68,9 +71,8 @@ def reset_cli_parser():
 @pytest.fixture(autouse=True)
 def check_loop_hygiene():
     """
-    Diagnostic: Ensures that no event loop is left in a 'running' OR 'set' state after a test.
-    In Python 3.14+, Runner.run() crashes if a loop is already running or if the policy is in a
-    weird state.
+    Diagnostic & Remediation: Ensures that no event loop is left in a 'running' OR 'set' state.
+    Hardened for Python 3.14+ loop policy isolation.
     """
     import asyncio
     import warnings
@@ -78,18 +80,32 @@ def check_loop_hygiene():
     yield
 
     try:
-        # get_event_loop() can return a loop that is set but not running.
-        # Deprecated in some contexts but useful for diagnosing 3.14 policy noise.
-        loop = asyncio.get_event_loop_policy().get_event_loop()
+        policy = asyncio.get_event_loop_policy()
+        loop = policy.get_event_loop()
         if loop is not None:
+            if loop.is_running():
+                # Critical violation: loop should never be running after test yield
+                pass
+
+            # Explicitly close and clear the loop from the policy to prevent cross-test leakage
+            if not loop.is_closed():
+                loop.close()
+
+            # Forcing a fresh loop for the next test context
+            try:
+                new_loop = asyncio.new_event_loop()
+                policy.set_event_loop(new_loop)
+                new_loop.close()  # Keep it set but closed for safety
+            except Exception:
+                pass
+
             warnings.warn(
-                f"Loop pollution: An event loop ({loop}) is still SET in the policy after test "
-                "completion.",
+                f"Loop pollution detected and mitigated: {loop} was still SET.",
                 RuntimeWarning,
                 stacklevel=2,
             )
     except Exception:
-        # No loop set, which is the clean state we want.
+        # No loop set or policy empty, which is the clean state we want.
         pass
 
 

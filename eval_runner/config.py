@@ -39,6 +39,141 @@ VERSION = _get_project_version()
 _TEMP_DIR_CACHE = None
 
 
+# --- Configuration Consolidation (Infrastructure Hygiene) ---
+AES_CONFIG_DIR = (PROJECT_ROOT / ".aes" / "config").absolute()
+ROUTING_CONFIG_PATH = AES_CONFIG_DIR / "routing" / "manifest.json"
+ROUTING_D_DIR = AES_CONFIG_DIR / "routing.d"
+
+# Shim Extensions (.aes/config/shims.d/)
+SHIM_RESOURCES_D_DIR = AES_CONFIG_DIR / "shims.d"
+FORENSICS_D_DIR = AES_CONFIG_DIR / "forensics.d"
+
+# Plugins (.aes/config/plugins.json)
+PLUGINS_CONFIG_PATH = AES_CONFIG_DIR / "plugins.json"
+
+# --- Shim Registry Manager (v1.3.0 Cumulative Mode) ---
+SHIM_RESOURCES_INTERNAL_PATH = Path(__file__).parent / "resources" / "shim_resources.json"
+_SHIM_REGISTRY_CACHE = None
+
+
+class RegistryManager:
+    """Manages the lifecycle and hygiene of the authoritative shim configuration manifest."""
+
+    @classmethod
+    def _redact_sensitive_data(cls, data):
+        """Recursively redact sensitive keys in a dictionary or list."""
+        sensitive_keywords = {
+            "api_key",
+            "token",
+            "secret",
+            "password",
+            "key",
+            "access_key",
+            "bearer",
+            "private_key",
+        }
+
+        if isinstance(data, dict):
+            new_dict = {}
+            for k, v in data.items():
+                # Check if key is sensitive (case-insensitive substring match)
+                if any(kw in k.lower() for kw in sensitive_keywords):
+                    new_dict[k] = "[REDACTED]"
+                else:
+                    new_dict[k] = cls._redact_sensitive_data(v)
+            return new_dict
+        elif isinstance(data, list):
+            return [cls._redact_sensitive_data(item) for item in data]
+        return data
+
+    @classmethod
+    def get_sanitized_registry(cls):
+        """Returns a version of the resolved registry with sensitive data redacted."""
+        registry = cls.get_resolved_registry()
+        return cls._redact_sensitive_data(registry)
+
+    @staticmethod
+    def get_resolved_registry() -> dict:
+        """
+        Loads and merges all registry sources (Internal -> Cumulative .d Folder -> Env Overrides).
+        """
+        global _SHIM_REGISTRY_CACHE
+        if _SHIM_REGISTRY_CACHE is not None:
+            return _SHIM_REGISTRY_CACHE
+
+        registry = {"shims": {}, "forensics": {}}
+
+        # 1. Internal Package Baseline (Sanctioned Core)
+        if SHIM_RESOURCES_INTERNAL_PATH.exists():
+            try:
+                with open(SHIM_RESOURCES_INTERNAL_PATH) as f:
+                    content = json.load(f)
+                    if content:
+                        registry = RegistryManager._deep_merge(registry, content)
+            except Exception as e:
+                print(f"      [Config] Warning: Failed to load internal baseline: {e}")
+
+        # 2. Distributed Registry Extensions (.aes/config/*.d/)
+        # This is now the ONLY location for project and environment overrides.
+        search_dirs = [SHIM_RESOURCES_D_DIR, FORENSICS_D_DIR]
+
+        for d_dir in search_dirs:
+            if d_dir.exists() and d_dir.is_dir():
+                # Alphabetical sort ensures deterministic override priority
+                paths = sorted(list(d_dir.glob("*.json")) + list(d_dir.glob("*.yaml")))
+                for path in paths:
+                    try:
+                        with open(path, encoding="utf-8") as f:
+                            ext = (
+                                yaml.safe_load(f)
+                                if path.suffix in [".yaml", ".yml"]
+                                else json.load(f)
+                            )
+                            if ext:
+                                registry = RegistryManager._deep_merge(registry, ext)
+                    except Exception as e:
+                        print(
+                            "      [Config] Warning: Failed to load extension "
+                            f"from {path.name}: {e}"
+                        )
+
+        # 3. Environment Overrides (Ultimate Authority)
+        env_json = os.getenv("AES_SHIM_RESOURCES_JSON")
+        if env_json:
+            try:
+                env_override = json.loads(env_json)
+                registry = RegistryManager._deep_merge(registry, env_override)
+            except Exception as e:
+                print(f"      [Config] Warning: Failed to parse AES_SHIM_RESOURCES_JSON: {e}")
+
+        _SHIM_REGISTRY_CACHE = registry
+        return registry
+
+    @staticmethod
+    def reload():
+        """Clears the internal cache, forcing a re-load of the registry state."""
+        global _SHIM_REGISTRY_CACHE
+        _SHIM_REGISTRY_CACHE = None
+        return RegistryManager.get_resolved_registry()
+
+    @staticmethod
+    def _deep_merge(base: dict, overlay: dict) -> dict:
+        """Performs a nested merge of configuration dictionaries."""
+        import copy
+
+        result = copy.deepcopy(base)
+        for k, v in overlay.items():
+            if k in result and isinstance(result[k], dict) and isinstance(v, dict):
+                result[k] = RegistryManager._deep_merge(result[k], v)
+            else:
+                result[k] = copy.deepcopy(v)
+        return result
+
+
+# Authoritative Global Registry Instance (v1.3.0 Standard)
+R_MANAGER = RegistryManager()
+
+
 def get_safe_tmp_dir() -> Path:
     """
     Returns a writable temporary directory within the PROJECT_ROOT.
@@ -92,19 +227,39 @@ VC_VERSION = os.getenv("VC_VERSION", "3.0.0")
 TRUST_ROOT = Path(os.getenv("TRUST_ROOT", ".aes/keys")).absolute()
 GOVERNANCE_TTL_DAYS = int(os.getenv("GOVERNANCE_TTL_DAYS", "90"))
 TRUSTED_POLICY_REF = os.getenv("TRUSTED_POLICY_REF", "NIST-AI-100-1")
-ALLOW_SYSTEM_IDENTITY_PROVISIONING = os.getenv("ALLOW_SYSTEM_IDENTITY_PROVISIONING", "false").lower() == "true"
+ALLOW_SYSTEM_IDENTITY_PROVISIONING = (
+    os.getenv("ALLOW_SYSTEM_IDENTITY_PROVISIONING", "false").lower() == "true"
+)
+
 
 def get_forensic_policy() -> dict:
     """Helper to retrieve consolidated forensic policy from registry and env."""
     reg = RegistryManager.get_resolved_registry().get("forensics", {})
-    
+
     # Precedence: Env Var > Registry File > Default
     return {
-        "extensions": os.getenv("FORENSIC_ALLOWED_EXTS", reg.get("extensions", ".jsonl,.log,.json,.png,.jpg,.pdf,.csv,.db,.sqlite,.txt,.parquet,.yaml,.yml,.sql,.patch,.diff,.zip,.tar.gz,.tgz,.html,.svg")).split(","),
-        "mandatory_patterns": os.getenv("FORENSIC_MANDATORY_PATTERNS", reg.get("mandatory_patterns", "audit_.*\\.json")).split(","),
-        "exclusion_patterns": os.getenv("FORENSIC_EXCLUSION_PATTERNS", reg.get("exclusion_patterns", ".*\\.dll$,.*\\.node$,.*\\.exe$,.*\\.cache$,.*\\.tmp$,.*\\.cpuprofile$")).split(","),
-        "max_artifact_size": int(os.getenv("FORENSIC_MAX_ARTIFACT_SIZE", reg.get("max_artifact_size", 5000000)))
+        "extensions": os.getenv(
+            "FORENSIC_ALLOWED_EXTS",
+            reg.get(
+                "extensions",
+                ".jsonl,.log,.json,.png,.jpg,.pdf,.csv,.db,.sqlite,.txt,.parquet,.yaml,.yml,.sql,.patch,.diff,.zip,.tar.gz,.tgz,.html,.svg",
+            ),
+        ).split(","),
+        "mandatory_patterns": os.getenv(
+            "FORENSIC_MANDATORY_PATTERNS", reg.get("mandatory_patterns", "audit_.*\\.json")
+        ).split(","),
+        "exclusion_patterns": os.getenv(
+            "FORENSIC_EXCLUSION_PATTERNS",
+            reg.get(
+                "exclusion_patterns",
+                ".*\\.dll$,.*\\.node$,.*\\.exe$,.*\\.cache$,.*\\.tmp$,.*\\.cpuprofile$",
+            ),
+        ).split(","),
+        "max_artifact_size": int(
+            os.getenv("FORENSIC_MAX_ARTIFACT_SIZE", reg.get("max_artifact_size", 5000000))
+        ),
     }
+
 
 FORENSIC_EXTENSION_ALIASES = {
     ".jpeg": ".jpg",
@@ -121,26 +276,29 @@ FORENSIC_EXTENSION_ALIASES = {
 
 # System Junk Blacklist (v1.4.1 Hardening)
 SYSTEM_JUNK_FILES = {
-    "AdobeARM.log", "MpCmdRun.log", "pipecom.log", "StructuredQuery.log",
-    "NotifyIconGeneratedAumid", "thumbs.db", "desktop.ini", ".DS_Store"
+    "AdobeARM.log",
+    "MpCmdRun.log",
+    "pipecom.log",
+    "StructuredQuery.log",
+    "NotifyIconGeneratedAumid",
+    "thumbs.db",
+    "desktop.ini",
+    ".DS_Store",
 }
 
 # Platform Infrastructure Blacklist (v1.4.1 Hardening)
 SYSTEM_JUNK_EXTENSIONS = {
-    ".dll", ".node", ".exe", ".cache", ".tmp", ".cpuprofile", ".pyc", ".pyo", ".pyd"
+    ".dll",
+    ".node",
+    ".exe",
+    ".cache",
+    ".tmp",
+    ".cpuprofile",
+    ".pyc",
+    ".pyo",
+    ".pyd",
 }
 
-# --- Configuration Consolidation (Infrastructure Hygiene) ---
-AES_CONFIG_DIR = (PROJECT_ROOT / ".aes" / "config").absolute()
-ROUTING_CONFIG_PATH = AES_CONFIG_DIR / "routing" / "manifest.json"
-ROUTING_D_DIR = AES_CONFIG_DIR / "routing.d"
-
-# Shim Extensions (.aes/config/shims.d/)
-SHIM_RESOURCES_D_DIR = AES_CONFIG_DIR / "shims.d"
-FORENSICS_D_DIR = AES_CONFIG_DIR / "forensics.d"
-
-# Plugins (.aes/config/plugins.json)
-PLUGINS_CONFIG_PATH = AES_CONFIG_DIR / "plugins.json"
 
 # --- Logging Configuration ---
 RUN_LOG_DIR = (PROJECT_ROOT / os.getenv("RUN_LOG_DIR", "runs")).absolute()
@@ -251,128 +409,17 @@ DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 # Industrial Feature Toggles (v1.2.4)
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
-# --- Shim Registry Manager (v1.3.0 Cumulative Mode) ---
-SHIM_RESOURCES_INTERNAL_PATH = Path(__file__).parent / "resources" / "shim_resources.json"
-_SHIM_REGISTRY_CACHE = None
-
-
-class RegistryManager:
-    """Manages the lifecycle and hygiene of the authoritative shim configuration manifest."""
-
-    @classmethod
-    def _redact_sensitive_data(cls, data):
-        """Recursively redact sensitive keys in a dictionary or list."""
-        sensitive_keywords = {
-            "api_key",
-            "token",
-            "secret",
-            "password",
-            "key",
-            "access_key",
-            "bearer",
-            "private_key",
-        }
-
-        if isinstance(data, dict):
-            new_dict = {}
-            for k, v in data.items():
-                # Check if key is sensitive (case-insensitive substring match)
-                if any(kw in k.lower() for kw in sensitive_keywords):
-                    new_dict[k] = "[REDACTED]"
-                else:
-                    new_dict[k] = cls._redact_sensitive_data(v)
-            return new_dict
-        elif isinstance(data, list):
-            return [cls._redact_sensitive_data(item) for item in data]
-        return data
-
-    @classmethod
-    def get_sanitized_registry(cls):
-        """Returns a version of the resolved registry with sensitive data redacted."""
-        registry = cls.get_resolved_registry()
-        return cls._redact_sensitive_data(registry)
-
-    @staticmethod
-    def get_resolved_registry() -> dict:
-        """
-        Loads and merges all registry sources (Internal -> Cumulative .d Folder -> Env Overrides).
-        """
-        global _SHIM_REGISTRY_CACHE
-        if _SHIM_REGISTRY_CACHE is not None:
-            return _SHIM_REGISTRY_CACHE
-
-        registry = {"shims": {}, "forensics": {}}
-
-        # 1. Internal Package Baseline (Sanctioned Core)
-        if SHIM_RESOURCES_INTERNAL_PATH.exists():
-            try:
-                with open(SHIM_RESOURCES_INTERNAL_PATH) as f:
-                    content = json.load(f)
-                    if content:
-                        registry = RegistryManager._deep_merge(registry, content)
-            except Exception as e:
-                print(f"      [Config] Warning: Failed to load internal baseline: {e}")
-
-        # 2. Distributed Registry Extensions (.aes/config/*.d/)
-        # This is now the ONLY location for project and environment overrides.
-        search_dirs = [SHIM_RESOURCES_D_DIR, FORENSICS_D_DIR]
-        
-        for d_dir in search_dirs:
-            if d_dir.exists() and d_dir.is_dir():
-                # Alphabetical sort ensures deterministic override priority
-                paths = sorted(
-                    list(d_dir.glob("*.json"))
-                    + list(d_dir.glob("*.yaml"))
-                )
-                for path in paths:
-                    try:
-                        with open(path, "r", encoding="utf-8") as f:
-                            ext = (
-                                yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
-                            )
-                            if ext:
-                                registry = RegistryManager._deep_merge(registry, ext)
-                    except Exception as e:
-                        print(f"      [Config] Warning: Failed to load extension from {path.name}: {e}")
-
-        # 3. Environment Overrides (Ultimate Authority)
-        env_json = os.getenv("AES_SHIM_RESOURCES_JSON")
-        if env_json:
-            try:
-                env_override = json.loads(env_json)
-                registry = RegistryManager._deep_merge(registry, env_override)
-            except Exception as e:
-                print(f"      [Config] Warning: Failed to parse AES_SHIM_RESOURCES_JSON: {e}")
-
-        _SHIM_REGISTRY_CACHE = registry
-        return registry
-
-    @staticmethod
-    def reload():
-        """Clears the internal cache, forcing a re-load of the registry state."""
-        global _SHIM_REGISTRY_CACHE
-        _SHIM_REGISTRY_CACHE = None
-        return RegistryManager.get_resolved_registry()
-
-    @staticmethod
-    def _deep_merge(base: dict, overlay: dict) -> dict:
-        """Performs a nested merge of configuration dictionaries."""
-        import copy
-
-        result = copy.deepcopy(base)
-        for k, v in overlay.items():
-            if k in result and isinstance(result[k], dict) and isinstance(v, dict):
-                result[k] = RegistryManager._deep_merge(result[k], v)
-            else:
-                result[k] = copy.deepcopy(v)
-        return result
-
 
 def get_shim_config(shim_name: str) -> dict:
     """Standard protocol for shims to retrieve their environmental state from the registry."""
     registry = RegistryManager.get_resolved_registry()
     shim_def = registry.get("shims", {}).get(shim_name, {})
     return shim_def.get("resources", {})
+
+
+def get_routing_strategy() -> str:
+    """Authoritative routing resolver (Single Source of Truth)."""
+    return os.getenv("EVAL_ROUTING_STRATEGY", "Priority_Standard")
 
 
 # Throttle between agent turns (seconds) to prevent resource exhaustion

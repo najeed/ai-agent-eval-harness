@@ -91,26 +91,20 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
             url = url.rstrip("/") + "/invoke"
 
         # Signal start of remote execution
-        emit(
-            CoreEvents.CHAIN_START, {"adapter": "langchain", "mode": "remote", "url": url}
-        )
+        emit(CoreEvents.CHAIN_START, {"adapter": "langchain", "mode": "remote", "url": url})
 
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json={"input": input_data}, timeout=60) as response:
                     if response.status != 200:
-                        emit(
-                            CoreEvents.ERROR, {"message": f"LangServe {response.status}"}
-                        )
+                        emit(CoreEvents.ERROR, {"message": f"LangServe {response.status}"})
                         return {
                             "status": "error",
                             "message": f"LangServe returned {response.status}",
                         }
 
                     data = await response.json()
-                    emit(
-                        CoreEvents.CHAIN_END, {"adapter": "langchain", "mode": "remote"}
-                    )
+                    emit(CoreEvents.CHAIN_END, {"adapter": "langchain", "mode": "remote"})
                     return {
                         "status": "success",
                         "output": str(data.get("output", "")),

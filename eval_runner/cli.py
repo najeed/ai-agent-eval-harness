@@ -248,10 +248,13 @@ Utilities & Environment:
         "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
     )
     certify_parser.add_argument(
-        "--identity", "-i", default="system_id", help="Identity ID to use for signing (default: system_id)"
+        "--identity", "-i", default="system_id", help="Identity ID for signing (default: system_id)"
     )
     certify_parser.add_argument(
-        "--status", default="pass", choices=["pass", "fail", "warning"], help="Compliance status to embed"
+        "--status",
+        default="pass",
+        choices=["pass", "fail", "warning"],
+        help="Compliance status to embed",
     )
     certify_parser.add_argument(
         "--score", type=float, default=1.0, help="Compliance score (0.0-1.0) to embed"
@@ -259,9 +262,7 @@ Utilities & Environment:
     certify_parser.add_argument(
         "--policy-ref", help="Reference to the policy being certified against"
     )
-    certify_parser.add_argument(
-        "--ttl", type=int, help="Governance TTL in days (overrides config)"
-    )
+    certify_parser.add_argument("--ttl", type=int, help="Governance TTL in days (overrides config)")
     certify_parser.add_argument(
         "--fingerprint",
         help="Optional hardware/environment fingerprint ID to embed in the certificate",
@@ -277,7 +278,9 @@ Utilities & Environment:
         "--hash", help="Optional commit hash to verify against manifest metadata"
     )
     gate_parser.add_argument(
-        "--verify-ledger", action="store_true", help="Perform full forensic hash check of all sidecar artifacts"
+        "--verify-ledger",
+        action="store_true",
+        help="Perform full forensic hash check of all sidecar artifacts",
     )
 
     # --- SPECIFICATION & SCENARIOS ---
@@ -374,7 +377,9 @@ Utilities & Environment:
         "--plot", action="store_true", help="Generate a visualization of the calibration results"
     )
 
-    explain_parser = subparsers.add_parser("explain", help="Diagnose root causes from evaluation traces")
+    explain_parser = subparsers.add_parser(
+        "explain", help="Diagnose root causes from evaluation traces"
+    )
     explain_parser.add_argument(
         "--run-id", required=True, help="[SSOT] Mandatory Run ID for autonomous artifact discovery"
     )

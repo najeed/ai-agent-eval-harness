@@ -5,7 +5,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from . import config
 
@@ -30,20 +30,22 @@ class ForensicRelevanceEngine:
     def __init__(self, profile: dict | None = None):
         profile = profile or {}
         policy = config.get_forensic_policy()
-        
+
         self.allowed_exts = set(profile.get("extensions", policy["extensions"]))
         self.mandatory_patterns = profile.get("mandatory_patterns", policy["mandatory_patterns"])
         self.exclusion_patterns = profile.get("exclusion_patterns", policy["exclusion_patterns"])
         self.max_size = profile.get("max_artifact_size", policy["max_artifact_size"])
         self.aliases = config.FORENSIC_EXTENSION_ALIASES
 
-    def is_relevant(self, path: Path, run_id: str | None = None, is_dedicated_dir: bool = False) -> bool:
+    def is_relevant(
+        self, path: Path, run_id: str | None = None, is_dedicated_dir: bool = False
+    ) -> bool:
         """
         Determines relevance based on the three-tier model:
         Tier 1: Participatory Root (forensics/) -> Always Included.
         Tier 2: Mandatory Patterns -> Always Included (Bypasses Size Cap).
         Tier 3: Functional Extensions -> Included if size < MAX_ARTIFACT_SIZE.
-        
+
         Namespace Affinity: If NOT in a dedicated directory, only allow run_id prefixed files.
         """
         # 1. Tier 1: Absolute Mandatory (Participation Root)
@@ -52,12 +54,16 @@ class ForensicRelevanceEngine:
             return True
 
         # 2. Global Safety: Hidden files, manifest files, and System Junk
-        if path.name.startswith(".") or path.name.endswith("_manifest.json") or path.name.endswith("_vc.json"):
+        if (
+            path.name.startswith(".")
+            or path.name.endswith("_manifest.json")
+            or path.name.endswith("_vc.json")
+        ):
             return False
 
         if path.name in config.SYSTEM_JUNK_FILES:
             return False
-            
+
         if any(path.name.endswith(ext) for ext in config.SYSTEM_JUNK_EXTENSIONS):
             return False
 
@@ -77,28 +83,33 @@ class ForensicRelevanceEngine:
         # 5. Tier 3: Functional Extension Whitelist
         suffix = path.suffix.lower()
         canonical_suffix = self.aliases.get(suffix, suffix)
-        
+
         if canonical_suffix not in self.allowed_exts:
             return False
 
         # Apply Storage Safety (Size Cap) for Tier 3 only
         try:
             if path.stat().st_size > self.max_size:
-                logger.debug(f"[Forensics] Excluding oversized artifact ({path.stat().st_size}b): {path.name}")
+                logger.debug(
+                    f"[Forensics] Excluding oversized artifact "
+                    f"({path.stat().st_size}b): {path.name}"
+                )
                 return False
         except (FileNotFoundError, PermissionError):
             return False
 
         return True
 
-    def compute_filtered_ledger(self, directory: Path, exclude_files: list[str], run_id: str | None = None) -> Dict[str, str]:
+    def compute_filtered_ledger(
+        self, directory: Path, exclude_files: list[str], run_id: str | None = None
+    ) -> dict[str, str]:
         """
         Computes a filtered forensic ledger for a directory.
         Implements Namespace Affinity Enforcement.
         """
         ledger = {}
         is_dedicated_dir = run_id and directory.name == run_id
-        
+
         for root, _, files in os.walk(directory):
             for file in files:
                 file_path = Path(root) / file
@@ -124,8 +135,8 @@ class ForensicCollector:
     def __init__(self, run_id: str, run_log_dir: Path):
         self.run_id = run_id
         self.target_dir = run_log_dir / "forensics"
-        self._artifacts: List[Dict[str, Any]] = []
-        self._state_snapshots: Dict[int, Path] = {}
+        self._artifacts: list[dict[str, Any]] = []
+        self._state_snapshots: dict[int, Path] = {}
 
     def register_artifact(self, path: Path, alias: str):
         """Registers a file path to be collected at the end of the session."""
@@ -133,14 +144,14 @@ class ForensicCollector:
             self._artifacts.append({"path": path, "alias": alias})
             logger.debug(f"[Forensics] Registered artifact: {alias} -> {path}")
 
-    def snapshot_state(self, state: Dict[str, Any], turn: int):
+    def snapshot_state(self, state: dict[str, Any], turn: int):
         """
         Saves a JSON snapshot of the world state to disk.
         Prevents O(N^2) memory growth in SessionManager.
         """
         self.target_dir.mkdir(parents=True, exist_ok=True)
         snapshot_path = self.target_dir / f"state_turn_{turn:03d}.json"
-        
+
         try:
             with open(snapshot_path, "w", encoding="utf-8") as f:
                 json.dump(state, f, indent=4)
@@ -149,7 +160,7 @@ class ForensicCollector:
         except Exception as e:
             logger.error(f"[Forensics] Failed to save state snapshot for turn {turn}: {e}")
 
-    def collect(self) -> Dict[str, str]:
+    def collect(self) -> dict[str, str]:
         """
         Physically gathers all registered artifacts and snapshots into the forensics directory.
         Returns a ledger (SHA-256 map) for inclusion in the VC v3 manifest.
@@ -162,7 +173,7 @@ class ForensicCollector:
             src = art["path"]
             alias = art["alias"]
             dest = self.target_dir / alias
-            
+
             try:
                 shutil.copy2(src, dest)
                 ledger[alias] = compute_file_hash(dest)
@@ -170,7 +181,7 @@ class ForensicCollector:
                 logger.error(f"[Forensics] Failed to collect artifact {alias}: {e}")
 
         # 2. Add snapshots to ledger
-        for turn, path in self._state_snapshots.items():
+        for _, path in self._state_snapshots.items():
             rel_path = f"forensics/{path.name}"
             ledger[rel_path] = compute_file_hash(path)
 

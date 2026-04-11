@@ -1,5 +1,5 @@
 import json
-import random
+import secrets
 from pathlib import Path
 
 
@@ -44,11 +44,11 @@ def main():
 
     for failure in failures:
         # Simulated LLM/Manual categorization
-        category = random.choice(taxonomy_categories)
+        category = secrets.choice(taxonomy_categories)
         results[failure["id"]] = {
             "industry": failure["industry"],
             "root_cause": category,
-            "severity": random.choice(["Medium", "High", "Critical"]),
+            "severity": secrets.choice(["Medium", "High", "Critical"]),
         }
         print(f"   [Analyzed] {failure['id']}: {failure['issue']} -> {category}")
 

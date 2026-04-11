@@ -1,8 +1,4 @@
 import json
-from unittest.mock import patch
-from pathlib import Path
-
-import pytest
 
 from eval_runner import config
 from eval_runner.verifier import TraceVerifier
@@ -37,7 +33,7 @@ def test_verifier_end_to_end_v3_cycle(tmp_path, monkeypatch):
         str(trace_path),
         identity_id=identity_id,
         behavioral_fingerprint_id=fingerprint,
-        run_id=run_id
+        run_id=run_id,
     )
 
     # 4. Schema Checks
@@ -64,7 +60,10 @@ def test_verifier_end_to_end_v3_cycle(tmp_path, monkeypatch):
 
 def test_verifier_missing_files():
     """Verify robust failure on missing artifacts."""
-    assert TraceVerifier.verify_trace("non_existent_trace.jsonl", "non_existent_manifest.json") is False
+    assert (
+        TraceVerifier.verify_trace("non_existent_trace.jsonl", "non_existent_manifest.json")
+        is False
+    )
 
 
 def test_verifier_legacy_rejection(tmp_path, monkeypatch):
@@ -73,16 +72,16 @@ def test_verifier_legacy_rejection(tmp_path, monkeypatch):
     run_dir.mkdir()
     trace_path = run_dir / "trace.jsonl"
     trace_path.write_text("{}")
-    
+
     legacy_manifest = {
         "vc_version": "1.0.0",
         "sha256": TraceVerifier.compute_signature(trace_path),
-        "run_id": "legacy"
+        "run_id": "legacy",
     }
     manifest_path = run_dir / "run_manifest.json"
     with open(manifest_path, "w") as f:
         json.dump(legacy_manifest, f)
-        
+
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
@@ -91,12 +90,12 @@ def test_verifier_security_jail_violation(tmp_path, monkeypatch):
     """Verify traversal protection in verifier."""
     outside_file = tmp_path / "outside.jsonl"
     outside_file.write_text("{}")
-    
+
     # Set PROJECT_ROOT to a subdirectory
     jail_root = tmp_path / "jail"
     jail_root.mkdir()
     monkeypatch.setattr(config, "PROJECT_ROOT", jail_root)
-    
+
     assert TraceVerifier.verify_trace(str(outside_file), str(jail_root / "manifest.json")) is False
 
 
@@ -106,7 +105,7 @@ def test_verifier_expired_ttl(tmp_path, monkeypatch):
     run_dir.mkdir()
     trace_path = run_dir / "run.jsonl"
     trace_path.write_bytes(b"data")
-    
+
     # Create a manifest with an old timestamp
     old_ts = "2020-01-01T12:00:00.000+0000"
     manifest = {
@@ -114,14 +113,16 @@ def test_verifier_expired_ttl(tmp_path, monkeypatch):
         "timestamp": old_ts,
         "run_id": "expired",
         "sha256": TraceVerifier.compute_signature(trace_path),
-        "governance_ttl": 30, # 30 days
-        "provenance_chain": [{"identity": "sys", "signature": "fake"}] # Triggered if we don't mock get_public_key
+        "governance_ttl": 30,  # 30 days
+        "provenance_chain": [
+            {"identity": "sys", "signature": "fake"}
+        ],  # Triggered if we don't mock get_public_key
     }
-    
+
     manifest_path = run_dir / "run_manifest.json"
     with open(manifest_path, "w") as f:
         json.dump(manifest, f)
-        
+
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     # Verification should fail due to TTL
     assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False

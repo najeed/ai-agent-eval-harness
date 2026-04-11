@@ -67,7 +67,10 @@ async def test_handle_replay_exceptions(tmp_path, monkeypatch):
     args = parse_args(["replay", "--run-id", "read_err"])
     with (
         patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
-        patch("eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read fail"))
+        patch(
+            "eval_runner.handlers.analysis.trace_utils.load_events",
+            side_effect=Exception("Read fail"),
+        ),
     ):
         try:
             await handle_replay(args)

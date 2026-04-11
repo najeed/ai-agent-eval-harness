@@ -29,9 +29,9 @@ async def test_demographics_world_bank_production():
         assert len(results) > 0
         # Simulation data for USA has value=333287557 — must be > 0
         pop_values = [r.data["population"] for r in results]
-        assert any(p > 0 for p in pop_values), (
-            f"Expected at least one positive population, got: {pop_values}"
-        )
+        assert any(
+            p > 0 for p in pop_values
+        ), f"Expected at least one positive population, got: {pop_values}"
         assert results[0].provenance["provider"] == "World Bank"
 
 

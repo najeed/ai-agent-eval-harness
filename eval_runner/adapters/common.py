@@ -44,9 +44,7 @@ class AESCallbackHandler(BaseCallbackHandler):
         )
 
     def on_chain_end(self, outputs: dict[str, Any], **kwargs: Any):
-        emit(
-            CoreEvents.CHAIN_END, {"adapter": self.adapter_name, "id": self.identifier}
-        )
+        emit(CoreEvents.CHAIN_END, {"adapter": self.adapter_name, "id": self.identifier})
 
     def on_node_start(self, serialized: dict[str, Any], inputs: dict[str, Any], **kwargs: Any):
         emit(

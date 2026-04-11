@@ -367,4 +367,3 @@ class EnergyProvider(BaseProvider):
                     )
                     return False
         return True
-

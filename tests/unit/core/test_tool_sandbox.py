@@ -50,7 +50,7 @@ async def test_sandbox_unknown_tool():
                 {"id": "t1", "task_description": "task", "required_tools": ["get_customer_details"]}
             ],
             "edges": [],
-        }
+        },
     }
     sandbox = ToolSandbox(scenario)
 

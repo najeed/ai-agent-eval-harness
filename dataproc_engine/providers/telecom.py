@@ -313,9 +313,9 @@ class TelecomProvider(BaseProvider):
                 name = self.scrub_pii(row.get("provider_name") or row.get("name") or "Unknown")
 
                 # Deterministic tracking ID
-                record_id = hashlib.sha256(
-                    f"{p_id}-{artifact.source_url}".encode()
-                ).hexdigest()[:16]
+                record_id = hashlib.sha256(f"{p_id}-{artifact.source_url}".encode()).hexdigest()[
+                    :16
+                ]
 
                 # Defensive Key Mapping (Case-Resilient)
                 def get_field(keys):
@@ -370,4 +370,3 @@ class TelecomProvider(BaseProvider):
                     logger.warning("anomaly_detected", record_id=record.id, reason="Negative speed")
                     return False
         return True
-

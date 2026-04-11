@@ -1,5 +1,4 @@
 import pytest
-from pathlib import Path
 
 from eval_runner import config
 from eval_runner.console.app import create_app
@@ -30,7 +29,7 @@ def test_public_verify_endpoint_v3(client, tmp_path, monkeypatch):
     identity_id = "system_id"
     keys_dir = tmp_path / "keys" / identity_id
     TraceVerifier.generate_key_pair(output_dir=str(keys_dir))
-    
+
     # Configure Environment
     monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "keys")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)

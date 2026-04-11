@@ -65,7 +65,6 @@ async def test_gemini_provider():
 
 
 def test_provider_factory():
-
     with patch("eval_runner.config.JUDGE_PROVIDER", "openai"):
         provider = LLMProviderFactory.create()
         assert isinstance(provider, OpenAIProvider)

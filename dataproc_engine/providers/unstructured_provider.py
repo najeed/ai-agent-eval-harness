@@ -154,7 +154,7 @@ class UnstructuredProvider(BaseProvider):
                 return []
 
         # Safety check for hashlib (requires bytes-like object)
-        hash_input = content if isinstance(content, (str, bytes)) else str(content)
+        hash_input = content if isinstance(content, str | bytes) else str(content)
         id_content = f"{self.input_uri}-{hashlib.sha256(hash_input.encode()).hexdigest()[:8]}"
 
         return [
@@ -288,7 +288,7 @@ class UnstructuredProvider(BaseProvider):
         """
         # Basic non-negative check for financials
         for key in ["revenue", "assets"]:
-            if key in data and isinstance(data[key], (int, float)) and data[key] < 0:
+            if key in data and isinstance(data[key], int | float) and data[key] < 0:
                 return False
         return True
 
@@ -301,4 +301,3 @@ class UnstructuredProvider(BaseProvider):
             if not record.data:
                 return False
         return True
-

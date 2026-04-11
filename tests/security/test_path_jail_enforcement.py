@@ -1,5 +1,4 @@
 from argparse import Namespace
-import os
 
 import pytest
 
@@ -28,10 +27,10 @@ def physical_jail(tmp_path):
 
     # Return context
     return {
-        "root": root, 
+        "root": root,
         "runs_dir": runs_dir,
-        "eval_id": eval_id, 
-        "eval_path": str(eval_dir / "run.jsonl")
+        "eval_id": eval_id,
+        "eval_path": str(eval_dir / "run.jsonl"),
     }
 
 

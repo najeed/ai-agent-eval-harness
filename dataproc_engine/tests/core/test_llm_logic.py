@@ -55,4 +55,4 @@ async def test_mock_extraction():
     result = await llm.extract_structured_data("some text", schema)
     assert "id" in result
     assert "value" in result
-    assert isinstance(result["value"], (int, float))
+    assert isinstance(result["value"], int | float)
