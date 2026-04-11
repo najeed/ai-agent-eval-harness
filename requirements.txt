@@ -13,6 +13,7 @@ aiohttp==3.13.5
 # --- Data & Schemas ---
 jsonschema==4.26.0
 PyYAML==6.0.3
+sqlalchemy==2.0.38
 
 # --- ML / Embeddings (optional, for benchmark loaders) ---
 sentence-transformers==5.3.0

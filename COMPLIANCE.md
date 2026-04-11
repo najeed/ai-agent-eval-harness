@@ -18,6 +18,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **sentence-transformers** | 5.3.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **numpy** | 2.4.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **sqlalchemy** | 2.0.38 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 4.8.4 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **PyJWT** | 2.12.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 46.0.7 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |

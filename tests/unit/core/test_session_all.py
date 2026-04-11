@@ -192,8 +192,10 @@ class TestSession:
     async def test_handle_hitl_non_interactive(self, session):
         with patch("eval_runner.events.EventEmitter.emit"):
             with patch("sys.stdin.isatty", return_value=False):
-                res = await session._handle_hitl("task-1", "approve?")
-                assert "Simulation" in res
+                # Ensure the test isn't short-circuited by CI auto-approval
+                with patch.dict(os.environ, {"CI": "false"}):
+                    res = await session._handle_hitl("task-1", "approve?")
+                    assert "Simulation" in res
 
     @pytest.mark.asyncio
     async def test_calculate_metrics_state_hygiene(self, session):
