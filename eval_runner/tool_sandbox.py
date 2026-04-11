@@ -7,7 +7,6 @@ Defines the environment in which the agent's tool calls are executed.
 Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 """
 
-import os  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
@@ -29,14 +28,15 @@ class ResourceRegistry:
 
     def cleanup(self):
         """Perform an atomic unlink/rmtree of all registered paths."""
-        import shutil
 
         for path in self._tracked_paths:
             try:
                 if path.is_file():
                     path.unlink(missing_ok=True)
                 elif path.is_dir():
-                    shutil.rmtree(path, ignore_errors=True)
+                    from .utils import rmtree_resilient
+
+                    rmtree_resilient(path)
             except Exception as e:
                 # Log but do not crash during teardown (Industrial Robustness)
                 # In a real system, we'd emit an event here
@@ -171,10 +171,24 @@ class AbstractSandbox(ABC):
 
     async def teardown(self):
         """Perform one-time teardown: Clean up workspace (optional)."""
-        import shutil
+        import os
         from pathlib import Path
 
-        # 0. Core Hardening: Unified Resource Cleanup
+        # 0. Core Hardening (Iteration 6): RELEASE HANDLES FIRST
+        # Explicitly teardown all simulators to release resources (DB handles, etc.)
+        # This prevents WinError 32 during filesystem cleanup.
+        if self._simulator_cache:
+            for sim in self._simulator_cache.values():
+                try:
+                    await sim.cleanup()
+                except Exception:  # noqa: E722
+                    pass
+            print(
+                f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up "
+                "(Registry Teardown)."
+            )
+
+        # 1. Industrial Resource Cleanup
         self.resources.cleanup()
 
         # Only clean up if explicitly requested in scenario metadata or if it's a test run
@@ -182,7 +196,9 @@ class AbstractSandbox(ABC):
         if metadata.get("cleanup_workspace", self.scenario.get("cleanup_workspace", False)):
             ws_path = Path(self.workspace_dir)
             if ws_path.exists():
-                shutil.rmtree(ws_path)
+                from .utils import rmtree_resilient
+
+                rmtree_resilient(ws_path)
                 print("      [Sandbox] Workspace cleaned up.")
 
         # [Iteration 5: Secure Wipe] Cleanup terminal_jail
@@ -193,20 +209,10 @@ class AbstractSandbox(ABC):
         if cleanup_jail:
             jail_path = Path(self.terminal_jail)
             if jail_path.exists():
-                shutil.rmtree(jail_path)
-                print(f"      [Sandbox] Secure Wipe: Terminal Jail deleted at {jail_path}")
+                from .utils import rmtree_resilient
 
-        # Explicitly teardown all simulators to release resources
-        if self._simulator_cache:
-            for sim in self._simulator_cache.values():
-                try:
-                    await sim.cleanup()
-                except:  # noqa: E722
-                    pass
-            print(
-                f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up "
-                "(Registry Teardown)."
-            )
+                rmtree_resilient(jail_path)
+                print(f"      [Sandbox] Secure Wipe: Terminal Jail deleted at {jail_path}")
 
     @abstractmethod
     def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 loader.py
 
@@ -7,36 +5,48 @@ This module provides utilities for loading scenario and dataset files for the Ag
 It supports loading scenario JSON files with schema validation, and dataset loading for CSV/JSONL.
 """
 
-import csv  # noqa: E402
-import json  # noqa: E402
-from collections.abc import Callable  # noqa: E402
-from pathlib import Path  # noqa: E402
-from typing import Any  # noqa: E402
+from __future__ import annotations
 
-from jsonschema import ValidationError  # type: ignore, E402, E402  # noqa: E402
+import csv
+import json
+import sys
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
-from .trace_utils import load_events  # noqa: E402
+from jsonschema import ValidationError
+
+from . import config
+from .trace_utils import load_events
+from .utils import normalize_uri
 
 # --- UNIVERSAL IMMUTABLE REGISTRY (Industrial Purity v1.4.0) ---
 _REGISTRY_CACHE = None
-_SPEC_ROOT = Path(__file__).parent.parent / "spec"
-_SCHEMA_PATH = _SPEC_ROOT / "aes" / "aes.schema.json"
 _SCENARIO_SCHEMA = None
 
 
-def _normalize_uri(p: Path) -> str:
-    """Industrial-grade URI normalization for Windows (Lower-case drive letters)."""
-    posix_path = p.as_posix()
-    if ":" in posix_path:
-        drive, rest = posix_path.split(":", 1)
-        posix_path = f"{drive.lower()}:{rest}"
-    return f"file:///{posix_path}"
+def get_internal_spec_root() -> Path:
+    """authoritatve spec root relative to the source code baseline."""
+    return Path(__file__).parent.parent / "spec"
+
+
+def get_spec_root() -> Path:
+    """Dynamically resolves the specification root based on the authoritative PROJECT_ROOT."""
+    return config.PROJECT_ROOT / "spec"
+
+
+def reset_universal_registry():
+    """Industrial helper for test environments to clear cached registry state."""
+    global _REGISTRY_CACHE, _SCENARIO_SCHEMA
+    _REGISTRY_CACHE = None
+    _SCENARIO_SCHEMA = None
 
 
 def get_universal_registry():
     """
     Core industrial-grade registry for all forensic specifications.
-    Pre-compiles root schemas and definitions into an immutable collection.
+    Pre-compiles internal baseline and project-specific overlays into an immutable collection.
+    Complies with Guardrails v3.4 Section 1.6 (Environment Portability).
     """
     global _REGISTRY_CACHE
     if _REGISTRY_CACHE is not None:
@@ -47,47 +57,67 @@ def get_universal_registry():
 
     registry = Registry()
 
-    # Recursively index every JSON file (Root Schemas and Definitions) in the spec/ directory
-    for json_path in _SPEC_ROOT.glob("**/*.json"):
-        try:
-            with open(json_path, encoding="utf-8") as f:
-                json_data = json.load(f)
+    # 1. Authoritative Internal Baseline (Code-Relative)
+    internal_root = get_internal_spec_root()
+    # 2. Dynamic Project Overlay (Environment-Relative)
+    project_root = get_spec_root()
 
-            # Industrial Hardening: Canonical URI normalization
-            file_uri = _normalize_uri(json_path)
+    roots_to_crawl = [internal_root]
+    if project_root.exists() and project_root.resolve() != internal_root.resolve():
+        roots_to_crawl.append(project_root)
 
-            # Anchor Logic: Ensure the resource knows its identity for relative $ref resolution
-            if "$id" not in json_data:
-                json_data["$id"] = file_uri
+    for root in roots_to_crawl:
+        # Recursively index every JSON file (Root Schemas and Definitions) in the spec/ directory
+        for json_path in root.glob("**/*.json"):
+            try:
+                with open(json_path, encoding="utf-8") as f:
+                    json_data = json.load(f)
 
-            # Ensure every resource has a specification (default to DRAFT7 for fragments)
-            if "$schema" in json_data:
-                resource = Resource.from_contents(json_data)
-            else:
-                resource = Resource.from_contents(json_data, default_specification=DRAFT7)
+                # A. Physical URI (Legacy/Isolation support)
+                file_uri = normalize_uri(json_path)
 
-            registry = registry.with_resource(file_uri, resource)
+                # B. Logical URI (Guardrails v3.4 Section 1.6 - Identity Portability)
+                rel_path = json_path.relative_to(root)
+                logical_uri = f"https://agentv.co/spec/{rel_path.as_posix()}"
 
-            # Optimization: Specifically index the parent for relative sibling resolution
-            if json_path.name.endswith(".schema.json"):
-                base_uri = _normalize_uri(json_path.parent) + "/"
-                registry = registry.with_resource(base_uri, resource)
-        except Exception as e:
-            # Critical Boot-Time Failure: Spec integrity is mandatory
-            import sys
+                # Anchor Logic: Authoritative Identity (Guardrails v3.4 Section 1.6)
+                # We prioritize the Logical URI identity for absolute portability.
+                if "$id" not in json_data:
+                    json_data["$id"] = logical_uri
 
-            sys.stderr.write(f"   [Loader] CRITICAL: Failed to index resource {json_path}: {e}\n")
-            raise
+                # Ensure every resource has a specification (default to DRAFT7 for fragments)
+                if "$schema" in json_data:
+                    resource = Resource.from_contents(json_data)
+                else:
+                    resource = Resource.from_contents(json_data, default_specification=DRAFT7)
+
+                # Double-Registration for total environment portability
+                registry = registry.with_resource(file_uri, resource)
+                registry = registry.with_resource(logical_uri, resource)
+
+                # Optimization: Specifically index the parent for relative sibling resolution
+                if json_path.name.endswith(".schema.json"):
+                    base_uri = normalize_uri(json_path.parent) + "/"
+                    registry = registry.with_resource(base_uri, resource)
+
+            except Exception as e:
+                # Critical Boot-Time Failure: Spec integrity is mandatory
+                sys.stderr.write(
+                    f"   [Loader] CRITICAL: Failed to index resource {json_path}: {e}\n"
+                )
+                raise
 
     _REGISTRY_CACHE = registry
     return _REGISTRY_CACHE
 
 
 def _get_schema() -> dict:
-    """Lazy-loads and caches the scenario JSON schema."""
+    """Lazy-loads and caches the scenario JSON schema. Forensic: Logical resolution."""
     global _SCENARIO_SCHEMA
     if _SCENARIO_SCHEMA is None:
-        with open(_SCHEMA_PATH) as f:
+        # Prefer the internal baseline for authoritative platform logic
+        schema_path = get_internal_spec_root() / "aes" / "aes.schema.json"
+        with open(schema_path, encoding="utf-8") as f:
             _SCENARIO_SCHEMA = json.load(f)
     return _SCENARIO_SCHEMA
 
@@ -209,7 +239,7 @@ def load_scenario(
         # Anchor Logic: Ensure the schema dict is associated with its canonical identity
         # The Registry provides all external $ref resolution without I/O side effects
         if "$id" not in schema:
-            schema["$id"] = _normalize_uri(_SCHEMA_PATH)
+            schema["$id"] = "https://agentv.co/spec/aes/aes.schema.json"
 
         validator_cls = validator_for(schema)
         validator = validator_cls(schema, registry=registry)

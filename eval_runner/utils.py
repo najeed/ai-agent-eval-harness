@@ -90,6 +90,15 @@ def get_canonical_path(path_str: str) -> str:
     return path_str.lower().replace("\\", "/")
 
 
+def normalize_uri(p: Path) -> str:
+    """Industrial-grade URI normalization for Windows (Lower-case drive letters)."""
+    posix_path = p.as_posix()
+    if ":" in posix_path:
+        drive, rest = posix_path.split(":", 1)
+        posix_path = f"{drive.lower()}:{rest}"
+    return f"file:///{posix_path}"
+
+
 def safe_run_async(coro):
     """
     Industrial-grade async runner (v2.0).

@@ -109,11 +109,10 @@ class PluginManager:
                 with open(PERSISTENT_PLUGINS_PATH, encoding="utf-8") as f:
                     registry_data = json.load(f)
 
-                # --- Forensic Purity: Validate the Registry against the Universal Schema ---
                 universal_registry = get_universal_registry()
-                # Resolve the official plugins schema
-                schema_path = config.PROJECT_ROOT / "spec" / "plugins" / "plugins.schema.json"
-                schema_uri = schema_path.as_uri()
+                # AUTHORITATIVELY resolve the plugins schema using the Logical Anchor
+                # (Guardrails v3.4 Section 1.6 compliance)
+                schema_uri = "https://agentv.co/spec/plugins/plugins.schema.json"
                 try:
                     schema_resource = universal_registry.resolver().lookup(schema_uri).contents
                     validator_cls = validator_for(schema_resource)

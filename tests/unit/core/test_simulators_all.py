@@ -1,3 +1,4 @@
+import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -118,7 +119,7 @@ async def test_terminal_simulator_hardened(tmp_path):
     assert "Security Violation" in res["message"]
 
     # Subprocess execution (Iteration 3)
-    res = await term.execute("terminal_execute", {"cmd": "python -c \"print('hello')\""})
+    res = await term.execute("terminal_execute", {"cmd": f"{sys.executable} -c \"print('hello')\""})
     if res["status"] == "error":
         print(f"DEBUG TERM DATA: {res}")
     assert res["status"] == "success"

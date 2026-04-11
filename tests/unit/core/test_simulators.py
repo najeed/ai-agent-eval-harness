@@ -1,7 +1,4 @@
-"""
-Test suite for hardened simulation objects.
-"""
-
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -64,11 +61,11 @@ async def test_terminal_simulator(tmp_path):
     # Use a command that works without shell redirection
     # On Windows, 'echo' is a builtin but also exists as an executable in some envs
     # Better: use python to write a file for cross-platform reliability
-    cmd = "python -c \"with open('file1.txt', 'w') as f: f.write('test')\""
+    cmd = f"{sys.executable} -c \"with open('file1.txt', 'w') as f: f.write('test')\""
     res = await sim.execute("terminal_execute", {"cmd": cmd})
     assert res["status"] == "success"
 
-    res = await sim.execute("terminal_execute", {"cmd": "python --version"})
+    res = await sim.execute("terminal_execute", {"cmd": f"{sys.executable} --version"})
     assert res["status"] == "success"
 
 

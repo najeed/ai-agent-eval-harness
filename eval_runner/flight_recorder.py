@@ -76,9 +76,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         if self._audit_level >= 2 and self._private_key_path:
             try:
                 payload = json.dumps(data, sort_keys=True).encode("utf-8")
-                data["_sig"] = verifier.TraceVerifier.sign_asymmetric(
-                    payload, self._private_key_path
-                )
+                data["_sig"] = verifier.TraceVerifier.sign_payload(payload, self._private_key_path)
             except Exception as e:
                 data["_sig_error"] = str(e)
 

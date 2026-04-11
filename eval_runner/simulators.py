@@ -134,6 +134,12 @@ class GitSimulator(BaseSimulator):
         """Simulates a push to origin (for safety in evaluation)."""
         return {"status": "success", "message": "Pushed to origin main (Simulated for safety)"}
 
+    async def cleanup(self):
+        """[Iteration 5: Secure Wipe] Release Git handles."""
+        if self._repo:
+            self._repo.close()
+            self._repo = None
+
 
 class ApiSimulator(BaseSimulator):
     """Simulates a generic REST API with dynamic registration."""
@@ -304,6 +310,12 @@ class DatabaseSimulator(BaseSimulator):
                 return {"status": "success", "message": "Query executed successfully."}
         except Exception as e:
             return {"status": "error", "message": f"Database Error: {str(e)}"}
+
+    async def cleanup(self):
+        """[Iteration 5: Secure Wipe] Dispose SQLAlchemy engine to release file locks."""
+        if self._engine:
+            self._engine.dispose()
+            self._engine = None
 
 
 class SlackSimulator(BaseSimulator):
@@ -477,14 +489,19 @@ class TerminalSimulator(BaseSimulator):
                 cwd = str(jail_path)
 
             # [Iteration 5: Timeout] Standard Industrial Threshold
+            import sys
+
+            is_windows = sys.platform == "win32"
+
             process = subprocess.run(
-                shlex.split(cmd),
+                shlex.split(cmd) if not is_windows else cmd,
                 cwd=cwd,
                 env={},  # Extreme Isolation: No host env leakage
                 capture_output=True,
                 text=True,
                 timeout=30,
-                start_new_session=True,  # Process Group Isolation
+                shell=is_windows,  # Windows needs shell for builtins like 'echo'
+                start_new_session=not is_windows,  # Process Group Isolation
             )
 
             return {

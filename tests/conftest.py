@@ -35,6 +35,7 @@ def reset_plugins():
     """Resets all registries before each test."""
     from eval_runner.engine import AgentAdapterRegistry
     from eval_runner.events import reset
+    from eval_runner.loader import reset_universal_registry
     from eval_runner.metrics import MetricRegistry
     from eval_runner.plugins import manager
 
@@ -42,6 +43,7 @@ def reset_plugins():
     AgentAdapterRegistry.reset()
     reset()
     MetricRegistry.reset()
+    reset_universal_registry()
     yield
 
 
