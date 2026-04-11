@@ -1262,10 +1262,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#registering-plugins" class="md-nav__link">
+  <a href="#registration-discovery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Registering Plugins
+        🔌 Registration &amp; Discovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔌 Registration &amp; Discovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dynamic-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Dynamic Entry-Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-persistent-registration-local-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Persistent Registration (Local Registry)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forensic-registry-schema-strict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧬 Forensic Registry Schema (Strict)
       
     </span>
   </a>
@@ -4073,10 +4112,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#registering-plugins" class="md-nav__link">
+  <a href="#registration-discovery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Registering Plugins
+        🔌 Registration &amp; Discovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔌 Registration &amp; Discovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dynamic-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Dynamic Entry-Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-persistent-registration-local-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Persistent Registration (Local Registry)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forensic-registry-schema-strict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧬 Forensic Registry Schema (Strict)
       
     </span>
   </a>
@@ -4438,11 +4516,39 @@
 <li><strong>Namespacing</strong>: When storing data in <code>plugin_data</code>, use your plugin's name as a key (e.g., <code>context.plugin_data["my_plugin"] = {...}</code>) to avoid collisions with other active plugins.</li>
 </ol>
 <hr />
-<h2 id="registering-plugins">Registering Plugins<a class="headerlink" href="#registering-plugins" title="Permanent link">&para;</a></h2>
-<p>Plugins are discovered via <code>entry-points</code> in <code>pyproject.toml</code>:</p>
+<h2 id="registration-discovery">🔌 Registration &amp; Discovery<a class="headerlink" href="#registration-discovery" title="Permanent link">&para;</a></h2>
+<p>Plugins are discovered by the AgentV engine using two complementary mechanisms:</p>
+<h3 id="1-dynamic-entry-points">1. Dynamic Entry-Points<a class="headerlink" href="#1-dynamic-entry-points" title="Permanent link">&para;</a></h3>
+<p>For plugins distributed as pip packages, use the <code>project.entry-points</code> section in your <code>pyproject.toml</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">[project.entry-points.</span><span class="s2">&quot;eval_runner.plugins&quot;</span><span class="k">]</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">my_analysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_package.plugin:MyAnalysisPlugin&quot;</span>
 </code></pre></div>
+<h3 id="2-persistent-registration-local-registry">2. Persistent Registration (Local Registry)<a class="headerlink" href="#2-persistent-registration-local-registry" title="Permanent link">&para;</a></h3>
+<p>For plugins specific to a benchmark environment or external modules, use the CLI registration tool:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>register<span class="w"> </span>/path/to/plugin/
+</code></pre></div>
+<p>This persistent registration is stored in <code>.aes/config/plugins/registry.json</code>.</p>
+<hr />
+<h2 id="forensic-registry-schema-strict">🧬 Forensic Registry Schema (Strict)<a class="headerlink" href="#forensic-registry-schema-strict" title="Permanent link">&para;</a></h2>
+<p>To maintain industrial-grade clarity and prevent package resolution ambiguity, the persistent registry enforces a <strong>Split Schema</strong>. You must specify the <code>module</code> path and the <code>class</code> name as distinct fields.</p>
+<p><strong>Location</strong>: <code>.aes/config/plugins/registry.json</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">&quot;plugins&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-recorder&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-recorder&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eval_runner.plugins.flight_recorder&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">      </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FlightRecorderPlugin&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">      </span><span class="nt">&quot;config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span><span class="p">]</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="p">}</span>
+</code></pre></div>
+<blockquote>
+<p>[!WARNING]
+Support for the combined <code>"module": "path.Class"</code> format has been deprecated and removed to prevent Core ambiguity. Manual edits to <code>registry.json</code> must follow the split format above.</p>
+</blockquote>
 <h2 id="framework-adapters-advanced">Framework Adapters (Advanced)<a class="headerlink" href="#framework-adapters-advanced" title="Permanent link">&para;</a></h2>
 <p>There is built-in support for extending agent communication protocols without touching the core engine. Using the <code>on_discover_adapters</code> hook, a plugin can register custom protocol schemes (e.g., <code>langgraph://</code>). </p>
 <p><strong>Note on Discovery Timing</strong>: Agent adapters and subcommands are discovered dynamically from active plugins. For execution commands (<code>evaluate</code>, <code>run</code>, <code>record</code>, <code>playground</code>), the harness triggers the full discovery lifecycle to ensure all custom protocols are available.</p>
@@ -4453,15 +4559,15 @@
 - <strong><code>grok://</code></strong>: Native xAI Grok API integration.
 - <strong><code>ollama://</code></strong>, <strong><code>openai://</code></strong>, <strong><code>claude://</code></strong>: Direct LLM provider shims.
 - <strong><code>gemini://</code></strong>: Official <strong>google-genai v1.70.0</strong> SDK implementation (Default: Gemini 2.5 Flash).</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">eval_runner.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvalPlugin</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">LangGraphAdapterPlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_discover_adapters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;langgraph&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_langgraph_node</span><span class="p">)</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_langgraph_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom execution logic specific to LangGraph.&quot;&quot;&quot;</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;final_answer&quot;</span><span class="p">,</span> <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;LangGraph Execution Complete.&quot;</span><span class="p">}</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">eval_runner.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvalPlugin</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">LangGraphAdapterPlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_discover_adapters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>        <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;langgraph&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_langgraph_node</span><span class="p">)</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_langgraph_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom execution logic specific to LangGraph.&quot;&quot;&quot;</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;final_answer&quot;</span><span class="p">,</span> <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;LangGraph Execution Complete.&quot;</span><span class="p">}</span>
 </code></pre></div>
 If this plugin is active, scenarios can now specify an agent URL like <code>langgraph://my_agent_node</code>, and the engine will seamlessly route the task to this adapter bypassing standard HTTP mechanisms.</p>
 <h3 id="ecosystem-provider-adapters">Ecosystem Provider Adapters<a class="headerlink" href="#ecosystem-provider-adapters" title="Permanent link">&para;</a></h3>
@@ -4470,12 +4576,12 @@ If this plugin is active, scenarios can now specify an agent URL like <code>lang
 <p>The harness features a pluggable LLM-as-judge layer (<code>Luna-Judge</code>). Developers can extend this in two ways:</p>
 <h3 id="1-registering-custom-rubrics">1. Registering Custom Rubrics<a class="headerlink" href="#1-registering-custom-rubrics" title="Permanent link">&para;</a></h3>
 <p>Rubrics are stored in <code>eval_runner/rubrics.py</code> via the <code>RubricRegistry</code>. While you can add them directly to the registry for the core, you can also register them dynamically in a plugin:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">eval_runner.rubrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">RubricRegistry</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomJudgePlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">before_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        <span class="c1"># Register a domain-specific rubric</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>        <span class="n">RubricRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_industry&quot;</span><span class="p">,</span> <span class="s2">&quot;Evaluate the agent based on [My Specialized Rules]...&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">eval_runner.rubrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">RubricRegistry</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomJudgePlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">before_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>        <span class="c1"># Register a domain-specific rubric</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>        <span class="n">RubricRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_industry&quot;</span><span class="p">,</span> <span class="s2">&quot;Evaluate the agent based on [My Specialized Rules]...&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="2-custom-judge-providers">2. Custom Judge Providers<a class="headerlink" href="#2-custom-judge-providers" title="Permanent link">&para;</a></h3>
 <p>The judge uses the <code>LLMProviderFactory</code> to route scoring requests. By adding a custom adapter via <code>on_discover_adapters</code>, you can make new models available for judging by setting the <code>judge_provider</code> in your scenario's <code>judge_config</code>.</p>

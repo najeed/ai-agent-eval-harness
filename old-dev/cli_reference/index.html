@@ -3894,6 +3894,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#list-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list-metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list-plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4044,16 +4066,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#plugin-commands" class="md-nav__link">
+  <a href="#plugin-management" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Plugin Commands
+        Plugin Management
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Plugin Commands">
+    <nav class="md-nav" aria-label="Plugin Management">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugin-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plugin register
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugin-unregister" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plugin unregister
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugin-list-alias-list-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plugin list (Alias: list-plugins)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#plugin-name-command" class="md-nav__link">
@@ -4238,6 +4293,10 @@ When <code>--attempts</code> &gt; 1, the harness generates:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>agentv<span class="w"> </span>failures<span class="w"> </span>search<span class="w"> </span>&lt;query&gt;
 </code></pre></div>
 <strong>Example:</strong> <code>agentv failures search "pii leaks"</code> discovers and imports realistic failing scenarios from the corpus.</p>
+<h3 id="list-metrics"><code>list-metrics</code><a class="headerlink" href="#list-metrics" title="Permanent link">&para;</a></h3>
+<p>Display descriptions for all registered evaluation metrics.</p>
+<h3 id="list-plugins"><code>list-plugins</code><a class="headerlink" href="#list-plugins" title="Permanent link">&para;</a></h3>
+<p>Display all active and persistently registered plugins (Alias for <code>agentv plugin list</code>).</p>
 <h2 id="debugging-exploration">Debugging &amp; Exploration<a class="headerlink" href="#debugging-exploration" title="Permanent link">&para;</a></h2>
 <h3 id="replay"><code>replay</code><a class="headerlink" href="#replay" title="Permanent link">&para;</a></h3>
 <p>Replay a previously recorded run trace (Flight Recorder).
@@ -4294,10 +4353,26 @@ When <code>--attempts</code> &gt; 1, the harness generates:
 <p>Interactively workspace to generate new test scenarios via a terminal wizard.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>agentv<span class="w"> </span>scenario<span class="w"> </span>generate
 </code></pre></div></p>
-<h2 id="plugin-commands">Plugin Commands<a class="headerlink" href="#plugin-commands" title="Permanent link">&para;</a></h2>
+<h2 id="plugin-management">Plugin Management<a class="headerlink" href="#plugin-management" title="Permanent link">&para;</a></h2>
+<h3 id="plugin-register"><code>plugin register</code><a class="headerlink" href="#plugin-register" title="Permanent link">&para;</a></h3>
+<p>Register an external plugin persistently in the local registry.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>register<span class="w"> </span>&lt;path_to_plugin&gt;
+</code></pre></div>
+- <code>&lt;path_to_plugin&gt;</code>: File system path or Python module path to register.
+- Automatically normalizes the registration into the required split <code>module</code>/<code>class</code> schema.</p>
+<h3 id="plugin-unregister"><code>plugin unregister</code><a class="headerlink" href="#plugin-unregister" title="Permanent link">&para;</a></h3>
+<p>Remove a plugin from the persistent registry.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>unregister<span class="w"> </span>&lt;plugin_name_or_id&gt;
+</code></pre></div></p>
+<h3 id="plugin-list-alias-list-plugins"><code>plugin list</code> (Alias: <code>list-plugins</code>)<a class="headerlink" href="#plugin-list-alias-list-plugins" title="Permanent link">&para;</a></h3>
+<p>List all active and persistently registered plugins.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>list
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="c1"># OR</span>
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>agentv<span class="w"> </span>list-plugins
+</code></pre></div></p>
 <h3 id="plugin-name-command"><code>plugin &lt;name&gt; &lt;command&gt;</code><a class="headerlink" href="#plugin-name-command" title="Permanent link">&para;</a></h3>
 <p>Execute plugin-specific subcommands. Plugins register their own commands under a secure namespace to prevent command hijacking.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>&lt;plugin_name&gt;<span class="w"> </span>&lt;command&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>&lt;plugin_name&gt;<span class="w"> </span>&lt;command&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
 </code></pre></div></p>
 <blockquote>
 <p><strong>Security Note:</strong> All plugin commands are namespaced under <code>agentv plugin &lt;name&gt;</code> to prevent command hijacking. </p>
