@@ -2,10 +2,43 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
+const base = process.env.BASE_URL || '/ai-agent-eval-harness/';
+
+/**
+ * Remark plugin to prepend the base path to internal absolute-style links.
+ */
+function remarkReplaceBase() {
+	const cleanBase = base.replace(/\/$/, '');
+	/**
+	 * @param {import('mdast').Root} tree
+	 */
+	return (tree) => {
+		/**
+		 * @param {import('mdast').Content | import('mdast').Root} node
+		 */
+		function visit(node) {
+			if (node.type === 'link' || node.type === 'image') {
+				// @ts-ignore - url exists on link/image but not all Content types
+				if (node.url && node.url.startsWith('/') && !node.url.startsWith('//') && !node.url.startsWith(cleanBase + '/')) {
+					// @ts-ignore
+					node.url = cleanBase + node.url;
+				}
+			}
+			if ('children' in node && Array.isArray(node.children)) {
+				node.children.forEach(visit);
+			}
+		}
+		visit(tree);
+	};
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://najeed.github.io',
-	base: process.env.BASE_URL || '/ai-agent-eval-harness/',
+	base,
+	markdown: {
+		remarkPlugins: [remarkReplaceBase],
+	},
 	integrations: [
 		starlight({
 			title: 'AgentV',
