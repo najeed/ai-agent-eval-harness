@@ -3651,23 +3651,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-gradient-analysis-leak-detection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Gradient Analysis (Leak Detection)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Gradient Analysis (Leak Detection)">
-      <ul class="md-nav__list">
-        
           <li class="md-nav__item">
   <a href="#identifying-a-logic-induced-leak" class="md-nav__link">
     <span class="md-ellipsis">
@@ -3734,8 +3717,7 @@
 <li><strong>Disk (%)</strong>: Workspace filesystem saturation.</li>
 </ul>
 <hr />
-<h2 id="2-gradient-analysis-leak-detection">2. Gradient Analysis (Leak Detection)<a class="headerlink" href="#2-gradient-analysis-leak-detection" title="Permanent link">&para;</a></h2>
-<p>Traditional monitors only alert on hard crashes (e.g., OOM). AgentV's <a href="../../eval_runner/taxonomy.py">ResourceGradientAnalyzer</a> tracks the <strong>rate of change</strong> across turns.</p>
+<p>Traditional monitors only alert on hard crashes (e.g., OOM). For industrial audits, the <strong>ResourceGradientAnalyzer</strong> (available as an Enterprise extension) tracks the <strong>rate of change</strong> across turns.</p>
 <h3 id="identifying-a-logic-induced-leak">Identifying a Logic-Induced Leak<a class="headerlink" href="#identifying-a-logic-induced-leak" title="Permanent link">&para;</a></h3>
 <p>A sustained positive gradient (e.g., +2MB memory growth per turn) across 3+ consecutive turns indicates a memory leak in either the agent's logic or the world simulators. </p>
 <p>The analyzer will flag this as an <code>INFRA_OOM</code> precursor in the <a href="../05_DRIFT_AND_TRIAGE/#3-automated-diagnostics-the-causal-chain-explain">Causal Chain</a>, even if the run successfully completes before hitting the hard limit.</p>
