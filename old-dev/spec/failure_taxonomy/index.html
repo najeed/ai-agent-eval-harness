@@ -25,7 +25,7 @@
     
     
       
-        <title>Specification: Stratified Failure Taxonomy (v1.3) - AgentV</title>
+        <title>Specification: Stratified Failure Taxonomy (v1.5.0) - AgentV</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#specification-stratified-failure-taxonomy-v13" class="md-skip">
+        <a href="#specification-stratified-failure-taxonomy-v150" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Specification: Stratified Failure Taxonomy (v1.3)
+              Specification: Stratified Failure Taxonomy (v1.5.0)
             
           </span>
         </div>
@@ -3640,55 +3640,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-the-core-enum-registry" class="md-nav__link">
+  <a href="#2-pluggable-analyzer-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. The Core Enum Registry
+        2. Pluggable Analyzer Architecture
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. The Core Enum Registry">
+    <nav class="md-nav" aria-label="2. Pluggable Analyzer Architecture">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#infrastructure-failures" class="md-nav__link">
+  <a href="#baseline-vs-enterprise-analyzers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Infrastructure Failures
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#logic-failures" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logic Failures
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#policy-failures" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Policy Failures
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#security-failures" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security Failures
+        Baseline vs. Enterprise Analyzers
       
     </span>
   </a>
@@ -3701,13 +3668,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-forensic-triage-isolation" class="md-nav__link">
+  <a href="#3-forensic-triage-causal-attribution" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Forensic Triage &amp; Isolation
+        3. Forensic Triage &amp; Causal Attribution
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="3. Forensic Triage &amp; Causal Attribution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#causal-chain-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Causal Chain Attribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3739,8 +3723,8 @@
 
 
 
-<h1 id="specification-stratified-failure-taxonomy-v13">Specification: Stratified Failure Taxonomy (v1.3)<a class="headerlink" href="#specification-stratified-failure-taxonomy-v13" title="Permanent link">&para;</a></h1>
-<p>To replace brittle, heuristic-based error string matching, AgentEval v1.3.0 implements a formal, <strong>NIST-aligned Failure Registry</strong>. This system provides a stratified, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics.</p>
+<h1 id="specification-stratified-failure-taxonomy-v150">Specification: Stratified Failure Taxonomy (v1.5.0)<a class="headerlink" href="#specification-stratified-failure-taxonomy-v150" title="Permanent link">&para;</a></h1>
+<p>To replace brittle, heuristic-based error string matching, AgentEval v1.5.0 implements an <strong>Industrial-Grade Forensic Taxonomy Engine</strong>. This system provides pluggable, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics and causal-chain attribution.</p>
 <h2 id="1-classification-hierarchy">1. Classification Hierarchy<a class="headerlink" href="#1-classification-hierarchy" title="Permanent link">&para;</a></h2>
 <p>Failures are categorized into four primary industrial domains:</p>
 <table>
@@ -3775,52 +3759,35 @@
 </tbody>
 </table>
 <hr />
-<h2 id="2-the-core-enum-registry">2. The Core Enum Registry<a class="headerlink" href="#2-the-core-enum-registry" title="Permanent link">&para;</a></h2>
-<p>The following Enums are the first-class failure codes emitted by the engine:</p>
-<h3 id="infrastructure-failures">Infrastructure Failures<a class="headerlink" href="#infrastructure-failures" title="Permanent link">&para;</a></h3>
+<h2 id="2-pluggable-analyzer-architecture">2. Pluggable Analyzer Architecture<a class="headerlink" href="#2-pluggable-analyzer-architecture" title="Permanent link">&para;</a></h2>
+<p>AgentV 1.5.0 transitions from a monolithic triage engine to a <strong>Forensic Analyzer Registry</strong>. Every diagnostic logic is encapsulated in an analyzer that implements the <code>BaseForensicAnalyzer</code> interface.</p>
+<h3 id="baseline-vs-enterprise-analyzers">Baseline vs. Enterprise Analyzers<a class="headerlink" href="#baseline-vs-enterprise-analyzers" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>INFRA_SIMULATOR_EXCEPTION</code>: Internal 500 error in a World Shim (e.g., Database crash).</li>
-<li><code>INFRA_TIMEOUT</code>: Evaluation exceeded the <code>EVAL_MAX_TURNS</code> or wall-clock limit.</li>
-<li><code>INFRA_CONNECTION_FAILED</code>: Agent adapter could not reach the target endpoint.</li>
-</ul>
-<h3 id="logic-failures">Logic Failures<a class="headerlink" href="#logic-failures" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>LOGIC_STALL</code>: Agent detected in a reasoning loop (multi-turn repetition).</li>
-<li><code>LOGIC_REFUSAL</code>: Agent explicitly refused a valid mission task.</li>
-<li><code>LOGIC_PLANNING_ERROR</code>: High-Fidelity: Agent logic diverged from the required DAG path.</li>
-</ul>
-<h3 id="policy-failures">Policy Failures<a class="headerlink" href="#policy-failures" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>POLICY_VIOLATION</code>: Agent attempted an action blocked by a scenario-level guardrail.</li>
-<li><code>POLICY_HALLUCINATION</code>: Agent attempted to use a tool that does not exist in the VFS.</li>
-<li><code>POLICY_DACON_LEAK</code>: Detected exposure of internal system prompts or logic.</li>
-</ul>
-<h3 id="security-failures">Security Failures<a class="headerlink" href="#security-failures" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>SECURITY_PII_LEAK</code>: Agent exposed sensitive personal information in its response.</li>
-<li><code>SECURITY_UNAUTHORIZED_ACCESS</code>: Tool call made with incorrect PBAC permissions.</li>
-<li><code>SECURITY_SANDBOX_ESCAPE</code>: (Critical) Attempted filesystem access outside the managed workspace.</li>
+<li><strong>Core (Baseline)</strong>: Regex-based PII matching, cyclical turn repetition, and protocol sequence verification.</li>
+<li><strong>Enterprise (High-Fidelity)</strong>: Semantic clustering of strategies, sustained resource gradient tracking, and state-action intent validation.</li>
 </ul>
 <hr />
-<h2 id="3-forensic-triage-isolation">3. Forensic Triage &amp; Isolation<a class="headerlink" href="#3-forensic-triage-isolation" title="Permanent link">&para;</a></h2>
-<p>When a failure occurs, the <code>TriageEngine</code> is triggered. It performs a three-layer analysis:</p>
+<h2 id="3-forensic-triage-causal-attribution">3. Forensic Triage &amp; Causal Attribution<a class="headerlink" href="#3-forensic-triage-causal-attribution" title="Permanent link">&para;</a></h2>
+<p>When a failure occurs, the engine performs a stratified analysis by executing all registered analyzers against the <a href="forensic_ledger_schema.md">Forensic Ledger</a>:</p>
 <ol>
-<li><strong>State Layer</strong>: Compares the physical VFS delta against the scenario's ground truth.</li>
-<li><strong>Telemetry Layer</strong>: Scans the <code>CHAIN_START</code> / <code>NODE_START</code> events for framework-level crashes (e.g., LangGraph node transitions).</li>
-<li><strong>Registry Layer</strong>: Correlates the error with a known Enum from the Failure Registry.</li>
+<li><strong>State Layer</strong>: Compares state-delta snapshots (SHA-256) across turns.</li>
+<li><strong>Telemetry Layer</strong>: Scans hardware resource gradients (CPU/Mem/Disk) for leaks via <code>psutil</code>.</li>
+<li><strong>Audit Layer</strong>: Correlates events into a <strong>Causal Chain</strong>.</li>
 </ol>
-<p>The result is a <strong>Patient Zero Identification</strong>—the exact step, turn, and tool-call responsible for the cascade.</p>
+<h3 id="causal-chain-attribution">Causal Chain Attribution<a class="headerlink" href="#causal-chain-attribution" title="Permanent link">&para;</a></h3>
+<p>The engine distinguishes between the <strong>Root Cause (Trigger)</strong> and the <strong>Terminal Status (Symptom)</strong>. The Causal Chain provides a timestamped ledger of forensic alerts that leads to the final failure.</p>
+<hr />
 <h2 id="4-nist-ai-100-1-mapping">4. NIST AI-100-1 Mapping<a class="headerlink" href="#4-nist-ai-100-1-mapping" title="Permanent link">&para;</a></h2>
 <p>This taxonomy is mapped directly to the <strong>NIST AI-100-1</strong> trustworthiness framework to support industrial certification:</p>
 <ul>
-<li><strong>Reliability</strong> → Infrastructure Failures.</li>
+<li><strong>Reliability</strong> → Infrastructure Failures &amp; Resource Gradients.</li>
 <li><strong>Safety</strong> → Policy Failures.</li>
-<li><strong>Explainability</strong> → Logic Failures (via Root Cause Isolation).</li>
+<li><strong>Explainability</strong> → Logic Failures (via Causal Chain).</li>
 <li><strong>Security &amp; Privacy</strong> → Security Failures.</li>
 </ul>
 <blockquote>
 <p>[!IMPORTANT]
-<strong>Extensibility</strong>: Developers can register custom failure codes in the registry via the <code>on_discover_failures</code> plugin hook.</p>
+<strong>Extensiblity</strong>: Developers can register specialized forensic analyzers via the <code>on_diagnose_failure</code> plugin hook.</p>
 </blockquote>
 
 

@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#guide-drift-management-edge-case-triage" class="md-skip">
+        <a href="#guide-drift-management-deep-forensics-triage-v150" class="md-skip">
           Skip to content
         </a>
       
@@ -2894,17 +2894,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#trace-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trace Format
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#result" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2921,33 +2910,50 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-edge-case-triage-library" class="md-nav__link">
+  <a href="#2-pluggable-triage-engine" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Edge-Case Triage Library
+        2. Pluggable Triage Engine
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Edge-Case Triage Library">
+    <nav class="md-nav" aria-label="2. Pluggable Triage Engine">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#built-in-triage-tags" class="md-nav__link">
+  <a href="#diagnostic-triage-tags" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Built-in Triage Tags
+        Diagnostic Triage Tags
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-automated-diagnostics-the-causal-chain-explain" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How it Works
+        3. Automated Diagnostics: The Causal Chain (explain)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Automated Diagnostics: The Causal Chain (explain)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#causal-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Causal Attribution
       
     </span>
   </a>
@@ -3808,17 +3814,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#trace-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trace Format
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#result" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3835,33 +3830,50 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-edge-case-triage-library" class="md-nav__link">
+  <a href="#2-pluggable-triage-engine" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Edge-Case Triage Library
+        2. Pluggable Triage Engine
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Edge-Case Triage Library">
+    <nav class="md-nav" aria-label="2. Pluggable Triage Engine">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#built-in-triage-tags" class="md-nav__link">
+  <a href="#diagnostic-triage-tags" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Built-in Triage Tags
+        Diagnostic Triage Tags
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-automated-diagnostics-the-causal-chain-explain" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How it Works
+        3. Automated Diagnostics: The Causal Chain (explain)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Automated Diagnostics: The Causal Chain (explain)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#causal-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Causal Attribution
       
     </span>
   </a>
@@ -3901,26 +3913,19 @@
 
 
 
-<h1 id="guide-drift-management-edge-case-triage">Guide: Drift Management &amp; Edge-Case Triage<a class="headerlink" href="#guide-drift-management-edge-case-triage" title="Permanent link">&para;</a></h1>
-<p>This guide details how to use the Semantic Bridge features to ingest real-world behavior and analyze agent failures.</p>
+<h1 id="guide-drift-management-deep-forensics-triage-v150">Guide: Drift Management &amp; Deep Forensics Triage (v1.5.0)<a class="headerlink" href="#guide-drift-management-deep-forensics-triage-v150" title="Permanent link">&para;</a></h1>
+<p>This guide details how to use the Semantic Bridge features and the pluggable <strong>Deep Forensics</strong> engine to analyze agent failures.</p>
 <h2 id="1-drift-importer-import-drift">1. Drift Importer (<code>import-drift</code>)<a class="headerlink" href="#1-drift-importer-import-drift" title="Permanent link">&para;</a></h2>
 <p>The Drift Importer allows you to convert production traces (agent/user interaction logs) into reusable evaluation scenarios. This is critical for building regression suites from real-world "drift."</p>
 <h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>import-drift<span class="w"> </span>--input<span class="w"> </span>path/to/trace.json<span class="w"> </span>--industry<span class="w"> </span>telecom
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>import_drift<span class="w"> </span>--input<span class="w"> </span>path/to/trace.json<span class="w"> </span>--industry<span class="w"> </span>telecom
 </code></pre></div>
-<h3 id="trace-format">Trace Format<a class="headerlink" href="#trace-format" title="Permanent link">&para;</a></h3>
-<p>The importer expects a list of interaction objects:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">[</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="p">{</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I need help with my bill.&quot;</span><span class="p">},</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="p">{</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;assistant&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I can help with that. What is your account number?&quot;</span><span class="p">}</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">]</span>
-</code></pre></div></p>
 <h3 id="result">Result<a class="headerlink" href="#result" title="Permanent link">&para;</a></h3>
-<p>A new v2 scenario file is created in <code>industries/[industry]/scenarios/drift-[hash].json</code>, containing the original history as <code>ground_truth_history</code>.</p>
+<p>A new scenario file is created in <code>industries/[industry]/scenarios/drift-[hash].json</code>, containing the original history as <code>ground_truth_history</code>.</p>
 <hr />
-<h2 id="2-edge-case-triage-library">2. Edge-Case Triage Library<a class="headerlink" href="#2-edge-case-triage-library" title="Permanent link">&para;</a></h2>
-<p>The Triage Engine automatically analyzes failed evaluation tasks and applies tags based on known failure patterns.</p>
-<h3 id="built-in-triage-tags">Built-in Triage Tags<a class="headerlink" href="#built-in-triage-tags" title="Permanent link">&para;</a></h3>
+<h2 id="2-pluggable-triage-engine">2. Pluggable Triage Engine<a class="headerlink" href="#2-pluggable-triage-engine" title="Permanent link">&para;</a></h2>
+<p>AgentV 1.5.0 introduces the <strong>Forensic Analyzer Registry</strong>. Failure diagnostics are no longer a black-box heuristic; they are a series of pluggable analyzers that inspect the <a href="../spec/forensic_ledger_schema.md">Forensic Ledger</a>.</p>
+<h3 id="diagnostic-triage-tags">Diagnostic Triage Tags<a class="headerlink" href="#diagnostic-triage-tags" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -3930,44 +3935,40 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>CONNECTION_ERROR</code></td>
-<td style="text-align: left;">Agent communication failed (e.g., timeout, 500 reset).</td>
+<td style="text-align: left;"><code>INFRA_TIMEOUT</code></td>
+<td style="text-align: left;">Exceeded wall-clock limits (Hardware telemetry gradient used).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>POLICY_VIOLATION</code></td>
-<td style="text-align: left;">The agent attempted an action forbidden by the <code>ToolSandbox</code> policies.</td>
+<td style="text-align: left;"><code>POLICY_HALLUCINATION</code></td>
+<td style="text-align: left;">Tool use claims that lack environment evidence (State snapshots).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>TOOL_ERROR</code></td>
-<td style="text-align: left;">A mock tool returned an error status during execution.</td>
+<td style="text-align: left;"><code>LOGIC_STATE_STALL</code></td>
+<td style="text-align: left;">No measurable state progress detected across 3+ turns (Fingerprint delta).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>STALL</code></td>
-<td style="text-align: left;">The agent hit the maximum number of turns without reaching a final answer.</td>
+<td style="text-align: left;"><code>STRATEGIC_LOOP</code></td>
+<td style="text-align: left;"><strong>Enterprise</strong>: Semantic similarity detected across different tool attempts.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="how-it-works">How it Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
-<p>The Triage Engine inspects the <code>conversation_history</code> and <code>EvaluationContext</code> after a run to match heuristics.</p>
-<p>Task: refund_processing [FAILURE [CONNECTION_ERROR]]
-  FAILED Metric: generic_accuracy | Score: 0.00 | Threshold: 0.80
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>## 3. Automated Diagnostics (`explain`)
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>While triage applies categorical tags, the `explain` command performs a deep forensic analysis of the execution trace to identify the root cause of a failure.
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>### Usage
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>```bash
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>agentv explain --run-id &lt;id&gt;
-</code></pre></div></p>
+<hr />
+<h2 id="3-automated-diagnostics-the-causal-chain-explain">3. Automated Diagnostics: The Causal Chain (<code>explain</code>)<a class="headerlink" href="#3-automated-diagnostics-the-causal-chain-explain" title="Permanent link">&para;</a></h2>
+<p>While triage applies categorical tags, the <code>explain</code> command now performs a <strong>Causal Attribution</strong> analysis to identify the Root Cause.</p>
+<h3 id="causal-attribution">Causal Attribution<a class="headerlink" href="#causal-attribution" title="Permanent link">&para;</a></h3>
+<p>The engine distinguishes between the <strong>Root Cause (Trigger)</strong> and the <strong>Terminal Status (Symptom)</strong>.</p>
+<p><strong>Example</strong>:
+- <strong>Root Cause</strong>: <code>LOGIC_PLANNING_ERROR</code> (Semantic Loop detected)
+- <strong>Manifestation</strong>: <code>INFRA_TIMEOUT</code></p>
 <h3 id="forensic-features">Forensic Features<a class="headerlink" href="#forensic-features" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Tiered Confidence Scoring</strong>: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).</li>
-<li><strong>Actionable Remediation</strong>: Provides targeted advice based on the identified pattern (e.g., prompt refinement, sandbox optimization).</li>
-<li><strong>Pinpoint Diagnostics</strong>: Identifies the exact turn (index) where the failure logic diverged.</li>
+<li><strong>Deterministic Trail</strong>: Every failure is traced via the <strong>Causal Chain</strong>, a timestamped ledger linking forensic alerts.</li>
+<li><strong>Resource Gradient Analysis</strong>: Identifies hardware pressure (CPU/RAM spikes) as precursors to failure. See the <a href="../08_RESOURCE_MONITORING/">Resource Monitoring Guide</a>.</li>
+<li><strong>State-Action Integrity</strong>: Contradicts agent claims against physical state-delta reality.</li>
 </ul>
 <blockquote>
 <p>[!TIP]
-<strong>Visual Triage</strong>: Use <code>agentv console</code> to view these failure tags interactively. The dashboard highlights <code>POLICY_VIOLATION</code> and <code>STALL</code> events with visual cues in the trajectory timeline.</p>
+<strong>Industrial Replay</strong>: You can export the full Forensic Ledger and causal chain for offline audit or replay using the <code>--export forensic</code> flag.</p>
 </blockquote>
 
 
