@@ -9,12 +9,16 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import hashlib
 import json
 import logging
 import os
+import time
 from dataclasses import replace  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
+
+import psutil  # Forensic telemetry fallback
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +61,15 @@ class SessionManager:
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
 
+        # 2. Forensic Archiving: Preserve ad-hoc plugin source code for non-repudiation
+        forensic_plugins = self.metadata.get("forensic_plugins", [])
+        for fp in forensic_plugins:
+            try:
+                if "path" in fp:
+                    self.forensics.archive_plugin(Path(fp["path"]))
+            except Exception as e:
+                logger.warning(f"   [Session] Failed to archive plugin {fp.get('path')}: {e}")
+
         # Auto-subscribe plugins to the session bus (Bridge to legacy Hooks)
         def _bridge_event_internal(event: Event):
             # Map events to legacy hook names
@@ -98,6 +111,16 @@ class SessionManager:
                 logger.info(
                     f"      [Routing] Infrastructure resolved via capabilities: {capabilities}"
                 )
+
+        # 🚀 [Forensic Hardening] Protocol Trace capture
+        self.protocol_sequence: list[str] = []
+        self.event_bus.subscribe(lambda e: self.protocol_sequence.append(e.name))
+
+        # [Forensic Hardening] State Snapshot storage
+        self.state_snapshots: list[str] = []
+
+        # [Forensic Hardening] Resource Telemetry storage
+        self.resource_telemetry: list[dict[str, float]] = []
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
@@ -155,6 +178,12 @@ class SessionManager:
                 task_description = node.get("task_description")
 
                 self.event_bus.emit(
+                    CoreEvents.MANEUVER_START,
+                    {"node_id": node_id, "task": task_description},
+                    span_context=self.session_metadata.get("span_context"),
+                )
+
+                self.event_bus.emit(
                     CoreEvents.TASK_START,
                     {"task_id": node_id, "attempt": attempt_number},
                     span_context=self.session_metadata.get("span_context"),
@@ -162,6 +191,13 @@ class SessionManager:
                 self.event_bus.emit(
                     CoreEvents.SUBTASK_START,
                     {"subtask_id": f"subtask-{node_id}", "type": "agent_reasoning"},
+                    span_context=self.session_metadata.get("span_context"),
+                )
+
+                # 🧬 Behavioral DNA: Reasoning Chain Tracking
+                self.event_bus.emit(
+                    CoreEvents.CHAIN_START,
+                    {"chain_id": f"chain-{node_id}"},
                     span_context=self.session_metadata.get("span_context"),
                 )
 
@@ -205,6 +241,12 @@ class SessionManager:
                     self.event_bus.emit(
                         CoreEvents.TURN_START,
                         {"turn": turn, "task_id": node_id},
+                        span_context=turn_ctx.span_context,
+                    )
+                    # 🧬 Behavioral DNA: Atomic Step tracking
+                    self.event_bus.emit(
+                        CoreEvents.NODE_START,
+                        {"node_index": turn},
                         span_context=turn_ctx.span_context,
                     )
                     self.plugin_manager.trigger("on_agent_turn_start", turn_ctx)
@@ -302,6 +344,11 @@ class SessionManager:
                         break
 
                     self.plugin_manager.trigger("on_turn_end", turn_ctx)
+                    self.event_bus.emit(
+                        CoreEvents.NODE_END,
+                        {"node_index": turn},
+                        span_context=turn_ctx.span_context,
+                    )
 
                 # Metric calculation...
                 task_results = await self._calculate_metrics(
@@ -325,6 +372,18 @@ class SessionManager:
                 self.event_bus.emit(
                     CoreEvents.TASK_END,
                     {"task_id": node_id, "results": task_results},
+                    span_context=self.session_metadata.get("span_context"),
+                )
+
+                # 🧬 Behavioral DNA: Closure
+                self.event_bus.emit(
+                    CoreEvents.CHAIN_END,
+                    {"chain_id": f"chain-{node_id}"},
+                    span_context=self.session_metadata.get("span_context"),
+                )
+                self.event_bus.emit(
+                    CoreEvents.MANEUVER_END,
+                    {"node_id": node_id},
                     span_context=self.session_metadata.get("span_context"),
                 )
 
@@ -391,6 +450,14 @@ class SessionManager:
         self.forensics.snapshot_state(state_before, turn)
         self.forensics.snapshot_state(state_after, turn + 1000)
 
+        # [Forensic Hardening] capture state fingerprint for stall detection
+        self.state_snapshots.append(
+            hashlib.sha256(str(sorted(state_after.items())).encode()).hexdigest()
+        )
+
+        # [Forensic Hardening] capture resource telemetry
+        self._capture_telemetry()
+
         self.event_bus.emit(
             CoreEvents.ACTION_END,
             {"action_type": "tool_execution", "tool": tool_name},
@@ -443,6 +510,14 @@ class SessionManager:
         self.forensics.snapshot_state(
             state_after, turn + 1000
         )  # Offset for after-state transparency
+
+        # [Forensic Hardening] capture state fingerprint for stall detection
+        self.state_snapshots.append(
+            hashlib.sha256(str(sorted(state_after.items())).encode()).hexdigest()
+        )
+
+        # [Forensic Hardening] capture resource telemetry
+        self._capture_telemetry()
 
         history.append(
             {
@@ -505,6 +580,10 @@ class SessionManager:
             "turns_taken": turns,
             "conversation_history": history,
             "metrics": [],
+            "protocol_sequence": list(self.protocol_sequence),
+            "state_snapshots": list(self.state_snapshots),
+            "resource_telemetry": list(self.resource_telemetry),
+            "tool_registry": self._extract_tool_registry(),
         }
 
         # v1.2 Hardened Metrics: Pre-condition check (State Hygiene)
@@ -658,3 +737,37 @@ class SessionManager:
         # and ensure the conversation history is properly partitioned.
         print(f"   [Session] Forking trajectory with {len(history)} messages in history.")
         return new_session
+
+    def _extract_tool_registry(self) -> dict[str, Any]:
+        """Extracts tool names and parameter keys from scenario for forensic validation."""
+        registry = {}
+        tool_defs = self.scenario.get("tools", {})
+        for name, defn in tool_defs.items():
+            # Initial Depth: Focus on name and top-level parameter keys
+            # Supporting 'expected_params' or scanning 'output_logic' if present
+            params = defn.get("expected_params", [])
+            # Fallback: scan scenario's use of this tool in other nodes to infer params?
+            # Better: assume tools define their expected schema in 'parameters' or similar
+            if not params and "parameters" in defn:
+                params = list(defn["parameters"].keys())
+
+            registry[name] = {"parameters": params}
+        return registry
+
+    def _capture_telemetry(self):
+        """Captures hardware resource metrics for forensic gradient analysis."""
+        try:
+            process = psutil.Process(os.getpid())
+            mem_info = process.memory_info()
+
+            # Simplified Telemetry Packet (Enterprise-Ready)
+            metrics = {
+                "timestamp": time.time(),
+                "cpu_percent": process.cpu_percent(),
+                "rss_mb": mem_info.rss / (1024 * 1024),
+                "vms_mb": mem_info.vms / (1024 * 1024),
+                "disk_usage_percent": psutil.disk_usage(os.getcwd()).percent,
+            }
+            self.resource_telemetry.append(metrics)
+        except Exception as e:
+            logger.warning(f"   [Session] Telemetry capture failed: {e}")

@@ -60,6 +60,10 @@ class BaseEvalPlugin(ABC):  # noqa: B024
         """Hook to register custom world simulators."""
         pass
 
+    def on_diagnose_failure(self, taxonomy: Any):  # noqa: B027
+        """Hook to register custom forensic failure analyzers with the taxonomy engine."""
+        pass
+
 
 class PluginManager:
     """
@@ -70,6 +74,7 @@ class PluginManager:
     def __init__(self):
         self.plugins: list[BaseEvalPlugin] = []
         self._plugins = self.plugins  # Alias for diagnostic visibility
+        self.provenance_map: list[dict[str, Any]] = []
         self._loaded = False
         self._last_load_time = 0
 
@@ -77,6 +82,58 @@ class PluginManager:
         """Resets the plugin manager state for tests."""
         self.plugins.clear()
         self._loaded = False
+
+    def load(self, path: str) -> dict[str, Any]:
+        """
+        Ad-hoc logic to load a single plugin from a path.
+        Returns provenance metadata (path, hash) for forensic tracking.
+        """
+        path_obj = Path(path).resolve()
+        if not path_obj.exists():
+            raise FileNotFoundError(f"Plugin file not found: {path}")
+
+        # 1. Forensic Hash Calculation
+        from .forensics import compute_file_hash
+
+        file_hash = compute_file_hash(path_obj)
+
+        # 2. Dynamic Import
+        module_name = path_obj.stem
+        spec = importlib.util.spec_from_file_location(module_name, path_obj)
+        if not spec or not spec.loader:
+            raise ImportError(f"Could not load spec for plugin: {path}")
+
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        # 3. Discovery & Instantiation
+        found = False
+        loaded_class = None
+        for name_attr, obj in inspect.getmembers(module, inspect.isclass):
+            # Ensure it's inside the module and inherits
+            # (directly or indirectly) from BaseEvalPlugin
+            # Note: module.__name__ is the canonical module name used during import
+            if obj.__module__ == module.__name__ and any(
+                base.__name__ == "BaseEvalPlugin" for base in obj.__mro__
+            ):
+                if not any(isinstance(p, obj) for p in self.plugins):
+                    instance = obj()
+                    self.plugins.append(instance)
+                    found = True
+                    loaded_class = name_attr
+                    break
+                else:
+                    # Already loaded, find the existing one for metadata mapping
+                    found = True
+                    loaded_class = name_attr
+                    break
+
+        if not found:
+            raise ValueError(f"No valid BaseEvalPlugin found in {path}")
+
+        metadata = {"path": str(path_obj), "hash": file_hash, "class": loaded_class}
+        self.provenance_map.append(metadata)
+        return metadata
 
     def load_plugins(self, force: bool = False):
         """Discovers and loads plugins with an industrial 60s TTL debounce."""

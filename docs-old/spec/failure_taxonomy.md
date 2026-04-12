@@ -1,6 +1,6 @@
-# Specification: Stratified Failure Taxonomy (v1.3)
+# Specification: Stratified Failure Taxonomy (v1.5.0)
 
-To replace brittle, heuristic-based error string matching, AgentEval v1.3.0 implements a formal, **NIST-aligned Failure Registry**. This system provides a stratified, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics.
+To replace brittle, heuristic-based error string matching, AgentEval v1.5.0 implements an **Industrial-Grade Forensic Taxonomy Engine**. This system provides pluggable, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics and causal-chain attribution.
 
 ## 1. Classification Hierarchy
 
@@ -15,50 +15,37 @@ Failures are categorized into four primary industrial domains:
 
 ---
 
-## 2. The Core Enum Registry
+## 2. Pluggable Analyzer Architecture
 
-The following Enums are the first-class failure codes emitted by the engine:
+AgentV 1.5.0 transitions from a monolithic triage engine to a **Forensic Analyzer Registry**. Every diagnostic logic is encapsulated in an analyzer that implements the `BaseForensicAnalyzer` interface.
 
-### Infrastructure Failures
-- `INFRA_SIMULATOR_EXCEPTION`: Internal 500 error in a World Shim (e.g., Database crash).
-- `INFRA_TIMEOUT`: Evaluation exceeded the `EVAL_MAX_TURNS` or wall-clock limit.
-- `INFRA_CONNECTION_FAILED`: Agent adapter could not reach the target endpoint.
-
-### Logic Failures
-- `LOGIC_STALL`: Agent detected in a reasoning loop (multi-turn repetition).
-- `LOGIC_REFUSAL`: Agent explicitly refused a valid mission task.
-- `LOGIC_PLANNING_ERROR`: High-Fidelity: Agent logic diverged from the required DAG path.
-
-### Policy Failures
-- `POLICY_VIOLATION`: Agent attempted an action blocked by a scenario-level guardrail.
-- `POLICY_HALLUCINATION`: Agent attempted to use a tool that does not exist in the VFS.
-- `POLICY_DACON_LEAK`: Detected exposure of internal system prompts or logic.
-
-### Security Failures
-- `SECURITY_PII_LEAK`: Agent exposed sensitive personal information in its response.
-- `SECURITY_UNAUTHORIZED_ACCESS`: Tool call made with incorrect PBAC permissions.
-- `SECURITY_SANDBOX_ESCAPE`: (Critical) Attempted filesystem access outside the managed workspace.
+### Baseline vs. Enterprise Analyzers
+- **Core (Baseline)**: Regex-based PII matching, cyclical turn repetition, and protocol sequence verification.
+- **Enterprise (High-Fidelity)**: Semantic clustering of strategies, sustained resource gradient tracking, and state-action intent validation.
 
 ---
 
-## 3. Forensic Triage & Isolation
+## 3. Forensic Triage & Causal Attribution
 
-When a failure occurs, the `TriageEngine` is triggered. It performs a three-layer analysis:
+When a failure occurs, the engine performs a stratified analysis by executing all registered analyzers against the [Forensic Ledger](forensic_ledger_schema.md):
 
-1.  **State Layer**: Compares the physical VFS delta against the scenario's ground truth.
-2.  **Telemetry Layer**: Scans the `CHAIN_START` / `NODE_START` events for framework-level crashes (e.g., LangGraph node transitions).
-3.  **Registry Layer**: Correlates the error with a known Enum from the Failure Registry.
+1.  **State Layer**: Compares state-delta snapshots (SHA-256) across turns.
+2.  **Telemetry Layer**: Scans hardware resource gradients (CPU/Mem/Disk) for leaks via `psutil`.
+3.  **Audit Layer**: Correlates events into a **Causal Chain**.
 
-The result is a **Patient Zero Identification**—the exact step, turn, and tool-call responsible for the cascade.
+### Causal Chain Attribution
+The engine distinguishes between the **Root Cause (Trigger)** and the **Terminal Status (Symptom)**. The Causal Chain provides a timestamped ledger of forensic alerts that leads to the final failure.
+
+---
 
 ## 4. NIST AI-100-1 Mapping
 
 This taxonomy is mapped directly to the **NIST AI-100-1** trustworthiness framework to support industrial certification:
 
-- **Reliability** → Infrastructure Failures.
+- **Reliability** → Infrastructure Failures & Resource Gradients.
 - **Safety** → Policy Failures.
-- **Explainability** → Logic Failures (via Root Cause Isolation).
+- **Explainability** → Logic Failures (via Causal Chain).
 - **Security & Privacy** → Security Failures.
 
 > [!IMPORTANT]
-> **Extensibility**: Developers can register custom failure codes in the registry via the `on_discover_failures` plugin hook.
+> **Extensiblity**: Developers can register specialized forensic analyzers via the `on_diagnose_failure` plugin hook.

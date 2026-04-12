@@ -65,7 +65,7 @@ To remain compliant with these licenses, the following steps are handled automat
 ### Audit Readiness
 The framework satisfies industrial audit requirements (NIST AI-100-1) by providing:
 1. **WORM Logs**: Write-Once-Read-Many flight recorder logs (`run.jsonl`).
-2. **Behavioral DNA**: High-granularity event tracing (PHASE, ACTION, STEP).
+2. **Behavioral DNA**: High-granularity event tracing (PHASE, SUBTASK, ACTION, STEP).
 3. **Provisioning Provenance**: Mathematical proof of the environment state.
 4. **VC v3 Verification**: Non-repudiable Verification Certificates with chained identity support.
 

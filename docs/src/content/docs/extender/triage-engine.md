@@ -1,46 +1,52 @@
 ---
-title: Triage Engine & VFS
-description: Deep dive into the forensic state-level triage and Virtual File System (VFS).
+title: Triage Engine & Forensic Analyzers
+description: Advanced failure diagnostics via the pluggable forensic analyzer architecture.
 ---
 
-AgentV isolates the root cause of an agent's failure by moving beyond simple log analysis and into **State-Level Trajectory Triage**.
+AgentV 1.5.0 transforms failure diagnosis from a monolithic heuristic engine into a **High-Fidelity Forensic Pipeline**. 
 
-## 1. The "State Parity" Check (VFS Delta)
+## 1. The Forensic Diagnostic Pipeline
 
-Unlike standard benchmarks that only check for text output, AgentV maintains a **Virtual File System (VFS)**.
-- **VFS-Aware Shims**: Every [World Shim](/extender/shimming/) (Database, Git, Slack, etc.) is "VFS-aware."
-- **State Comparison**: When an agent executes a tool, the engine compares the resulting sandbox state against the ground truth defined in the scenario.
-- **Patient Zero**: If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the "Patient Zero" step.
+Failure diagnosis is no longer a single "scan." It is an ordered execution of **Forensic Analyzers** that operate on the [Forensic Ledger](/spec/forensic-ledger-schema/).
 
----
-
-## 2. Heuristic Triage Engine
-
-The triage engine scans the execution trace for complex failure patterns:
-- **Stall Detection**: Identifies if an agent is "looping" (e.g., calling the same `list_dir` 3 times without changing behavior).
-- **Tool-Level Exceptions**: Captures internal simulator errors (e.g., a "404 Not Found" from an API Shim) that the agent might have suppressed.
-- **Policy Violations**: Pinpoints exactly which guardrail was triggered in the [Security Protocol](/auditor/security/).
-
----
-
-## 3. Visual Root Cause Isolation
-
-In the [Visual Console](/evaluator/user-manual/), the **"Isolate Root Cause"** feature automatically scrolls the trajectory timeline to the exact node where the first non-success signal occurred.
-
-| Layer | What it detects | Why it matters |
+| Step | Layer | Description |
 | :--- | :--- | :--- |
-| **State** | Data/File divergence | Catches "silent" failures where the agent *thinks* it succeeded. |
-| **Logic** | Loops & Stalls | Identifies when an agent's reasoning has hit a dead-end. |
-| **Security** | Policy Violations | Pinpoints exactly which guardrail was triggered and why. |
+| **1** | **Pipeline** | Detects terminal outcomes (Success, Partial Pass). |
+| **2** | **Infrastructure** | Scans telemetry for simulator crashes, OOMs, and timeouts. |
+| **3** | **Protocol** | Verifies [handshake sequences](/spec/forensic-ledger-schema/#protocol-sequences). |
+| **4** | **Behavioral** | Analyzes agent DNA for loops and hallucinations. |
+| **5** | **Custom** | Executes third-party analyzers registered via [Plugins](/extender/plugins/). |
 
 ---
 
-## 4. Stratified Failure Taxonomy
+## 2. Pluggable Analyzers (Core vs. Enterprise)
 
-Diagnostics are aligned with the formal [Failure Taxonomy](/evaluator/taxonomy/), categories into:
-1.  **INFRASTRUCTURE**: Simulator crashes, timeouts, or connectivity issues.
-2.  **LOGIC**: Reasoning loops, planning errors, or task refusals.
-3.  **POLICY**: Violation of tool-level governance rules.
-4.  **SECURITY**: Data leaks and unauthorized access attempts.
+The triage engine is refactored for **Core Extensibility**. Every diagnostic logic is encapsulated in an analyzer that implements the `BaseForensicAnalyzer` interface.
 
-By correlating these failure codes with **Behavioral DNA** telemetry (`CHAIN_START`, `NODE_START`), the system provides transparency into even the most complex multi-agent reasoning paths.
+- **Core Analyzers**: Baseline regex matching, cyclical loop detection, and basic protocol checks.
+- **Enterprise Analyzers**: High-fidelity semantic clustering (LLM), sustained resource gradient tracking, and state-action intent verification.
+
+> [!TIP]
+> You can extend the triage engine by writing your own analyzer. See the [Custom Forensic Analyzers](/extender/forensic-analyzers/) guide.
+
+---
+
+## 3. Causal Chain Attribution
+
+AgentV 1.5.0 distinguishes between the **Root Cause (Trigger)** and the **Terminal Status (Symptom)**.
+
+- **Trigger**: The specific mistake or anomaly (e.g., "Semantic Loop detected").
+- **Symptom**: The final state of the task (e.g., "INFRA_TIMEOUT").
+
+Every classification is documented in a **Causal Chain**, allowing auditors to trace the exact lineage of a failure from the first logic divergence to the final crash.
+
+---
+
+## 4. Forensic Data Sinks
+
+The triage engine leverages three primary data sinks captured by the `SessionManager`:
+1.  **State Snapshots**: Content-hashed fingerprints of the environment at each turn.
+2.  **Resource Telemetry**: Real-time CPU, RAM, and Disk metrics.
+3.  **Protocol Trace**: A sequence of FSM transitions recorded during execution.
+
+For technical details on these fields, refer to the [Forensic Ledger Specification](/spec/forensic-ledger-schema/).

@@ -1,6 +1,6 @@
-# Guide: Drift Management & Edge-Case Triage
+# Guide: Drift Management & Deep Forensics Triage (v1.5.0)
 
-This guide details how to use the Semantic Bridge features to ingest real-world behavior and analyze agent failures.
+This guide details how to use the Semantic Bridge features and the pluggable **Deep Forensics** engine to analyze agent failures.
 
 ## 1. Drift Importer (`import-drift`)
 
@@ -8,56 +8,44 @@ The Drift Importer allows you to convert production traces (agent/user interacti
 
 ### Usage
 ```bash
-agentv import-drift --input path/to/trace.json --industry telecom
-```
-
-### Trace Format
-The importer expects a list of interaction objects:
-```json
-[
-  {"role": "user", "content": "I need help with my bill."},
-  {"role": "assistant", "content": "I can help with that. What is your account number?"}
-]
+agentv import_drift --input path/to/trace.json --industry telecom
 ```
 
 ### Result
-A new v2 scenario file is created in `industries/[industry]/scenarios/drift-[hash].json`, containing the original history as `ground_truth_history`.
+A new scenario file is created in `industries/[industry]/scenarios/drift-[hash].json`, containing the original history as `ground_truth_history`.
 
 ---
 
-## 2. Edge-Case Triage Library
+## 2. Pluggable Triage Engine
 
-The Triage Engine automatically analyzes failed evaluation tasks and applies tags based on known failure patterns.
+AgentV 1.5.0 introduces the **Forensic Analyzer Registry**. Failure diagnostics are no longer a black-box heuristic; they are a series of pluggable analyzers that inspect the [Forensic Ledger](../spec/forensic_ledger_schema.md).
 
-### Built-in Triage Tags
+### Diagnostic Triage Tags
 | Tag | Description |
 | :--- | :--- |
-| `CONNECTION_ERROR` | Agent communication failed (e.g., timeout, 500 reset). |
-| `POLICY_VIOLATION` | The agent attempted an action forbidden by the `ToolSandbox` policies. |
-| `TOOL_ERROR` | A mock tool returned an error status during execution. |
-| `STALL` | The agent hit the maximum number of turns without reaching a final answer. |
+| `INFRA_TIMEOUT` | Exceeded wall-clock limits (Hardware telemetry gradient used). |
+| `POLICY_HALLUCINATION` | Tool use claims that lack environment evidence (State snapshots). |
+| `LOGIC_STATE_STALL` | No measurable state progress detected across 3+ turns (Fingerprint delta). |
+| `STRATEGIC_LOOP` | **Enterprise**: Semantic similarity detected across different tool attempts. |
 
-### How it Works
-The Triage Engine inspects the `conversation_history` and `EvaluationContext` after a run to match heuristics.
+---
 
-Task: refund_processing [FAILURE [CONNECTION_ERROR]]
-  FAILED Metric: generic_accuracy | Score: 0.00 | Threshold: 0.80
-```
+## 3. Automated Diagnostics: The Causal Chain (`explain`)
 
-## 3. Automated Diagnostics (`explain`)
+While triage applies categorical tags, the `explain` command now performs a **Causal Attribution** analysis to identify the Root Cause.
 
-While triage applies categorical tags, the `explain` command performs a deep forensic analysis of the execution trace to identify the root cause of a failure.
+### Causal Attribution
+The engine distinguishes between the **Root Cause (Trigger)** and the **Terminal Status (Symptom)**.
 
-### Usage
-```bash
-agentv explain --run-id <id>
-```
+**Example**:
+- **Root Cause**: `LOGIC_PLANNING_ERROR` (Semantic Loop detected)
+- **Manifestation**: `INFRA_TIMEOUT`
 
 ### Forensic Features
-- **Tiered Confidence Scoring**: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
-- **Actionable Remediation**: Provides targeted advice based on the identified pattern (e.g., prompt refinement, sandbox optimization).
-- **Pinpoint Diagnostics**: Identifies the exact turn (index) where the failure logic diverged.
+- **Deterministic Trail**: Every failure is traced via the **Causal Chain**, a timestamped ledger linking forensic alerts.
+- **Resource Gradient Analysis**: Identifies hardware pressure (CPU/RAM spikes) as precursors to failure. See the [Resource Monitoring Guide](08_RESOURCE_MONITORING.md).
+- **State-Action Integrity**: Contradicts agent claims against physical state-delta reality.
 
 > [!TIP]
-> **Visual Triage**: Use `agentv console` to view these failure tags interactively. The dashboard highlights `POLICY_VIOLATION` and `STALL` events with visual cues in the trajectory timeline.
+> **Industrial Replay**: You can export the full Forensic Ledger and causal chain for offline audit or replay using the `--export forensic` flag.
 

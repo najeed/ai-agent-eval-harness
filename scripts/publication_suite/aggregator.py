@@ -13,9 +13,12 @@ from typing import Any
 import yaml
 
 try:
-    from .taxonomy import FailureTaxonomy
+    from eval_runner.taxonomy import FailureTaxonomy
 except ImportError:
-    from taxonomy import FailureTaxonomy
+    import sys
+
+    sys.path.append(str(Path(__file__).parent.parent.parent))
+    from eval_runner.taxonomy import FailureTaxonomy
 
 
 class Aggregator:

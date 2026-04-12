@@ -105,6 +105,7 @@ The plugin system provides hooks at every stage of the evaluation loop.
 | **`on_agent_turn_start`** | `context: TurnContext` | Intercept the conversation flow. |
 | **`on_tool_request`** | `context`, `tool`, `args` | **Critical Security Hook**. Block or modify tools. |
 | **`on_tool_result`** | `context`, `tool`, `result` | Observe tool outputs for drift detection. |
+| **`on_diagnose_failure`**| `taxonomy` | **New (v1.5.0)**. Register [Custom Forensic Analyzers](/extender/forensic-analyzers/). |
 | **`on_register_commands`**| `registry` | Inject custom commands into the `agentv` CLI. |
 | **`on_register_console_routes`** | `app`, `nav` | Add custom views to the [Integrated Console](/extender/api-reference/). |
 

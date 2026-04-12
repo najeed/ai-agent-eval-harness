@@ -144,6 +144,30 @@ class ForensicCollector:
             self._artifacts.append({"path": path, "alias": alias})
             logger.debug(f"[Forensics] Registered artifact: {alias} -> {path}")
 
+    def archive_plugin(self, path: Path) -> str:
+        """
+        Archives a plugin's source code into the forensic artifact vault.
+        Ensures 100% reproducibility of ad-hoc injected code.
+        Returns the SHA-256 hash of the content.
+        """
+        if not path.exists():
+            raise FileNotFoundError(f"Plugin source not found: {path}")
+
+        file_hash = compute_file_hash(path)
+        dest_filename = f"{path.stem}.{file_hash[:12]}.py"
+        target_path = self.target_dir / "plugins" / dest_filename
+
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        import shutil
+
+        shutil.copy2(path, target_path)
+
+        # Link artifact to the session lifecycle
+        # We use a specialized alias to facilitate automated replay discovery
+        self.register_artifact(target_path, f"plugins/{dest_filename}")
+
+        return file_hash
+
     def snapshot_state(self, state: dict[str, Any], turn: int):
         """
         Saves a JSON snapshot of the world state to disk.
@@ -175,7 +199,8 @@ class ForensicCollector:
             dest = self.target_dir / alias
 
             try:
-                shutil.copy2(src, dest)
+                if src.resolve() != dest.resolve():
+                    shutil.copy2(src, dest)
                 ledger[alias] = compute_file_hash(dest)
             except Exception as e:
                 logger.error(f"[Forensics] Failed to collect artifact {alias}: {e}")

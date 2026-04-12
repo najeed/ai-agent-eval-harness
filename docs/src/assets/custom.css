@@ -1,16 +1,23 @@
 /* Custom CSS for AgentV Persona-Based Documentation */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&display=swap');
 
 :root {
-	/* The Commander (Evaluator) */
-	--sl-color-persona-evaluator: #4f46e5; /* Indigo */
-	/* The Navigator (Integrator) */
-	--sl-color-persona-integrator: #10b981; /* Emerald */
-	/* The Alchemist (Extender) */
-	--sl-color-persona-extender: #f59e0b; /* Amber */
-	/* The Architect (Builder) */
-	--sl-color-persona-builder: #3b82f6; /* Blue */
-	/* The Guardian (Auditor) */
-	--sl-color-persona-auditor: #ef4444; /* Crimson */
+    --green: #18674a;
+    /* The Commander (Evaluator) */
+    --sl-color-persona-evaluator: #4f46e5;
+    /* Indigo */
+    /* The Navigator (Integrator) */
+    --sl-color-persona-integrator: #10b981;
+    /* Emerald */
+    /* The Alchemist (Extender) */
+    --sl-color-persona-extender: #f59e0b;
+    /* Amber */
+    /* The Architect (Builder) */
+    --sl-color-persona-builder: #3b82f6;
+    /* Blue */
+    /* The Guardian (Auditor) */
+    --sl-color-persona-auditor: #ef4444;
+    /* Crimson */
 
     /* Premium Accents */
     --aeh-card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -73,4 +80,19 @@
     --sl-color-accent-low: #7f1d1d;
     --sl-color-accent: #ef4444;
     --sl-color-accent-high: #fca5a5;
+}
+
+/* AgentV Wordmark */
+.wordmark {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  margin: 3rem 0;
+  text-align: center;
+}
+
+.wordmark .dot {
+    color: var(--green);
 }

@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-04-12
+
+### Deep Forensics & High-Fidelity Diagnostics
+*   **Deep Forensics Engine (v1.5.0)**: Refactored the taxonomy engine from a monolithic heuristic scanner into a pluggable, registry-based diagnostic platform.
+*   **Pluggable Forensic Analyzers**: Introduced the `BaseForensicAnalyzer` architecture, enabling both lean Core checks and high-fidelity Enterprise intelligence.
+*   **Turn-Based Resource Telemetry**: Integrated `psutil` to capture real-time CPU, RAM (RSS/VMS), and Disk usage gradients at every agent turn and tool execution.
+*   **Causal Chain Attribution**: Implemented the `CausalChain` and `DiagnosticResult` models to distinguish between root-cause triggers (e.g., Logical Loop) and terminal symptoms (e.g., Infra Timeout).
+*   **High-Fidelity Enterprise Analyzers**:
+    -   **`StrategicLoopAnalyzer`**: Semantic clustering of agent strategies using `sentence-transformers`.
+    -   **`ResourceGradientAnalyzer`**: Trend-based leak detection for proactive infrastructure failure prevention.
+    -   **`StateActionAnalyzer`**: Deterministic verification of agent-claimed effects against physical state snapshots.
+*   **Forensic Plugin Hook**: Added the `on_diagnose_failure` hook to `BaseEvalPlugin`, allowing dynamic registration of domain-specific diagnostic analyzers.
+*   **Documentation Overhaul**: Extensively updated both modern (Starlight) and legacy documentation to include forensic ledger specifications, analyzer development guides, and hardware telemetry schemas.
+*   **Registry Hardening**: Integrated hardware telemetry and state fingerprints directly into the `task_result` ledger for industrial-grade auditability.
+
 ## [1.4.2] - 2026-04-11
 
 ### AgentV Rebranding & Universal Architectural Purity

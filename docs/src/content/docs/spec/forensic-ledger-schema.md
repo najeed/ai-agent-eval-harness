@@ -1,0 +1,74 @@
+---
+title: Forensic Ledger Schema
+description: Technical specification for the task_result v1.5.0 metadata.
+---
+
+The **Forensic Ledger** is the single source of truth for failure diagnosis in AgentV. It is stored as a JSON object within the `task_result` property of every evaluation run.
+
+## 1. Schema Overview (v1.5.0)
+
+The ledger bundles metrics, trajectory history, and forensic metadata into a deterministic forensic packet.
+
+```json
+{
+  "metrics": [],
+  "conversation_history": [],
+  "protocol_sequence": [],
+  "state_snapshots": [],
+  "resource_telemetry": [],
+  "tool_registry": {},
+  "causal_chain": {}
+}
+```
+
+---
+
+## 2. Field Definitions
+
+### `resource_telemetry` (list[dict])
+A chronological list of hardware metrics sampled at each agent turn.
+- **timestamp** (float): Unix epoch.
+- **cpu_percent** (float): Current CPU load.
+- **rss_mb** (float): Physical memory (Megabytes).
+- **disk_usage_percent** (float): Workspace disk consumption.
+
+### `state_snapshots` (list[str])
+A list of SHA-256 hashes representing the environment state (files, database keys) at the end of each turn.
+- Used by the [StateActionAnalyzer](/extender/triage-engine/#2-pluggable-analyzers-core-vs-enterprise) to detect logic-state stalls and hallucinations.
+
+### `protocol_sequence` (list[str])
+A trace of transition events recorded during execution (e.g., `init`, `auth`, `execute`).
+- Verified against the `protocol_sequence_required` schema in the scenario.
+
+### `causal_chain` (dict)
+A timestamped correlation of forensic alerts.
+- **trigger**: The [FailureCategory](/evaluator/taxonomy/) identified by an analyzer.
+- **evidence**: A string describing the observation (e.g., "Fuzzy loop detected").
+
+---
+
+## 3. Tool Registry Schema
+
+The `tool_registry` defines the expected interface of all available tools, used for semantic validation.
+
+```json
+{
+  "delete_file": {
+    "parameters": ["target_file", "reason"],
+    "description": "Deletes a file from the VFS."
+  }
+}
+```
+
+---
+
+## 4. Usage in Custom Analyzers
+
+When implementing a [Custom Forensic Analyzer](/extender/forensic-analyzers/), the `task_result` object passed to the `analyze()` method contains this exact structure.
+
+```python
+def analyze(self, history, task_result):
+    telemetry = task_result.get("resource_telemetry", [])
+    # Access high-fidelity hardware data directly
+    current_rss = telemetry[-1]["rss_mb"]
+```

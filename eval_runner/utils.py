@@ -9,6 +9,7 @@ import shutil
 import stat
 import time
 from pathlib import Path
+from typing import Any
 
 # Industry Consolidation Table (AES Standard v1.2)
 INDUSTRY_MAPPING = {
@@ -176,3 +177,43 @@ def generate_id(prefix: str = "id") -> str:
     timestamp = hex(int(time.time()))[2:]
     suffix = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
     return f"{prefix}-{timestamp}-{suffix}"
+
+
+def deep_diff(d1: Any, d2: Any, path: str = "") -> list[str]:
+    """
+    Computes a structural difference between two nested objects.
+    Returns a list of human-readable differences.
+    Used for Industrial State Parity verification (AES v1.4).
+    """
+
+    diffs = []
+
+    if isinstance(d1, (int, float)) and isinstance(d2, (int, float)):
+        pass  # Allow numeric comparison without type check
+    elif type(d1) is not type(d2):
+        diffs.append(f"{path}: types differ ({type(d1).__name__} vs {type(d2).__name__})")
+        return diffs
+
+    if isinstance(d1, dict):
+        keys1 = set(d1.keys())
+        keys2 = set(d2.keys())
+
+        for k in keys1 - keys2:
+            diffs.append(f"{path}.{k}: key missing in target" if path else f"{k}: key missing")
+        for k in keys2 - keys1:
+            diffs.append(f"{path}.{k}: key extra in target" if path else f"{k}: key extra")
+
+        for k in keys1 & keys2:
+            diffs.extend(deep_diff(d1[k], d2[k], f"{path}.{k}" if path else k))
+
+    elif isinstance(d1, list | tuple):
+        if len(d1) != len(d2):
+            diffs.append(f"{path}: lengths differ ({len(d1)} vs {len(d2)})")
+        else:
+            for i in range(len(d1)):
+                diffs.extend(deep_diff(d1[i], d2[i], f"{path}[{i}]"))
+    else:
+        if d1 != d2:
+            diffs.append(f"{path}: values differ ({d1!r} vs {d2!r})")
+
+    return diffs

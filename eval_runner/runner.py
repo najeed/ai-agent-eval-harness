@@ -72,6 +72,13 @@ class DefaultRunner(BaseRunner):
 
         all_attempt_results = []
 
+        # 🚀 STRATEGY: Mission-Level Telemetry
+        events.emit(
+            events.CoreEvents.STRATEGY_START,
+            {"strategy": "pass_at_k", "k": attempts},
+            span_context=ctx.span_context,
+        )
+
         events.emit(
             events.CoreEvents.PHASE_START,
             {"phase": "pass_at_k_execution", "k": attempts},
@@ -110,6 +117,12 @@ class DefaultRunner(BaseRunner):
                 ),
                 "total_attempts": attempts,
             },
+            span_context=ctx.span_context,
+        )
+
+        events.emit(
+            events.CoreEvents.STRATEGY_END,
+            {"strategy": "pass_at_k", "status": "success" if pass_at_k > 0 else "failure"},
             span_context=ctx.span_context,
         )
 

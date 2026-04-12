@@ -18,7 +18,7 @@ if os.getenv("DEBUG_PATHS", "true").lower() == "true":
     import sys
 
     sys.stderr.write(f"   [Config] Loading Core Config from: {__file__}\n")
-    sys.stderr.write(f"   [Config] Authoritative PROJECT_ROOT: {PROJECT_ROOT}\n")
+    sys.stderr.write(f"   [Config] PROJECT_ROOT: {PROJECT_ROOT}\n")
 
 
 def _get_project_version() -> str:

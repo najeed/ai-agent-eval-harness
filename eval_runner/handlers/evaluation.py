@@ -124,10 +124,16 @@ async def handle_evaluate(args):
                     args_dict = vars(args)
                 except TypeError:
                     args_dict = {}
+                from .. import plugins
+
                 await engine.run_evaluation(
                     scenario,
                     run_id=getattr(args, "run_id", None),
-                    metadata={"args": args_dict, **agent_metadata},
+                    metadata={
+                        "args": args_dict,
+                        "forensic_plugins": plugins.manager.provenance_map,
+                        **agent_metadata,
+                    },
                 )
 
         sys.exit(0)
@@ -179,11 +185,17 @@ async def handle_run(args):
             attempts = getattr(args, "attempts", 1)
             if not isinstance(attempts, int):
                 attempts = 1
+            from .. import plugins
+
             await engine.run_evaluation(
                 scenario,
                 run_id=getattr(args, "run_id", None),
                 attempts=attempts,
-                metadata={"args": args_dict, **agent_metadata},
+                metadata={
+                    "args": args_dict,
+                    "forensic_plugins": plugins.manager.provenance_map,
+                    **agent_metadata,
+                },
             )
             scenario_name = scenario.get("title", scenario.get("scenario_id", "Unknown Scenario"))
             print(f"\n   [CLI] Evaluation complete for {scenario_name}")
