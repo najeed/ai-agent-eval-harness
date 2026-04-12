@@ -3,7 +3,7 @@ title: Custom Forensic Analyzers
 description: Extend the diagnostic depth of AgentV by building custom forensic analyzers.
 ---
 
-Forensic Analyzers are the intelligence layer of the [Triage Engine](/extender/triage-engine/). While AgentV Core provides baseline heuristic checks, you can implement custom analyzers to detect domain-specific logic errors, protocol violations, or security anomalies.
+Forensic Analyzers are the intelligence layer of the [Triage Engine](/spec/taxonomy/). While AgentV Core provides baseline heuristic checks, you can implement custom analyzers to detect domain-specific logic errors, protocol violations, or security anomalies.
 
 ## 1. The `BaseForensicAnalyzer` Interface
 
