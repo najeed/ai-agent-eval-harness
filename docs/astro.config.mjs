@@ -5,7 +5,7 @@ import starlight from '@astrojs/starlight';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://najeed.github.io',
-	base: '/ai-agent-eval-harness/',
+	base: process.env.BASE_URL || '/ai-agent-eval-harness/',
 	integrations: [
 		starlight({
 			title: 'AgentV',

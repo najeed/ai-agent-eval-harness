@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Fraud & Security**: Suspicious activity detection and KYC validation.
 - **Retail Banking**: Account servicing, loans, and credit adjustments.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

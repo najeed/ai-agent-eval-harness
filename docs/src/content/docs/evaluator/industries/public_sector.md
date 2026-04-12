@@ -53,4 +53,4 @@ Key functions identified for this sector include:
 - **Regulatory & Compliance**: Environmental auditing, labor law enforcement.
 - **Human Services**: Benefits administration and case management.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

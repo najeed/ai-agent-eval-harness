@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Service Orders**: Field service requests, low pressure, and meter checks.
 - **Sustainability**: Conservation efficiency and energy-saving program management.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

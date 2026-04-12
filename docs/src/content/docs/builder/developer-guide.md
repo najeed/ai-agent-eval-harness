@@ -41,7 +41,7 @@ Plugins are the primary extension point for the harness.
 | `on_agent_turn_start`| Intercept and inspect context before the agent speaks. |
 | `on_tool_request` | **Interception**: Return `False` to block a suspicious tool call. |
 | `on_metrics_calculated`| Post-process scores or inject custom logic. |
-| `on_register_console_routes`| Inject custom REST routes and navigation into the [Visual Console](/ai-agent-eval-harness/evaluator/user-manual/). |
+| `on_register_console_routes`| Inject custom REST routes and navigation into the [Visual Console](/evaluator/user-manual/). |
 
 ---
 

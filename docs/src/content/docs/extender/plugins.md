@@ -106,7 +106,7 @@ The plugin system provides hooks at every stage of the evaluation loop.
 | **`on_tool_request`** | `context`, `tool`, `args` | **Critical Security Hook**. Block or modify tools. |
 | **`on_tool_result`** | `context`, `tool`, `result` | Observe tool outputs for drift detection. |
 | **`on_register_commands`**| `registry` | Inject custom commands into the `agentv` CLI. |
-| **`on_register_console_routes`** | `app`, `nav` | Add custom views to the [Integrated Console](/ai-agent-eval-harness/extender/api-reference/). |
+| **`on_register_console_routes`** | `app`, `nav` | Add custom views to the [Integrated Console](/extender/api-reference/). |
 
 ---
 
@@ -119,25 +119,6 @@ To prevent prototype pollution and maintain forensic integrity, all hooks receiv
 
 ### Plugin Timeout
 All plugin hooks are subject to a **5-second timeout** (`PLUGIN_TIMEOUT`). If a hook hangs, the engine logs a `PluginTimeoutError` and proceeds, ensuring the industrial pipeline doesn't stall.
-
----
-
-## 🔍 Diagnostic & CI Enforcement
-
-### Strict Mode (`STRICT_PLUGINS`)
-To prevent "ghost" registrations or malformed configurations from polluting your environment, AgentV supports a **Strict Mode**.
-
-| Mode | Environment Variable | Behavior |
-| :--- | :--- | :--- |
-| **Resilient** | `STRICT_PLUGINS=false` (Default) | Logs a warning if a plugin fails to load and continues. Recommended for production. |
-| **Strict** | `STRICT_PLUGINS=true` | Raises a `ValueError` if any registered plugin fails to load. Used in CI and the local test suite. |
-
-To enable Strict Mode locally for debugging:
-```bash
-$env:STRICT_PLUGINS = "true"  # PowerShell
-# or
-export STRICT_PLUGINS=true    # Linux/macOS
-```
 
 ---
 
@@ -158,7 +139,7 @@ Once registered, any scenario referencing `s3_bucket` will automatically use thi
 
 ## ⚡ Integrated Console Extension
 
-Plugins can inject custom React views and REST endpoints into the [Harness Console](/ai-agent-eval-harness/extender/api-reference/).
+Plugins can inject custom React views and REST endpoints into the [Harness Console](/extender/api-reference/).
 
 ```python
 class AdminAnalysisPlugin(BaseEvalPlugin):

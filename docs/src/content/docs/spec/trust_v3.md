@@ -7,7 +7,7 @@ description: "Authoritative specification for cryptographic evaluation integrity
 The Forensic Trust Protocol v3.0.0 (Forensic Standard) extends the base Trust Protocol to provide immutable evidence for every sidecar artifact generated during an evaluation attempt.
 
 # 2. Schema
-The VC v3 manifest follows the [Industrial Forensic JSON Schema](file:///c:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/spec/vc/vc.schema.json).
+The VC v3 manifest follows the [Industrial Forensic JSON Schema](file:///c:/Users/najee/OneDrive/Documents/Projects/spec/vc/vc.schema.json).
 
 ## Key Extensions
 - **`evidence_ledger`**: A map of SHA-256 hashes for all physical artifacts (e.g. `terminal.log`, `database.sqlite`).

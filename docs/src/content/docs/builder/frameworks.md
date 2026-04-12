@@ -7,7 +7,7 @@ AgentV is framework-agnostic. You can evaluate agents built with any library (La
 
 ## 🔌 Native Ecosystem Adapters
 
-For the highest level of integration, use native adapters. These typically require a [Plugin](/ai-agent-eval-harness/extender/plugins/) and allow the harness to communicate directly with the framework's internal message bus.
+For the highest level of integration, use native adapters. These typically require a [Plugin](/extender/plugins/) and allow the harness to communicate directly with the framework's internal message bus.
 
 ### Supported Adapters (2026 Baseline)
 - **`langgraph://`**: Official LangGraph v2 Protocol support.
@@ -23,7 +23,7 @@ agentv evaluate --agent langgraph://my_retail_node
 
 ## 🛠️ Manual API Wrapping (HTTP/REST)
 
-If a native adapter is not available, you can wrap your agent in a simple REST API that follows the [Agent API Contract](/ai-agent-eval-harness/extender/api-reference/).
+If a native adapter is not available, you can wrap your agent in a simple REST API that follows the [Agent API Contract](/extender/api-reference/).
 
 ### 🟢 LangGraph Example
 ```python
@@ -81,7 +81,7 @@ agentv evaluate \
 ```
 
 ## 📊 Generating Results
-After the run completes, generate a [Verified Report](/ai-agent-eval-harness/evaluator/reports/) to analyze the results:
+After the run completes, generate a [Verified Report](/evaluator/reports/) to analyze the results:
 ```bash
 agentv report --run-id <id> --share
 ```

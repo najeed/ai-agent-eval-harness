@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Content Operations**: Curriculum planning and resource management.
 - **Student Services**: Enrollment, transcript management, and advising.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

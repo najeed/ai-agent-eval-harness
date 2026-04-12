@@ -22,7 +22,7 @@ agentv evaluate \
 - `--attempts`: Pass@K trials per scenario.
 
 ### `run`
-Execute a single specific scenario or a [Benchmark URI](/ai-agent-eval-harness/extender/api-reference/).
+Execute a single specific scenario or a [Benchmark URI](/extender/api-reference/).
 ```bash
 agentv run --scenario gaia://2023_all
 ```
@@ -50,13 +50,13 @@ agentv certify --run-id <id> --status pass --score 0.95
 ## 📂 Specification & Scenario Management
 
 ### `spec-to-eval`
-Convert Markdown PRDs/Specs into executable AES JSON using [Hybrid Parsing](/ai-agent-eval-harness/evaluator/aes-spec/).
+Convert Markdown PRDs/Specs into executable AES JSON using [Hybrid Parsing](/evaluator/aes-spec/).
 ```bash
 agentv spec-to-eval --input prd.md --output scenario.json --fill-defaults
 ```
 
 ### `import-drift`
-Convert production traces into evaluation scenarios for [Regression Testing](/ai-agent-eval-harness/evaluator/drift/).
+Convert production traces into evaluation scenarios for [Regression Testing](/evaluator/drift/).
 
 ---
 
@@ -69,7 +69,7 @@ agentv report --run-id <id> --share
 ```
 
 ### `explain`
-AI-powered root cause diagnosis with [Tiered Confidence Scoring](/ai-agent-eval-harness/evaluator/drift/).
+AI-powered root cause diagnosis with [Tiered Confidence Scoring](/evaluator/drift/).
 
 ---
 

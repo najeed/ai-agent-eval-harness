@@ -75,4 +75,4 @@ agentv spec-to-eval \
 ```
 
 > [!IMPORTANT]
-> **Schema Validation**: Validated AES files are required for [Trust Protocol Certification](/ai-agent-eval-harness/auditor/trust-protocol/). Unauthorized modifications to a certified AES file will trigger a **Behavioral Drift** alert in Phase 5.
+> **Schema Validation**: Validated AES files are required for [Trust Protocol Certification](/auditor/trust-protocol/). Unauthorized modifications to a certified AES file will trigger a **Behavioral Drift** alert in Phase 5.

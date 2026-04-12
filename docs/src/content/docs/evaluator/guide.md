@@ -20,7 +20,7 @@ AgentV ships with a production-grade corpus of **5,000+ scenarios** across 45+ i
 Each evaluation is defined by an **Agent Evaluation Specification (AES)** file. Key components include:
 
 - **`scenario_id`**: Unique identifier (e.g., `telecom-cs-001`).
-- **`industry` & `use_case`**: Contextual categorization for [Industrial Benchmarking](/ai-agent-eval-harness/evaluator/industries/).
+- **`industry` & `use_case`**: Contextual categorization for [Industrial Benchmarking](/evaluator/industries/).
 - **`initial_state`**: The starting sandbox state, supporting nested dot-notation.
 - **`tasks`**: An ordered array of steps the agent must accomplish.
 

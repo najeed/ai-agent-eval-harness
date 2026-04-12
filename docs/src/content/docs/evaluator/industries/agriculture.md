@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Supply & Logistics**: Procurement, ordering, and inbound management.
 - **Food Safety**: Traceability and global compliance auditing.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

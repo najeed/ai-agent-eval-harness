@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Account Administration**: Plan management and lifecycle events.
 - **Technical Support**: Mobile device and broadband troubleshooting.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

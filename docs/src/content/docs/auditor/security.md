@@ -7,7 +7,7 @@ AgentV is **Secure-by-Design**. It protects evaluation infrastructure and data v
 
 ## 🔑 The `DASHBOARD_API_KEY`
 
-The `DASHBOARD_API_KEY` is a mandatory credential required for all protected REST API routes and the [Integrated Console](/ai-agent-eval-harness/extender/api-reference/).
+The `DASHBOARD_API_KEY` is a mandatory credential required for all protected REST API routes and the [Integrated Console](/extender/api-reference/).
 
 ### Generating a Secure Key
 ```bash
@@ -43,7 +43,7 @@ The harness implements IP-level validation to prevent **Server-Side Request Forg
 - **Strict (Hardened)**: Set `AEH_STRICT_JAIL=1` to enforce an absolute, project-only jail, blocking access to all external directories.
 
 ### 3. Path Traversal Protection
-The [Integrated Console](/ai-agent-eval-harness/extender/api-reference/) implements a **Global Proactive Security Intercept**. Any request containing traversal patterns (`..`, `%2e%2e`) is immediately blocked with a **403 Forbidden** response.
+The [Integrated Console](/extender/api-reference/) implements a **Global Proactive Security Intercept**. Any request containing traversal patterns (`..`, `%2e%2e`) is immediately blocked with a **403 Forbidden** response.
 
 ---
 
@@ -68,7 +68,7 @@ If foundational **Safety** or **Security** scores fall below **0.5**, the aggreg
 
 ## 📑 Trust Protocol Fingerprinting
 
-The [Trust Protocol](/ai-agent-eval-harness/auditor/trust-protocol/) provides immutable proof of run integrity.
+The [Trust Protocol](/auditor/trust-protocol/) provides immutable proof of run integrity.
 
 1. **Behavioral Fingerprinting**: Uses **SHA-256** content hashing to sign raw `.jsonl` trace files.
 2. **Certification API**: Serves as a public "Trust Anchor" for external CI/CD gates via `GET /api/v1/certificates/<run_id>`.
@@ -83,4 +83,4 @@ For enterprise environments, the harness supports **Permission-Based Access Cont
 - **`OPERATOR`**: Trigger evaluations and refresh indexes.
 - **`ADMIN`**: Full control over system configuration and scenario writing.
 
-Plugins can subclass `AuthManager` to integrate with **Okta** or **Azure AD** using the [Plugin System](/ai-agent-eval-harness/extender/plugins/).
+Plugins can subclass `AuthManager` to integrate with **Okta** or **Azure AD** using the [Plugin System](/extender/plugins/).

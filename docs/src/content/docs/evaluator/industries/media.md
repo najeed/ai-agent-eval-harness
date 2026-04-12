@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Scheduling**: Linear and non-linear programming.
 - **Audience & Revenue**: Monetization, subscription management, and insights.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

@@ -54,15 +54,19 @@ jobs:
 
       - name: Build Primary Starlight Docs (Main)
         if: github.ref == 'refs/heads/main'
+        env:
+          BASE_URL: /ai-agent-eval-harness/
         run: |
           cd docs
-          npm run build -- --base /ai-agent-eval-harness/
+          npm run build
 
       - name: Build Primary Starlight Docs (Dev)
         if: github.ref == 'refs/heads/dev'
+        env:
+          BASE_URL: /ai-agent-eval-harness/dev/
         run: |
           cd docs
-          npm run build -- --base /ai-agent-eval-harness/dev/
+          npm run build
 
       # --- 3. Assembly Logic (Merge into Persistence Path) ---
       - name: Assemble Site (Main)

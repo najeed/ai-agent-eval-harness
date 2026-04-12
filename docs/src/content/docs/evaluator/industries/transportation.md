@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Urban Mobility**: Public transit scheduling and traffic management.
 - **Aviation**: Flight operations, crew scheduling, and safety auditing.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

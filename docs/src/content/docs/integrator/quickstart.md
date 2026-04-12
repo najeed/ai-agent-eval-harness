@@ -47,12 +47,12 @@ agentv auto-translate --input specs/loan_approval.pdf --industry finance
 
 To connect your own agent to the harness:
 
-1.  **Start Your Agent**: Ensure it follows the [Agent API Contract](/ai-agent-eval-harness/integrator/agent-contract/).
+1.  **Start Your Agent**: Ensure it follows the [Agent API Contract](/integrator/agent-contract/).
 2.  **Configure `.env`**: Point `AGENT_API_URL` to your endpoint.
     ```bash
     AGENT_API_URL=http://localhost:5001/execute_task
     ```
-3.  **Run Evaluation**: Use scenarios from the [Industrial Library](/ai-agent-eval-harness/evaluator/industries/).
+3.  **Run Evaluation**: Use scenarios from the [Industrial Library](/evaluator/industries/).
     ```bash
     agentv evaluate --run-id <id>
     ```
@@ -64,6 +64,6 @@ To connect your own agent to the harness:
 ---
 
 ## 🧭 Next Steps
-- **Evaluators**: Read the [User Manual](/ai-agent-eval-harness/evaluator/user-manual/) for advanced analysis.
-- **Architects**: Dive into the [Core Architecture](/ai-agent-eval-harness/builder/architecture/).
-- **Extenders**: Learn how to write [Custom Shims](/ai-agent-eval-harness/extender/shimming/).
+- **Evaluators**: Read the [User Manual](/evaluator/user-manual/) for advanced analysis.
+- **Architects**: Dive into the [Core Architecture](/builder/architecture/).
+- **Extenders**: Learn how to write [Custom Shims](/extender/shimming/).

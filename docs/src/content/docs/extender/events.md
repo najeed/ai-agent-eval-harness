@@ -1,0 +1,65 @@
+---
+title: CoreEvents Reference
+description: Authoritative guide to the AgentV Event Bus and Behavioral DNA hierarchy.
+---
+
+The AgentV event bus is the central nervous system of the evaluation harness. It facilitates decoupled communication between the engine, plugins, and forensic collectors.
+
+## 🧬 Hierarchy of Behavioral DNA
+Behavioral DNA markers allow the engine and agents to provide high-fidelity traces of their internal decision-making process.
+
+| Level | Marker | Source | Description |
+| :--- | :--- | :--- | :--- |
+| **0** | `STRATEGY` | Engine | Mission-level intent (e.g., Pass@K, Consistency). |
+| **1** | `PHASE` | Engine | Macro segments of the evaluation lifecycle. |
+| **2** | `MANEUVER` | Engine | Orchestration logic for a specific workflow node. |
+| **3** | `CHAIN` | Engine | A sequence of reasoning links within a task. |
+| **4** | `NODE` | Engine | A single atomic reasoning/execution turn. |
+| **5** | `SUBTASK` | Agent/Engine | Discrete logic units (e.g., "Dependency Check"). |
+| **6** | `ACTION` | Agent | Individual tool decisions and reasoning leaps. |
+| **7** | `STEP` | Agent | Atomic environment interactions. |
+
+---
+
+## 🏗️ Infrastructure Events
+These events track the lifecycle of the evaluation run.
+
+### `RUN_START` / `RUN_END`
+- **Trigger**: Called when a mission (multiple attempts) starts or finishes.
+- **Payload**: `run_id`, `scenario_id`, `k_attempts`.
+
+### `TASK_START` / `TASK_END`
+- **Trigger**: Called when a specific task node within a scenario starts.
+- **Payload**: `task_id`, `attempt`.
+
+### `TURN_START` / `TURN_END`
+- **Trigger**: Called for every interaction turn between the agent and environment.
+- **Payload**: `turn`, `task_id`.
+
+---
+
+## 🛠️ Tool & Environment Events
+
+### `TOOL_CALL`
+- **Trigger**: Emitted when an agent requests a tool execution.
+- **Payload**: `tool_name`, `arguments`.
+
+### `TOOL_RESULT`
+- **Trigger**: Emitted after a tool has executed.
+- **Payload**: `tool_name`, `result`, `status` (success/error/policy_violation).
+
+### `STATE_VERIFICATION`
+- **Trigger**: Emitted when a state-parity check is performed.
+- **Payload**: `metric`, `success`, `diff` (structural state difference).
+
+---
+
+## 🔬 Forensic Events
+
+### `HITL_PAUSE`
+- **Trigger**: Emitted when human intervention is requested.
+- **Payload**: `agent_request`, `human_message`.
+
+### `SANDBOX_EVENT`
+- **Trigger**: Emitted during sandbox lifecycle transitions.
+- **Payload**: `action` (create/teardown/limit), `resource_id`.

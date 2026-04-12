@@ -22,7 +22,7 @@ The AgentV core supports 1,800+ function identifiers across the following major 
 
 ## 📂 Detailed Function Registry
 
-For a complete breakdown of every function and its success criteria, refer to the individual **Sector Guides** in the [Evaluator Persona](/ai-agent-eval-harness/evaluator/industries/).
+For a complete breakdown of every function and its success criteria, refer to the individual **Sector Guides** in the [Evaluator Persona](/evaluator/industries/).
 
 ### Common Cross-Sector Functions
 While most functions are industry-specific, several recur across domains:
@@ -54,7 +54,7 @@ The `TriageEngine` uses this tag to correlate failures with historic performance
 ## 📝 Full Registry Reference
 
 > [!NOTE]
-> The complete 1,800-line registry is maintained in the [Sector Guide Repository](/ai-agent-eval-harness/evaluator/industries/). Below are several key highlights by industry.
+> The complete 1,800-line registry is maintained in the [Sector Guide Repository](/evaluator/industries/). Below are several key highlights by industry.
 
 ### Agriculture
 - **Planting & Seeding**: Variety selection and prescription generation.
@@ -71,4 +71,4 @@ The `TriageEngine` uses this tag to correlate failures with historic performance
 - **Vulnerability Assessment**: NIST evaluation and incident response plan review.
 - **Process Efficiency**: Bottleneck identification and process mapping.
 
-[See all 30+ Industrial Sectors...](/ai-agent-eval-harness/evaluator/industries/)
+[See all 30+ Industrial Sectors...](/evaluator/industries/)

@@ -31,7 +31,7 @@ Shims integrate directly with the **Virtual File System (VFS)** to ensure forens
 
 ## 🛠️ Adding a Custom Shim
 
-You can add new shims via the [Plugin System](/ai-agent-eval-harness/builder/developer-guide/) to keep the core immutable.
+You can add new shims via the [Plugin System](/builder/developer-guide/) to keep the core immutable.
 
 ### 1. Define the Simulator
 Create a class that implements the `execute(action, params)` interface.
@@ -51,7 +51,7 @@ class MyShimPlugin(BaseEvalPlugin):
 ```
 
 ### 3. Configure via Hybrid Registry
-Add your shim to the [Cumulative Registry](/ai-agent-eval-harness/extender/api-reference/) (`shim_resources.json`) to decouple URLs and credentials from logic.
+Add your shim to the [Cumulative Registry](/extender/api-reference/) (`shim_resources.json`) to decouple URLs and credentials from logic.
 
 ---
 

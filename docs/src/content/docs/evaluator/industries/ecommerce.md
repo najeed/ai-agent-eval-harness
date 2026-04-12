@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Operations & CX**: Returns, refunds, and order status lifecycle.
 - **Inventory**: Stock level monitoring and procurement.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

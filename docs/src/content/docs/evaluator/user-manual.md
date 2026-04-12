@@ -11,7 +11,7 @@ This manual is for users who want to run and understand evaluations without divi
 The unit of evaluation. A JSON or YAML file mapping to the **Agent Evaluation Specification**.
 - **`scenario_id`**: Unique identifier.
 - **`industry`**: Context (e.g., `telecom`, `finance`).
-- **`dataset`**: (Optional) Path to synthetic CSV/JSONL data. Supports [Path Decoupling](/ai-agent-eval-harness/evaluator/aes-spec/).
+- **`dataset`**: (Optional) Path to synthetic CSV/JSONL data. Supports [Path Decoupling](/evaluator/aes-spec/).
 - **`tasks`**: Ordered steps the agent must achieve.
 
 ### ✅ The Task

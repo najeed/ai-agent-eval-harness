@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **QA & Testing**: Inspection results and non-conformance tracking.
 - **Maintenance**: Preventive maintenance and spares management.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

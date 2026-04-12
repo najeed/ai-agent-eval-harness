@@ -9,7 +9,7 @@ The **Interactive Visual Suite** (launched via `agentv console`) is a high-densi
 
 The core of the suite is the **Visual Debugger**, which provides a frame-by-frame reconstruction of agent reasoning.
 - **Node-Based Trajectory**: Visualize agent turns as an interactive React Flow graph.
-- **State Inspection**: Real-time diffing of the [Virtual File System (VFS)](/ai-agent-eval-harness/extender/triage-engine/) at any point in the timeline.
+- **State Inspection**: Real-time diffing of the [Virtual File System (VFS)](/extender/triage-engine/) at any point in the timeline.
 - **Live DNA Streaming**: When using the `RemoteBridgePlugin`, evaluations stream events directly to the console in real-time.
 
 ---
@@ -17,7 +17,7 @@ The core of the suite is the **Visual Debugger**, which provides a frame-by-fram
 ## 🎯 Forensic Root Cause Isolation
 
 One of the suite's most powerful features is the **"Isolate Root Cause"** engine. 
-- It scans the [Failure Taxonomy](/ai-agent-eval-harness/evaluator/taxonomy/) markers and behavioral telemetry.
+- It scans the [Failure Taxonomy](/evaluator/taxonomy/) markers and behavioral telemetry.
 - One-click focus scrolls the trajectory to **"Patient Zero"**—the exact step where the first logic, security, or state divergence occurred.
 
 ---
@@ -27,7 +27,7 @@ One of the suite's most powerful features is the **"Isolate Root Cause"** engine
 For rapid scenario design, the suite includes a drag-and-drop editor for the **Agent Evaluation Specification (AES)**.
 - **Node Library**: Add task nodes, tool constraints, and success criteria via a GUI.
 - **Instant Validation**: The editor lints the scenario against the latest industrial schema in real-time.
-- **Persistence**: Scenarios saved in the builder are persisted directly to the authoritative [`industries/`](/ai-agent-eval-harness/evaluator/industries/) directory.
+- **Persistence**: Scenarios saved in the builder are persisted directly to the authoritative [`industries/`](/evaluator/industries/) directory.
 
 ---
 
@@ -42,6 +42,6 @@ The suite aggregates batch results into interactive leaderboards:
 
 ## 🔌 Extensibility
 
-Developers can extend the Visual Suite using the [Plugin System](/ai-agent-eval-harness/builder/developer-guide/).
+Developers can extend the Visual Suite using the [Plugin System](/builder/developer-guide/).
 - **Custom Views**: Inject React components into the dashboard using JIT-Babel hydration.
 - **Custom Routes**: Use the `on_register_console_routes` hook to add proprietary monitoring or administration endpoints.

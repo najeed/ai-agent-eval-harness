@@ -23,7 +23,7 @@ The Core (Harness) resolves capabilities using a tiered strategy:
 4. **Harness Default**: Global `AGENT_API_URL` environment variables.
 
 # 4. Routing Manifest
-The manifest is stored in `.aes/config/routing/manifest.json`. See [Routing JSON Schema](file:///c:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/spec/routing/routing.schema.json).
+The manifest is stored in `.aes/config/routing/manifest.json`. See [Routing JSON Schema](file:///c:/Users/najee/OneDrive/Documents/Projects/spec/routing/routing.schema.json).
 
 ## Example:
 ```json

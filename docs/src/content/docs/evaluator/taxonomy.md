@@ -30,7 +30,7 @@ The following Enums are the first-class failure codes emitted by the evaluation 
 ### Logic Failures
 - `LOGIC_STALL`: Agent detected in a reasoning loop (multi-turn repetition).
 - `LOGIC_REFUSAL`: Agent explicitly refused a valid mission task.
-- `LOGIC_PLANNING_ERROR`: Agent logic diverged from the required [AES DAG Path](/ai-agent-eval-harness/evaluator/aes-spec/).
+- `LOGIC_PLANNING_ERROR`: Agent logic diverged from the required [AES DAG Path](/evaluator/aes-spec/).
 
 ### Policy Failures
 - `POLICY_VIOLATION`: Agent attempted an action blocked by a scenario-level guardrail.

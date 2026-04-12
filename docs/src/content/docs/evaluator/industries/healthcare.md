@@ -39,4 +39,4 @@ Key functions identified for this sector include:
 - **Clinical Care**: Treatment planning and diagnostic interpretation.
 - **Revenue Cycle**: HIPAA-compliant claim processing and auditing.
 
-[Explore all 1,800+ Core Functions](/ai-agent-eval-harness/builder/core-functions/)
+[Explore all 1,800+ Core Functions](/builder/core-functions/)

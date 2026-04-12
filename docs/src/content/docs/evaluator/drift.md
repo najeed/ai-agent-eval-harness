@@ -30,13 +30,13 @@ Upon import, the engine generates a new **AES v1.4** scenario file in `industrie
 
 ## 🔍 Edge-Case Triage Library
 
-The **Triage Engine** automatically inspects failed tasks and applies diagnostic tags based on the [Failure Taxonomy](/ai-agent-eval-harness/evaluator/taxonomy/).
+The **Triage Engine** automatically inspects failed tasks and applies diagnostic tags based on the [Failure Taxonomy](/evaluator/taxonomy/).
 
 ### Industrial Triage Tags
 | Tag | Description |
 | :--- | :--- |
 | **`CONNECTION_ERROR`** | Communication failure with the agent or LLM provider (e.g., 500 reset). |
-| **`POLICY_VIOLATION`** | The agent attempted an action forbidden by the [Secure Sandbox](/ai-agent-eval-harness/auditor/trust-protocol/). |
+| **`POLICY_VIOLATION`** | The agent attempted an action forbidden by the [Secure Sandbox](/auditor/trust-protocol/). |
 | **`TOOL_ERROR`** | A World Shim returned an error status during tool execution. |
 | **`STALL`** | The agent hit the turn limit without reaching a terminal `final_answer`. |
 
@@ -61,7 +61,7 @@ agentv explain --run-id <id>
 ### Forensic Features
 - **Tiered Confidence Scoring**: Distinguishes between explicit violations (100%), induced system errors (85%), and heuristic fallbacks (50%).
 - **Remediation Advice**: Provides targeted prompts for refinement (e.g., "Refine sandbox policy for `read_file` to allow restricted access").
-- **Pinpoint Divergence**: Identifies the exact turn index where the agent's logic diverged from the [Trust Protocol](/ai-agent-eval-harness/auditor/trust-protocol/).
+- **Pinpoint Divergence**: Identifies the exact turn index where the agent's logic diverged from the [Trust Protocol](/auditor/trust-protocol/).
 
 > [!TIP]
-> **Visual Triage**: Failure tags are integrated into the [Integrated Console](/ai-agent-eval-harness/extender/api-reference/). High-priority tags like `POLICY_VIOLATION` are highlighted in the trajectory timeline for manual review.
+> **Visual Triage**: Failure tags are integrated into the [Integrated Console](/extender/api-reference/). High-priority tags like `POLICY_VIOLATION` are highlighted in the trajectory timeline for manual review.

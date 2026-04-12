@@ -10,18 +10,18 @@ The Extender API is designed for system integrators, dashboard developers, and p
 When running `agentv console`, the harness launches a Flask-based REST API (default: `http://localhost:5000/api`).
 
 ### 🔐 Authentication & Permissions
-Access is governed by the [Security Protocol](/ai-agent-eval-harness/auditor/security/).
+Access is governed by the [Security Protocol](/auditor/security/).
 
 - **`POST /api/auth/login`**: Authenticate via `DASHBOARD_API_KEY`. Sets an encrypted session cookie.
 - **`GET /api/auth/handoff`**: Generates a short-lived (60s) JWT token for secure frontend-to-plugin communication.
 
 ### 📋 System & Navigation
 - **`GET /api/info`**: Returns system status, engine version, and active 프로젝트 directories.
-- **`GET /api/nav`**: Returns the dynamic sidebar registry. This reflects any navigation items injected by [Plugins](/ai-agent-eval-harness/extender/plugins/).
+- **`GET /api/nav`**: Returns the dynamic sidebar registry. This reflects any navigation items injected by [Plugins](/extender/plugins/).
 
 ### 📂 Scenario Management
 - **`GET /api/scenarios`**: Faceted search across the industrial scenario catalog.
-- **`POST /api/scenarios`**: Saves or updates a scenario JSON file in the authoritative `industries/` directory. (Validated against the [Secure Jail](/ai-agent-eval-harness/auditor/security/)).
+- **`POST /api/scenarios`**: Saves or updates a scenario JSON file in the authoritative `industries/` directory. (Validated against the [Secure Jail](/auditor/security/)).
 
 ### ⚡ Execution & Monitoring
 - **`POST /api/evaluate`**: Triggers an asynchronous evaluation run. Returns a `scenario_id` for tracking.
@@ -33,7 +33,7 @@ Access is governed by the [Security Protocol](/ai-agent-eval-harness/auditor/sec
 
 These endpoints are unprotected by the primary API key to allow external deployment gates and CI/CD pipelines to verify results.
 
-- **`GET /api/v1/certificates/<run_id>`**: Retrieves the authoritative [Verification Certificate](/ai-agent-eval-harness/auditor/trust-protocol/) (VC) for a specific run.
+- **`GET /api/v1/certificates/<run_id>`**: Retrieves the authoritative [Verification Certificate](/auditor/trust-protocol/) (VC) for a specific run.
 - **`GET /api/v1/verify/<run_id>`**: Performs real-time SHA-256 integrity verification of the trace against its VC.
 
 ---
