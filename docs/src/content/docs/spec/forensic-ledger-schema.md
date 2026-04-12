@@ -34,7 +34,7 @@ A chronological list of hardware metrics sampled at each agent turn.
 
 ### `state_snapshots` (list[str])
 A list of SHA-256 hashes representing the environment state (files, database keys) at the end of each turn.
-- Used by the [StateActionAnalyzer](/extender/triage-engine/#2-pluggable-analyzers-core-vs-enterprise) to detect logic-state stalls and hallucinations.
+- Used by Enterprise analyzers to detect logic-state stalls, hallucinations, and state-action contradictions.
 
 ### `protocol_sequence` (list[str])
 A trace of transition events recorded during execution (e.g., `init`, `auth`, `execute`).

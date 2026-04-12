@@ -170,3 +170,47 @@ def test_sandbox_value_sanitization():
     val = ToolSandbox._sanitize_value("ls -la; rm -rf /")
     assert ";" not in val
     assert "ls -la rm -rf /" in val
+
+
+def test_shared_state_events():
+    """Verify that SharedStateRegistry emits events for both reads and writes."""
+    from unittest.mock import MagicMock
+
+    from eval_runner.tool_sandbox import SharedStateRegistry
+
+    mock_bus = MagicMock()
+    topology = {"agent_a": {"writes": ["*"], "reads": ["*"]}}
+    registry = SharedStateRegistry(topology, event_bus=mock_bus)
+
+    # 1. Test state_write event
+    registry.write("agent_a", "global:key", "value")
+    mock_bus.emit.assert_any_call(
+        "state_write", {"agent": "agent_a", "path": "global:key", "value": "value"}
+    )
+
+    # 2. Test state_read event
+    val = registry.read("agent_a", "global:key")
+    assert val == "value"
+    mock_bus.emit.assert_any_call(
+        "state_read", {"agent": "agent_a", "path": "global:key", "value": "value"}
+    )
+
+
+def test_abstract_sandbox_propagate_bus():
+    """Verify that AbstractSandbox propagates the event_bus to the registry."""
+    from unittest.mock import MagicMock
+
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    mock_bus = MagicMock()
+    scenario = {"scenario_id": "bus-test", "agent_topology": {"agent_a": {"writes": ["*"]}}}
+    sandbox = ToolSandbox(scenario, event_bus=mock_bus)
+
+    # Check propagation
+    assert sandbox.shared_state.event_bus == mock_bus
+
+    # Verify write through sandbox still emits
+    sandbox.shared_state.write("agent_a", "test:path", 42)
+    mock_bus.emit.assert_any_call(
+        "state_write", {"agent": "agent_a", "path": "test:path", "value": 42}
+    )

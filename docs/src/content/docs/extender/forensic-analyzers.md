@@ -43,8 +43,11 @@ class MyForensicPlugin(BaseEvalPlugin):
 
 ---
 
-## 3. Example: Building a State-Action Validator
+## 3. Advanced Examples (Enterprise Patterns)
 
+The follow examples demonstrate how heavy or domain-specific logic (e.g., NLP clustering or telemetry trending) can be integrated as custom analyzers. 
+
+### Example A: Building a State-Action Validator
 This example detects if an agent claims to have "deleted" a file, but the state snapshots show the file system remains unchanged.
 
 ```python
@@ -73,4 +76,4 @@ class StateActionAnalyzer(BaseForensicAnalyzer):
 
 - **Avoid Side Effects**: Analyzers should be read-only. They analyze the ledger, they do not modify it.
 - **Fail Gracefully**: Wrap complex logic in `try/except` blocks to prevent an analyzer failure from crashing the entire diagnostic pipeline.
-- **Leverage Telemetry**: Use the `resource_telemetry` gradient to detect non-functional failures like resource leaks or thermal throttling precursors.
+- **Leverage Telemetry**: Use the `resource_telemetry` gradient to detect non-functional failures like resource leaks. (Note: High-fidelity gradient analysis is an Enterprise-tier plugin feature).

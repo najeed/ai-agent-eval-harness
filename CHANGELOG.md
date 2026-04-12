@@ -7,18 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.0] - 2026-04-12
 
-### Deep Forensics & High-Fidelity Diagnostics
+### Deep Forensics & Core Refinement
 *   **Deep Forensics Engine (v1.5.0)**: Refactored the taxonomy engine from a monolithic heuristic scanner into a pluggable, registry-based diagnostic platform.
-*   **Pluggable Forensic Analyzers**: Introduced the `BaseForensicAnalyzer` architecture, enabling both lean Core checks and high-fidelity Enterprise intelligence.
-*   **Turn-Based Resource Telemetry**: Integrated `psutil` to capture real-time CPU, RAM (RSS/VMS), and Disk usage gradients at every agent turn and tool execution.
+*   **Reduced Core Dependencies**: Eliminated the requirement for `sentence_transformers` and `numpy` dot-product logic in the Core harness.
+*   **Centralized State Observability**: Migrated `state_read` and introduced `state_write` event emissions into the `SharedStateRegistry`, ensuring 100% forensic coverage for data lineage and industrial taint tracking.
+*   **Granular Taint Tracking**: Enhanced the `SharedStateRegistry` to accept a centralized `event_bus` for unified infrastructure interaction monitoring.
 *   **Causal Chain Attribution**: Implemented the `CausalChain` and `DiagnosticResult` models to distinguish between root-cause triggers (e.g., Logical Loop) and terminal symptoms (e.g., Infra Timeout).
-*   **High-Fidelity Enterprise Analyzers**:
-    -   **`StrategicLoopAnalyzer`**: Semantic clustering of agent strategies using `sentence-transformers`.
-    -   **`ResourceGradientAnalyzer`**: Trend-based leak detection for proactive infrastructure failure prevention.
-    -   **`StateActionAnalyzer`**: Deterministic verification of agent-claimed effects against physical state snapshots.
-*   **Forensic Plugin Hook**: Added the `on_diagnose_failure` hook to `BaseEvalPlugin`, allowing dynamic registration of domain-specific diagnostic analyzers.
-*   **Documentation Overhaul**: Extensively updated both modern (Starlight) and legacy documentation to include forensic ledger specifications, analyzer development guides, and hardware telemetry schemas.
-*   **Registry Hardening**: Integrated hardware telemetry and state fingerprints directly into the `task_result` ledger for industrial-grade auditability.
+*   **Enterprise Extension Support**: Re-categorized high-fidelity analyzers (Strategic Loops, Telemetry Gradients) as plugin-based examples, enabling users to inject advanced diagnostics via the `on_diagnose_failure` hook.
+*   **Documentation & Test Sync**: Extensively updated both modern (Starlight) and legacy documentation to reflect the Core/Enterprise structural split.
 
 ## [1.4.2] - 2026-04-11
 

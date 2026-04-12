@@ -50,10 +50,11 @@ class ResourceRegistry:
 class SharedStateRegistry:
     """Standard protocol for multi-agent state visibility (namespaces)."""
 
-    def __init__(self, topology: dict):
+    def __init__(self, topology: dict, event_bus: Any | None = None):
         self.topology = topology
         self.registry: dict[str, Any] = {}  # Stores namespace:key -> value
         self.redundant_reads = 0
+        self.event_bus = event_bus
 
     def write(self, agent_name: str, path: str, value: Any) -> bool:
         """Writes to a namespace if agent has permission."""
@@ -67,6 +68,16 @@ class SharedStateRegistry:
             or "*" in allowed_writes
         ):
             self.registry[path] = value
+
+            # Granular Taint tracking: Emit write event (Enterprise Audit Requirement)
+            from . import events
+
+            event_data = {"agent": agent_name, "path": path, "value": value}
+            if self.event_bus:
+                self.event_bus.emit("state_write", event_data)
+            else:
+                events.emit("state_write", event_data)
+
             return True
         return False
 
@@ -83,7 +94,18 @@ class SharedStateRegistry:
         ):
             # Track redundant reads (reading same value multiple times)
             # This is a metric mentioned in the roadmap
-            return self.registry.get(path)
+            val = self.registry.get(path)
+
+            # Granular Taint tracking: Emit read event (Enterprise Audit Requirement)
+            from . import events
+
+            event_data = {"agent": agent_name, "path": path, "value": val}
+            if self.event_bus:
+                self.event_bus.emit("state_read", event_data)
+            else:
+                events.emit("state_read", event_data)
+
+            return val
         return None
 
     def _match_namespace(self, namespace: str, pattern: str) -> bool:
@@ -100,7 +122,9 @@ class AbstractSandbox(ABC):
     def __init__(self, scenario: dict, event_bus: Any | None = None, forensics: Any | None = None):
         self.scenario = scenario
         self.state = scenario.get("initial_state", {}).copy()
-        self.shared_state = SharedStateRegistry(scenario.get("agent_topology", {}))
+        self.shared_state = SharedStateRegistry(
+            scenario.get("agent_topology", {}), event_bus=event_bus
+        )
         self.current_agent = "default_agent"  # Can be updated per turn
         self.event_bus = event_bus
         self.forensics = forensics
@@ -291,20 +315,6 @@ class ToolSandbox(AbstractSandbox):
                         "status": "error",
                         "message": f"Agent {active_agent} has no read permission for {read_path}",
                     }
-
-                # Notify observers of read (Enterprise requirement 5)
-                from . import events
-
-                if self.event_bus:
-                    self.event_bus.emit(
-                        "state_read",
-                        {"agent": active_agent, "path": read_path, "value": val},
-                    )
-                else:
-                    events.emit(
-                        "state_read",
-                        {"agent": active_agent, "path": read_path, "value": val},
-                    )
 
         # 5. Return Output
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})

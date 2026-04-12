@@ -13,9 +13,7 @@ The `SessionManager` now samples hardware metrics at every turn using `psutil`. 
 
 ---
 
-## 2. Gradient Analysis (Leak Detection)
-
-Traditional monitors only alert on hard crashes (e.g., OOM). AgentV's [ResourceGradientAnalyzer](../../eval_runner/taxonomy.py) tracks the **rate of change** across turns.
+Traditional monitors only alert on hard crashes (e.g., OOM). For industrial audits, the **ResourceGradientAnalyzer** (available as an Enterprise extension) tracks the **rate of change** across turns.
 
 ### Identifying a Logic-Induced Leak
 A sustained positive gradient (e.g., +2MB memory growth per turn) across 3+ consecutive turns indicates a memory leak in either the agent's logic or the world simulators. 

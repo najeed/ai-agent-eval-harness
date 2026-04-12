@@ -52,6 +52,14 @@ These events track the lifecycle of the evaluation run.
 - **Trigger**: Emitted when a state-parity check is performed.
 - **Payload**: `metric`, `success`, `diff` (structural state difference).
 
+### `STATE_READ`
+- **Trigger**: Emitted when an agent reads a value from the `SharedStateRegistry`.
+- **Payload**: `agent`, `path`, `value`.
+
+### `STATE_WRITE`
+- **Trigger**: Emitted when an agent successfully writes a value to the `SharedStateRegistry`.
+- **Payload**: `agent`, `path`, `value` (Crucial for Taint Tracking).
+
 ---
 
 ## 🔬 Forensic Events

@@ -43,7 +43,7 @@ Every failure report now includes a `causal_chain` field. This is a timestamped 
 
 ## 3. Real-World Correlations
 
-The [StrategicLoopAnalyzer](/extender/triage-engine/#2-pluggable-analyzers-core-vs-enterprise) often reveals causal links that standard loggers miss:
+Advanced analyzers (available via Enterprise extensions) often reveal causal links that standard loggers miss:
 
 ### Case Study: The "Try-Hard" Loop
 1.  **Turn 5**: The agent receives a `Permission Denied` error for a file.

@@ -16,15 +16,15 @@ The `SessionManager` captures the following hardware metrics at every agent turn
 
 ---
 
-## 2. Resource Gradients (Leak Detection)
+## 2. Resource Gradients (Enterprise Feature)
 
-Instead of just checking for a hard crash (e.g., OOM), the [ResourceGradientAnalyzer](/extender/triage-engine/#2-pluggable-analyzers-core-vs-enterprise) tracks the **Gradient** (rate of change) of these metrics.
+While Core AgentV captures raw metrics, the high-fidelity **Gradient** tracking (analyzing the rate of change) is available via Enterprise-tier plugins.
 
 ### Identifying a Memory Leak
 - **Normal**: Memory fluctuates as tools are loaded and unloaded.
 - **Anomalous**: A sustained, positive linear gradient (e.g., +5MB per turn) across more than 3 turns, even during idle periods.
 
-When a leak is detected, AgentV flags the session with a `LOGIC_STATE_STALL` or `INFRA_OOM` trigger in the [Causal Chain](/auditor/causal-chains/).
+When a leak is detected, the Enterprise analyzer flags the session with a `LOGIC_STATE_STALL` or `INFRA_OOM` trigger in the [Causal Chain](/auditor/causal-chains/).
 
 ---
 
