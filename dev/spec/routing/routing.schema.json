@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Capability-Based Routing v1",
+  "description": "Schema for the infrastructure routing manifest (routing.json)",
+  "type": "object",
+  "required": [
+    "mappings"
+  ],
+  "properties": {
+    "mappings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "protocol",
+          "endpoint"
+        ],
+        "properties": {
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "http",
+              "local",
+              "socket",
+              "grpc"
+            ]
+          },
+          "endpoint": {
+            "type": "string",
+            "description": "URL, CLI command, or socket identifier"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Optional environment-specific metadata (e.g. headers, timeout)"
+          }
+        }
+      }
+    }
+  }
+}

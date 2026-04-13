@@ -5198,7 +5198,7 @@
 <h3 id="scenario">🗂️ Scenario<a class="headerlink" href="#scenario" title="Permanent link">&para;</a></h3>
 <p>A scenario is the unit of evaluation. It's a JSON file that defines:</p>
 <ul>
-<li><code>scenario_id</code> — unique identifier</li>
+<li><code>id</code> — unique identifier</li>
 <li><code>title</code> — human-friendly name</li>
 <li><code>industry</code> — category for grouping</li>
 <li><code>dataset</code> — (optional) path to a synthetic CSV/JSONL dataset to ground the scenario. <strong>Path Decoupling (v1.1+)</strong>: Relative paths (e.g., <code>./data.csv</code>) are resolved relative to the scenario file itself.</li>
@@ -5467,14 +5467,14 @@
 <h4 id="run-trace-management">📽️ Run Trace Management<a class="headerlink" href="#run-trace-management" title="Permanent link">&para;</a></h4>
 <p>The harness records every event (agent messages, tool calls, metrics) into trace files for debugging and auditing.</p>
 <p><strong>Default Behavior:</strong>
-- All runs are appended to <code>runs/run.jsonl</code>.
-- Each run is also saved to its own file: <code>runs/run-&lt;run_id&gt;.jsonl</code>.</p>
+- All runs are appended to <code>runs/run.jsonl</code> (master log).
+- Each run is also physically isolated in its own <strong>Industrial Vault</strong>: <code>runs/&lt;run_id&gt;/run.jsonl</code>.</p>
 <p><strong>Configuration (Environment Variables):</strong>
 | Variable | Default | Description |
 |---|---|---|
 | <code>RUN_LOG_DIR</code> | <code>runs</code> | Directory where trace files are stored. |
-| <code>RUN_LOG_PER_RUN</code> | <code>true</code> | Save each run to a separate file. |
-| <code>RUN_LOG_MASTER</code> | <code>true</code> | Append all runs to a master <code>run.jsonl</code>. |
+| <code>RUN_LOG_PER_RUN</code> | <code>true</code> | Creates a nested "Vault" directory for every execution (Required for Compliance). Set to <code>false</code> for quick debugging of traces - this will prevent the creation of new subdirectories in the <code>runs</code> folder and cannot be used for compliance purposes.  |
+| <code>RUN_LOG_MASTER</code> | <code>true</code> | Append all runs to a master <code>run.jsonl</code>. Setting it to <code>false</code> in high security environments where you do not want to store all runs in a single file will force RUN_LOG_PER_RUN to be true. |
 | <code>RUN_LOG_ROTATE_COUNT</code> | <code>0</code> | Number of per-run files to keep. <code>0</code> means keep all. |
 | <code>EVAL_TURN_THROTTLE</code> | <code>0</code> | Operational: Delay (seconds) between agent turns for rate-limiting. |</p>
 <hr />
@@ -5559,7 +5559,7 @@
 <hr />
 <h2 id="scenario-structure-example">🧩 Scenario Structure (Example)<a class="headerlink" href="#scenario-structure-example" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;scenario_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example_01&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example_01&quot;</span><span class="p">,</span>
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basic instruction&quot;</span><span class="p">,</span>
 <a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;generic&quot;</span><span class="p">,</span>
 <a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -5589,7 +5589,7 @@ The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</c
 <li>Add a JSON scenario file (any name ending in <code>.json</code>):</li>
 </ol>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">{</span>
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&quot;scenario_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_scenario_01&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_scenario_01&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Example scenario&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">  </span><span class="nt">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;your_industry&gt;&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">  </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">]</span>
@@ -5608,7 +5608,7 @@ The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</c
 <h2 id="cumulative-industrial-registry-v130">Cumulative Industrial Registry (v1.3.0)<a class="headerlink" href="#cumulative-industrial-registry-v130" title="Permanent link">&para;</a></h2>
 <p>For high-stakes evaluations, the harness separates core infrastructure definitions from environment-specific overrides using a <strong>Cumulative Layered Model</strong>.</p>
 <h3 id="precedence-merging-v130">Precedence &amp; Merging (v1.3.0)<a class="headerlink" href="#precedence-merging-v130" title="Permanent link">&para;</a></h3>
-<p>The harness simplifies configuration management by deep-merging two authoritative sources:
+<p>The harness simplifies configuration management by deep-merging two sources:
 1.  <strong>Immutable Core baseline</strong> (Internal): Sanctioned defaults for API/Git. This ensured the harness works Out-of-the-Box.
 2.  <strong>Distributed Cumulative Folder</strong> (<code>shim_resources.d/</code>): The <strong>single source of truth</strong> for all team and project extensions.
 3.  <strong>Environment Injection</strong> (<code>AES_SHIM_RESOURCES_JSON</code>): Higher-precedence runtime overrides for CI/CD pipelines.</p>
@@ -5715,9 +5715,9 @@ This prevents agents from unintentionally interfering with each other and enable
 <div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>agentv<span class="w"> </span>import-drift<span class="w"> </span>--input<span class="w"> </span>production_trace.jsonl<span class="w"> </span>--industry<span class="w"> </span>telecom<span class="w"> </span>--output-dir<span class="w"> </span>industries/telecom/scenarios
 </code></pre></div>
 <h3 id="52-state-level-trajectory-triage-how-root-cause-isolation-works">🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)<a class="headerlink" href="#52-state-level-trajectory-triage-how-root-cause-isolation-works" title="Permanent link">&para;</a></h3>
-<p>AgentEval isolates the root cause of a failure by combining three layers of analysis — not just scanning logs.</p>
+<p>AgentV isolates the root cause of a failure by combining three layers of analysis — not just scanning logs.</p>
 <p><strong>Layer 1: State Parity Check (VFS Delta)</strong>
-Every World Shim (Database, Jira, Git, API, etc.) is "VFS-aware". When an agent calls a tool, AgentEval compares the resulting system state against the "Ground Truth" defined in the scenario. If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the <strong>"Patient Zero"</strong> step. This catches "silent failures" where the agent <em>thinks</em> it succeeded but the environment changed incorrectly.</p>
+Every World Shim (Database, Jira, Git, API, etc.) is "VFS-aware". When an agent calls a tool, AgentV compares the resulting system state against the "Ground Truth" defined in the scenario. If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the <strong>"Patient Zero"</strong> step. This catches "silent failures" where the agent <em>thinks</em> it succeeded but the environment changed incorrectly.</p>
 <p><strong>Layer 2: Heuristic Triage Engine (<code>triage.py</code>)</strong>
 A specialized engine scans the entire trace for failure patterns:
 - <strong>Stall Detection</strong> — identifies if an agent is looping (e.g., calling <code>list_dir</code> 3 times with no change in behavior).
@@ -5751,7 +5751,7 @@ The Visual Debugger's <strong>"Isolate Root Cause"</strong> automatically scroll
 </tr>
 </tbody>
 </table>
-<p>By combining these layers, AgentEval can distinguish between an agent that <em>hallucinated a tool's existence</em> vs. an agent that <em>used the right tool but with the wrong parameters</em>.</p>
+<p>By combining these layers, AgentV can distinguish between an agent that <em>hallucinated a tool's existence</em> vs. an agent that <em>used the right tool but with the wrong parameters</em>.</p>
 <blockquote>
 <p><strong>Why use Shims instead of Real APIs?</strong>
 - <strong>Safety</strong>: No risk of accidentally deleting a production database or emailing a real customer.

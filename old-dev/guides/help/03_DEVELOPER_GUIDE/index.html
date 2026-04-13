@@ -897,10 +897,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#secure-handoff-workflow" class="md-nav__link">
+  <a href="#secure-industrial-handoff" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Secure Handoff Workflow:
+        Secure Industrial Handoff:
       
     </span>
   </a>
@@ -1135,10 +1135,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#121-signing-workflow" class="md-nav__link">
+  <a href="#121-industrial-signing-workflow-aes-v150-strict" class="md-nav__link">
     <span class="md-ellipsis">
       
-        12.1 Signing Workflow
+        12.1 Industrial Signing Workflow (AES v1.5.0 Strict)
       
     </span>
   </a>
@@ -4441,10 +4441,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#secure-handoff-workflow" class="md-nav__link">
+  <a href="#secure-industrial-handoff" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Secure Handoff Workflow:
+        Secure Industrial Handoff:
       
     </span>
   </a>
@@ -4679,10 +4679,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#121-signing-workflow" class="md-nav__link">
+  <a href="#121-industrial-signing-workflow-aes-v150-strict" class="md-nav__link">
     <span class="md-ellipsis">
       
-        12.1 Signing Workflow
+        12.1 Industrial Signing Workflow (AES v1.5.0 Strict)
       
     </span>
   </a>
@@ -4842,9 +4842,9 @@
 - <strong>Decoupled Shims</strong>: Most infrastructure shims (CLI, Docker, API) are in <code>eval_runner/simulators.py</code>.</p>
 <hr />
 <h2 id="15-zero-hardcode-versioning-ssot">1.5 Zero-Hardcode Versioning (SSOT)<a class="headerlink" href="#15-zero-hardcode-versioning-ssot" title="Permanent link">&para;</a></h2>
-<p>To maintain industrial auditability, AgentEval follows a <strong>Single Source of Truth (SSOT)</strong> for all versioning. Do NOT hardcode version strings (e.g. <code>1.3.0</code>) in logic or tests.</p>
+<p>To maintain industrial auditability, AgentV follows a <strong>Single Source of Truth (SSOT)</strong> for all versioning. Do NOT hardcode version strings (e.g. <code>1.3.0</code>) in logic or tests.</p>
 <h3 id="programmatic-access">Programmatic Access<a class="headerlink" href="#programmatic-access" title="Permanent link">&para;</a></h3>
-<p>Always import the authoritative version from the core config:
+<p>Always import the version from the core config:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">eval_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Harness Version: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></p>
@@ -4974,10 +4974,15 @@ The harness uses an <strong>Adapter Pattern</strong> to support diverse provider
 </code></pre></div></p>
 <h3 id="43-extending-the-integrated-visual-suite-native-gui">4.3 Extending the Integrated Visual Suite (Native GUI)<a class="headerlink" href="#43-extending-the-integrated-visual-suite-native-gui" title="Permanent link">&para;</a></h3>
 <p>The Visual Suite uses a <strong>Secure Handoff</strong> architecture and provides integrated high-level features like the <strong>Visual Scenario Editor</strong> (persists directly to disk) and the <strong>Visual DNA Debugger</strong> (taps into engine events).</p>
-<h4 id="secure-handoff-workflow">Secure Handoff Workflow:<a class="headerlink" href="#secure-handoff-workflow" title="Permanent link">&para;</a></h4>
+<h4 id="secure-industrial-handoff">Secure Industrial Handoff:<a class="headerlink" href="#secure-industrial-handoff" title="Permanent link">&para;</a></h4>
 <ol>
 <li><strong>JWT Issuance</strong>: The frontend requests a short-lived (60s) handoff token from <code>/api/auth/handoff</code>.</li>
 <li><strong>Authentication</strong>: The plugin route must be decorated with <code>@handoff_required</code> to verify this token.</li>
+<li><strong>Consolidated API</strong>: All industrial triggers (e.g., <code>/api/v1/evaluate</code>, <code>/api/v1/certify</code>) reside under the <code>v1/</code> sub-prefix.<ul>
+<li><strong><code>POST /api/v1/evaluate</code></strong>: Requires <code>path</code> (scenario JSON); returns <code>run_id</code>.</li>
+<li><strong><code>POST /api/v1/certify</code></strong>: Requires <code>run_id</code>; returns a cryptographically signed VC manifest.</li>
+</ul>
+</li>
 <li><strong>Dual Rendering Modes</strong>:</li>
 <li><strong>Mode A (Native SDUI)</strong>: If the endpoint returns <code>application/json</code> with a UI spec, the console renders it using native React components.</li>
 <li><strong>Mode B (Secure WebView)</strong>: If it returns HTML, the console renders an authenticated WebView.</li>
@@ -5088,7 +5093,7 @@ The harness uses an <strong>Adapter Pattern</strong> to support diverse provider
 <h3 id="92-configuration">9.2 Configuration<a class="headerlink" href="#92-configuration" title="Permanent link">&para;</a></h3>
 <p>Cleanup is conditional based on the scenario metadata:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">&quot;scenario_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example-123&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example-123&quot;</span><span class="p">,</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nt">&quot;cleanup_workspace&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="p">}</span>
@@ -5149,11 +5154,12 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 <hr />
 <h2 id="12-security-artifact-integrity">🔐 12 Security &amp; Artifact Integrity<a class="headerlink" href="#12-security-artifact-integrity" title="Permanent link">&para;</a></h2>
 <p>The harness uses an <strong>ED25519-based signing protocol</strong> to ensure the integrity of evaluation artifacts.</p>
-<h3 id="121-signing-workflow">12.1 Signing Workflow<a class="headerlink" href="#121-signing-workflow" title="Permanent link">&para;</a></h3>
+<h3 id="121-industrial-signing-workflow-aes-v150-strict">12.1 Industrial Signing Workflow (AES v1.5.0 Strict)<a class="headerlink" href="#121-industrial-signing-workflow-aes-v150-strict" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Key Generation</strong>: If <code>AES_PRIVATE_KEY</code> is missing from <code>.env</code>, the engine auto-generates a key in <code>.aes/keys/</code>.</li>
-<li><strong>Manifest Signing</strong>: The <code>ArtifactPlugin</code> generates an <code>audit_manifest.json</code> for every run, containing hashes of all traces and reports, signed by the system's private key.</li>
-<li><strong>Verification</strong>: Use <code>agentv verify --run-id &lt;id&gt;</code> to validate the signature against the public key.</li>
+<li><strong>Zero-Inference Policy</strong>: Certification MUST include an explicit <code>run_id</code>. Speculative inference from parent directories is prohibited.</li>
+<li><strong>Vault Affinity</strong>: Traces MUST reside in a compliant industrial vault (<code>runs/&lt;run_id&gt;/run.jsonl</code>) or in the master log (<code>runs/run.jsonl</code>).</li>
+<li><strong>Zero-Copy Signing</strong>: Traces are signed directly within the vault to ensure forensic sidecars remain relative and portable.</li>
+<li><strong>Verification</strong>: Use <code>agentv verify --run-id &lt;id&gt;</code> to validate the signature against the public key using the industrial trust gate.</li>
 </ul>
 <h3 id="122-cicd-hard-gates">12.2 CI/CD Hard Gates<a class="headerlink" href="#122-cicd-hard-gates" title="Permanent link">&para;</a></h3>
 <p>The <code>gate</code> command enforces these signatures in pipeline environments, preventing unverified or tampered results from passing the build.</p>
@@ -5193,7 +5199,7 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 - <code>apiFetch</code> automatically injects the necessary security headers and handles the auth-refresh handshake.</p>
 <hr />
 <h2 id="15-cumulative-industrial-registry-v130">🛠️ 15 Cumulative Industrial Registry (v1.3.0)<a class="headerlink" href="#15-cumulative-industrial-registry-v130" title="Permanent link">&para;</a></h2>
-<p>To support high-stakes, multi-tenant agent evaluations, AgentEval v1.3.0 implements a <strong>Cumulative Distributed Registry</strong>. This architecture ensures that core infrastructure remains stable while allowing custom extensions and local configurations to layer their own state on top of the baseline. They are consumed in the following order:</p>
+<p>To support high-stakes, multi-tenant agent evaluations, AgentV v1.3.0 implements a <strong>Cumulative Distributed Registry</strong>. This architecture ensures that core infrastructure remains stable while allowing custom extensions and local configurations to layer their own state on top of the baseline. They are consumed in the following order:</p>
 <ul>
 <li><code>00_*.json</code> — Core extensions or base infrastructural layers.</li>
 <li><code>10_*.json</code> — Vertical industry extensions (Fintech, Healthcare).</li>

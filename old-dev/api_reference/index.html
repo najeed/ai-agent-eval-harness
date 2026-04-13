@@ -3701,6 +3701,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#4-identity-resolution-public" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Identity Resolution (Public)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3735,7 +3746,7 @@
 
 
 <h1 id="api-reference-programmatic-authorization">API Reference (Programmatic Authorization)<a class="headerlink" href="#api-reference-programmatic-authorization" title="Permanent link">&para;</a></h1>
-<p>This document provides a technical guide for interacting with the Advanced AgentEval Harness REST API using specialized service keys.</p>
+<p>This document provides a technical guide for interacting with the Advanced AgentV Harness REST API using specialized service keys.</p>
 <h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
 <p>Programmatic access is controlled via the <code>X-Api-Key</code> header.</p>
 <h3 id="provisioning">Provisioning<a class="headerlink" href="#provisioning" title="Permanent link">&para;</a></h3>
@@ -3765,15 +3776,18 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;started&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Evaluation started for loan_decision.yaml&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;scenario_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fin_loan_001&quot;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fin_loan_001&quot;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">}</span>
 </code></pre></div></p>
 <h3 id="2-verify-run-public-trust">2. Verify Run (Public Trust)<a class="headerlink" href="#2-verify-run-public-trust" title="Permanent link">&para;</a></h3>
 <p><code>GET /v1/verify/&lt;run_id&gt;</code></p>
-<p>Public endpoint that verifies a completed run against its industrial manifest using autonomous artifact resolution.</p>
+<p>Public endpoint that verifies a completed run against its industrial manifest using autonomous artifact resolution. (Unprotected for Public Trust compatibility).</p>
 <h3 id="3-retrieve-certificate-industrial-vc">3. Retrieve Certificate (Industrial VC)<a class="headerlink" href="#3-retrieve-certificate-industrial-vc" title="Permanent link">&para;</a></h3>
 <p><code>GET /v1/certificates/&lt;run_id&gt;</code></p>
-<p>Retrieves the authoritative Verification Certificate (VC) for a specific run, including SHA-256 hashes and identity signatures.</p>
+<p>Retrieves the Verification Certificate (VC) for a specific run, including SHA-256 hashes and identity signatures. (Unprotected for Public Trust compatibility).</p>
+<h3 id="4-identity-resolution-public">4. Identity Resolution (Public)<a class="headerlink" href="#4-identity-resolution-public" title="Permanent link">&para;</a></h3>
+<p><code>GET /v1/identity/&lt;identity_id&gt;/public_key</code></p>
+<p>Resolves the public key for a forensic identity to support multi-party signature verification. (Unprotected for Public Trust compatibility).</p>
 <hr />
 <h2 id="polling-pattern-cli-integration">Polling Pattern (CLI Integration)<a class="headerlink" href="#polling-pattern-cli-integration" title="Permanent link">&para;</a></h2>
 <p>For headless CI/CD, use the following pattern:

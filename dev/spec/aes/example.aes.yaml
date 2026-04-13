@@ -1,0 +1,24 @@
+aes_version: 1.4
+metadata:
+  name: "Base Interaction Benchmark"
+  compliance_level: "Standard"
+  capabilities:
+    - "default_http_agent"
+
+description: "A simple baseline scenario for testing agent connectivity and response quality."
+industry: "general"
+
+workflow:
+  nodes:
+    - id: "start"
+      task_description: "Say hello to the evaluator and confirm connection."
+      success_criteria:
+        - output_matches: "(?i)hello|connected"
+
+  edges: []
+
+evaluation:
+  consensus:
+    strategy: "Majority_Vote"
+    min_judges: 1
+    judge_panel: ["Luna-1"]

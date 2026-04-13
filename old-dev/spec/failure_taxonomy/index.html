@@ -3724,7 +3724,7 @@
 
 
 <h1 id="specification-stratified-failure-taxonomy-v150">Specification: Stratified Failure Taxonomy (v1.5.0)<a class="headerlink" href="#specification-stratified-failure-taxonomy-v150" title="Permanent link">&para;</a></h1>
-<p>To replace brittle, heuristic-based error string matching, AgentEval v1.5.0 implements an <strong>Industrial-Grade Forensic Taxonomy Engine</strong>. This system provides pluggable, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics and causal-chain attribution.</p>
+<p>To replace brittle, heuristic-based error string matching, AgentV v1.5.0 implements an <strong>Industrial-Grade Forensic Taxonomy Engine</strong>. This system provides pluggable, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics and causal-chain attribution.</p>
 <h2 id="1-classification-hierarchy">1. Classification Hierarchy<a class="headerlink" href="#1-classification-hierarchy" title="Permanent link">&para;</a></h2>
 <p>Failures are categorized into four primary industrial domains:</p>
 <table>
@@ -3738,29 +3738,29 @@
 <tbody>
 <tr>
 <td style="text-align: left;"><strong>INFRASTRUCTURE</strong></td>
-<td style="text-align: left;">Simulator, network, or environment errors.</td>
+<td style="text-align: left;">Simulator, network, or identity-signed environment errors.</td>
 <td style="text-align: left;">Reliability engineering</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>LOGIC</strong></td>
-<td style="text-align: left;">Reasoning errors, loops, or planning failures.</td>
+<td style="text-align: left;">Reasoning errors, loops, or planning failures (Behavioral DNA).</td>
 <td style="text-align: left;">Cognitive assessment</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>POLICY</strong></td>
-<td style="text-align: left;">Violations of explicit tool or safety guardrails.</td>
+<td style="text-align: left;">Violations of explicit tool, safety, or PBAC identity constraints.</td>
 <td style="text-align: left;">Governance &amp; Compliance</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>SECURITY</strong></td>
-<td style="text-align: left;">Unauthorized access, data leaks, or PII breaches.</td>
+<td style="text-align: left;">Unauthorized access, data leaks, or signed provenance breaches.</td>
 <td style="text-align: left;">Cyber-security / Privacy</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="2-pluggable-analyzer-architecture">2. Pluggable Analyzer Architecture<a class="headerlink" href="#2-pluggable-analyzer-architecture" title="Permanent link">&para;</a></h2>
-<p>AgentV 1.5.0 transitions from a monolithic triage engine to a <strong>Forensic Analyzer Registry</strong>. Every diagnostic logic is encapsulated in an analyzer that implements the <code>BaseForensicAnalyzer</code> interface.</p>
+<p>AgentV 1.5.0 transitions from a monolithic triage engine to an <strong>Identity-Signed Forensic Analyzer Registry</strong>. Every diagnostic logic is encapsulated in an analyzer that implements the <code>BaseForensicAnalyzer</code> interface, prioritizing <strong>PBAC Identity Nodes</strong> over legacy strings.</p>
 <h3 id="baseline-vs-enterprise-analyzers">Baseline vs. Enterprise Analyzers<a class="headerlink" href="#baseline-vs-enterprise-analyzers" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Core (Baseline)</strong>: Regex-based PII matching, cyclical turn repetition, and protocol sequence verification.</li>
@@ -3768,14 +3768,14 @@
 </ul>
 <hr />
 <h2 id="3-forensic-triage-causal-attribution">3. Forensic Triage &amp; Causal Attribution<a class="headerlink" href="#3-forensic-triage-causal-attribution" title="Permanent link">&para;</a></h2>
-<p>When a failure occurs, the engine performs a stratified analysis by executing all registered analyzers against the <a href="forensic_ledger_schema.md">Forensic Ledger</a>:</p>
+<p>When a failure occurs, the engine performs a stratified analysis by executing all registered analyzers against the <a href="../../docs/src/content/docs/spec/forensic-ledger-schema.md">Forensic Ledger</a>:</p>
 <ol>
 <li><strong>State Layer</strong>: Compares state-delta snapshots (SHA-256) across turns.</li>
 <li><strong>Telemetry Layer</strong>: Scans hardware resource gradients (CPU/Mem/Disk) for leaks via <code>psutil</code>.</li>
 <li><strong>Audit Layer</strong>: Correlates events into a <strong>Causal Chain</strong>.</li>
 </ol>
 <h3 id="causal-chain-attribution">Causal Chain Attribution<a class="headerlink" href="#causal-chain-attribution" title="Permanent link">&para;</a></h3>
-<p>The engine distinguishes between the <strong>Root Cause (Trigger)</strong> and the <strong>Terminal Status (Symptom)</strong>. The Causal Chain provides a timestamped ledger of forensic alerts that leads to the final failure.</p>
+<p>The engine distinguishes between the <strong>Root Cause (Trigger)</strong> and the <strong>Terminal Status (Symptom)</strong>. Anchoring is performed via the <strong>Robust Step-Back Scan</strong>, which searches for the last authoritative <strong>Identity Node</strong> (agent_id) to pin the failure.</p>
 <hr />
 <h2 id="4-nist-ai-100-1-mapping">4. NIST AI-100-1 Mapping<a class="headerlink" href="#4-nist-ai-100-1-mapping" title="Permanent link">&para;</a></h2>
 <p>This taxonomy is mapped directly to the <strong>NIST AI-100-1</strong> trustworthiness framework to support industrial certification:</p>

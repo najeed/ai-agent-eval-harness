@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Evaluation Results v1",
+  "description": "Standard schema for atomic evaluation outcomes",
+  "type": "object",
+  "required": [
+    "run_id",
+    "id",
+    "status",
+    "metrics"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failure",
+        "error",
+        "cancelled"
+      ]
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "tool_correctness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "avg_latency": {
+          "type": "number"
+        },
+        "total_tokens": {
+          "type": "integer"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

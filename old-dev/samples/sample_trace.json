@@ -1,6 +1,6 @@
 {
     "metadata": {
-        "scenario_id": "billing_dispute_01",
+        "id": "billing_dispute_01",
         "version": "2.0-STABLE",
         "timestamp": "2026-03-31T06:33:00Z",
         "attribution": "Ookla Speedtest Global Performance (CC BY-NC-SA 4.0)"

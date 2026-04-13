@@ -4114,7 +4114,7 @@
 
 
 <h1 id="trust-protocol-standard-v141-forensic-baseline">Trust Protocol Standard v1.4.1 (Forensic Baseline)<a class="headerlink" href="#trust-protocol-standard-v141-forensic-baseline" title="Permanent link">&para;</a></h1>
-<p>The Trust Protocol is designed to provide <strong>immutable proof of run integrity</strong> for the AgentV Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate v3).</p>
+<p>The Trust Protocol is designed to provide <strong>immutable proof of run integrity</strong> for the AgentV Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the metadata (Verification Certificate v3).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>graph TD
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    A[Trace File .jsonl] --&gt;|SHA-256| B[Content Hash]
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    B --&gt; C[Manifest v3 Metadata]
@@ -4139,7 +4139,7 @@
 <ol>
 <li><strong>Trace Layer (Integrity)</strong>: A SHA-256 hash of the <code>.jsonl</code> trace file ensures core execution has not been altered.</li>
 <li><strong>Evidence Layer (Provenance)</strong>: The <strong>Forensic Evidence Ledger</strong> contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.</li>
-<li><strong>Manifest Layer (Authority)</strong>: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an authoritative identity via the <strong>Identity Registry</strong>.</li>
+<li><strong>Manifest Layer (Authority)</strong>: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an identity via the <strong>Identity Registry</strong>.</li>
 </ol>
 <h3 id="the-forensic-relevance-engine-artifact-filtering">The Forensic Relevance Engine (Artifact Filtering)<a class="headerlink" href="#the-forensic-relevance-engine-artifact-filtering" title="Permanent link">&para;</a></h3>
 <p>To prevent "Forensic Bloat" while maintaining industrial accountability, the harness employs an <strong>Authoritative Relevance Engine</strong> for artifact collection. This engine enforces a Three-Tier Filtering Model:</p>
@@ -4179,7 +4179,7 @@
 <h2 id="3-the-verification-workflow">3. The Verification Workflow<a class="headerlink" href="#3-the-verification-workflow" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Generation</strong>: Upon run completion, the harness generates hashes for the trace and all sidecar artifacts.</li>
-<li><strong>Issuance</strong>: The <code>IdentityService</code> resolves the authoritative <code>system_id</code> private key and signs the VC v3 manifest.</li>
+<li><strong>Issuance</strong>: The <code>IdentityService</code> resolves the <code>system_id</code> private key and signs the VC v3 manifest.</li>
 <li><strong>Redundant Storage</strong>:<ul>
 <li><strong>Sidecar</strong>: Stored as <code>run_manifest.json</code> within the run directory for local reproducibility.</li>
 <li><strong>Authoritative Store</strong>: Stored in <code>reports/certificates/</code> for the Trust API.</li>
@@ -4273,7 +4273,7 @@ This enables "Zero-Touch" security where the harness remains provider-agnostic w
 <p>The Evaluation Harness provides a first-class CLI suite to manage the Trust Protocol workflow:</p>
 <ul>
 <li><strong><code>certify --run-id &lt;id&gt; [--identity system_id] [--status pass]</code></strong>: 
-    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and authoritative store.</li>
+    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and store.</li>
 <li><strong><code>verify --run-id &lt;id&gt;</code></strong>: 
     Locally verifies the integrity of a trace file against its manifest (Sidecar) using autonomous artifact resolution.</li>
 <li><strong><code>gate --run-id &lt;id&gt; [--verify-ledger]</code></strong>: 

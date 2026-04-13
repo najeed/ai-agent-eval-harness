@@ -4450,7 +4450,7 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 - <strong>Cloud Metadata Security</strong>: Access to cloud provider metadata endpoints (e.g., <code>169.254.169.254</code>) is strictly neutralized to prevent credential theft.</p>
 <h3 id="b-data-integrity-telemetry-masking">B. Data Integrity &amp; Telemetry Masking<a class="headerlink" href="#b-data-integrity-telemetry-masking" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Path Traversal Hardening</strong>: All file-based operations (scenario saving, trace loading, and report generation) are subject to strict <strong>Path Anchoring</strong>. The harness resolves and normalizes all user-provided paths against the authoritative <code>PROJECT_ROOT</code>, preventing jail escapes even when the root resides within temporary system directories.</li>
+<li><strong>Path Traversal Hardening</strong>: All file-based operations (scenario saving, trace loading, and report generation) are subject to strict <strong>Path Anchoring</strong>. The harness resolves and normalizes all user-provided paths against the <code>PROJECT_ROOT</code>, preventing jail escapes even when the root resides within temporary system directories.</li>
 <li><strong>Recursive Secret Scrubbing</strong>: The <code>TraceRecorder</code> and <code>EventEmitter</code> now employ a recursive masking layer that automatically redacts common secret patterns (API keys, JWTs, PII) from flight-recorded telemetry.</li>
 <li><strong>Console Security Intercept</strong>: The Visual Debugger and REST API now implement a <strong>Global Proactive Security Intercept</strong>. Any request containing path traversal patterns (<code>..</code>, <code>%2e%2e</code>) is immediately detected and blocked with a <code>403 Forbidden</code> response, preventing security probes from reaching the application logic.</li>
 </ul>
@@ -4531,7 +4531,7 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 <ul>
 <li><strong>Endpoint</strong>: <code>GET /api/v1/certificates/&lt;run_id&gt;</code></li>
 <li><strong>Response</strong>: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the <strong>signature_ed25519</strong> field from the issuing harness.</li>
-<li><strong>Verification CLI</strong>: Stakeholders can use the <code>verify --run-id &lt;id&gt;</code> command locally or the <code>gate --run-id &lt;id&gt;</code> command in CI/CD pipelines to verify the signature (authoritative field: <code>signature_ed25519</code>) and re-compute the trace hash locally to prove absolute veracity.</li>
+<li><strong>Verification CLI</strong>: Stakeholders can use the <code>verify --run-id &lt;id&gt;</code> command locally or the <code>gate --run-id &lt;id&gt;</code> command in CI/CD pipelines to verify the signature (field: <code>signature_ed25519</code>) and re-compute the trace hash locally to prove absolute veracity.</li>
 </ul>
 <h3 id="c-hms-ready-architecture">C. HMS-Ready Architecture<a class="headerlink" href="#c-hms-ready-architecture" title="Permanent link">&para;</a></h3>
 <p>The Trust Protocol is designed for <strong>HMS-Readiness</strong>, supporting the transition to professional Hardware Security Modules (HSM) or Cloud KMS providers.

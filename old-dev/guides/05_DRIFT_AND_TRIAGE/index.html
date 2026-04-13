@@ -3924,31 +3924,36 @@
 <p>A new scenario file is created in <code>industries/[industry]/scenarios/drift-[hash].json</code>, containing the original history as <code>ground_truth_history</code>.</p>
 <hr />
 <h2 id="2-pluggable-triage-engine">2. Pluggable Triage Engine<a class="headerlink" href="#2-pluggable-triage-engine" title="Permanent link">&para;</a></h2>
-<p>AgentV 1.5.0 introduces the <strong>Forensic Analyzer Registry</strong>. Failure diagnostics are no longer a black-box heuristic; they are a series of pluggable analyzers that inspect the <a href="../spec/forensic_ledger_schema.md">Forensic Ledger</a>.</p>
+<p>AgentV 1.5.0 introduces the <strong>Identity-Signed Forensic Analyzer Registry</strong>. Failure diagnostics are no longer a black-box heuristic; they are a series of pluggable analyzers that inspect the <a href="../../docs/src/content/docs/spec/forensic-ledger-schema.md">Forensic Ledger</a>.</p>
 <h3 id="diagnostic-triage-tags">Diagnostic Triage Tags<a class="headerlink" href="#diagnostic-triage-tags" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">Tag</th>
 <th style="text-align: left;">Description</th>
+<th style="text-align: left;">Identity Anchoring</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>INFRA_TIMEOUT</code></td>
-<td style="text-align: left;">Exceeded wall-clock limits (Hardware telemetry gradient used).</td>
+<td style="text-align: left;">Exceeded wall-clock limits (Hardware telemetry gradient).</td>
+<td style="text-align: left;">Step-Back to Agent Stimulus</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>POLICY_HALLUCINATION</code></td>
-<td style="text-align: left;">Tool use claims that lack environment evidence (State snapshots).</td>
+<td style="text-align: left;"><code>POLICY_VIOLATION</code></td>
+<td style="text-align: left;">Explicit deviation from safety/identity boundaries.</td>
+<td style="text-align: left;">Detection Point</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>LOGIC_STATE_STALL</code></td>
-<td style="text-align: left;">No measurable state progress detected across 3+ turns (Fingerprint delta).</td>
+<td style="text-align: left;">No measurable state progress detected across 3+ turns.</td>
+<td style="text-align: left;">Trigger Point</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>STRATEGIC_LOOP</code></td>
-<td style="text-align: left;"><strong>Enterprise</strong>: Semantic similarity detected across different tool attempts.</td>
+<td style="text-align: left;"><code>INFRA_CONNECTION_FAILED</code></td>
+<td style="text-align: left;">Network or platform unavailability.</td>
+<td style="text-align: left;">Step-Back to Agent Turn</td>
 </tr>
 </tbody>
 </table>
@@ -3957,8 +3962,9 @@
 <p>While triage applies categorical tags, the <code>explain</code> command now performs a <strong>Causal Attribution</strong> analysis to identify the Root Cause.</p>
 <h3 id="causal-attribution">Causal Attribution<a class="headerlink" href="#causal-attribution" title="Permanent link">&para;</a></h3>
 <p>The engine distinguishes between the <strong>Root Cause (Trigger)</strong> and the <strong>Terminal Status (Symptom)</strong>.</p>
+<p><strong>Robust Step-Back Scan</strong>: In v1.5.2, the triage engine performs a backward identity search to anchor infrastructure or metric faults to the preceding agent turn.</p>
 <p><strong>Example</strong>:
-- <strong>Root Cause</strong>: <code>LOGIC_PLANNING_ERROR</code> (Semantic Loop detected)
+- <strong>Root Cause</strong>: <code>LOGIC_PLANNING_ERROR</code> (Circular Loop found via Step-Back)
 - <strong>Manifestation</strong>: <code>INFRA_TIMEOUT</code></p>
 <h3 id="forensic-features">Forensic Features<a class="headerlink" href="#forensic-features" title="Permanent link">&para;</a></h3>
 <ul>

@@ -4649,7 +4649,7 @@
 <h2 id="hybrid-core-registry-forensic-dna-v13">Hybrid Core Registry &amp; Forensic DNA (v1.3)<a class="headerlink" href="#hybrid-core-registry-forensic-dna-v13" title="Permanent link">&para;</a></h2>
 <p>v1.3 introduces a "Hybrid" approach to environment orchestration, decoupling the physical infrastructure state from the functional evaluation logic.</p>
 <h3 id="decoupled-configuration-protocol">Decoupled Configuration Protocol<a class="headerlink" href="#decoupled-configuration-protocol" title="Permanent link">&para;</a></h3>
-<p>The framework now consumes a centralized <strong>Hybrid Registry</strong> (<code>shim_resources.json</code>) that serves as the authoritative source for all environmental resources (API endpoints, DB credentials, Git branches).</p>
+<p>The framework now consumes a centralized <strong>Hybrid Registry</strong> (<code>shim_resources.json</code>) that serves as the source for all environmental resources (API endpoints, DB credentials, Git branches).</p>
 <ol>
 <li><strong>Declarative Manifest (<code>shim_resources.json</code>)</strong>: Version-controlled, environment-agnostic resource definitions.</li>
 <li><strong>Local Secrets Overlay (<code>shim_resources.local.json</code>)</strong>: Git-ignored, developer-specific credential storage (replaces <code>.env</code>).</li>

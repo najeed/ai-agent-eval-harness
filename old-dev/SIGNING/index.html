@@ -3792,7 +3792,7 @@
 <li><strong>Identity Registry</strong>: Centralized service (<code>IdentityService</code>) managing Ed25519 keys for evaluators and auditors.</li>
 <li><strong>Verification Certificate (VC) v3</strong>: A signed forensic manifest (<code>run_manifest.json</code>) containing hashes for the trace AND sidecar artifacts.</li>
 <li><strong>Forensic Evidence Ledger</strong>: Part of the VC v3 that lists SHA-256 hashes of all generated artifacts to prevent side-channel tampering.</li>
-<li><strong>Identity Normalization</strong>: Automatic renaming of temporary traces (e.g., <code>tmp_*.jsonl</code>) to the authoritative <code>run.jsonl</code> during certification.</li>
+<li><strong>Identity Normalization</strong>: Automatic renaming of temporary traces (e.g., <code>tmp_*.jsonl</code>) to the <code>run.jsonl</code> during certification.</li>
 <li><strong>NIST AI-100-1 Scoring</strong>: A multi-dimensional <code>VerificationResult</code> schema incorporating a Weighted Severity Model (WSM).</li>
 <li><strong>Hard Gate</strong>: A CI/CD step (<code>gate</code> command) that fails if signatures, evidence hashes, or agent results are compromised.</li>
 </ul>

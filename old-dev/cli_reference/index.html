@@ -4164,8 +4164,8 @@
 | <code>EVAL_MAX_TURNS</code> | <code>5</code> | Max conversation turns per task |
 | <code>MAX_ENGINE_ATTEMPTS</code> | <code>50</code> | Global engine retry limit |
 | <code>RUN_LOG_DIR</code> | <code>runs</code> | Directory for execution traces |
-| <code>RUN_LOG_PER_RUN</code> | <code>true</code> | Save individual trace files per scenario |
-| <code>RUN_LOG_MASTER</code> | <code>true</code> | Consolidated trace log |
+| <code>RUN_LOG_PER_RUN</code> | <code>true</code> | Create nested vault directories (Industrial Standard). Set <code>false</code> for debugging. |
+| <code>RUN_LOG_MASTER</code> | <code>true</code> | Consolidated trace log (Master Fallback) |
 | <code>JUDGE_PROVIDER</code> | <code>ollama</code> | LLM Judge provider (<code>openai</code>, <code>anthropic</code>, <code>gemini</code>, <code>ollama</code>, <code>grok</code>) |
 | <code>JUDGE_MODEL</code> | <code>llama3</code> | Specific model for the judge (Industrial Default) |
 | <code>LUNA_JUDGE_TEMPERATURE</code>| <code>0.0</code> | Temperature for judge generation |
@@ -4309,8 +4309,9 @@ When <code>--attempts</code> &gt; 1, the harness generates:
 </code></pre></div>
 <strong>Forensic Features:</strong>
 - <strong>Tiered Confidence Scoring</strong>: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
+- <strong>Identity-Aware Diagnostic</strong>: Anchors failure to the authoritative PBAC Identity Node (<code>agent_id</code>, <code>system_id</code>) using the <strong>Robust Step-Back Scan</strong>.
 - <strong>Actionable Recommendations</strong>: Provides targeted remediation advice (e.g., prompt refinement, tool sandbox optimization) based on the identified failure pattern.
-- <strong>Pinpoint Diagnostics</strong>: Identifies the exact turn (index) in the trajectory where the failure logic diverged.</p>
+- <strong>Root-Cause Anchoring</strong>: Pinpoints the exact turn index in the trajectory where logic diverged, even if the manifestation happened turns later.</p>
 <h3 id="calibrate"><code>calibrate</code><a class="headerlink" href="#calibrate" title="Permanent link">&para;</a></h3>
 <p>Measure alignment between the LLM judge and human ground truth in a flight recorder log.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>agentv<span class="w"> </span>calibrate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--golden<span class="w"> </span>&lt;path&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--plot<span class="o">]</span>

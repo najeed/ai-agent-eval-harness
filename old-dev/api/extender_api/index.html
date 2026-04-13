@@ -1146,28 +1146,22 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-        
           <li class="md-nav__item">
-  <a href="#execution-monitoring" class="md-nav__link">
+  <a href="#post-apiv1evaluate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ⚡ Execution &amp; Monitoring
+        POST /api/v1/evaluate
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="⚡ Execution &amp; Monitoring">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
-  <a href="#post-apievaluate" class="md-nav__link">
+  <a href="#get-apiv1runsrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        POST /api/evaluate
+        GET /api/v1/runs/&lt;run_id&gt;
       
     </span>
   </a>
@@ -4020,28 +4014,22 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-        
           <li class="md-nav__item">
-  <a href="#execution-monitoring" class="md-nav__link">
+  <a href="#post-apiv1evaluate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ⚡ Execution &amp; Monitoring
+        POST /api/v1/evaluate
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="⚡ Execution &amp; Monitoring">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
-  <a href="#post-apievaluate" class="md-nav__link">
+  <a href="#get-apiv1runsrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        POST /api/evaluate
+        GET /api/v1/runs/&lt;run_id&gt;
       
     </span>
   </a>
@@ -4140,7 +4128,7 @@
 <hr />
 <h3 id="system-metadata">📋 System &amp; Metadata<a class="headerlink" href="#system-metadata" title="Permanent link">&para;</a></h3>
 <h4 id="get-apiinfo"><code>GET /api/info</code><a class="headerlink" href="#get-apiinfo" title="Permanent link">&para;</a></h4>
-<p>Returns the authoritative system status, including:
+<p>Returns the system status, including:
 - Engine version.
 - Count of active plugins, adapters, and environment shims.
 - Configured agent endpoints (Gemini, Claude, Ollama).
@@ -4153,19 +4141,41 @@
 <p>Faceted search across the scenario catalog.
 - <strong>Query Params</strong>: <code>q</code> (search string), <code>industry</code>, <code>difficulty</code>, <code>limit</code>, <code>page</code>.</p>
 <h4 id="post-apiscenarios"><code>POST /api/scenarios</code><a class="headerlink" href="#post-apiscenarios" title="Permanent link">&para;</a></h4>
-<p>Saves or updates a scenario JSON file in the authoritative <code>industries/</code> directory.
+<p>Saves or updates a scenario JSON file in the <code>industries/</code> directory.
 - <strong>Body</strong>: Complete AES V1.3 scenario JSON.
 - <strong>Security</strong>: Validates against the project jail and sanitizes industry paths.</p>
 <hr />
-<h3 id="execution-monitoring">⚡ Execution &amp; Monitoring<a class="headerlink" href="#execution-monitoring" title="Permanent link">&para;</a></h3>
-<h4 id="post-apievaluate"><code>POST /api/evaluate</code><a class="headerlink" href="#post-apievaluate" title="Permanent link">&para;</a></h4>
-<p>Triggers an asynchronous evaluation run.
-- <strong>Body</strong>: <code>{"path": "scenarios/my_test.json", "max_turns": 5}</code>
-- <strong>Response</strong>: <code>{"status": "started", "scenario_id": "..."}</code>
-- <strong>Note</strong>: Runs in a background thread to prevent blocking the Console API.</p>
+<h4 id="post-apiv1evaluate"><code>POST /api/v1/evaluate</code><a class="headerlink" href="#post-apiv1evaluate" title="Permanent link">&para;</a></h4>
+<p>Triggers an asynchronous evaluation run using the authoritative industrial namespace.
+- <strong>Method</strong>: <code>POST</code>
+- <strong>Body</strong>:
+    - <code>path</code> (string, <strong>required</strong>): Absolute or relative path to the scenario JSON.
+    - <code>max_turns</code> (int, optional): Maximum conversation depth (Default: 10).
+- <strong>Response</strong>:
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;started&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;run_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eval_20240412_...&quot;</span><span class="p">}</span>
+</code></pre></div>
+- <strong>Note</strong>: This endpoint initiates a background thread. Results are streamed to <code>runs/&lt;run_id&gt;/run.jsonl</code>. This endpoint enforces strict vault affinity.</p>
+<h4 id="get-apiv1runsrun_id"><code>GET /api/v1/runs/&lt;run_id&gt;</code><a class="headerlink" href="#get-apiv1runsrun_id" title="Permanent link">&para;</a></h4>
+<p>Industrial Polling Primitive.
+- <strong>Method</strong>: <code>GET</code>
+- <strong>Params</strong>: None.
+- <strong>Response</strong>:
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;run_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vault&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;runs/.../run.jsonl&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&quot;size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12450</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">&quot;mtime&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1712952000.0</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</code></pre></div>
+- <strong>Note</strong>: Checks the authoritative vault first, falling back to a shallow scan of the master log if the vault directory is missing or unlinked.</p>
 <h4 id="get-apiruns"><code>GET /api/runs</code><a class="headerlink" href="#get-apiruns" title="Permanent link">&para;</a></h4>
-<p>Lists recent run traces, including both global logs and individual per-run artifacts.
-- <strong>Filtering</strong>: Supports <code>q</code> param for searching by Run ID or Scenario Name.</p>
+<p>Legacy faceted listing of all traces (supports master log and vault discovery).
+- <strong>Method</strong>: <code>GET</code>
+- <strong>Params</strong>:
+    - <code>q</code> (string, optional): Search filter for Run ID or Scenario Name.
+- <strong>Filtering</strong>: Supports shallow string matching across the forensic registry.</p>
 <hr />
 <h3 id="extensibility-hooks-python">🔌 Extensibility Hooks (Python)<a class="headerlink" href="#extensibility-hooks-python" title="Permanent link">&para;</a></h3>
 <p>Platform extenders can inject custom logic directly into the Console by implementing specific hooks in their plugins.</p>
@@ -4174,26 +4184,55 @@
 - <code>app</code>: The Flask application instance (for adding <code>@app.route</code>).
 - <code>nav_registry</code>: The list of sidebar navigation items (for adding custom UI links).</p>
 <p><strong>Example Interface:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomDashboardPlugin</span><span class="p">:</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_register_console_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">nav_registry</span><span class="p">):</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/my-plugin/stats&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">():</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">}</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="n">nav_registry</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_plugin&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom Stats&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/my-plugin&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>            <span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="s2">&quot;activity&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;internal&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        <span class="p">})</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomDashboardPlugin</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_register_console_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">nav_registry</span><span class="p">):</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/my-plugin/stats&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">():</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">}</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">nav_registry</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_plugin&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom Stats&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/my-plugin&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>            <span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="s2">&quot;activity&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;internal&quot;</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>        <span class="p">})</span>
 </code></pre></div></p>
 <hr />
 <h3 id="public-trust-endpoints-v1">🛡️ Public Trust Endpoints (v1)<a class="headerlink" href="#public-trust-endpoints-v1" title="Permanent link">&para;</a></h3>
 <p>These endpoints are unprotected to allow external deployment gates to verify results.</p>
 <ul>
-<li><code>GET /api/v1/certificates/&lt;run_id&gt;</code>: Industrial VC retrieval.</li>
-<li><code>GET /api/v1/verify/&lt;run_id&gt;</code>: SHA-256 integrity verification.</li>
+<li><code>POST /api/v1/certify</code>: Industrial Certification Service. Signs the trace zero-copy within the authoritative vault.<ul>
+<li><strong>Body</strong>:<ul>
+<li><code>run_id</code> (string, <strong>required</strong>): Unique identifier for the evaluation run.</li>
+<li><code>identity</code> (string, optional): Signing Identity (Default: <code>system_id</code>).</li>
+<li><code>status</code> (string, optional): Compliance outcome (e.g., <code>pass</code>, <code>fail</code>).</li>
+<li><code>score</code> (float, optional): Normalized evaluation score (0.0 - 1.0).</li>
+<li><code>policy_ref</code> (string, optional): Reference ID for the governing policy.</li>
+<li><code>ttl</code> (int, optional): Certificate validity in days.</li>
+</ul>
+</li>
+<li><strong>Response</strong>: A complete VC v3 manifest containing the <code>sha256</code> hash and <code>provenance_chain</code>.</li>
+<li><strong>Note</strong>: This requires write access to the vault. It generates <code>run_manifest.json</code> in the run directory.</li>
+</ul>
+</li>
+<li><code>GET /v1/certificates/&lt;run_id&gt;</code>: Public Trust Protocol retrieval of the Verification Certificate (VC).<ul>
+<li><strong>Response</strong>: The raw VC v3 JSON manifest.</li>
+<li><strong>Note</strong>: Unprotected endpoint for industrial deployment gates.</li>
+</ul>
+</li>
+<li><code>GET /v1/verify/&lt;run_id&gt;</code>: Public Verification API for SHA-256 and cryptographic proof check.<ul>
+<li><strong>Response</strong>:
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;run_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;verified&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-04-12T...&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ED25519 cryptographic signature proof&quot;</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Note</strong>: Performs a live integrity check comparing the <code>run.jsonl</code> trace against the issued manifest.</li>
+</ul>
+</li>
 </ul>
 
 

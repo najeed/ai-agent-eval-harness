@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-agenteval-isolates-root-causes-state-level-triage" class="md-skip">
+        <a href="#how-agentv-isolates-root-causes-state-level-triage" class="md-skip">
           Skip to content
         </a>
       
@@ -3870,18 +3870,18 @@
 
 
 
-<h1 id="how-agenteval-isolates-root-causes-state-level-triage">🕵️ How AgentEval Isolates Root Causes (State-Level Triage)<a class="headerlink" href="#how-agenteval-isolates-root-causes-state-level-triage" title="Permanent link">&para;</a></h1>
-<p>AgentEval isolates the root cause of an agent's failure by moving beyond simple log analysis and into <strong>State-Level Trajectory Triage</strong>. It works across three distinct layers:</p>
+<h1 id="how-agentv-isolates-root-causes-state-level-triage">🕵️ How AgentV Isolates Root Causes (State-Level Triage)<a class="headerlink" href="#how-agentv-isolates-root-causes-state-level-triage" title="Permanent link">&para;</a></h1>
+<p>AgentV isolates the root cause of an agent's failure by moving beyond simple log analysis and into <strong>State-Level Trajectory Triage</strong>. It works across three distinct layers:</p>
 <h2 id="1-the-state-parity-check-vfs-delta">1. The "State Parity" Check (VFS Delta)<a class="headerlink" href="#1-the-state-parity-check-vfs-delta" title="Permanent link">&para;</a></h2>
-<p>Unlike standard benchmarks that only check the agent's final text response, AgentEval maintains a <strong>Virtual File System (VFS)</strong>.</p>
+<p>Unlike standard benchmarks that only check the agent's final text response, AgentV maintains a <strong>Virtual File System (VFS)</strong>.</p>
 <ul>
 <li><strong>VFS-Aware Shims</strong>: Every World Shim (Database, Jira, Git, etc.) is "VFS-aware."</li>
-<li><strong>State Comparison</strong>: When an agent executes a tool, AgentEval compares the resulting system state against the "Ground Truth" defined in the scenario.</li>
+<li><strong>State Comparison</strong>: When an agent executes a tool, AgentV compares the resulting system state against the "Ground Truth" defined in the scenario.</li>
 <li><strong>Patient Zero</strong>: If the agent queries the wrong table or fails to commit a file, the State Divergence is marked immediately as the "Patient Zero" step.</li>
 </ul>
 <hr />
 <h2 id="2-heuristic-triage-engine-triagepy">2. Heuristic Triage Engine (<code>triage.py</code>)<a class="headerlink" href="#2-heuristic-triage-engine-triagepy" title="Permanent link">&para;</a></h2>
-<p>AgentEval uses a specialized engine to scan the entire execution trace for failure patterns:</p>
+<p>AgentV uses a specialized engine to scan the entire execution trace for failure patterns:</p>
 <ul>
 <li><strong>Stall Detection</strong>: Identifies if an agent is "looping" (e.g., calling the same <code>list_dir</code> 3 times without changing its behavior).</li>
 <li><strong>Tool-Level Exceptions</strong>: Captures internal simulator errors (e.g., a "404 Not Found" from the API Shim) that the agent might have ignored or misinterpreted.</li>
@@ -3916,7 +3916,7 @@
 </tr>
 </tbody>
 </table>
-<p>By combining these, AgentEval can distinguish between an agent that hallucinated a tool's existence vs. an agent that used the right tool but with the wrong parameters.</p>
+<p>By combining these, AgentV can distinguish between an agent that hallucinated a tool's existence vs. an agent that used the right tool but with the wrong parameters.</p>
 <hr />
 <h2 id="why-use-shims-instead-of-real-apis">Why use Shims instead of Real APIs?<a class="headerlink" href="#why-use-shims-instead-of-real-apis" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3926,7 +3926,7 @@
 </ul>
 <hr />
 <h2 id="4-stratified-failure-taxonomy-v13">4. Stratified Failure Taxonomy (v1.3)<a class="headerlink" href="#4-stratified-failure-taxonomy-v13" title="Permanent link">&para;</a></h2>
-<p>To achieve industrial-grade diagnostics, AgentEval has transitioned from brittle error string matching to a formal, <strong>NIST-aligned Failure Registry</strong>.</p>
+<p>To achieve industrial-grade diagnostics, AgentV has transitioned from brittle error string matching to a formal, <strong>NIST-aligned Failure Registry</strong>.</p>
 <h3 id="hierarchical-root-cause-analysis">Hierarchical Root-Cause Analysis<a class="headerlink" href="#hierarchical-root-cause-analysis" title="Permanent link">&para;</a></h3>
 <p>Failures are no longer treated as "generic errors." They are stratified into hierarchical categories:
 1.  <strong>INFRASTRUCTURE</strong>: Simulator crashes, timeouts, or adapter connectivity issues.

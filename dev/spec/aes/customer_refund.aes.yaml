@@ -1,0 +1,43 @@
+aes_version: 1.4
+metadata:
+  name: "Industrial Customer Refund Validation"
+  compliance_level: "Regulatory_Audit"
+  capabilities:
+    - "refund_processor_api"
+    - "customer_crm_v2"
+  standards_registry:
+    - "PCI_DSS_v4"
+    - "ISO_27001_2022"
+
+description: "Validate the agent's ability to process customer refunds according to financial compliance standards."
+industry: "finance"
+
+workflow:
+  nodes:
+    - id: "verify_request"
+      task_description: "Check the customer refund request against the transaction history in CRM."
+      required_tools:
+        - "customer_crm_v2"
+      success_criteria:
+        - tool_called: "customer_crm_v2"
+        - output_matches: "Transaction ID: [A-Z0-9]+"
+
+    - id: "process_payout"
+      task_description: "Initiate the payout through the finance gateway."
+      required_tools:
+        - "refund_processor_api"
+      success_criteria:
+        - tool_called: "refund_processor_api"
+        - output_matches: "Status: Success"
+
+  edges:
+    - from: "verify_request"
+      to: "process_payout"
+      condition: "request_valid == true"
+
+evaluation:
+  consensus:
+    strategy: "Absolute_Unanimity"
+    min_judges: 3
+    judge_panel: ["Audit-Judge-1", "Audit-Judge-2", "Compliance-Expert"]
+  ija_threshold: 1.0

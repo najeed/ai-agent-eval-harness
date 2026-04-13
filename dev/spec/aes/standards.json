@@ -1,0 +1,117 @@
+{
+  "categories": {
+    "Finance & Payments": {
+      "description": "Financial messaging, payment security, and banking regulations.",
+      "standards": [
+        { "id": "ISO_20022", "name": "ISO 20022", "description": "Universal financial industry message scheme." },
+        { "id": "SWIFT_MT103", "name": "SWIFT MT103", "description": "Single Customer Credit Transfer." },
+        { "id": "PCI_DSS_V4", "name": "PCI DSS v4", "description": "Payment Card Industry Data Security Standard." },
+        { "id": "PSD2", "name": "PSD2", "description": "EU Payment Services Directive 2." },
+        { "id": "BASEL_III", "name": "Basel III", "description": "Global regulatory framework for bank capital adequacy." },
+        { "id": "MIFID_II", "name": "MiFID II", "description": "Markets in Financial Instruments Directive." },
+        { "id": "SOX", "name": "SOX", "description": "Sarbanes-Oxley Act." },
+        { "id": "GLBA", "name": "GLBA", "description": "Gramm-Leach-Bliley Act." }
+      ]
+    },
+    "Healthcare": {
+      "description": "Health data interoperability, privacy, and clinical standards.",
+      "standards": [
+        { "id": "HL7_FHIR_V4", "name": "HL7 FHIR v4", "description": "Fast Healthcare Interoperability Resources." },
+        { "id": "ICD_10", "name": "ICD-10", "description": "International Classification of Diseases, 10th Revision." },
+        { "id": "ICD_11", "name": "ICD-11", "description": "International Classification of Diseases, 11th Revision." },
+        { "id": "DICOM", "name": "DICOM", "description": "Digital Imaging and Communications in Medicine." },
+        { "id": "HIPAA", "name": "HIPAA", "description": "Health Insurance Portability and Accountability Act." },
+        { "id": "HITECH", "name": "HITECH Act", "description": "Health Information Technology for Economic and Clinical Health Act." }
+      ]
+    },
+    "Security & Privacy": {
+      "description": "Cybersecurity frameworks, information security, and data privacy.",
+      "standards": [
+        { "id": "ISO_27001", "name": "ISO/IEC 27001", "description": "Information Security Management Systems." },
+        { "id": "SOC_2", "name": "SOC 2", "description": "System and Organization Controls 2." },
+        { "id": "CIS_BENCHMARKS", "name": "CIS Benchmarks", "description": "Best practices for securing IT systems." },
+        { "id": "NIST_CSF", "name": "NIST CSF", "description": "NIST Cybersecurity Framework." },
+        { "id": "FISMA", "name": "FISMA", "description": "Federal Information Security Management Act." },
+        { "id": "FIPS_140_3", "name": "FIPS 140-3", "description": "Security Requirements for Cryptographic Modules." },
+        { "id": "ISO_19790", "name": "ISO/IEC 19790", "description": "Security requirements for cryptographic modules." },
+        { "id": "GDPR", "name": "GDPR", "description": "General Data Protection Regulation (EU)." },
+        { "id": "CCPA", "name": "CCPA", "description": "California Consumer Privacy Act." },
+        { "id": "LGPD", "name": "LGPD", "description": "Lei Geral de Proteção de Dados (Brazil)." },
+        { "id": "PIPEDA", "name": "PIPEDA", "description": "Personal Information Protection and Electronic Documents Act (Canada)." },
+        { "id": "FEDRAMP", "name": "FedRAMP", "description": "Federal Risk and Authorization Management Program." },
+        { "id": "ISO_27701", "name": "ISO/IEC 27701", "description": "Privacy Information Management System (PIMS)." }
+      ]
+    },
+    "Identity & Access": {
+       "description": "Authentication and authorization protocols.",
+       "standards": [
+         { "id": "X_509", "name": "ITU-T X.509", "description": "Public key infrastructure (PKI) and Privilege Management Infrastructure." },
+         { "id": "SAML_V2", "name": "OASIS SAML v2.0", "description": "Security Assertion Markup Language." },
+         { "id": "OAUTH_2", "name": "OAuth 2.0", "description": "Authorization framework." },
+         { "id": "OIDC", "name": "OpenID Connect", "description": "Identity layer on top of OAuth 2.0." }
+       ]
+    },
+    "Energy & Utilities": {
+      "description": "Smart grid, power systems, and utility infrastructure.",
+      "standards": [
+        { "id": "IEC_61850", "name": "IEC 61850", "description": "Communication networks and systems for power utility automation." },
+        { "id": "IEEE_1547", "name": "IEEE 1547", "description": "Standard for interconnection and interoperability of distributed energy resources." },
+        { "id": "IEC_62351", "name": "IEC 62351", "description": "Information security for power system control operations." },
+        { "id": "NERC_CIP", "name": "NERC CIP", "description": "Critical Infrastructure Protection standards." }
+      ]
+    },
+    "Industrial & Manufacturing": {
+      "description": "Automation, integration, and industrial cybersecurity.",
+      "standards": [
+        { "id": "ISA_95", "name": "ISA-95", "description": "Enterprise-Control System Integration." },
+        { "id": "OPC_UA", "name": "OPC UA", "description": "Open Platform Communications Unified Architecture." },
+        { "id": "IEC_62443", "name": "IEC 62443", "description": "Security for Industrial Automation and Control Systems." },
+        { "id": "ISO_50001", "name": "ISO 50001", "description": "Energy Management." },
+        { "id": "ISO_45001", "name": "ISO 45001", "description": "Occupational Health and Safety." }
+      ]
+    },
+    "AI & Ethics": {
+      "description": "Artificial Intelligence management, risk, and ethics.",
+      "standards": [
+        { "id": "ISO_42001", "name": "ISO/IEC 42001 AIMS", "description": "Artificial Intelligence Management System." },
+        { "id": "ISO_23894", "name": "ISO/IEC 23894 RM", "description": "AI Risk Management." },
+        { "id": "EU_AI_ACT", "name": "EU AI Act", "description": "European Union Artificial Intelligence Act." },
+        { "id": "NIST_AI_RMF", "name": "NIST AI RMF", "description": "NIST Artificial Intelligence Risk Management Framework." },
+        { "id": "OECD_AI_PRINCIPLES", "name": "OECD AI Principles", "description": "Principles for responsible stewardship of trustworthy AI." },
+        { "id": "UNESCO_AI_ETHICS", "name": "UNESCO AI Ethics", "description": "Recommendation on the Ethics of Artificial Intelligence." }
+      ]
+    },
+    "Telecom & Networking": {
+      "description": "Telecommunications protocols and networking standards.",
+      "standards": [
+        { "id": "3GPP_5G", "name": "3GPP (4G/5G/6G)", "description": "Mobile broadband standards." },
+        { "id": "ISO_9594", "name": "ISO/IEC 9594", "description": "Directory services (X.500)." },
+        { "id": "IETF_RFC", "name": "IETF RFCs", "description": "Internet Engineering Task Force Request for Comments (TCP/IP, HTTP)." }
+      ]
+    },
+    "Data & Interoperability": {
+      "description": "Data modeling, metadata, and web standards.",
+      "standards": [
+        { "id": "ISO_11179", "name": "ISO/IEC 11179", "description": "Metadata registries (MDR)." },
+        { "id": "W3C_XML", "name": "W3C XML", "description": "Extensible Markup Language." },
+        { "id": "W3C_RDF", "name": "W3C RDF", "description": "Resource Description Framework." },
+        { "id": "W3C_OWL", "name": "W3C OWL", "description": "Web Ontology Language." },
+        { "id": "DUBLIN_CORE", "name": "Dublin Core", "description": "Metadata element set." },
+        { "id": "DCAT", "name": "DCAT", "description": "Data Catalog Vocabulary." }
+      ]
+    },
+    "Cross-Industry & Governance": {
+      "description": "Quality management, risk, and ESG reporting.",
+      "standards": [
+        { "id": "ISO_9001", "name": "ISO 9001", "description": "Quality Management Systems." },
+        { "id": "ISO_14001", "name": "ISO 14001", "description": "Environmental Management Systems." },
+        { "id": "ISO_31000", "name": "ISO 31000", "description": "Risk Management." },
+        { "id": "COSO_ERM", "name": "COSO ERM", "description": "Enterprise Risk Management framework." },
+        { "id": "COBIT", "name": "COBIT", "description": "Control Objectives for Information and Related Technologies." },
+        { "id": "ESG_GRI", "name": "ESG Reporting (GRI)", "description": "Global Reporting Initiative." },
+        { "id": "ESG_SASB", "name": "ESG Reporting (SASB)", "description": "Sustainability Accounting Standards Board." },
+        { "id": "ESG_ISSB", "name": "ESG Reporting (ISSB)", "description": "International Sustainability Standards Board." }
+      ]
+    }
+  }
+}
